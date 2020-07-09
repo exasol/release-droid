@@ -1,10 +1,10 @@
 <head><link href="oft_spec.css" rel="stylesheet"></head>
 
-# System Requirement Specification Exasol Row Level Security
+# System Requirement Specification Exasol Release Robot
 
 ## Introduction
 
-Release Robot (short "RR") is a combination of validators and automation that make a software release safer and more convenient.
+Release Robot (short "RR") is a combination of validators and automation that make a software release safer, faster and more convenient.
 
 ## About This Document
 
@@ -96,7 +96,7 @@ Let's call them "pre-condition validation" and "release step validation".
 
 #### Pre-condition validation
 
-Teams usually agree on rules that each member follows in order to have complete and uniformly looking releases. This helps team mates navigate each others projects and makes for a professional outside appearance.
+Teams usually agree on rules that each member follows in order to have complete and uniformly looking releases. This helps teammates navigate each other's projects and provides a professional appearance.
 
 Typical examples of these rules are directory layout, naming conventions, versioning rules and so forth.
 
@@ -128,7 +128,7 @@ Needs: dsn
 ##### Defining Search for Uniform Version
 `req~defining-search-for-uniform-version~1`
 
-Integrators can define the following criteria tuples that is used in searches for the use of the version number in a project:
+Integrators can define the following criteria tuples that are used in searches for the use of the version number in a project:
 
 1. Paths to files with wildcards
 1. Regular expressions applied inside the file to find the version
@@ -147,7 +147,15 @@ Needs: dsn
 `req~path-wildcards-can-span-multiple-path-elements~1`
 
 Path wildcards used in validation rules can span multiple path elements.
+Comment:
 
+A path consists of multiple elements, and a regular wildcard typically only is a placeholder for a single element.
+
+    src/main/*
+
+It it often useful though to formulate wildcards that dive deeper. In the example below the path pattern matches all Markdown files in any sub-directory of `doc`.
+
+    doc/**/*.md 
 Rationale:
 
 This allows defining rules before the actual directory layout is known. Project structures tend to grow with the project's age and not all path layout decisions are predictable.
@@ -210,7 +218,7 @@ Needs: dsn
 
 Release step validation serves two purposes. The first one is obvious: you want to validate that a step in your release process was executed successfully and that all the expected results exist and are valid.
 
-Additionally step validation helps recovering from a release that was interrupted midway. Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time. Depending on how many steps your release process has and how complicated they are, starting over can be terribly annoying and costly.
+Additionally, step validation helps to recover from a release that was interrupted midway. Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time. Depending on how many steps your release process has and how complicated they are, starting over can be terribly annoying and costly.
 
 What you really want is to find out, how far you got and restart from that point.
 
@@ -366,4 +374,3 @@ Releases are a sensitive process in which a lot of things can go wrong. In order
       '-- Security
 
 ### Quality Scenarios
-
