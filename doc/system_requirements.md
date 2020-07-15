@@ -327,7 +327,7 @@ Needs: dsn
 ##### Validating That GitHub Issues are Closed
 `req~validating-that-github-issues-are-closed~1`
 
-RR validates that the issue ticket numbers mentioned in the release letter a all closed.
+RR validates that the issue ticket numbers mentioned in the release letter are all closed.
 
 Rationale:
 

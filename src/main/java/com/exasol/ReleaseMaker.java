@@ -1,7 +1,16 @@
 package com.exasol;
 
+/**
+ * A common interface for executing release goals.
+ */
 public interface ReleaseMaker {
-    public void validate(ReleasePlatform platform, String projectName);
+    /**
+     * Validate if the project is ready for a release.
+     */
+    public void validate();
 
-    public void release(ReleasePlatform platform, String projectName);
+    /**
+     * Release the project.
+     */
+    public void release();
 }
