@@ -7,13 +7,15 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.platform.ReleaseMakerFactory;
+import com.exasol.platform.GitHubRepository;
+import com.exasol.platform.RepositoryHandlerFactory;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
  */
 public class RequestDispatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDispatcher.class);
+    private static final String REPOSITORY_OWNER = "exasol";
 
     /**
      * Main entry point for all Release Robot's calls.
@@ -26,12 +28,10 @@ public class RequestDispatcher {
         LOGGER.info("Release Robot has received '{}' request for the project '{}'.", goal, repositoryName);
         try {
             final Set<ReleasePlatform> platformsList = getReleasePlatformsList(platforms);
-            final ReleaseMaker releaseMaker = ReleaseMakerFactory.getReleaseMaker(repositoryName, platformsList);
             if (goal.equalsIgnoreCase("validate")) {
-                releaseMaker.validate();
+                runValidate(repositoryName, platformsList);
             } else if (goal.equalsIgnoreCase("release")) {
-                releaseMaker.validate();
-                releaseMaker.release();
+                runRelease(repositoryName, platformsList);
             } else {
                 throw new UnsupportedOperationException(
                         "'" + goal + "' goal is unknown. Please, use one of the following goals: release, validate");
@@ -39,6 +39,22 @@ public class RequestDispatcher {
         } catch (final RuntimeException exception) {
             LOGGER.error("'{}' request failed. Cause: {}", goal, exception.getMessage());
         }
+    }
+
+    private void runValidate(final String repositoryName, final Set<ReleasePlatform> platformsList) {
+        final GitHubRepository repository = GitHubRepository.getAnonymousGitHubRepository(REPOSITORY_OWNER,
+                repositoryName);
+        final RepositoryHandler repositoryHandler = RepositoryHandlerFactory.getReleaseHandler(repository,
+                platformsList);
+        repositoryHandler.validate();
+    }
+
+    private void runRelease(final String repositoryName, final Set<ReleasePlatform> platformsList) {
+        final GitHubRepository repository = GitHubRepository.getLogInGitHubRepository(REPOSITORY_OWNER, repositoryName);
+        final RepositoryHandler repositoryHandler = RepositoryHandlerFactory.getReleaseHandler(repository,
+                platformsList);
+        repositoryHandler.validate();
+        repositoryHandler.release();
     }
 
     protected Set<ReleasePlatform> getReleasePlatformsList(final String[] platforms) {

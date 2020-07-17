@@ -54,8 +54,16 @@ public class GitHubRepository {
             final GHRepository ghRepository = github.getRepository(repositoryOwner + "/" + repositoryName);
             return new GitHubRepository(ghRepository);
         } catch (final IOException exception) {
-            throw new IllegalArgumentException("Repository '" + repositoryName
-                    + "' not found. The repository doesn't exist or the user doesn't have privileges to see it.");
+            final String message;
+            if (exception.getMessage().contains("Not Found")) {
+                message = "Repository '" + repositoryName
+                        + "' not found. The repository doesn't exist or the user doesn't have permissions to see it.";
+            } else if (exception.getMessage().contains("Bad credentials")) {
+                message = "A GitHub account with specified username and password doesn't exist.";
+            } else {
+                message = exception.getMessage();
+            }
+            throw new IllegalArgumentException(message);
         }
     }
 
@@ -93,6 +101,11 @@ public class GitHubRepository {
         }
     }
 
-    public void release() {
+    public void release(final String tag, final String name, final String releaseLetter) {
+        try {
+            this.repository.createRelease(tag).draft(true).body(releaseLetter).name(name).create();
+        } catch (final IOException exception) {
+            throw new IllegalStateException("An error occurred during the release process: " + exception.getMessage());
+        }
     }
 }

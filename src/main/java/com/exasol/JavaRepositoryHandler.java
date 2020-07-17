@@ -1,17 +1,22 @@
-package com.exasol.validation;
+package com.exasol;
+
+import java.util.Set;
 
 import com.exasol.platform.GitHubRepository;
 
-/**
- * A java specific project validator.
- */
-public class ProjectValidatorJava extends AbstractProjectValidator {
-    public ProjectValidatorJava(final GitHubRepository repository) {
-        super(repository);
+public class JavaRepositoryHandler extends AbstractRepositoryHandler {
+    /**
+     * Create a new instance of {@link JavaRepositoryHandler}.
+     *
+     * @param repository in instance of {@link GitHubRepository}
+     * @param platforms one or more {@link ReleasePlatform}
+     */
+    public JavaRepositoryHandler(final GitHubRepository repository, final Set<ReleasePlatform> platforms) {
+        super(repository, platforms);
     }
 
     @Override
-    protected String getVersion() {
+    public String getVersion() {
         final String pom = this.repository.getSingleFileContentAsString("pom.xml");
         final String projectVersionTag = "<version>";
         final int index = pom.indexOf(projectVersionTag);
