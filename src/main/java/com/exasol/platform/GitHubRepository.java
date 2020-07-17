@@ -4,47 +4,59 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.kohsuke.github.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a github repository.
  */
 public class GitHubRepository {
-    private final GitHub github;
-    private final String owner;
-    private final String name;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitHubRepository.class);
     private final GHRepository repository;
 
-    private GitHubRepository(final String owner, final String name) {
-        try {
-            this.github = GitHub.connectAnonymously();
-        } catch (final IOException exception) {
-            throw new IllegalStateException(
-                    "Cannot create GitHubController due to unexpected error: " + exception.getMessage());
-        }
-        this.owner = owner;
-        this.name = name;
-        this.repository = getRepository();
-    }
-
-    private GHRepository getRepository() {
-        try {
-            return this.github.getRepository(this.owner + "/" + this.name);
-        } catch (final IOException exception) {
-            throw new IllegalArgumentException("Repository '" + this.name
-                    + "' not found in the list of public repositories of the owner '" + this.owner + "'.");
-        }
+    private GitHubRepository(final GHRepository repository) {
+        this.repository = repository;
     }
 
     /**
-     * Create an instance of {@link GitHubRepository} without possibilities to edit it.
+     * Create an instance of {@link GitHubRepository} only for reading purposes. Only for validation of public
+     * repositories.
      * 
      * @param repositoryOwner name of the owner on github
      * @param repositoryName name of the repository on github
      * @return new instance of {@link GitHubRepository}
      */
-    public static GitHubRepository getImmutableGitHubRepository(final String repositoryOwner,
+    public static GitHubRepository getAnonymousGitHubRepository(final String repositoryOwner,
             final String repositoryName) {
-        return new GitHubRepository(repositoryOwner, repositoryName);
+        final GitHub github = GitHubInstance.getAnonymousGitHub();
+        try {
+            final GHRepository ghRepository = github.getRepository(repositoryOwner + "/" + repositoryName);
+            return new GitHubRepository(ghRepository);
+        } catch (final IOException exception) {
+            LOGGER.info(
+                    "Repository '{}' not found in the list of public repositories of the owner '{}'. "
+                            + "Log in as a GitHub user to search in the private repositories too.",
+                    repositoryName, repositoryOwner);
+            return getLogInGitHubRepository(repositoryOwner, repositoryName);
+        }
+    }
+
+    /**
+     * Create an instance of {@link GitHubRepository}.
+     *
+     * @param repositoryOwner name of the owner on github
+     * @param repositoryName name of the repository on github
+     * @return new instance of {@link GitHubRepository}
+     */
+    public static GitHubRepository getLogInGitHubRepository(final String repositoryOwner, final String repositoryName) {
+        final GitHub github = GitHubInstance.getUserVerifiedGitHub();
+        try {
+            final GHRepository ghRepository = github.getRepository(repositoryOwner + "/" + repositoryName);
+            return new GitHubRepository(ghRepository);
+        } catch (final IOException exception) {
+            throw new IllegalArgumentException("Repository '" + repositoryName
+                    + "' not found. The repository doesn't exist or the user doesn't have privileges to see it.");
+        }
     }
 
     /**
@@ -79,5 +91,8 @@ public class GitHubRepository {
             throw new IllegalArgumentException("Cannot find or read file " + filePath + " in the repository "
                     + this.repository.getName() + ". Please add this file according to the User Guide.");
         }
+    }
+
+    public void release() {
     }
 }

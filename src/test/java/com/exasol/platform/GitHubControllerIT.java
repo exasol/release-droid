@@ -10,19 +10,19 @@ import org.junit.jupiter.api.Test;
 class GitHubControllerIT {
     @Test
     void testValidateProjectExists() {
-        assertDoesNotThrow(() -> GitHubRepository.getImmutableGitHubRepository("exasol", "release-robot"));
+        assertDoesNotThrow(() -> GitHubRepository.getAnonymousGitHubRepository("exasol", "release-robot"));
     }
 
     @Test
     void testValidateProjectExistsThrowsException() {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> GitHubRepository.getImmutableGitHubRepository("exasol", "fake-name"));
+                () -> GitHubRepository.getAnonymousGitHubRepository("exasol", "fake-name"));
         assertThat(exception.getMessage(), containsString("Repository 'fake-name' not found"));
     }
 
     @Test
     void testGetSingleFileContentAsString() {
-        final GitHubRepository repository = GitHubRepository.getImmutableGitHubRepository("exasol", "release-robot");
+        final GitHubRepository repository = GitHubRepository.getAnonymousGitHubRepository("exasol", "release-robot");
         final String pom = repository.getSingleFileContentAsString("pom.xml");
         assertThat(pom, containsString("<artifactId>release-robot</artifactId>"));
     }

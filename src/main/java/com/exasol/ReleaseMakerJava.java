@@ -32,7 +32,7 @@ public class ReleaseMakerJava implements ReleaseMaker {
     @Override
     public void validate() {
         LOGGER.info("Validation of Java project started.");
-        final GitHubRepository repository = GitHubRepository.getImmutableGitHubRepository(REPOSITORY_OWNER,
+        final GitHubRepository repository = GitHubRepository.getAnonymousGitHubRepository(REPOSITORY_OWNER,
                 this.repositoryName);
         final ProjectValidator projectValidator = new ProjectValidatorJava(repository);
         projectValidator.validatePlatformIndependent();
@@ -44,5 +44,7 @@ public class ReleaseMakerJava implements ReleaseMaker {
     @Override
     public void release() {
         LOGGER.info("Release of Java project started.");
+        final GitHubRepository repository = GitHubRepository.getLogInGitHubRepository(REPOSITORY_OWNER,
+                this.repositoryName);
     }
 }
