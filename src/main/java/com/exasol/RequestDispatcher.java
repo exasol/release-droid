@@ -7,8 +7,8 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.platform.GitHubRepository;
-import com.exasol.platform.RepositoryHandlerFactory;
+import com.exasol.github.*;
+import com.exasol.release.ReleasePlatform;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
@@ -42,17 +42,16 @@ public class RequestDispatcher {
     }
 
     private void runValidate(final String repositoryName, final Set<ReleasePlatform> platformsList) {
-        final GitHubRepository repository = GitHubRepository.getAnonymousGitHubRepository(REPOSITORY_OWNER,
+        final GitHubRepository repository = GitHubRepositoryFactory.getAnonymousGitHubRepository(REPOSITORY_OWNER,
                 repositoryName);
-        final RepositoryHandler repositoryHandler = RepositoryHandlerFactory.getReleaseHandler(repository,
-                platformsList);
+        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
         repositoryHandler.validate();
     }
 
     private void runRelease(final String repositoryName, final Set<ReleasePlatform> platformsList) {
-        final GitHubRepository repository = GitHubRepository.getLogInGitHubRepository(REPOSITORY_OWNER, repositoryName);
-        final RepositoryHandler repositoryHandler = RepositoryHandlerFactory.getReleaseHandler(repository,
-                platformsList);
+        final GitHubRepository repository = GitHubRepositoryFactory.getLogInGitHubRepository(REPOSITORY_OWNER,
+                repositoryName);
+        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
         repositoryHandler.validate();
         repositoryHandler.release();
     }
@@ -66,7 +65,7 @@ public class RequestDispatcher {
     }
 
     /**
-     * Run the Release Robot from the terminal.
+     * Run the Release Robot.
      * 
      * @param args arguments
      */

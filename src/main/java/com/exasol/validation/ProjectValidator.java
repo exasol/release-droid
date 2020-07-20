@@ -6,36 +6,34 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.ReleasePlatform;
-import com.exasol.platform.GitHubRepository;
+import com.exasol.github.GitHubRepository;
+import com.exasol.release.ReleasePlatform;
 
 /**
- * This class contains a common part for validations.
+ * This class checks if the project repository is ready for a release.
  */
 public class ProjectValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectValidator.class);
     protected final GitHubRepository repository;
-    private final String version;
 
     /**
      * Create a new instance of {@link ProjectValidator}.
      *
      * @param repository repository to validate
-     * @param version
      */
-    public ProjectValidator(final GitHubRepository repository, final String version) {
+    public ProjectValidator(final GitHubRepository repository) {
         this.repository = repository;
-        this.version = version;
     }
 
     /**
      * Validate common release requirements.
      */
     public void validatePlatformIndependent() {
-        final String changelog = this.repository.getSingleFileContentAsString("doc/changes/changelog.md");
-        validateChangelog(changelog, this.version);
-        final String changes = getChanges(this.version);
-        validateChanges(changes, this.version);
+        final String changelog = this.repository.getChangelogFile();
+        final String version = this.repository.getVersion();
+        final String changes = this.repository.getChangesFile();
+        validateChangelog(changelog, version);
+        validateChanges(changes, version);
     }
 
     protected void validateChangelog(final String changelog, final String version) {
@@ -43,14 +41,9 @@ public class ProjectValidator {
         final String changelogContent = "[" + version + "](changes-" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
             throw new IllegalStateException(
-                    "doc/changes/changelog.md file doesn't contain the following link, please add it to the file: "
+                    "changelog.md file doesn't contain the following link, please add it to the file: "
                             + changelogContent);
         }
-    }
-
-    private String getChanges(final String version) {
-        final String changesFileName = "changes-" + version + ".md";
-        return this.repository.getSingleFileContentAsString("doc/changes/" + changesFileName);
     }
 
     protected void validateChanges(final String changes, final String version) {
@@ -83,7 +76,8 @@ public class ProjectValidator {
     protected void validateGitHub() {
         LOGGER.info("Validating github specific requirements.");
         final Optional<String> latestReleaseTag = this.repository.getLatestReleaseVersion();
-        validateVersion(this.version, latestReleaseTag);
+        final String version = this.repository.getVersion();
+        validateVersion(version, latestReleaseTag);
     }
 
     protected void validateVersion(final String version, final Optional<String> latestReleaseTag) {

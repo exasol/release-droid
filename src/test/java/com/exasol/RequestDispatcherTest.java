@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.release.ReleasePlatform;
+
 class RequestDispatcherTest {
     @Test
     void testGetReleasePlatformsList() {
