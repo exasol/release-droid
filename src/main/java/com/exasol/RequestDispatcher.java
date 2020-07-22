@@ -1,7 +1,7 @@
 package com.exasol;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -21,39 +21,38 @@ public class RequestDispatcher {
      * Main entry point for all Release Robot's calls.
      * 
      * @param repositoryName name of a target project from GitHub
-     * @param goal run goal. Supported goals: release, validate
+     * @param goalAsString run goal. Supported goals: release, validate
      * @param platforms one or more platforms for validation or release. Supported values: github
      */
-    public void dispatch(final String repositoryName, final String goal, final String... platforms) {
-        LOGGER.info("Release Robot has received '{}' request for the project '{}'.", goal, repositoryName);
+    public void dispatch(final String repositoryName, final String goalAsString, final String... platforms) {
+        LOGGER.info("Release Robot has received '{}' request for the project '{}'.", goalAsString, repositoryName);
         try {
+            final Goal goal = getGoal(goalAsString);
             final Set<ReleasePlatform> platformsList = getReleasePlatformsList(platforms);
-            if (goal.equalsIgnoreCase("validate")) {
-                runValidate(repositoryName, platformsList);
-            } else if (goal.equalsIgnoreCase("release")) {
-                runRelease(repositoryName, platformsList);
+            final GitHubRepository repository = GitHubRepositoryFactory.getInstance()
+                    .createGitHubRepository(REPOSITORY_OWNER, repositoryName);
+            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
+            if (goal == Goal.VALIDATE) {
+                repositoryHandler.validate();
             } else {
-                throw new UnsupportedOperationException(
-                        "'" + goal + "' goal is unknown. Please, use one of the following goals: release, validate");
+                repositoryHandler.validate();
+                repositoryHandler.release();
             }
         } catch (final RuntimeException exception) {
-            LOGGER.error("'{}' request failed. Cause: {}", goal, exception.getMessage());
+            LOGGER.error("'{}' request failed. Cause: {}", goalAsString, exception.getMessage());
         }
     }
 
-    private void runValidate(final String repositoryName, final Set<ReleasePlatform> platformsList) {
-        final GitHubRepository repository = GitHubRepositoryFactory.getAnonymousGitHubRepository(REPOSITORY_OWNER,
-                repositoryName);
-        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
-        repositoryHandler.validate();
-    }
-
-    private void runRelease(final String repositoryName, final Set<ReleasePlatform> platformsList) {
-        final GitHubRepository repository = GitHubRepositoryFactory.getLogInGitHubRepository(REPOSITORY_OWNER,
-                repositoryName);
-        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
-        repositoryHandler.validate();
-        repositoryHandler.release();
+    private Goal getGoal(final String goalAsString) {
+        try {
+            return Goal.valueOf(goalAsString.toUpperCase());
+        } catch (final IllegalArgumentException illegalArgumentException) {
+            final List<String> allowedGoals = Arrays.stream(Goal.values()).map(goal -> goal.toString().toLowerCase())
+                    .collect(Collectors.toList());
+            LOGGER.error("Cannot parse a goal '{}'. Please, use one of the following goals: {}", goalAsString,
+                    String.join(",", allowedGoals));
+            throw illegalArgumentException;
+        }
     }
 
     protected Set<ReleasePlatform> getReleasePlatformsList(final String[] platforms) {

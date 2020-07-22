@@ -30,11 +30,10 @@ public interface GitHubRepository {
     /**
      * Release a new GitHub tag.
      *
-     * @param tag tag as a String
      * @param name release name
      * @param releaseLetter release letter
      */
-    public void release(String tag, String name, String releaseLetter);
+    public void release(String name, String releaseLetter);
 
     /**
      * Get a project version to be released.

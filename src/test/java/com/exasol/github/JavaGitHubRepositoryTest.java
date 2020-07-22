@@ -22,7 +22,7 @@ class JavaGitHubRepositoryTest {
         final String version = "<version>1.0.0</version>";
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
-        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock);
+        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock, "");
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString()));
@@ -35,7 +35,7 @@ class JavaGitHubRepositoryTest {
         final String version = "nothing here";
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
-        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock);
+        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock, "");
         assertThrows(GitHubException.class, repository::getVersion);
     }
 }

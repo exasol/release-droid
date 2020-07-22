@@ -8,11 +8,12 @@ import org.kohsuke.github.GHRepository;
 public class JavaGitHubRepository extends AbstractGitHubRepository {
     /**
      * Create a new instance of {@link JavaGitHubRepository}.
-     * 
-     * @param repository new instance of {@link JavaGitHubRepository}
+     *
+     * @param oauthAccessToken GitHub oauth Access Token
+     * @param repository an instance of {@link GHRepository}
      */
-    public JavaGitHubRepository(final GHRepository repository) {
-        super(repository);
+    public JavaGitHubRepository(final GHRepository repository, final String oauthAccessToken) {
+        super(repository, oauthAccessToken);
     }
 
     @Override

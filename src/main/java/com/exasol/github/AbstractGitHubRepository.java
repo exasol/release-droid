@@ -1,7 +1,11 @@
 package com.exasol.github;
 
 import java.io.IOException;
+import java.net.*;
+import java.net.http.*;
 import java.util.*;
+
+import javax.json.Json;
 
 import org.kohsuke.github.*;
 
@@ -11,15 +15,18 @@ import org.kohsuke.github.*;
 public abstract class AbstractGitHubRepository implements GitHubRepository {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     private final GHRepository repository;
+    private final String oauthAccessToken;
     protected Map<String, String> filesCache = new HashMap<>();
 
     /**
      * A base constructor.
      * 
+     * @param oauthAccessToken GitHub oauth Acess Token
      * @param repository an instance of {@link GHRepository}
      */
-    protected AbstractGitHubRepository(final GHRepository repository) {
+    protected AbstractGitHubRepository(final GHRepository repository, final String oauthAccessToken) {
         this.repository = repository;
+        this.oauthAccessToken = oauthAccessToken;
     }
 
     @Override
@@ -69,12 +76,51 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     }
 
     @Override
-    public void release(final String tag, final String name, final String releaseLetter) {
+    public void release(final String name, final String releaseLetter) {
         try {
-            this.repository.createRelease(tag).draft(true).body(releaseLetter).name(name).create();
+            final GHRelease release = this.repository.createRelease(getVersion()).draft(true).body(releaseLetter)
+                    .name(name).create();
+            final String uploadUrl = release.getUploadUrl();
+            uploadAssets(uploadUrl);
         } catch (final IOException exception) {
             throw new GitHubException("GitHub connection problem happened during releasing a new tag. "
                     + "Please, try again later. Cause: " + exception.getMessage(), exception);
+        }
+    }
+
+    private void uploadAssets(final String uploadUrl) {
+        final URI uri = getAssetsUploadUri();
+        final String json = Json.createObjectBuilder() //
+                .add("ref", "master") //
+                .add("inputs", Json.createObjectBuilder() //
+                        .add("version", getVersion()) //
+                        .add("upload_url", uploadUrl) //
+                ) //
+                .build() //
+                .toString();
+        final HttpRequest request = HttpRequest.newBuilder() //
+                .uri(uri) //
+                .header("Accept", "application/vnd.github.v3+json") //
+                .header("Authorization", "token " + this.oauthAccessToken) //
+                .header("Content-Type", "application/json") //
+                .POST(HttpRequest.BodyPublishers.ofString(json)) //
+                .build();
+        final HttpClient build = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).build();
+        try {
+            build.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (final IOException | InterruptedException exception) {
+            throw new GitHubException("Exception happened during uploading assets on the GitHub release. Cause: "
+                    + exception.getMessage(), exception);
+        }
+    }
+
+    private URI getAssetsUploadUri() {
+        final String uriString = "https://api.github.com/repos/" + this.repository.getOwnerName() + "/"
+                + this.repository.getName() + "/actions/workflows/upload_release_asset.yml/dispatches";
+        try {
+            return new URI(uriString);
+        } catch (final URISyntaxException exception) {
+            throw new IllegalArgumentException("Cannot upload assets. Invalid URI format.", exception);
         }
     }
 }

@@ -2,7 +2,8 @@ package com.exasol.github;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -76,25 +77,6 @@ class GitHubRepositoryTest {
     }
 
     @Test
-    void testRelease() throws IOException {
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        final GHReleaseBuilder releaseBuilderMock = Mockito.mock(GHReleaseBuilder.class);
-        final GHRelease ghRelease = new GHRelease();
-        when(releaseBuilderMock.create()).thenReturn(ghRelease);
-        when(releaseBuilderMock.draft(true)).thenReturn(releaseBuilderMock);
-        when(releaseBuilderMock.body(anyString())).thenReturn(releaseBuilderMock);
-        when(releaseBuilderMock.name(anyString())).thenReturn(releaseBuilderMock);
-        when(ghRepositoryMock.createRelease(anyString())).thenReturn(releaseBuilderMock);
-        final GitHubRepository repository = new DummyGitHubRepository(ghRepositoryMock);
-        assertAll(() -> assertDoesNotThrow(() -> repository.release("", "", "")),
-                () -> verify(releaseBuilderMock, times(1)).create(), //
-                () -> verify(releaseBuilderMock, times(1)).draft(true),
-                () -> verify(releaseBuilderMock, times(1)).name(anyString()),
-                () -> verify(releaseBuilderMock, times(1)).body(anyString()),
-                () -> verify(ghRepositoryMock, times(1)).createRelease(anyString()));
-    }
-
-    @Test
     void testReleaseThrowsException() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHReleaseBuilder releaseBuilderMock = Mockito.mock(GHReleaseBuilder.class);
@@ -114,7 +96,7 @@ class GitHubRepositoryTest {
 
     static class DummyGitHubRepository extends AbstractGitHubRepository {
         protected DummyGitHubRepository(final GHRepository repository) {
-            super(repository);
+            super(repository, "");
         }
 
         @Override
