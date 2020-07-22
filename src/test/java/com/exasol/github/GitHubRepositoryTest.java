@@ -86,7 +86,7 @@ class GitHubRepositoryTest {
         when(ghRepositoryMock.createRelease(anyString())).thenReturn(releaseBuilderMock);
         when(releaseBuilderMock.create()).thenThrow(IOException.class);
         final GitHubRepository repository = new DummyGitHubRepository(ghRepositoryMock);
-        assertAll(() -> assertThrows(GitHubException.class, () -> repository.release("", "", "")),
+        assertAll(() -> assertThrows(GitHubException.class, () -> repository.release("", "")),
                 () -> verify(releaseBuilderMock, times(1)).draft(true),
                 () -> verify(releaseBuilderMock, times(1)).name(anyString()),
                 () -> verify(releaseBuilderMock, times(1)).body(anyString()),
@@ -101,7 +101,7 @@ class GitHubRepositoryTest {
 
         @Override
         public String getVersion() {
-            return null;
+            return "1.0.0";
         }
     }
 }

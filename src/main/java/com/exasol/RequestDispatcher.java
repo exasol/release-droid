@@ -43,9 +43,9 @@ public class RequestDispatcher {
         }
     }
 
-    private Goal getGoal(final String goalAsString) {
+    protected Goal getGoal(final String goalAsString) {
         try {
-            return Goal.valueOf(goalAsString.toUpperCase());
+            return Goal.valueOf(goalAsString.toUpperCase().trim());
         } catch (final IllegalArgumentException illegalArgumentException) {
             final List<String> allowedGoals = Arrays.stream(Goal.values()).map(goal -> goal.toString().toLowerCase())
                     .collect(Collectors.toList());

@@ -5,8 +5,7 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 
-import javax.json.Json;
-
+import org.json.JSONObject;
 import org.kohsuke.github.*;
 
 /**
@@ -90,14 +89,13 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
 
     private void uploadAssets(final String uploadUrl) {
         final URI uri = getAssetsUploadUri();
-        final String json = Json.createObjectBuilder() //
-                .add("ref", "master") //
-                .add("inputs", Json.createObjectBuilder() //
-                        .add("version", getVersion()) //
-                        .add("upload_url", uploadUrl) //
-                ) //
-                .build() //
-                .toString();
+        final JSONObject body = new JSONObject();
+        body.put("ref", "master");
+        final JSONObject inputs = new JSONObject();
+        inputs.put("version", getVersion());
+        inputs.put("upload_url", uploadUrl);
+        body.put("inputs", inputs);
+        final String json = body.toString();
         final HttpRequest request = HttpRequest.newBuilder() //
                 .uri(uri) //
                 .header("Accept", "application/vnd.github.v3+json") //

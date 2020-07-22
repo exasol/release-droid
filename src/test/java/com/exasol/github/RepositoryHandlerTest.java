@@ -25,4 +25,14 @@ class RepositoryHandlerTest {
                 Set.of(ReleasePlatform.GITHUB));
         assertDoesNotThrow(repositoryHandler::validate);
     }
+
+    @Test
+    void testRelease() {
+        final GitHubRepository repositoryMock = Mockito.mock(GitHubRepository.class);
+        when(repositoryMock.getVersion()).thenReturn("1.0.0");
+        when(repositoryMock.getChangesFile()).thenReturn("Release \n letter");
+        final RepositoryHandler repositoryHandler = new RepositoryHandler(repositoryMock,
+                Set.of(ReleasePlatform.GITHUB));
+        assertDoesNotThrow(repositoryHandler::release);
+    }
 }
