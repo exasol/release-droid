@@ -40,7 +40,7 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     }
 
     /**
-     * Get a content of any file of this repository.
+     * Get the content of a file in this repository.
      *
      * @param filePath path of the file as a String
      * @return content as a string

@@ -50,7 +50,7 @@ public class ProjectValidator {
         final String changesName = "changes-" + version + ".md";
         LOGGER.info("Validating {} file.", changesName);
         if (!changes.contains(version)) {
-            throw new IllegalStateException(changesName + " file doesn't contains a new version mentions.");
+            throw new IllegalStateException(changesName + " file does not mention the current version. Please add a new entry for this version.");
         }
         final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         if (!changes.contains(dateToday)) {
@@ -74,7 +74,7 @@ public class ProjectValidator {
     }
 
     protected void validateGitHub() {
-        LOGGER.info("Validating github specific requirements.");
+        LOGGER.info("Validating GitHub-specific requirements.");
         final Optional<String> latestReleaseTag = this.repository.getLatestReleaseVersion();
         final String version = this.repository.getVersion();
         validateVersion(version, latestReleaseTag);

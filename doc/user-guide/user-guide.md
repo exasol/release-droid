@@ -15,11 +15,11 @@ The following list contains the platforms on which the Release Robot can perform
 
 ## Pre-requirements and Release Rules
 
-You must fulfill the rules listed here depending on a programming language you use and platforms you want to release on to make a release with the Release Robot.
+Your project must fulfil the criteria listed in this section &mdash; depending on a programming language you use and platforms you want to release on to make a release with the Release Robot.
 
 ### Common Rules for All Projects
 
-* Currently, the Release Robot only supports the GitHub-based projects. 
+* Currently, Release Robot only supports the GitHub-based projects. 
   So the first essential requirement: the project must be uploaded to the GitHub.
   
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
@@ -31,15 +31,11 @@ You must fulfill the rules listed here depending on a programming language you u
 * The project must contain `changelog.md` and `changes-<version>.md` files in the following directory:
 
 ```
-project root
-  |
-  |__ doc
-       |
-       |___changes
-            |
-            |__ changelog.md
-            |
-            |__ changes-<version>.md
+project root/
+  '-- doc/
+       '-- changes/
+            |-- changelog.md
+            '-- changes-<version>.md
 ```
 
 * The user must create a new `changes-<version>.md` file for each new release. The `changes-<version>.md` must contain:
@@ -52,14 +48,14 @@ project root
         
 ### Rules for Java Repositories
 
-* The Project must be a valid Maven project.
+* The project must be a valid [Maven](https://maven.apache.org/) project.
 
-* The pom file of the project must contain a`<version></version>` tag with a valid version without variables.
+* The main file `pom.xml` of the project must contain a `<version></version>` tag containing a valid version as a constant.
 
 ### Rules for Release on GitHub
 
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
-It is not allowed to skip a version, to release the same version twice or to release the version that comes before the latest release.
+It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory. 
 You can find examples [here](upload-release-asset-example.md).
@@ -74,18 +70,18 @@ You can find examples [here](upload-release-asset-example.md).
 
 #### Run Steps
 
-1. Download the latest available [release](https://github.com/exasol/release-robot/releases) of the Release Robot.
+1. Download the latest available [release](https://github.com/exasol/release-robot/releases) of Release Robot.
 
-1. (Optional) Place in your home directory a file with credentials: `/<home>/.release-robot/credentials`.
+1. (Optional) Place a file with credentials  in your home directory: `~/.release-robot/credentials`.
     The file must contain the following two properties:
 
     ```properties
     github_username=<your username>
     github_oauth_access_token=<github access token>
     ```
-    If the Release Robot cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
+    If Release Robot cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
 
-2. Run the Release Robot with terminal:
+2. Run Release Robot from a terminal:
     
     `java -jar release-robot-<version>.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
     
@@ -93,7 +89,7 @@ You can find examples [here](upload-release-asset-example.md).
 
     `java -jar release-robot-0.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
-##### Input Arguments
+##### Command Line Arguments
 
 | Long Option | Short Option | Mandatory | Description                               | Possible values               |
 |-------------|--------------|-----------|-------------------------------------------|-------------------------------|
