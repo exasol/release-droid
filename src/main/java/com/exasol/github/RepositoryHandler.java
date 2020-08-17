@@ -1,19 +1,19 @@
 package com.exasol.github;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.exasol.release.ReleaseMaker;
 import com.exasol.ReleasePlatform;
+import com.exasol.release.ReleaseMaker;
+import com.exasol.release.ReleaseMakerFactory;
 import com.exasol.validation.ProjectValidator;
+import com.exasol.validation.ProjectValidatorFactory;
 
 /**
  * This class provides high-level control over a repository.
  */
 public class RepositoryHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(RepositoryHandler.class.getName());
     private final Set<ReleasePlatform> platforms;
     protected final GitHubRepository repository;
 
@@ -32,24 +32,24 @@ public class RepositoryHandler {
      * Validate if the project is ready for a release.
      */
     public void validate() {
-        LOGGER.debug("Validation started.");
-        final ProjectValidator projectValidator = new ProjectValidator(this.repository);
-        projectValidator.validatePlatformIndependent();
+        LOGGER.info("Validation started.");
         for (final ReleasePlatform platform : this.platforms) {
-            projectValidator.validatePlatform(platform);
+            final ProjectValidator projectValidator = ProjectValidatorFactory.createProjectValidator(this.repository,
+                    platform);
+            projectValidator.validate();
         }
-        LOGGER.debug("Validation successfully finished.");
+        LOGGER.info("Validation successfully finished.");
     }
 
     /**
      * Release the project.
      */
     public void release() {
-        LOGGER.debug("Release started.");
-        final ReleaseMaker releaseMaker = new ReleaseMaker(this.repository);
+        LOGGER.info("Release started.");
         for (final ReleasePlatform platform : this.platforms) {
-            releaseMaker.makeRelease(platform);
+            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(this.repository, platform);
+            releaseMaker.makeRelease();
         }
-        LOGGER.debug("Release successfully finished.");
+        LOGGER.info("Release successfully finished.");
     }
 }

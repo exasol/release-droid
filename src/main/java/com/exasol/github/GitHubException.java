@@ -15,13 +15,4 @@ public class GitHubException extends RuntimeException {
     public GitHubException(final String message, final Throwable cause) {
         super(message, cause);
     }
-
-    /**
-     * Create a new instance of {@link GitHubException}.
-     *
-     * @param message exception description
-     */
-    public GitHubException(final String message) {
-        super(message);
-    }
 }

@@ -1,17 +1,16 @@
 package com.exasol.github;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * This class instantiates a {@link GitHubRepository} corresponding to the project's main programming language.
+ * This class instantiates a {@link GitHubRepository} corresponding to the project's layout.
  */
 public final class GitHubRepositoryFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GitHubRepositoryFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(GitHubRepositoryFactory.class.getName());
     private static GitHubRepositoryFactory instance;
 
     private GitHubRepositoryFactory() {
@@ -69,13 +68,11 @@ public final class GitHubRepositoryFactory {
     }
 
     private GitHub getUserVerifiedGitHub(final String username, final String oauthAccessToken) {
-        LOGGER.debug("Creating a user-identified connection to the GitHub.");
+        LOGGER.fine("Creating a user-identified connection to the GitHub.");
         try {
             return GitHub.connect(username, oauthAccessToken);
         } catch (final IOException exception) {
-            throw new GitHubException(
-                    "Cannot create a user connection to the GitHub due to an error: " + exception.getMessage(),
-                    exception);
+            throw new GitHubException("Cannot create a user connection to the GitHub due to an error", exception);
         }
     }
 }

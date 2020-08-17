@@ -2,15 +2,13 @@ package com.exasol.github;
 
 import java.io.*;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
 
 /**
  * This class provides user credentials for different platforms.
  */
 public final class CredentialsProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CredentialsProvider.class);
+    private static final Logger LOGGER = Logger.getLogger(CredentialsProvider.class.getName());
     private static final String RELEASE_ROBOT_CREDENTIALS = "/.release-robot/credentials";
     private static final String GITHUB_USERNAME_KEY = "github_username";
     private static final String GITHUB_TOKEN_KEY = "github_oauth_access_token";
@@ -47,16 +45,16 @@ public final class CredentialsProvider {
     private Map<String, String> getCredentials(final String... mapKeys) {
         final Optional<Map<String, String>> properties = getCredentialsFromFile(mapKeys);
         if (properties.isPresent()) {
-            LOGGER.debug("Using credentials from file.");
+            LOGGER.fine("Using credentials from file.");
             return properties.get();
         } else {
-            LOGGER.debug("Credentials are not found in the file.");
+            LOGGER.fine("Credentials are not found in the file.");
             return getCredentialsFromConsole(mapKeys);
         }
     }
 
     private Optional<Map<String, String>> getCredentialsFromFile(final String... mapKeys) {
-        LOGGER.debug("Retrieving credentials from the file '" + RELEASE_ROBOT_CREDENTIALS + "'.");
+        LOGGER.fine("Retrieving credentials from the file '" + RELEASE_ROBOT_CREDENTIALS + "'.");
         final String homeDirectory = System.getProperty("user.home");
         final String credentialsPath = homeDirectory + RELEASE_ROBOT_CREDENTIALS;
         return readCredentialsFromFile(credentialsPath, mapKeys);

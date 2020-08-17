@@ -1,10 +1,10 @@
 package com.exasol;
 
+import java.text.MessageFormat;
 import java.util.Set;
+import java.util.logging.*;
 
 import org.apache.commons.cli.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.exasol.github.*;
 
@@ -12,7 +12,7 @@ import com.exasol.github.*;
  * This class is the main entry point for calls to a Release Robot.
  */
 public class ReleaseRobot {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseRobot.class);
+    private static final Logger LOGGER = Logger.getLogger(ReleaseRobot.class.getName());
     private static final String REPOSITORY_OWNER = "exasol";
     private static final String PLATFORM_SHORT_OPTION = "p";
     private static final String NAME_SHORT_OPTION = "n";
@@ -26,7 +26,8 @@ public class ReleaseRobot {
      * @param platforms one or more platforms for validation or release. Supported values: github
      */
     public void dispatch(final String repositoryName, final String goalAsString, final String... platforms) {
-        LOGGER.debug("Release Robot has received '{}' request for the project '{}'.", goalAsString, repositoryName);
+        LOGGER.fine(MessageFormat.format("Release Robot has received '{}' request for the project '{}'.", goalAsString,
+                repositoryName));
         try {
             final Goal goal = Goal.getGoal(goalAsString);
             final RepositoryHandler repositoryHandler = getRepositoryHandler(repositoryName, platforms);
@@ -37,7 +38,7 @@ public class ReleaseRobot {
                 repositoryHandler.release();
             }
         } catch (final RuntimeException exception) {
-            LOGGER.error("'{}' request failed. Cause: {}", goalAsString, exception.getMessage());
+            LOGGER.severe(MessageFormat.format("'{}' request failed. Cause: {}", goalAsString, exception.getMessage()));
         }
     }
 
