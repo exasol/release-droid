@@ -3,16 +3,16 @@ package com.exasol.github;
 import org.kohsuke.github.GHRepository;
 
 /**
- * This class represents a Java-based GitHub repository.
+ * This class represents a Maven-based Java project.
  */
-public class JavaGitHubRepository extends AbstractGitHubRepository {
+public class JavaMavenProject extends AbstractGitHubRepository {
     /**
-     * Create a new instance of {@link JavaGitHubRepository}.
+     * Create a new instance of {@link JavaMavenProject}.
      *
      * @param oauthAccessToken GitHub oauth Access Token
      * @param repository an instance of {@link GHRepository}
      */
-    public JavaGitHubRepository(final GHRepository repository, final String oauthAccessToken) {
+    public JavaMavenProject(final GHRepository repository, final String oauthAccessToken) {
         super(repository, oauthAccessToken);
     }
 

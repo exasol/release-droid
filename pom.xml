@@ -78,7 +78,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.exasol.RequestDispatcher</mainClass>
+                            <mainClass>com.exasol.ReleaseRobot</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

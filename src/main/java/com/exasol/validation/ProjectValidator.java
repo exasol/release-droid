@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.exasol.github.GitHubRepository;
-import com.exasol.release.ReleasePlatform;
+import com.exasol.ReleasePlatform;
 
 /**
  * This class checks if the project repository is ready for a release.
@@ -37,8 +37,8 @@ public class ProjectValidator {
     }
 
     protected void validateChangelog(final String changelog, final String version) {
-        LOGGER.info("Validating changelog.md file.");
-        final String changelogContent = "[" + version + "](changes-" + version + ".md)";
+        LOGGER.debug("Validating changelog.md file.");
+        final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
             throw new IllegalStateException(
                     "changelog.md file doesn't contain the following link, please add it to the file: "
@@ -47,14 +47,15 @@ public class ProjectValidator {
     }
 
     protected void validateChanges(final String changes, final String version) {
-        final String changesName = "changes-" + version + ".md";
-        LOGGER.info("Validating {} file.", changesName);
+        final String changesName = "changes_" + version + ".md";
+        LOGGER.debug("Validating {} file.", changesName);
         if (!changes.contains(version)) {
-            throw new IllegalStateException(changesName + " file does not mention the current version. Please add a new entry for this version.");
+            throw new IllegalStateException(changesName
+                    + " file does not mention the current version. Please add a new entry for this version.");
         }
         final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         if (!changes.contains(dateToday)) {
-            throw new IllegalStateException("changes-" + version + ".md file doesn't contain release's date: "
+            throw new IllegalStateException("changes_" + version + ".md file doesn't contain release's date: "
                     + dateToday + ". PLease, add or update the release date.");
         }
     }
@@ -74,14 +75,14 @@ public class ProjectValidator {
     }
 
     protected void validateGitHub() {
-        LOGGER.info("Validating GitHub-specific requirements.");
+        LOGGER.debug("Validating GitHub-specific requirements.");
         final Optional<String> latestReleaseTag = this.repository.getLatestReleaseVersion();
         final String version = this.repository.getVersion();
         validateVersion(version, latestReleaseTag);
     }
 
     protected void validateVersion(final String version, final Optional<String> latestReleaseTag) {
-        LOGGER.info("Validating a release version.");
+        LOGGER.debug("Validating a release version.");
         if (latestReleaseTag.isPresent()) {
             final Set<String> possibleVersions = getPossibleVersions(latestReleaseTag.get());
             if (!possibleVersions.contains(version)) {

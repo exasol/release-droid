@@ -28,23 +28,23 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 #### Changes Log
 
-* The project must contain `changelog.md` and `changes-<version>.md` files in the following directory:
+* The project must contain `changelog.md` and `changes_<version>.md` files in the following directory:
 
 ```
 project root/
   '-- doc/
        '-- changes/
             |-- changelog.md
-            '-- changes-<version>.md
+            '-- changes_<version>.md
 ```
 
-* The user must create a new `changes-<version>.md` file for each new release. The `changes-<version>.md` must contain:
+* The user must create a new `changes_<version>.md` file for each new release. The `changes_<version>.md` must contain:
 
     1. Header in the following format: `# <Project name> <version>, released yyyy-mm-dd`
     
     2. Description of the release changes. 
      
-* The `changelog.md` must contain a link to the `changes-<version>.md` file.
+* The `changelog.md` must contain a link to the `changes_<version>.md` file.
         
 ### Rules for Java Repositories
 
@@ -58,7 +58,7 @@ project root/
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory. 
-You can find examples [here](upload-release-asset-example.md).
+You can find examples [here](upload_release_asset_example.md).
 
 ## How to Use Release Robot
 

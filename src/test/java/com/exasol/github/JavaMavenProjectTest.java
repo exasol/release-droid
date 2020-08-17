@@ -14,7 +14,7 @@ import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRepository;
 import org.mockito.Mockito;
 
-class JavaGitHubRepositoryTest {
+class JavaMavenProjectTest {
     @Test
     void testGetVersionWithCaching() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
@@ -22,7 +22,7 @@ class JavaGitHubRepositoryTest {
         final String version = "<version>1.0.0</version>";
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
-        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock, "");
+        final GitHubRepository repository = new JavaMavenProject(ghRepositoryMock, "");
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString()));
@@ -35,7 +35,7 @@ class JavaGitHubRepositoryTest {
         final String version = "nothing here";
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
-        final GitHubRepository repository = new JavaGitHubRepository(ghRepositoryMock, "");
+        final GitHubRepository repository = new JavaMavenProject(ghRepositoryMock, "");
         assertThrows(GitHubException.class, repository::getVersion);
     }
 }

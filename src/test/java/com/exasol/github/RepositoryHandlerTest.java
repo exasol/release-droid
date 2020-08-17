@@ -9,7 +9,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.release.ReleasePlatform;
+import com.exasol.ReleasePlatform;
 
 class RepositoryHandlerTest {
     @Test

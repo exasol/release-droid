@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.exasol.release.ReleaseMaker;
-import com.exasol.release.ReleasePlatform;
+import com.exasol.ReleasePlatform;
 import com.exasol.validation.ProjectValidator;
 
 /**
@@ -32,24 +32,24 @@ public class RepositoryHandler {
      * Validate if the project is ready for a release.
      */
     public void validate() {
-        LOGGER.info("Validation started.");
+        LOGGER.debug("Validation started.");
         final ProjectValidator projectValidator = new ProjectValidator(this.repository);
         projectValidator.validatePlatformIndependent();
         for (final ReleasePlatform platform : this.platforms) {
             projectValidator.validatePlatform(platform);
         }
-        LOGGER.info("Validation successfully finished.");
+        LOGGER.debug("Validation successfully finished.");
     }
 
     /**
      * Release the project.
      */
     public void release() {
-        LOGGER.info("Release started.");
+        LOGGER.debug("Release started.");
         final ReleaseMaker releaseMaker = new ReleaseMaker(this.repository);
         for (final ReleasePlatform platform : this.platforms) {
             releaseMaker.makeRelease(platform);
         }
-        LOGGER.info("Release successfully finished.");
+        LOGGER.debug("Release successfully finished.");
     }
 }

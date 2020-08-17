@@ -40,29 +40,29 @@ public class GitHubRepositoryFactory {
      *
      * @param repositoryOwner name of the owner on github
      * @param repositoryName name of the repository on github
-     * @return currently always return an instance of {@link JavaGitHubRepository}
+     * @return currently always return an instance of {@link JavaMavenProject}
      */
     public GitHubRepository createGitHubRepository(final String repositoryOwner, final String repositoryName) {
         final Map<String, String> credentials = getCredentials();
         final String username = credentials.get(USERNAME_KEY);
         final String token = credentials.get(TOKEN_KEY);
         final GHRepository ghRepository = getLogInGitHubRepository(repositoryOwner, repositoryName, username, token);
-        return new JavaGitHubRepository(ghRepository, token);
+        return new JavaMavenProject(ghRepository, token);
     }
 
     private Map<String, String> getCredentials() {
         final Optional<Map<String, String>> properties = getCredentialsFromFile();
         if (properties.isPresent()) {
-            LOGGER.info("Using credentials from file.");
+            LOGGER.debug("Using credentials from file.");
             return properties.get();
         } else {
-            LOGGER.info("Credentials are not found in the file.");
+            LOGGER.debug("Credentials are not found in the file.");
             return getCredentialsFromConsole();
         }
     }
 
     private Optional<Map<String, String>> getCredentialsFromFile() {
-        LOGGER.info("Retrieving credentials from the file '.release-robot/credentials'.");
+        LOGGER.debug("Retrieving credentials from the file '.release-robot/credentials'.");
         final String homeDirectory = System.getProperty("user.home");
         final String credentialsPath = homeDirectory + "/.release-robot/credentials";
         try (final InputStream stream = new FileInputStream(credentialsPath)) {
@@ -113,7 +113,7 @@ public class GitHubRepositoryFactory {
     }
 
     private GitHub getUserVerifiedGitHub(final String username, final String oauthAccessToken) {
-        LOGGER.info("Creating a user-identified connection to the GitHub.");
+        LOGGER.debug("Creating a user-identified connection to the GitHub.");
         try {
             return GitHub.connect(username, oauthAccessToken);
         } catch (final IOException exception) {

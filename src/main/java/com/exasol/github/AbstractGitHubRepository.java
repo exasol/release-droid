@@ -13,6 +13,7 @@ import org.kohsuke.github.*;
  */
 public abstract class AbstractGitHubRepository implements GitHubRepository {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
+    private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
     private final GHRepository repository;
     private final String oauthAccessToken;
     protected Map<String, String> filesCache = new HashMap<>();
@@ -20,8 +21,8 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     /**
      * A base constructor.
      * 
-     * @param oauthAccessToken GitHub oauth Acess Token
      * @param repository an instance of {@link GHRepository}
+     * @param oauthAccessToken GitHub oauth Access Token
      */
     protected AbstractGitHubRepository(final GHRepository repository, final String oauthAccessToken) {
         this.repository = repository;
@@ -35,14 +36,14 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
             return release == null ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
             throw new GitHubException("GitHub connection problem happened during retrieving the latest release. "
-                    + "Please, try again later. Cause: " + exception.getMessage(), exception);
+                    + "Please, try again later.", exception);
         }
     }
 
     /**
      * Get the content of a file in this repository.
      *
-     * @param filePath path of the file as a String
+     * @param filePath path of the file as a string
      * @return content as a string
      */
     protected String getSingleFileContentAsString(final String filePath) {
@@ -50,10 +51,8 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
             final GHContent content = this.repository.getFileContent(filePath);
             return content.getContent();
         } catch (final IOException exception) {
-            throw new GitHubException(
-                    "Cannot find or read the file '" + filePath + "' in the repository " + this.repository.getName()
-                            + ". Please add this file according to the User Guide. Cause: " + exception.getMessage(),
-                    exception);
+            throw new GitHubException("Cannot find or read the file '" + filePath + "' in the repository "
+                    + this.repository.getName() + ". Please add this file according to the User Guide.", exception);
         }
     }
 
@@ -67,7 +66,7 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
 
     @Override
     public String getChangesFile() {
-        final String changesFileName = "doc/changes/changes-" + getVersion() + ".md";
+        final String changesFileName = "doc/changes/changes_" + getVersion() + ".md";
         if (!this.filesCache.containsKey(changesFileName)) {
             this.filesCache.put(changesFileName, getSingleFileContentAsString(changesFileName));
         }
@@ -82,8 +81,9 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
             final String uploadUrl = release.getUploadUrl();
             uploadAssets(uploadUrl);
         } catch (final IOException exception) {
-            throw new GitHubException("GitHub connection problem happened during releasing a new tag. "
-                    + "Please, try again later. Cause: " + exception.getMessage(), exception);
+            throw new GitHubException(
+                    "GitHub connection problem happened during releasing a new tag. Please, try again later.",
+                    exception);
         }
     }
 
@@ -107,14 +107,13 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
         try {
             build.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (final IOException | InterruptedException exception) {
-            throw new GitHubException("Exception happened during uploading assets on the GitHub release. Cause: "
-                    + exception.getMessage(), exception);
+            throw new GitHubException("Exception happened during uploading assets on the GitHub release.", exception);
         }
     }
 
     private URI getAssetsUploadUri() {
-        final String uriString = "https://api.github.com/repos/" + this.repository.getOwnerName() + "/"
-                + this.repository.getName() + "/actions/workflows/upload_release_asset.yml/dispatches";
+        final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
+                + "/actions/workflows/upload_release_asset.yml/dispatches";
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {

@@ -2,7 +2,7 @@
 
 # Eclipse and Maven
 .classpath
-.project
+
 # .settings : we need Eclipse settings for code formatter and clean-up rules
 target
 .cache
