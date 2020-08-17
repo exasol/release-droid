@@ -17,7 +17,7 @@ class ProjectValidatorTest {
     @Test
     void testValidateChangeLog() {
         final ProjectValidator validator = new ProjectValidator(null);
-        final String changelog = "[4.0.1](changes-4.0.1.md)";
+        final String changelog = "[4.0.1](changes_4.0.1.md)";
         assertDoesNotThrow(() -> validator.validateChangelog(changelog, "4.0.1"));
     }
 
@@ -28,7 +28,7 @@ class ProjectValidatorTest {
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateChangelog(changelog, "1.0.0"));
         assertThat(exception.getMessage(), containsString("changelog.md file "
-                + "doesn't contain the following link, please add it to the file: [1.0.0](changes-1.0.0.md)"));
+                + "doesn't contain the following link, please add it to the file: [1.0.0](changes_1.0.0.md)"));
     }
 
     @Test

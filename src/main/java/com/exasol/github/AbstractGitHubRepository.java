@@ -57,7 +57,7 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     }
 
     @Override
-    public String getChangelogFile() {
+    public final synchronized String getChangelogFile() {
         if (!this.filesCache.containsKey(CHANGELOG_FILE_PATH)) {
             this.filesCache.put(CHANGELOG_FILE_PATH, getSingleFileContentAsString(CHANGELOG_FILE_PATH));
         }
@@ -65,8 +65,8 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     }
 
     @Override
-    public String getChangesFile() {
-        final String changesFileName = "doc/changes/changes_" + getVersion() + ".md";
+    public final synchronized String getChangesFile(final String version) {
+        final String changesFileName = "doc/changes/changes_" + version + ".md";
         if (!this.filesCache.containsKey(changesFileName)) {
             this.filesCache.put(changesFileName, getSingleFileContentAsString(changesFileName));
         }
@@ -74,12 +74,12 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
     }
 
     @Override
-    public void release(final String name, final String releaseLetter) {
+    public void release(final String version, final String name, final String releaseLetter) {
         try {
-            final GHRelease release = this.repository.createRelease(getVersion()).draft(true).body(releaseLetter)
-                    .name(name).create();
+            final GHRelease release = this.repository.createRelease(version).draft(true).body(releaseLetter).name(name)
+                    .create();
             final String uploadUrl = release.getUploadUrl();
-            uploadAssets(uploadUrl);
+            uploadAssets(version, uploadUrl);
         } catch (final IOException exception) {
             throw new GitHubException(
                     "GitHub connection problem happened during releasing a new tag. Please, try again later.",
@@ -87,12 +87,12 @@ public abstract class AbstractGitHubRepository implements GitHubRepository {
         }
     }
 
-    private void uploadAssets(final String uploadUrl) {
+    private void uploadAssets(final String version, final String uploadUrl) {
         final URI uri = getAssetsUploadUri();
         final JSONObject body = new JSONObject();
         body.put("ref", "master");
         final JSONObject inputs = new JSONObject();
-        inputs.put("version", getVersion());
+        inputs.put("version", version);
         inputs.put("upload_url", uploadUrl);
         body.put("inputs", inputs);
         final String json = body.toString();

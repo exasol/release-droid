@@ -6,8 +6,8 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.github.GitHubRepository;
 import com.exasol.ReleasePlatform;
+import com.exasol.github.GitHubRepository;
 
 /**
  * This class checks if the project repository is ready for a release.
@@ -31,7 +31,7 @@ public class ProjectValidator {
     public void validatePlatformIndependent() {
         final String changelog = this.repository.getChangelogFile();
         final String version = this.repository.getVersion();
-        final String changes = this.repository.getChangesFile();
+        final String changes = this.repository.getChangesFile(version);
         validateChangelog(changelog, version);
         validateChanges(changes, version);
     }

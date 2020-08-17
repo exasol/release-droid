@@ -1,7 +1,6 @@
 package com.exasol.github;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
@@ -11,10 +10,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This class instantiates a {@link GitHubRepository} corresponding to the project's main programming language.
  */
-public class GitHubRepositoryFactory {
+public final class GitHubRepositoryFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GitHubRepositoryFactory.class);
-    private static final String USERNAME_KEY = "username";
-    private static final String TOKEN_KEY = "token";
     private static GitHubRepositoryFactory instance;
 
     private GitHubRepositoryFactory() {
@@ -34,63 +31,22 @@ public class GitHubRepositoryFactory {
     }
 
     /**
-     * Create a new {@link GitHubRepository}. This method reads credentials from the '.release-robot/credentials' file
-     * in the home directory. If the file does not exists or the credentials do not exist, it asks user to input
-     * credentials via terminal.
+     * Create a new {@link GitHubRepository}.
+     * <p>
+     * This method reads credentials from the {@code .release-robot/credentials} file in the user's home directory. If
+     * the file does not exists or the credentials do not exist, it asks user to input credentials via terminal.
+     * </p>
      *
      * @param repositoryOwner name of the owner on github
      * @param repositoryName name of the repository on github
      * @return currently always return an instance of {@link JavaMavenProject}
      */
-    public GitHubRepository createGitHubRepository(final String repositoryOwner, final String repositoryName) {
-        final Map<String, String> credentials = getCredentials();
-        final String username = credentials.get(USERNAME_KEY);
-        final String token = credentials.get(TOKEN_KEY);
+    public GitHubRepository createGitHubRepository(final String repositoryOwner, final String repositoryName,
+            final GitHubUser gitHubUser) {
+        final String username = gitHubUser.getUsername();
+        final String token = gitHubUser.getToken();
         final GHRepository ghRepository = getLogInGitHubRepository(repositoryOwner, repositoryName, username, token);
         return new JavaMavenProject(ghRepository, token);
-    }
-
-    private Map<String, String> getCredentials() {
-        final Optional<Map<String, String>> properties = getCredentialsFromFile();
-        if (properties.isPresent()) {
-            LOGGER.debug("Using credentials from file.");
-            return properties.get();
-        } else {
-            LOGGER.debug("Credentials are not found in the file.");
-            return getCredentialsFromConsole();
-        }
-    }
-
-    private Optional<Map<String, String>> getCredentialsFromFile() {
-        LOGGER.debug("Retrieving credentials from the file '.release-robot/credentials'.");
-        final String homeDirectory = System.getProperty("user.home");
-        final String credentialsPath = homeDirectory + "/.release-robot/credentials";
-        try (final InputStream stream = new FileInputStream(credentialsPath)) {
-            final Properties properties = new Properties();
-            properties.load(stream);
-            final Map<String, String> propertiesMap = new HashMap<>();
-            final String username = properties.getProperty("github_username");
-            final String token = properties.getProperty("github_oauth_access_token");
-            if (username == null || token == null) {
-                return Optional.empty();
-            } else {
-                propertiesMap.put(USERNAME_KEY, username);
-                propertiesMap.put(TOKEN_KEY, token);
-                return Optional.of(propertiesMap);
-            }
-        } catch (final IOException exception) {
-            return Optional.empty();
-        }
-    }
-
-    private Map<String, String> getCredentialsFromConsole() {
-        final Console console = System.console();
-        final String username = console.readLine("Enter username: ");
-        final String token = new String(console.readPassword("Enter oauth access token: "));
-        final Map<String, String> credentials = new HashMap<>();
-        credentials.put(USERNAME_KEY, username);
-        credentials.put(TOKEN_KEY, token);
-        return credentials;
     }
 
     private GHRepository getLogInGitHubRepository(final String repositoryOwner, final String repositoryName,

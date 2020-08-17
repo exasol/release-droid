@@ -23,17 +23,19 @@ public interface GitHubRepository {
     /**
      * Get a changes file as a string.
      *
+     * @param version version as a string
      * @return changes file as a string
      */
-    public String getChangesFile();
+    public String getChangesFile(String version);
 
     /**
      * Release a new GitHub tag.
      *
+     * @param version version to release
      * @param name release name
      * @param releaseLetter release letter
      */
-    public void release(String name, String releaseLetter);
+    public void release(String version, String name, String releaseLetter);
 
     /**
      * Get a project version to be released.

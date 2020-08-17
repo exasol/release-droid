@@ -71,8 +71,8 @@ class GitHubRepositoryTest {
         when(contentMock.getContent()).thenReturn(textContent);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
         final GitHubRepository repository = new DummyGitHubRepository(ghRepositoryMock);
-        assertAll(() -> assertThat(repository.getChangesFile(), equalTo(textContent)),
-                () -> assertThat(repository.getChangesFile(), equalTo(textContent)),
+        assertAll(() -> assertThat(repository.getChangesFile(repository.getVersion()), equalTo(textContent)),
+                () -> assertThat(repository.getChangesFile(repository.getVersion()), equalTo(textContent)),
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString()));
     }
 
@@ -86,7 +86,7 @@ class GitHubRepositoryTest {
         when(ghRepositoryMock.createRelease(anyString())).thenReturn(releaseBuilderMock);
         when(releaseBuilderMock.create()).thenThrow(IOException.class);
         final GitHubRepository repository = new DummyGitHubRepository(ghRepositoryMock);
-        assertAll(() -> assertThrows(GitHubException.class, () -> repository.release("", "")),
+        assertAll(() -> assertThrows(GitHubException.class, () -> repository.release("", "", "")),
                 () -> verify(releaseBuilderMock, times(1)).draft(true),
                 () -> verify(releaseBuilderMock, times(1)).name(anyString()),
                 () -> verify(releaseBuilderMock, times(1)).body(anyString()),

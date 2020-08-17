@@ -19,7 +19,7 @@ class JavaMavenProjectTest {
     void testGetVersionWithCaching() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHContent contentMock = Mockito.mock(GHContent.class);
-        final String version = "<version>1.0.0</version>";
+        final String version = "<project><version>1.0.0</version></project>";
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString())).thenReturn(contentMock);
         final GitHubRepository repository = new JavaMavenProject(ghRepositoryMock, "");

@@ -29,10 +29,7 @@ public class ReleaseRobot {
         LOGGER.debug("Release Robot has received '{}' request for the project '{}'.", goalAsString, repositoryName);
         try {
             final Goal goal = Goal.getGoal(goalAsString);
-            final Set<ReleasePlatform> platformsList = ReleasePlatform.toSet(platforms);
-            final GitHubRepository repository = GitHubRepositoryFactory.getInstance()
-                    .createGitHubRepository(REPOSITORY_OWNER, repositoryName);
-            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platformsList);
+            final RepositoryHandler repositoryHandler = getRepositoryHandler(repositoryName, platforms);
             if (goal == Goal.VALIDATE) {
                 repositoryHandler.validate();
             } else {
@@ -42,6 +39,14 @@ public class ReleaseRobot {
         } catch (final RuntimeException exception) {
             LOGGER.error("'{}' request failed. Cause: {}", goalAsString, exception.getMessage());
         }
+    }
+
+    private RepositoryHandler getRepositoryHandler(final String repositoryName, final String[] platforms) {
+        final Set<ReleasePlatform> platformsList = ReleasePlatform.toSet(platforms);
+        final CredentialsProvider credentialsProvider = CredentialsProvider.getInstance();
+        final GitHubRepository repository = GitHubRepositoryFactory.getInstance().createGitHubRepository(
+                REPOSITORY_OWNER, repositoryName, credentialsProvider.provideGitHubCredentials());
+        return new RepositoryHandler(repository, platformsList);
     }
 
     /**

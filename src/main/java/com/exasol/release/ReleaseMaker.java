@@ -1,9 +1,9 @@
 package com.exasol.release;
 
-import com.exasol.ReleasePlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.exasol.ReleasePlatform;
 import com.exasol.github.GitHubRepository;
 
 /**
@@ -37,10 +37,11 @@ public class ReleaseMaker {
 
     private void releaseGitHub() {
         LOGGER.debug("Releasing on GitHub.");
-        final String changes = this.repository.getChangesFile();
+        String version = this.repository.getVersion();
+        final String changes = this.repository.getChangesFile(version);
         final int firstLineEnd = changes.indexOf('\n');
         final String releaseName = changes.substring(0, firstLineEnd);
         final String releaseLetter = changes.substring(firstLineEnd + 1);
-        this.repository.release(releaseName, releaseLetter);
+        this.repository.release(version, releaseName, releaseLetter);
     }
 }
