@@ -1,0 +1,13 @@
+/target/
+
+# Eclipse and Maven
+.classpath
+
+# .settings : we need Eclipse settings for code formatter and clean-up rules
+target
+.cache
+dependency-reduced-pom.xml
+
+# Intellij
+.idea
+*.iml
