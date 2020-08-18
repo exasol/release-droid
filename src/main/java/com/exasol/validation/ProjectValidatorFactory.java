@@ -23,7 +23,7 @@ public final class ProjectValidatorFactory {
         if (platform == ReleasePlatform.GITHUB) {
             return new GitHubProjectValidator(repository);
         } else {
-            throw new IllegalArgumentException("Validation for release platform " + platform + " is not supported");
+            throw new IllegalArgumentException("Validation for release platform " + platform + " is not supported. Please choose one of: github");
         }
     }
 }

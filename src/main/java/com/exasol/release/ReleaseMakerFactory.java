@@ -22,7 +22,7 @@ public final class ReleaseMakerFactory {
         if (platform == ReleasePlatform.GITHUB) {
             return new GitHubReleaseMaker(repository);
         } else {
-            throw new IllegalArgumentException("Release for platform " + platform + " is not supported");
+            throw new IllegalArgumentException("Release for platform " + platform + " is not supported. Please choose one of: github");
         }
     }
 }

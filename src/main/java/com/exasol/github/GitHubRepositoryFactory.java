@@ -68,7 +68,7 @@ public final class GitHubRepositoryFactory {
     }
 
     private GitHub getUserVerifiedGitHub(final String username, final String oauthAccessToken) {
-        LOGGER.fine("Creating a user-identified connection to the GitHub.");
+        LOGGER.fine(() ->"Creating a user-identified connection to the GitHub.");
         try {
             return GitHub.connect(username, oauthAccessToken);
         } catch (final IOException exception) {

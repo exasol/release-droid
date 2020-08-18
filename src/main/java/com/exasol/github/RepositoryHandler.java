@@ -38,7 +38,7 @@ public class RepositoryHandler {
                     platform);
             projectValidator.validate();
         }
-        LOGGER.info("Validation successfully finished.");
+        LOGGER.info(() -> "Validation completed successfully.");
     }
 
     /**
@@ -50,6 +50,6 @@ public class RepositoryHandler {
             final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(this.repository, platform);
             releaseMaker.makeRelease();
         }
-        LOGGER.info("Release successfully finished.");
+        LOGGER.info(() -> "Release completed successfully.");
     }
 }

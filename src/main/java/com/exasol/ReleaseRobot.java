@@ -58,7 +58,7 @@ public class ReleaseRobot {
     public static void main(final String[] args) {
         final Options options = createOptions();
         final CommandLine cmd = getCommandLine(args, options);
-        final String[] platformsArray = cmd.getOptionValue(PLATFORM_SHORT_OPTION).split(",");
+        final String[] platformsArray = cmd.getOptionValue(PLATFORM_SHORT_OPTION).split("\s*,\s*");
         final ReleaseRobot releaseRobot = new ReleaseRobot();
         releaseRobot.dispatch(cmd.getOptionValue(NAME_SHORT_OPTION), cmd.getOptionValue(GOAL_SHORT_OPTION),
                 platformsArray);
