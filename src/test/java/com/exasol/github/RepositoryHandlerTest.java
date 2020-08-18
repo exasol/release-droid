@@ -18,7 +18,7 @@ class RepositoryHandlerTest {
         when(repositoryMock.getVersion()).thenReturn("1.0.0");
         when(repositoryMock.getLatestReleaseVersion()).thenReturn(Optional.of("0.5.1"));
         when(repositoryMock.getChangelogFile()).thenReturn("[1.0.0](changes_1.0.0.md)");
-        final String changes = "# Exasol Test Containers 1.0.0, released "
+        final String changes = "# Exasol Test Containers 1.0.0, released \n ## Features"
                 + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         when(repositoryMock.getChangesFile(repositoryMock.getVersion())).thenReturn(changes);
         final RepositoryHandler repositoryHandler = new RepositoryHandler(repositoryMock,

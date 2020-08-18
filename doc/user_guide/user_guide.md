@@ -81,7 +81,7 @@ You can find examples [here](upload_release_asset_example.md).
     ```
     If Release Robot cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
 
-2. Run Release Robot from a terminal:
+1. Run Release Robot from a terminal:
     
     `java -jar release-robot-<version>.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
     

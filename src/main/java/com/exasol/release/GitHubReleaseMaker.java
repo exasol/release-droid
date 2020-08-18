@@ -25,9 +25,19 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         LOGGER.fine("Releasing on GitHub.");
         final String version = this.repository.getVersion();
         final String changes = this.repository.getChangesFile(version);
-        final int firstLineEnd = changes.indexOf('\n');
-        final String releaseName = changes.substring(0, firstLineEnd);
-        final String releaseLetter = changes.substring(firstLineEnd + 1);
+        final String releaseName = readReleaseNameFromReleaseLetter(changes);
+        final String releaseLetter = readReleaseContentFromReleaseLetter(changes);
         this.repository.release(version, releaseName, releaseLetter);
+    }
+
+    private String readReleaseNameFromReleaseLetter(final String changes) {
+        final int firstLineEnd = changes.indexOf('\n');
+        final int endIndex = firstLineEnd >= 0 ? firstLineEnd : changes.length();
+        return changes.substring(0, endIndex);
+    }
+
+    private String readReleaseContentFromReleaseLetter(final String changes) {
+        final int firstLineEnd = changes.indexOf('\n');
+        return firstLineEnd >= 0 ? changes.substring(firstLineEnd + 1) : "";
     }
 }

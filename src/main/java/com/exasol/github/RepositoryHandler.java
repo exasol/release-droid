@@ -32,7 +32,7 @@ public class RepositoryHandler {
      * Validate if the project is ready for a release.
      */
     public void validate() {
-        LOGGER.info("Validation started.");
+        LOGGER.info(() -> "Validation started.");
         for (final ReleasePlatform platform : this.platforms) {
             final ProjectValidator projectValidator = ProjectValidatorFactory.createProjectValidator(this.repository,
                     platform);
@@ -45,7 +45,7 @@ public class RepositoryHandler {
      * Release the project.
      */
     public void release() {
-        LOGGER.info("Release started.");
+        LOGGER.info(() -> "Release started.");
         for (final ReleasePlatform platform : this.platforms) {
             final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(this.repository, platform);
             releaseMaker.makeRelease();

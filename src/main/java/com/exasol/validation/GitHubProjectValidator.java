@@ -50,6 +50,14 @@ public class GitHubProjectValidator implements ProjectValidator {
         LOGGER.fine("Validating " + changesName + " file.");
         validateVersionInChanges(changes, version, changesName);
         validateDateInChanges(changes, version);
+        validateMoreThanOneLine(changes);
+    }
+
+    private void validateMoreThanOneLine(String changes) {
+        if (changes.indexOf('\n') == -1) {
+            throw new IllegalStateException(
+                    "The changes file contains 1 or less lines. Please, add the changes you made before the release.");
+        }
     }
 
     private void validateVersionInChanges(final String changes, final String version, final String changesName) {

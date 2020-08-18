@@ -45,16 +45,16 @@ public final class CredentialsProvider {
     private Map<String, String> getCredentials(final String... mapKeys) {
         final Optional<Map<String, String>> properties = getCredentialsFromFile(mapKeys);
         if (properties.isPresent()) {
-            LOGGER.fine("Using credentials from file.");
+            LOGGER.fine(() -> "Using credentials from file.");
             return properties.get();
         } else {
-            LOGGER.fine("Credentials are not found in the file.");
+            LOGGER.fine(() -> "Credentials are not found in the file.");
             return getCredentialsFromConsole(mapKeys);
         }
     }
 
     private Optional<Map<String, String>> getCredentialsFromFile(final String... mapKeys) {
-        LOGGER.fine("Retrieving credentials from the file '" + RELEASE_ROBOT_CREDENTIALS + "'.");
+        LOGGER.fine(() -> "Retrieving credentials from the file '" + RELEASE_ROBOT_CREDENTIALS + "'.");
         final String homeDirectory = System.getProperty("user.home");
         final String credentialsPath = homeDirectory + RELEASE_ROBOT_CREDENTIALS;
         return readCredentialsFromFile(credentialsPath, mapKeys);

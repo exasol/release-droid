@@ -45,7 +45,7 @@ public class JavaMavenProject extends AbstractGitHubRepository {
             final DocumentBuilder documentBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
             final Document parsedPom = documentBuilder.parse(inputStream);
             final Element rootElement = parsedPom.getDocumentElement();
-            return rootElement.getElementsByTagName("version").item(0).getTextContent();
+            return rootElement.getElementsByTagName("version").item(0).getTextContent().strip();
         } catch (final ParserConfigurationException | SAXException | IOException exception) {
             throw new GitHubException("Cannot find a project version in pom.xml file. "
                     + "Please, check that the pom.xml file contains <version></version> tag and the tag is not empty.",

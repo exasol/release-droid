@@ -39,7 +39,7 @@ class GitHubProjectValidatorTest {
 
     @Test
     void testValidateChangesValid() {
-        final String changes = "# Exasol Test Containers 2.1.0, released "
+        final String changes = "# Exasol Test Containers 2.1.0, released \n ## Features"
                 + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         final GitHubProjectValidator validator = new GitHubProjectValidator(null);
         assertDoesNotThrow(() -> validator.validateChanges(changes, "2.1.0"));
@@ -47,7 +47,7 @@ class GitHubProjectValidatorTest {
 
     @Test
     void testValidateChangesInvalidDate() {
-        final String changes = "# Exasol Test Containers 2.1.0, released 2020-06-01";
+        final String changes = "# Exasol Test Containers 2.1.0, released 2020-06-01 \n ## Features";
         final GitHubProjectValidator validator = new GitHubProjectValidator(null);
         assertThrows(IllegalStateException.class, () -> validator.validateChanges(changes, "2.1.0"));
     }
@@ -58,6 +58,14 @@ class GitHubProjectValidatorTest {
                 + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         final GitHubProjectValidator validator = new GitHubProjectValidator(null);
         assertThrows(IllegalStateException.class, () -> validator.validateChanges(changes, "3.1.0"));
+    }
+
+    @Test
+    void testValidateChangesInvalidLength() {
+        final String changes = "# Exasol Test Containers 2.1.0, released "
+                + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        final GitHubProjectValidator validator = new GitHubProjectValidator(null);
+        assertThrows(IllegalStateException.class, () -> validator.validateChanges(changes, "2.1.0"));
     }
 
     @ParameterizedTest
