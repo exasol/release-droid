@@ -12,17 +12,17 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * This class represents a Maven-based Java project.
+ * This class represents a Maven-based Java project's content.
  */
-public class JavaMavenProject extends AbstractGitHubRepository {
+public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryContent {
     /**
-     * Create a new instance of {@link JavaMavenProject}.
+     * Create a new instance of {@link GitHubGitRepository}.
      *
-     * @param oauthAccessToken GitHub oauth Access Token
      * @param repository an instance of {@link GHRepository}
+     * @param branch name of a branch to get content from
      */
-    public JavaMavenProject(final GHRepository repository, final String oauthAccessToken) {
-        super(repository, oauthAccessToken);
+    protected JavaMavenGitRepositoryContent(final GHRepository repository, final String branch) {
+        super(repository, branch);
     }
 
     @Override

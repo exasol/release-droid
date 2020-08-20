@@ -1,8 +1,10 @@
-package com.exasol.github;
+package com.exasol;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+
+import com.exasol.github.GitHubUser;
 
 /**
  * This class provides user credentials for different platforms.

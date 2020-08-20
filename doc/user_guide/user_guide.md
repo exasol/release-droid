@@ -89,10 +89,27 @@ You can find examples [here](upload_release_asset_example.md).
 
     `java -jar release-robot-0.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
-##### Command Line Arguments
+#### Command Line Arguments
 
-| Long Option | Short Option | Mandatory | Description                               | Possible values               |
-|-------------|--------------|-----------|-------------------------------------------|-------------------------------|
-| --goal      | -g           | Yes       | Goal to execute                           | `validate`, `release`         |
-| --name      | -n           | Yes       | GitHub project name                       | Any valid GitHub project name |
-| --platforms | -p           | Yes       | Comma-separated list of release platforms | `github`                      |
+| Long Option | Short Option | Mandatory | Description                                        | Possible values               |
+|-------------|--------------|-----------|----------------------------------------------------|-------------------------------|
+| --branch    | -b           | No        | Git branch to work with (only for `validate` goal) | Any valid git branch name     |
+| --goal      | -g           | Yes       | Goal to execute                                    | `validate`, `release`         |
+| --name      | -n           | Yes       | GitHub project name                                | Any valid GitHub project name |
+| --platforms | -p           | Yes       | Comma-separated list of release platforms          | `github`                      |
+
+#### Release Goals
+
+* `validate` - use it when you are not ready to release yet, but want to check whether your branch is ready to be released. 
+This goal works with the git `master` branch by default, but you can also choose another branch available on GitHub. 
+
+* `release` - use it to validate and immediately start the release process. This goal always works with the git `master` branch.
+Note that you don't need to run `validate` goal before the release, as the `release` goal itself also runs validations.
+
+## Debugging
+
+If you need to debug the RR, you can adjust Java logging level (it is INFO by DEFAULT). There are a few ways to do it:
+
+1. Change a default logging level in JDK/JRE. 
+   Find a `logging.properties` file in the JDK/JRE directory and change the default logging level.
+   For `openjdk-11` you can find this file here: `jdk-11/conf/logging.properties`.

@@ -7,7 +7,7 @@ import java.util.Set;
  * This class contains supported release platforms.
  */
 public enum ReleasePlatform {
-    GITHUB, MAVEN_CENTRAL;
+    GITHUB;
 
     /**
      * Create a set of {@link ReleasePlatform}s from Strings.

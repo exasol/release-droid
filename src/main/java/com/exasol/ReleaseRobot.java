@@ -1,88 +1,171 @@
 package com.exasol;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import org.apache.commons.cli.*;
-
-import com.exasol.github.*;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
  */
 public class ReleaseRobot {
     private static final Logger LOGGER = Logger.getLogger(ReleaseRobot.class.getName());
-    private static final String REPOSITORY_OWNER = "exasol";
-    private static final String PLATFORM_SHORT_OPTION = "p";
-    private static final String NAME_SHORT_OPTION = "n";
-    private static final String GOAL_SHORT_OPTION = "g";
+    private final String gitBranch;
+    private final Goal goal;
+    private final Set<ReleasePlatform> platforms;
+    private final String repositoryName;
+    private final String repositoryOwner;
+
+    private ReleaseRobot(final Builder builder) {
+        this.gitBranch = builder.gitBranch;
+        this.goal = builder.goal;
+        this.platforms = builder.platforms;
+        this.repositoryName = builder.repositoryName;
+        this.repositoryOwner = builder.repositoryOwner;
+    }
 
     /**
      * Main entry point for all Release Robot's calls.
-     * 
-     * @param repositoryName name of a target project from GitHub
-     * @param goalAsString run goal. Supported goals: release, validate
-     * @param platforms one or more platforms for validation or release. Supported values: github
      */
-    public void dispatch(final String repositoryName, final String goalAsString, final String... platforms) {
-        LOGGER.fine(MessageFormat.format("Release Robot has received '{}' request for the project '{}'.", goalAsString,
-                repositoryName));
+    public void run() {
+        LOGGER.fine(() -> "Release Robot has received '" + this.goal + "' request for the project "
+                + this.repositoryName + ".");
         try {
-            final Goal goal = Goal.getGoal(goalAsString);
-            final RepositoryHandler repositoryHandler = getRepositoryHandler(repositoryName, platforms);
-            if (goal == Goal.VALIDATE) {
-                repositoryHandler.validate();
+            final GitRepository repository = GitRepositoryFactory.getInstance()
+                    .createGitHubGitRepository(this.repositoryOwner, this.repositoryName);
+            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, this.platforms);
+            if (this.goal == Goal.VALIDATE) {
+                runValidation(repositoryHandler);
             } else {
-                repositoryHandler.validate();
-                repositoryHandler.release();
+                runRelease(repositoryHandler);
             }
         } catch (final RuntimeException exception) {
-            LOGGER.severe(MessageFormat.format("'{}' request failed. Cause: {}", goalAsString, exception.getMessage()));
+            LOGGER.severe(() -> "'" + this.goal + "' request failed. Cause: " + exception.getMessage());
         }
     }
 
-    private RepositoryHandler getRepositoryHandler(final String repositoryName, final String[] platforms) {
-        final Set<ReleasePlatform> platformsList = ReleasePlatform.toSet(platforms);
-        final CredentialsProvider credentialsProvider = CredentialsProvider.getInstance();
-        final GitHubRepository repository = GitHubRepositoryFactory.getInstance().createGitHubRepository(
-                REPOSITORY_OWNER, repositoryName, credentialsProvider.provideGitHubCredentials());
-        return new RepositoryHandler(repository, platformsList);
+    private void runValidation(final RepositoryHandler repositoryHandler) {
+        if (this.gitBranch == null || this.gitBranch.isEmpty()) {
+            repositoryHandler.validate(Optional.empty());
+        } else {
+            repositoryHandler.validate(Optional.of(this.gitBranch));
+        }
+    }
+
+    private void runRelease(final RepositoryHandler repositoryHandler) {
+        repositoryHandler.validate(Optional.empty());
+        repositoryHandler.release();
     }
 
     /**
-     * Run the Release Robot.
-     * 
-     * @param args arguments
+     * Get a {@link ReleaseRobot} builder
+     *
+     * @return builder instance
      */
-    public static void main(final String[] args) {
-        final Options options = createOptions();
-        final CommandLine cmd = getCommandLine(args, options);
-        final String[] platformsArray = cmd.getOptionValue(PLATFORM_SHORT_OPTION).split(",");
-        final ReleaseRobot releaseRobot = new ReleaseRobot();
-        releaseRobot.dispatch(cmd.getOptionValue(NAME_SHORT_OPTION), cmd.getOptionValue(GOAL_SHORT_OPTION),
-                platformsArray);
+    public static Builder builder() {
+        return new Builder();
     }
 
-    private static Options createOptions() {
-        final Option name = new Option(NAME_SHORT_OPTION, "name", true, "project name");
-        name.setRequired(true);
-        final Option goal = new Option(GOAL_SHORT_OPTION, "goal", true, "goal to execute");
-        goal.setRequired(true);
-        final Option platforms = new Option(PLATFORM_SHORT_OPTION, "platforms", true,
-                "comma-separated list of release platforms");
-        platforms.setRequired(true);
-        return new Options().addOption(name).addOption(goal).addOption(platforms);
-    }
+    /**
+     * Builder for {@link ReleaseRobot}
+     */
+    public static final class Builder {
+        private String gitBranch;
+        private Goal goal;
+        private Set<ReleasePlatform> platforms;
+        private String repositoryName;
+        private String repositoryOwner;
 
-    private static CommandLine getCommandLine(final String[] args, final Options options) {
-        try {
-            final CommandLineParser parser = new DefaultParser();
-            return parser.parse(options, args);
-        } catch (final ParseException exception) {
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Release Robot", options);
-            throw new IllegalArgumentException(exception.getMessage());
+        /**
+         * Add a git branch.
+         *
+         * @param gitBranch name of a branch to work with.
+         * @return builder instance for fluent programming
+         */
+        public Builder gitBranch(final String gitBranch) {
+            this.gitBranch = gitBranch;
+            return this;
+        }
+
+        /**
+         * Add a run goal.
+         *
+         * @param goal run goal. Supported goals: release, validate
+         * @return builder instance for fluent programming
+         */
+        public Builder goal(final String goal) {
+            this.goal = Goal.getGoal(goal);
+            return this;
+        }
+
+        /**
+         * Add release platforms.
+         *
+         * @param platforms one or more platforms for validation or release. Supported values: github
+         * @return builder instance for fluent programming
+         */
+        public Builder platforms(final String... platforms) {
+            this.platforms = ReleasePlatform.toSet(platforms);
+            return this;
+        }
+
+        /**
+         * Add a name of a repository.
+         *
+         * @param repositoryName name of a target project from GitHub
+         * @return builder instance for fluent programming
+         */
+        public Builder repositoryName(final String repositoryName) {
+            this.repositoryName = repositoryName;
+            return this;
+        }
+
+        /**
+         * Add an owner of a GitHub repository.
+         *
+         * @param repositoryOwner an owner of a GitHub repository
+         * @return builder instance for fluent programming
+         */
+        public Builder repositoryOwner(final String repositoryOwner) {
+            this.repositoryOwner = repositoryOwner;
+            return this;
+        }
+
+        /**
+         * Create a new {@link ReleaseRobot} instance.
+         *
+         * @return new {@link ReleaseRobot} instance
+         */
+        public ReleaseRobot build() {
+            validateMandatoryParameters();
+            validateGoalAndBranch();
+            return new ReleaseRobot(this);
+        }
+
+        private void validateGoalAndBranch() {
+            if (this.goal == Goal.RELEASE && gitBranch != null) {
+                throw new IllegalStateException("Please, remove branch parameter if you want to make a release.");
+            }
+        }
+
+        private void validateMandatoryParameters() {
+            if (this.goal == null) {
+                throwExceptionForMissingParameter("goal");
+            }
+            if (this.platforms == null || this.platforms.isEmpty()) {
+                throwExceptionForMissingParameter("platforms");
+            }
+            if (this.repositoryName == null) {
+                throwExceptionForMissingParameter("repository name");
+            }
+            if (this.repositoryOwner == null) {
+                throwExceptionForMissingParameter("repository owner");
+            }
+        }
+
+        private void throwExceptionForMissingParameter(final String goal) {
+            throw new IllegalStateException(MessageFormat
+                    .format("Please, specify a mandatory parameter `{}` and re0run the Release Robot", goal));
         }
     }
 }
