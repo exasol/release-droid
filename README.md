@@ -35,6 +35,7 @@ Running the Release Robot requires a Java Runtime version 11 or later.
 | [Maven Assembly Plugin][maven-assembly-plugin]                     | Creating JAR                                       | Apache License 2.0          |
 | [Maven Compiler Plugin][maven-compiler-plugin]                     | Setting required Java version                      | Apache License 2.0          |
 | [Maven Enforcer Plugin][maven-enforcer-plugin]                     | Controlling environment constants                  | Apache License 2.0          |
+| [Maven Jacoco Plugin][maven-jacoco-plugin                    ]     | Code coverage metering                             | Eclipse Public License 2.0  |
 | [Maven Surefire Plugin][maven-surefire-plugin]                     | Unit testing                                       | Apache License 2.0          |
 | [Sonatype OSS Index Maven Plugin][sonatype-oss-index-maven-plugin] | Checking Dependencies Vulnerability                | ASL2                        |
 | [Versions Maven Plugin][versions-maven-plugin]                     | Checking if dependencies updates are available     | Apache License 2.0          |
@@ -49,6 +50,7 @@ Running the Release Robot requires a Java Runtime version 11 or later.
 [maven-assembly-plugin]: https://maven.apache.org/plugins/maven-assembly-plugin/
 [maven-compiler-plugin]: https://maven.apache.org/plugins/maven-compiler-plugin/
 [maven-enforcer-plugin]: http://maven.apache.org/enforcer/maven-enforcer-plugin/
+[maven-jacoco-plugin]: https://www.eclemma.org/jacoco/trunk/doc/maven.html
 [maven-surefire-plugin]: https://maven.apache.org/surefire/maven-surefire-plugin/
 [sonatype-oss-index-maven-plugin]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [versions-maven-plugin]: https://www.mojohaus.org/versions-maven-plugin/
