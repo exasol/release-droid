@@ -4,35 +4,47 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.github.GitHubRepository;
+import com.exasol.git.GitRepository;
+import com.exasol.git.GitRepositoryContent;
 
 /**
- * This class checks if the GitHub project repository is ready for a release.
+ * Contains validations for a Git project.
  */
-public class GitHubProjectValidator implements ProjectValidator {
-    private static final Logger LOGGER = Logger.getLogger(GitHubProjectValidator.class.getName());
-    protected final GitHubRepository repository;
+public class GitRepositoryValidator {
+    private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
+    private final GitRepository repository;
 
     /**
-     * Create a new instance of {@link GitHubProjectValidator}.
-     *
-     * @param repository repository to validate
+     * Create a new instance of {@link GitRepositoryValidator}.
+     * 
+     * @param repository instance of {@link GitRepository} to validate
      */
-    public GitHubProjectValidator(final GitHubRepository repository) {
+    public GitRepositoryValidator(final GitRepository repository) {
         this.repository = repository;
     }
 
-    @Override
-    public void validate() {
-        LOGGER.fine("Validating GitHub-specific requirements.");
-        final String changelog = this.repository.getChangelogFile();
-        final String version = this.repository.getVersion();
-        final String changes = this.repository.getChangesFile(version);
+    /**
+     * Validate content of a Git-based repository.
+     * 
+     * @param branch name of a branch to validate on
+     */
+    public void validate(final String branch) {
+        LOGGER.fine("Validating Git repository.");
+        final GitRepositoryContent content = this.repository.getRepositoryContent(branch);
+        final String changelog = content.getChangelogFile();
+        final String version = content.getVersion();
+        final String changes = content.getChangesFile(version);
         validateChangelog(changelog, version);
         validateChanges(changes, version);
-        final Optional<String> latestReleaseTag = this.repository.getLatestReleaseVersion();
+        final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         validateVersion(version, latestReleaseTag);
+    }
 
+    /**
+     * Validate content of a Git-based repository.
+     */
+    public void validate() {
+        validate(this.repository.getDefaultBranchName());
     }
 
     protected void validateChangelog(final String changelog, final String version) {
@@ -53,7 +65,7 @@ public class GitHubProjectValidator implements ProjectValidator {
         validateMoreThanOneLine(changes);
     }
 
-    private void validateMoreThanOneLine(String changes) {
+    private void validateMoreThanOneLine(final String changes) {
         if (changes.indexOf('\n') == -1) {
             throw new IllegalStateException(
                     "The changes file contains 1 or less lines. Please, add the changes you made before the release.");

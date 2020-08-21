@@ -6,8 +6,11 @@ import java.util.logging.Logger;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
+import com.exasol.CredentialsProvider;
+import com.exasol.git.GitRepository;
+
 /**
- * This class instantiates a {@link GitHubRepository} corresponding to the project's layout.
+ * Instantiates a {@link GitHubGitRepository}.
  */
 public final class GitHubRepositoryFactory {
     private static final Logger LOGGER = Logger.getLogger(GitHubRepositoryFactory.class.getName());
@@ -19,7 +22,7 @@ public final class GitHubRepositoryFactory {
 
     /**
      * Get an instance of {@link GitHubRepositoryFactory}.
-     * 
+     *
      * @return instance of {@link GitHubRepositoryFactory}
      */
     public static synchronized GitHubRepositoryFactory getInstance() {
@@ -30,28 +33,25 @@ public final class GitHubRepositoryFactory {
     }
 
     /**
-     * Create a new {@link GitHubRepository}.
-     * <p>
-     * This method reads credentials from the {@code .release-robot/credentials} file in the user's home directory. If
-     * the file does not exists or the credentials do not exist, it asks user to input credentials via terminal.
-     * </p>
-     *
-     * @param repositoryOwner name of the owner on github
-     * @param repositoryName name of the repository on github
-     * @return currently always return an instance of {@link JavaMavenProject}
+     * Create a new {@link GitHubGitRepository}.
+     * 
+     * @param repositoryOwner repository owner on the GitHub
+     * @param repositoryName repository name on the GitHub
+     * @return new instance of {@link GitHubGitRepository}
      */
-    public GitHubRepository createGitHubRepository(final String repositoryOwner, final String repositoryName,
-            final GitHubUser gitHubUser) {
-        final String username = gitHubUser.getUsername();
-        final String token = gitHubUser.getToken();
-        final GHRepository ghRepository = getLogInGitHubRepository(repositoryOwner, repositoryName, username, token);
-        return new JavaMavenProject(ghRepository, token);
+    public GitRepository createGitHubGitRepository(final String repositoryOwner, final String repositoryName) {
+        final CredentialsProvider credentialsProvider = CredentialsProvider.getInstance();
+        final GitHubUser gitHubUser = credentialsProvider.provideGitHubCredentials();
+        final GHRepository repository = getLogInGitHubRepository(repositoryOwner, repositoryName,
+                gitHubUser.getUsername(), gitHubUser.getToken());
+        LOGGER.fine(() -> "Created an instance of GHRepository.");
+        return new GitHubGitRepository(repository, gitHubUser);
     }
 
     private GHRepository getLogInGitHubRepository(final String repositoryOwner, final String repositoryName,
             final String username, final String oauthAccessToken) {
         try {
-            final GitHub gitHub = getUserVerifiedGitHub(username, oauthAccessToken);
+            final GitHub gitHub = GitHub.connect(username, oauthAccessToken);
             return gitHub.getRepository(repositoryOwner + "/" + repositoryName);
         } catch (final IOException exception) {
             final String message;
@@ -64,15 +64,6 @@ public final class GitHubRepositoryFactory {
                 message = exception.getMessage();
             }
             throw new GitHubException(message, exception);
-        }
-    }
-
-    private GitHub getUserVerifiedGitHub(final String username, final String oauthAccessToken) {
-        LOGGER.fine(() ->"Creating a user-identified connection to the GitHub.");
-        try {
-            return GitHub.connect(username, oauthAccessToken);
-        } catch (final IOException exception) {
-            throw new GitHubException("Cannot create a user connection to the GitHub due to an error", exception);
         }
     }
 }

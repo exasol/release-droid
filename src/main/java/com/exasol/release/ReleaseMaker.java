@@ -1,7 +1,7 @@
 package com.exasol.release;
 
 /**
- * A common interface for classes performing releases.
+ * A common interface for classes performing releases on different release platforms.
  */
 public interface ReleaseMaker {
     /**

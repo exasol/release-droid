@@ -1,7 +1,7 @@
 package com.exasol.release;
 
 import com.exasol.ReleasePlatform;
-import com.exasol.github.GitHubRepository;
+import com.exasol.git.GitRepository;
 
 /**
  * This factory class is responsible for instantiation of {@link ReleaseMaker}.
@@ -12,17 +12,18 @@ public final class ReleaseMakerFactory {
     }
 
     /**
-     * Create a new instance of {@link ReleaseMaker} depending on {@link ReleasePlatform}.
+     * Create a new instance of the {@link ReleaseMaker} depending on the {@link ReleasePlatform}.
      * 
-     * @param repository {@link GitHubRepository} with the project to release
+     * @param repository {@link GitRepository} with the project to release
      * @param platform release platform
-     * @return a new instance of {@link ReleaseMaker}
+     * @return new instance of {@link ReleaseMaker}
      */
-    public static ReleaseMaker createReleaseMaker(GitHubRepository repository, ReleasePlatform platform) {
+    public static ReleaseMaker createReleaseMaker(final GitRepository repository, final ReleasePlatform platform) {
         if (platform == ReleasePlatform.GITHUB) {
             return new GitHubReleaseMaker(repository);
         } else {
-            throw new IllegalArgumentException("Release for platform " + platform + " is not supported. Please choose one of: github");
+            throw new IllegalArgumentException(
+                    "Release for platform " + platform + " is not supported. Please choose one of: github");
         }
     }
 }
