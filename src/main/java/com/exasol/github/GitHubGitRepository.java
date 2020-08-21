@@ -9,8 +9,8 @@ import org.json.JSONObject;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 
-import com.exasol.GitRepository;
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepository;
+import com.exasol.git.GitRepositoryContent;
 
 /**
  * A GitHub-based repository.
@@ -32,7 +32,7 @@ public class GitHubGitRepository implements GitRepository {
     }
 
     @Override
-    public Optional<String> getLatestReleaseTag() {
+    public Optional<String> getLatestTag() {
         try {
             final GHRelease release = this.repository.getLatestRelease();
             return release == null ? Optional.empty() : Optional.of(release.getTagName());
@@ -40,6 +40,11 @@ public class GitHubGitRepository implements GitRepository {
             throw new GitHubException("GitHub connection problem happened during retrieving the latest release. "
                     + "Please, try again later.", exception);
         }
+    }
+
+    @Override
+    public String getDefaultBranchName() {
+        return this.repository.getDefaultBranch();
     }
 
     @Override
@@ -93,10 +98,5 @@ public class GitHubGitRepository implements GitRepository {
     @Override
     public GitRepositoryContent getRepositoryContent(final String branchName) {
         return GitHubRepositoryContentFactory.getInstance().getGitHubRepositoryContent(this.repository, branchName);
-    }
-
-    @Override
-    public GitRepositoryContent getRepositoryContent() {
-        return getRepositoryContent(this.repository.getDefaultBranch());
     }
 }

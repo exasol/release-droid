@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.GitRepository;
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepository;
+import com.exasol.git.GitRepositoryContent;
 
 /**
  * Contains validations for a Git project.
@@ -28,17 +28,23 @@ public class GitRepositoryValidator {
      * 
      * @param branch name of a branch to validate on
      */
-    public void validate(final Optional<String> branch) {
+    public void validate(final String branch) {
         LOGGER.fine("Validating Git repository.");
-        final GitRepositoryContent content = branch.isEmpty() ? this.repository.getRepositoryContent()
-                : this.repository.getRepositoryContent(branch.get());
+        final GitRepositoryContent content = this.repository.getRepositoryContent(branch);
         final String changelog = content.getChangelogFile();
         final String version = content.getVersion();
         final String changes = content.getChangesFile(version);
         validateChangelog(changelog, version);
         validateChanges(changes, version);
-        final Optional<String> latestReleaseTag = this.repository.getLatestReleaseTag();
+        final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         validateVersion(version, latestReleaseTag);
+    }
+
+    /**
+     * Validate content of a Git-based repository.
+     */
+    public void validate() {
+        validate(this.repository.getDefaultBranchName());
     }
 
     protected void validateChangelog(final String changelog, final String version) {

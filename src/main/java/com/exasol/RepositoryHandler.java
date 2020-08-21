@@ -1,9 +1,9 @@
 package com.exasol;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.exasol.git.GitRepository;
 import com.exasol.release.ReleaseMaker;
 import com.exasol.release.ReleaseMakerFactory;
 import com.exasol.validation.*;
@@ -32,10 +32,24 @@ public class RepositoryHandler {
      * 
      * @param branch name of a branch to validate on
      */
-    public void validate(final Optional<String> branch) {
+    public void validate(final String branch) {
         LOGGER.info(() -> "Validation started.");
         final GitRepositoryValidator validator = new GitRepositoryValidator(this.repository);
         validator.validate(branch);
+        validatePlatforms();
+    }
+
+    /**
+     * Validate if the git project is ready for a release on specified platforms.
+     */
+    public void validate() {
+        LOGGER.info(() -> "Validation started.");
+        final GitRepositoryValidator validator = new GitRepositoryValidator(this.repository);
+        validator.validate();
+        validatePlatforms();
+    }
+
+    private void validatePlatforms() {
         for (final ReleasePlatform platform : this.platforms) {
             final PlatformValidator platformValidator = PlatformValidatorFactory.createProjectValidator(this.repository,
                     platform);

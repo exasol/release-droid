@@ -1,7 +1,7 @@
 package com.exasol.validation;
 
-import com.exasol.GitRepository;
 import com.exasol.ReleasePlatform;
+import com.exasol.git.GitRepository;
 
 /**
  * Responsible for instantiation of {@link PlatformValidator}s.

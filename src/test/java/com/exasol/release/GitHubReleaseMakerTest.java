@@ -8,8 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import com.exasol.GitRepository;
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepository;
+import com.exasol.git.GitRepositoryContent;
 
 class GitHubReleaseMakerTest {
     @ParameterizedTest
@@ -19,7 +19,8 @@ class GitHubReleaseMakerTest {
         final String version = "1.0.0";
         final GitRepository repositoryMock = mock(GitRepository.class);
         final GitRepositoryContent contentMock = Mockito.mock(GitRepositoryContent.class);
-        when(repositoryMock.getRepositoryContent()).thenReturn(contentMock);
+        when(repositoryMock.getRepositoryContent(anyString())).thenReturn(contentMock);
+        when(repositoryMock.getDefaultBranchName()).thenReturn("master");
         when(contentMock.getVersion()).thenReturn(version);
         when(contentMock.getChangesFile(version)).thenReturn(changesFileContent);
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(repositoryMock);

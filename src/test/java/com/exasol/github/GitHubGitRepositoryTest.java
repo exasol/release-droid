@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.GitRepository;
+import com.exasol.git.GitRepository;
 
 class GitHubGitRepositoryTest {
     @Test
@@ -24,7 +24,7 @@ class GitHubGitRepositoryTest {
         when(releaseMock.getTagName()).thenReturn("1.0.0");
         when(ghRepositoryMock.getLatestRelease()).thenReturn(releaseMock);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock, new GitHubUser("", ""));
-        final Optional<String> latestReleaseTag = repository.getLatestReleaseTag();
+        final Optional<String> latestReleaseTag = repository.getLatestTag();
         assertThat(latestReleaseTag.isPresent(), equalTo(true));
         assertThat(latestReleaseTag.get(), equalTo("1.0.0"));
     }
@@ -34,7 +34,7 @@ class GitHubGitRepositoryTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getLatestRelease()).thenReturn(null);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock, new GitHubUser("", ""));
-        final Optional<String> latestReleaseTag = repository.getLatestReleaseTag();
+        final Optional<String> latestReleaseTag = repository.getLatestTag();
         assertThat(latestReleaseTag.isPresent(), equalTo(false));
     }
 
@@ -43,7 +43,7 @@ class GitHubGitRepositoryTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getLatestRelease()).thenThrow(IOException.class);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock, new GitHubUser("", ""));
-        assertThrows(GitHubException.class, repository::getLatestReleaseTag);
+        assertThrows(GitHubException.class, repository::getLatestTag);
     }
 
     @Test
@@ -61,6 +61,5 @@ class GitHubGitRepositoryTest {
                 () -> verify(releaseBuilderMock, times(1)).name(anyString()),
                 () -> verify(releaseBuilderMock, times(1)).body(anyString()),
                 () -> verify(ghRepositoryMock, times(1)).createRelease(anyString()));
-
     }
 }

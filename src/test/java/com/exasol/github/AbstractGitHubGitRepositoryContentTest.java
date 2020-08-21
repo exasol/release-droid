@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepositoryContent;
 
 class AbstractGitHubGitRepositoryContentTest {
     @Test

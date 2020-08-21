@@ -1,7 +1,7 @@
 package com.exasol.release;
 
-import com.exasol.GitRepository;
 import com.exasol.ReleasePlatform;
+import com.exasol.git.GitRepository;
 
 /**
  * This factory class is responsible for instantiation of {@link ReleaseMaker}.

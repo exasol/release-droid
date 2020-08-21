@@ -2,7 +2,7 @@ package com.exasol.validation;
 
 import java.util.logging.Logger;
 
-import com.exasol.GitRepository;
+import com.exasol.git.GitRepository;
 
 /**
  * This class checks if the GitHub project repository is ready for a release.

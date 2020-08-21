@@ -1,4 +1,4 @@
-package com.exasol;
+package com.exasol.github;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -6,27 +6,28 @@ import java.util.logging.Logger;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
-import com.exasol.github.*;
+import com.exasol.CredentialsProvider;
+import com.exasol.git.GitRepository;
 
 /**
- * Instantiates different {@link GitRepository}s.
+ * Instantiates a {@link GitHubGitRepository}.
  */
-public class GitRepositoryFactory {
-    private static final Logger LOGGER = Logger.getLogger(GitRepositoryFactory.class.getName());
-    private static GitRepositoryFactory instance;
+public final class GitHubRepositoryFactory {
+    private static final Logger LOGGER = Logger.getLogger(GitHubRepositoryFactory.class.getName());
+    private static GitHubRepositoryFactory instance;
 
-    private GitRepositoryFactory() {
+    private GitHubRepositoryFactory() {
         // prevent instantiation
     }
 
     /**
-     * Get an instance of {@link GitRepositoryFactory}.
+     * Get an instance of {@link GitHubRepositoryFactory}.
      *
-     * @return instance of {@link GitRepositoryFactory}
+     * @return instance of {@link GitHubRepositoryFactory}
      */
-    public static synchronized GitRepositoryFactory getInstance() {
+    public static synchronized GitHubRepositoryFactory getInstance() {
         if (instance == null) {
-            instance = new GitRepositoryFactory();
+            instance = new GitHubRepositoryFactory();
         }
         return instance;
     }

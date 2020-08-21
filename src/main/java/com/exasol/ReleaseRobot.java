@@ -1,9 +1,11 @@
 package com.exasol;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import com.exasol.git.GitRepository;
+import com.exasol.github.GitHubRepositoryFactory;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
@@ -31,7 +33,7 @@ public class ReleaseRobot {
         LOGGER.fine(() -> "Release Robot has received '" + this.goal + "' request for the project "
                 + this.repositoryName + ".");
         try {
-            final GitRepository repository = GitRepositoryFactory.getInstance()
+            final GitRepository repository = GitHubRepositoryFactory.getInstance()
                     .createGitHubGitRepository(this.repositoryOwner, this.repositoryName);
             final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, this.platforms);
             if (this.goal == Goal.VALIDATE) {
@@ -45,15 +47,19 @@ public class ReleaseRobot {
     }
 
     private void runValidation(final RepositoryHandler repositoryHandler) {
-        if (this.gitBranch == null || this.gitBranch.isEmpty()) {
-            repositoryHandler.validate(Optional.empty());
+        if (hasBranch()) {
+            repositoryHandler.validate();
         } else {
-            repositoryHandler.validate(Optional.of(this.gitBranch));
+            repositoryHandler.validate(this.gitBranch);
         }
     }
 
+    private boolean hasBranch() {
+        return this.gitBranch == null || this.gitBranch.isEmpty();
+    }
+
     private void runRelease(final RepositoryHandler repositoryHandler) {
-        repositoryHandler.validate(Optional.empty());
+        repositoryHandler.validate();
         repositoryHandler.release();
     }
 
@@ -143,7 +149,7 @@ public class ReleaseRobot {
         }
 
         private void validateGoalAndBranch() {
-            if (this.goal == Goal.RELEASE && gitBranch != null) {
+            if (this.goal == Goal.RELEASE && this.gitBranch != null) {
                 throw new IllegalStateException("Please, remove branch parameter if you want to make a release.");
             }
         }

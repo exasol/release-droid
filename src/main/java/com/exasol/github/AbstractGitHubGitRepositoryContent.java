@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.kohsuke.github.*;
 
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepositoryContent;
 
 /**
  * Contains common logic for GitHub-based repositories' content.
@@ -28,10 +28,10 @@ public abstract class AbstractGitHubGitRepositoryContent implements GitRepositor
         this.branch = getBranchByName(branch);
     }
 
-    private GHBranch getBranchByName(String branch) {
+    private GHBranch getBranchByName(final String branch) {
         try {
-            return repository.getBranch(branch);
-        } catch (IOException exception) {
+            return this.repository.getBranch(branch);
+        } catch (final IOException exception) {
             throw new GitHubException(
                     "Cannot find a branch '" + branch + "'. Please check if you specified a correct branch.",
                     exception);

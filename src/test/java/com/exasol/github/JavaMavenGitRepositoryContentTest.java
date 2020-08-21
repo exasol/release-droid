@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepositoryContent;
 
 class JavaMavenGitRepositoryContentTest {
     @ParameterizedTest

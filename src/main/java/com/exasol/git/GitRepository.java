@@ -1,4 +1,4 @@
-package com.exasol;
+package com.exasol.git;
 
 import java.util.Optional;
 
@@ -8,11 +8,18 @@ import java.util.Optional;
  */
 public interface GitRepository {
     /**
-     * Get the latest release tag if exists.
+     * Get the latest tag if exists.
      *
-     * @return latest release tag as a string or empty optional
+     * @return latest tag as a string or empty optional
      */
-    public Optional<String> getLatestReleaseTag();
+    public Optional<String> getLatestTag();
+
+    /**
+     * Get a name of the default branch of the repository.
+     * 
+     * @return name of the default branch
+     */
+    public String getDefaultBranchName();
 
     /**
      * Create a new release tag on the latest commit of the current branch.
@@ -29,11 +36,4 @@ public interface GitRepository {
      * @return new instance of {@link GitRepositoryContent}
      */
     public GitRepositoryContent getRepositoryContent(String branchName);
-
-    /**
-     * Get a new instance of {@link GitRepositoryContent} based on the current branch.
-     *
-     * @return new instance of {@link GitRepositoryContent}
-     */
-    public GitRepositoryContent getRepositoryContent();
 }

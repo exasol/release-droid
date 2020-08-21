@@ -2,8 +2,8 @@ package com.exasol.release;
 
 import java.util.logging.Logger;
 
-import com.exasol.GitRepository;
-import com.exasol.GitRepositoryContent;
+import com.exasol.git.GitRepository;
+import com.exasol.git.GitRepositoryContent;
 import com.exasol.github.GitHubGitRepository;
 
 /**
@@ -25,7 +25,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     @Override
     public void makeRelease() {
         LOGGER.fine("Releasing on GitHub.");
-        final GitRepositoryContent content = this.repository.getRepositoryContent();
+        final GitRepositoryContent content = this.repository
+                .getRepositoryContent(this.repository.getDefaultBranchName());
         final String version = content.getVersion();
         final String changes = content.getChangesFile(version);
         this.repository.release(version, changes);
