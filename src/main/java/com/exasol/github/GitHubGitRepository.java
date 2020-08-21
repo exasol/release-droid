@@ -81,6 +81,7 @@ public class GitHubGitRepository implements GitRepository {
         try {
             build.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (final IOException | InterruptedException exception) {
+            Thread.currentThread().interrupt();
             throw new GitHubException("Exception happened during uploading assets on the GitHub release.", exception);
         }
     }

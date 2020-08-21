@@ -19,7 +19,7 @@ final class GitHubRepositoryContentFactory {
      * 
      * @return instance of {@link GitHubRepositoryContentFactory}
      */
-    public static synchronized GitHubRepositoryContentFactory getInstance() {
+    static synchronized GitHubRepositoryContentFactory getInstance() {
         if (instance == null) {
             instance = new GitHubRepositoryContentFactory();
         }
