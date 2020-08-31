@@ -22,7 +22,7 @@ Running the Release Robot requires a Java Runtime version 11 or later.
 ### Test Dependencies
 
 | Dependency                                                         | Purpose                                            | License                    |
-|----------------------- --------------------------------------------|----------------------------------------------------|----------------------------|
+|--------------------------------------------------------------------|----------------------------------------------------|----------------------------|
 | [Apache Maven][apache-maven]                                       | Build tool                                         | Apache License 2.0         |
 | [Java Hamcrest][java-hamcrest]                                     | Checking for conditions in code via matchers       | BSD License                |
 | [JUnit][junit]                                                     | Unit testing framework                             | Eclipse Public License 1.0 |
