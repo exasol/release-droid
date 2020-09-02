@@ -15,6 +15,8 @@ import org.xml.sax.SAXException;
  * This class represents a Maven-based Java project's content.
  */
 public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryContent {
+    private String version = null;
+
     /**
      * Create a new instance of {@link GitHubGitRepository}.
      *
@@ -27,11 +29,10 @@ public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryCo
 
     @Override
     public synchronized String getVersion() {
-        final String versionKey = "version";
-        if (!this.filesCache.containsKey(versionKey)) {
-            this.filesCache.put(versionKey, getVersionFromPomFile());
+        if (this.version == null) {
+            this.version = getVersionFromPomFile();
         }
-        return this.filesCache.get(versionKey);
+        return this.version;
     }
 
     private String getVersionFromPomFile() {

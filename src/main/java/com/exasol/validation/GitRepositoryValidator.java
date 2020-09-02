@@ -1,11 +1,12 @@
 package com.exasol.validation;
 
-import java.text.SimpleDateFormat;
+import static com.exasol.ReleaseRobotConstants.VERSION_REGEX;
+
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.git.GitRepository;
-import com.exasol.git.GitRepositoryContent;
+import com.exasol.git.*;
 
 /**
  * Contains validations for a Git project.
@@ -16,7 +17,7 @@ public class GitRepositoryValidator {
 
     /**
      * Create a new instance of {@link GitRepositoryValidator}.
-     * 
+     *
      * @param repository instance of {@link GitRepository} to validate
      */
     public GitRepositoryValidator(final GitRepository repository) {
@@ -25,83 +26,53 @@ public class GitRepositoryValidator {
 
     /**
      * Validate content of a Git-based repository.
-     * 
+     *
      * @param branch name of a branch to validate on
      */
     public void validate(final String branch) {
         LOGGER.fine("Validating Git repository.");
         final GitRepositoryContent content = this.repository.getRepositoryContent(branch);
-        final String changelog = content.getChangelogFile();
         final String version = content.getVersion();
-        final String changes = content.getChangesFile(version);
+        validateNewVersion(version);
+        final String changelog = content.getChangelogFile();
         validateChangelog(changelog, version);
+        final ReleaseChangesLetter changes = content.getReleaseChangesLetter(version);
         validateChanges(changes, version);
+    }
+
+    protected void validateNewVersion(final String newVersion) {
+        LOGGER.fine("Validating a new version.");
+        validateVersionFormat(newVersion);
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
-        validateVersion(version, latestReleaseTag);
-    }
-
-    /**
-     * Validate content of a Git-based repository.
-     */
-    public void validate() {
-        validate(this.repository.getDefaultBranchName());
-    }
-
-    protected void validateChangelog(final String changelog, final String version) {
-        LOGGER.fine("Validating changelog.md file.");
-        final String changelogContent = "[" + version + "](changes_" + version + ".md)";
-        if (!changelog.contains(changelogContent)) {
-            throw new IllegalStateException(
-                    "changelog.md file doesn't contain the following link, please add it to the file: "
-                            + changelogContent);
-        }
-    }
-
-    protected void validateChanges(final String changes, final String version) {
-        final String changesName = "changes_" + version + ".md";
-        LOGGER.fine("Validating " + changesName + " file.");
-        validateVersionInChanges(changes, version, changesName);
-        validateDateInChanges(changes, version);
-        validateMoreThanOneLine(changes);
-    }
-
-    private void validateMoreThanOneLine(final String changes) {
-        if (changes.indexOf('\n') == -1) {
-            throw new IllegalStateException(
-                    "The changes file contains 1 or less lines. Please, add the changes you made before the release.");
-        }
-    }
-
-    private void validateVersionInChanges(final String changes, final String version, final String changesName) {
-        if (!changes.contains(version)) {
-            throw new IllegalStateException(changesName
-                    + " file does not mention the current version. Please add a new entry for this version.");
-        }
-    }
-
-    private void validateDateInChanges(final String changes, final String version) {
-        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-        if (!changes.contains(dateToday)) {
-            throw new IllegalStateException("changes_" + version + ".md file doesn't contain release's date: "
-                    + dateToday + ". PLease, add or update the release date.");
-        }
-    }
-
-    protected void validateVersion(final String version, final Optional<String> latestReleaseTag) {
-        LOGGER.fine("Validating a release version.");
         if (latestReleaseTag.isPresent()) {
-            final Set<String> possibleVersions = getPossibleVersions(latestReleaseTag.get());
-            if (!possibleVersions.contains(version)) {
-                throw new IllegalStateException(
-                        "A new version doesn't fit the versioning rules. Possible versions for the release are: "
-                                + possibleVersions.toString());
-            }
+            validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get());
         } else {
-            final String[] versionParts = version.split("\\.");
-            if (versionParts.length != 3) {
-                throw new IllegalStateException(
-                        "The version has invalid format. The valid format is: <major>.<minor>.<fix>");
-            }
+            validateFirstNewVersion(newVersion);
+        }
+    }
+
+    private void validateVersionFormat(final String version) {
+        if (!version.matches(VERSION_REGEX)) {
+            throw new IllegalArgumentException("A version or tag found in this repository has invalid format. "
+                    + "The valid format is: <major>.<minor>.<fix>. "
+                    + "Please, refer to the user guide to check requirements.");
+        }
+    }
+
+    private void validateFirstNewVersion(final String newVersion) {
+        final Set<String> validFirstTag = Set.of("1.0.0", "0.1.0", "0.0.1");
+        if (!validFirstTag.contains(newVersion)) {
+            throw new IllegalArgumentException(
+                    "A new version has invalid format. Allowed first tags are: " + String.join(", ", validFirstTag));
+        }
+    }
+
+    private void validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
+        final Set<String> possibleVersions = getPossibleVersions(latestTag);
+        if (!possibleVersions.contains(newTag)) {
+            throw new IllegalArgumentException(
+                    "A new version does not fit the versioning rules. Possible versions for the release are: "
+                            + possibleVersions.toString());
         }
     }
 
@@ -115,5 +86,47 @@ public class GitRepositoryValidator {
         versions.add(major + "." + (minor + 1) + ".0");
         versions.add(major + "." + minor + "." + (fix + 1));
         return versions;
+    }
+
+    protected void validateChangelog(final String changelog, final String version) {
+        LOGGER.fine("Validating `changelog.md` file.");
+        final String changelogContent = "[" + version + "](changes_" + version + ".md)";
+        if (!changelog.contains(changelogContent)) {
+            throw new IllegalStateException(
+                    "changelog.md file doesn't contain the following link, please add it to the file: "
+                            + changelogContent);
+        }
+        LOGGER.fine("Validation of `changelog.md` file was successful.");
+    }
+
+    protected void validateChanges(final ReleaseChangesLetter changes, final String version) {
+        LOGGER.fine("Validating " + changes.getFileName() + " file.");
+        validateVersionInChanges(changes, version);
+        validateDateInChanges(changes);
+        validateHasBody(changes);
+    }
+
+    private void validateVersionInChanges(final ReleaseChangesLetter changes, final String version) {
+        final Optional<String> versionNumber = changes.getVersionNumber();
+        if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
+            throw new IllegalStateException(changes.getFileName()
+                    + " file does not mention the current version. Please, follow the changes file's format rules.");
+        }
+    }
+
+    private void validateDateInChanges(final ReleaseChangesLetter changes) {
+        final LocalDate dateToday = LocalDate.now();
+        final Optional<LocalDate> releaseDate = changes.getReleaseDate();
+        if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
+            throw new IllegalStateException(changes.getFileName() + " file doesn't contain release's date: "
+                    + dateToday.toString() + ". PLease, add or update the release date.");
+        }
+    }
+
+    private void validateHasBody(final ReleaseChangesLetter changes) {
+        if (changes.getBody().isEmpty()) {
+            throw new IllegalStateException("Cannot find the " + changes.getFileName()
+                    + " body. Please, make sure you added the changes you made to the file.");
+        }
     }
 }

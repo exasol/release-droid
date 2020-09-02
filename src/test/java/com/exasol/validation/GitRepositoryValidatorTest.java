@@ -4,17 +4,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
+
+import com.exasol.git.GitRepository;
+import com.exasol.git.ReleaseChangesLetter;
 
 class GitRepositoryValidatorTest {
-    private final GitRepositoryValidator validator = new GitRepositoryValidator(null);
+    private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);
+    private final GitRepositoryValidator validator = new GitRepositoryValidator(this.gitRepositoryMock);
 
     @Test
     void testValidateChangeLog() {
@@ -32,56 +37,84 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
-    void testValidateVersionWithoutPreviousTag() {
-        assertDoesNotThrow(() -> this.validator.validateVersion("1.0.0", Optional.empty()));
-    }
-
-    @Test
     void testValidateChangesValid() {
-        final String changes = "# Exasol Test Containers 2.1.0, released \n ## Features"
-                + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-        assertDoesNotThrow(() -> this.validator.validateChanges(changes, "2.1.0"));
+        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
+        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
+        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0"));
     }
 
     @Test
     void testValidateChangesInvalidDate() {
-        final String changes = "# Exasol Test Containers 2.1.0, released 2020-06-01 \n ## Features";
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changes, "2.1.0"));
+        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
+        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
+        when(changesMock.getFileName()).thenReturn("file");
+        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "2.1.0"));
     }
 
     @Test
     void testValidateChangesInvalidVersion() {
-        final String changes = "# Exasol Test Containers 2.1.0, released "
-                + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changes, "3.1.0"));
+        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
+        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
+        when(changesMock.getFileName()).thenReturn("file");
+        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "3.1.0"));
     }
 
     @Test
-    void testValidateChangesInvalidLength() {
-        final String changes = "# Exasol Test Containers 2.1.0, released "
-                + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changes, "2.1.0"));
+    void testValidateChangesMissingBody() {
+        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
+        when(changesMock.getBody()).thenReturn(Optional.empty());
+        when(changesMock.getFileName()).thenReturn("file");
+        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "2.1.0"));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "1.3.6", "1.4.0", "2.0.0" })
-    void testValidateVersionValid(final String version) {
-        assertDoesNotThrow(() -> this.validator.validateVersion(version, Optional.of("1.3.5")));
+    @ValueSource(strings = { "{${product.version}}", "v1.4.0", "2.0.0-1", "1.2", " " })
+    void testValidateInvalidVersionFormat(final String version) {
+        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> this.validator.validateNewVersion(version));
+        assertThat(exception.getMessage(),
+                containsString("A version or tag found in this repository has invalid format"));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "1.3.7", "1.3.4", "1.4.3", "v1.4.0", "1.2.0", "3.0.0", "2.0.1", "2.1.0", "1.4" })
-    void testValidateVersionInvalid(final String version) {
-        assertThrows(IllegalStateException.class, () -> this.validator.validateVersion(version, Optional.of("1.3.5")));
+    @ValueSource(strings = { "1.0.0", "0.1.0", "0.0.1" })
+    void testValidateVersionWithoutPreviousTag(final String version) {
+        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
+        assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
     }
 
-    @Test
-    void testValidateVersionNoPreviousReleaseTag() {
-        assertDoesNotThrow(() -> this.validator.validateVersion("1.2.3", Optional.empty()));
+    @ParameterizedTest
+    @ValueSource(strings = { "0.2.0", "0.0.6", "2.0.0" })
+    void testValidateVersionWithoutPreviousTagInvalid(final String version) {
+        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> this.validator.validateNewVersion(version));
+        assertThat(exception.getMessage(), containsString("A new version has invalid format"));
     }
 
-    @Test
-    void testValidateVersionNoPreviousReleaseTagThrowsException() {
-        assertThrows(IllegalStateException.class, () -> this.validator.validateVersion("1.2", Optional.empty()));
+    @ParameterizedTest
+    @ValueSource(strings = { "1.36.13", "1.37.0", "2.0.0" })
+    void testValidateVersionWithPreviousTag(final String version) {
+        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
+        assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "1.3.7", "1.3.4", "1.4.3", "1.2.0", "3.0.0", "2.0.1", "2.1.0" })
+    void testValidateVersionWithPreviousTagInvalid(final String version) {
+        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> this.validator.validateNewVersion(version));
+        assertThat(exception.getMessage(), containsString("A new version does not fit the versioning rules"));
+
     }
 }

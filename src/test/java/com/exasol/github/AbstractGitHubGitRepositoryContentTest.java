@@ -57,14 +57,16 @@ class AbstractGitHubGitRepositoryContentTest {
         final GHContent contentMock = Mockito.mock(GHContent.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
         final String branchName = "my_branch";
-        final String textContent = "Text content";
-        when(contentMock.getContent()).thenReturn(textContent);
+        when(contentMock.getContent()).thenReturn("");
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitRepositoryContent repository = new DummyGitHubRepository(ghRepositoryMock, branchName);
-        assertAll(() -> assertThat(repository.getChangesFile(repository.getVersion()), equalTo(textContent)),
-                () -> assertThat(repository.getChangesFile(repository.getVersion()), equalTo(textContent)),
+        assertAll(
+                () -> assertThat(repository.getReleaseChangesLetter(repository.getVersion()).getFileName(),
+                        equalTo("changes_1.0.0.md")),
+                () -> assertThat(repository.getReleaseChangesLetter(repository.getVersion()).getFileName(),
+                        equalTo("changes_1.0.0.md")),
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
     }
 

@@ -7,15 +7,16 @@ import java.util.Map;
 import org.kohsuke.github.*;
 
 import com.exasol.git.GitRepositoryContent;
+import com.exasol.git.ReleaseChangesLetter;
 
 /**
  * Contains common logic for GitHub-based repositories' content.
  */
 public abstract class AbstractGitHubGitRepositoryContent implements GitRepositoryContent {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
-    protected Map<String, String> filesCache = new HashMap<>();
     private final GHRepository repository;
     private final GHBranch branch;
+    private final Map<String, ReleaseChangesLetter> releaseChangesLetters = new HashMap<>();
 
     /**
      * Create a new instance of {@link AbstractGitHubGitRepositoryContent}.
@@ -55,19 +56,18 @@ public abstract class AbstractGitHubGitRepositoryContent implements GitRepositor
     }
 
     @Override
-    public final synchronized String getChangelogFile() {
-        if (!this.filesCache.containsKey(CHANGELOG_FILE_PATH)) {
-            this.filesCache.put(CHANGELOG_FILE_PATH, getSingleFileContentAsString(CHANGELOG_FILE_PATH));
-        }
-        return this.filesCache.get(CHANGELOG_FILE_PATH);
+    public final String getChangelogFile() {
+        return getSingleFileContentAsString(CHANGELOG_FILE_PATH);
     }
 
     @Override
-    public final synchronized String getChangesFile(final String version) {
-        final String changesFileName = "doc/changes/changes_" + version + ".md";
-        if (!this.filesCache.containsKey(changesFileName)) {
-            this.filesCache.put(changesFileName, getSingleFileContentAsString(changesFileName));
+    public final synchronized ReleaseChangesLetter getReleaseChangesLetter(final String version) {
+        if (!this.releaseChangesLetters.containsKey(version)) {
+            final String fileName = "changes_" + version + ".md";
+            final String filePath = "doc/changes/" + fileName;
+            final String fileContent = getSingleFileContentAsString(filePath);
+            this.releaseChangesLetters.put(version, new ReleaseChangesLetter(fileName, fileContent));
         }
-        return this.filesCache.get(changesFileName);
+        return this.releaseChangesLetters.get(version);
     }
 }

@@ -17,14 +17,15 @@ The following list contains the platforms on which the Release Robot can perform
 
 Your project must fulfil the criteria listed in this section &mdash; depending on a programming language you use and platforms you want to release on to make a release with the Release Robot.
 
-### Common Rules for All Projects
+### Common Rules for All Repositories
 
 * Currently, Release Robot only supports the GitHub-based projects. 
   So the first essential requirement: the project must be uploaded to the GitHub.
   
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
 
-* The project must have a valid release version consisting of three parts: `<major version>.<minor version>.<bug fix version>`
+* The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. 
+  The version can contain only digits and dots.
 
 #### Changes Log
 
@@ -57,8 +58,13 @@ project root/
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
-* The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory. 
+* The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory to upload release assets. 
 You can find examples [here](upload_release_asset_example.md).
+
+* A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header.
+
+* A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'.
+  All the mentioned on the file tickets must have a closed status on the GitHub.
 
 ## How to Use Release Robot
 
