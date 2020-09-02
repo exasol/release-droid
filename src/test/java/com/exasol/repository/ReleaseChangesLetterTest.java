@@ -1,4 +1,4 @@
-package com.exasol.git;
+package com.exasol.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

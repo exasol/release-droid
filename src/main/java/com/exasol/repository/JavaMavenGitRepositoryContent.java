@@ -1,4 +1,4 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,8 @@ import org.kohsuke.github.GHRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import com.exasol.github.GitHubException;
 
 /**
  * This class represents a Maven-based Java project's content.

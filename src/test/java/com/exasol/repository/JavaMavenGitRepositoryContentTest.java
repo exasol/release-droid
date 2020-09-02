@@ -1,4 +1,4 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.git.GitRepositoryContent;
+import com.exasol.github.GitHubException;
 
 class JavaMavenGitRepositoryContentTest {
     @ParameterizedTest

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.git.*;
+import com.exasol.repository.*;
 
 /**
  * Contains validations for a Git project.

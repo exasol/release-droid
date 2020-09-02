@@ -1,7 +1,11 @@
 package com.exasol.validation;
 
-import com.exasol.ReleasePlatform;
-import com.exasol.git.GitRepositoryContent;
+import static com.exasol.Platform.PlatformName.GITHUB;
+
+import com.exasol.Platform;
+import com.exasol.Platform.PlatformName;
+import com.exasol.github.GitHubPlatform;
+import com.exasol.repository.GitRepositoryContent;
 
 /**
  * Responsible for instantiation of {@link PlatformValidator}s.
@@ -12,19 +16,20 @@ public final class PlatformValidatorFactory {
     }
 
     /**
-     * Create a new instance of the {@link PlatformValidator} depending on the {@link ReleasePlatform}.
+     * Create a new instance of the {@link PlatformValidator} depending on the {@link PlatformName}.
      *
      * @param repositoryContent {@link GitRepositoryContent} with the project's content
-     * @param platform release platform
+     * @param platform release platform details
      * @return new instance of {@link PlatformValidator}
      */
-    public static PlatformValidator createProjectValidator(final GitRepositoryContent repositoryContent,
-            final ReleasePlatform platform) {
-        if (platform == ReleasePlatform.GITHUB) {
-            return new GitHubPlatformValidator(repositoryContent);
+    public static PlatformValidator createPlatformValidator(final GitRepositoryContent repositoryContent,
+            final Platform platform) {
+        final PlatformName releasePlatform = platform.getPlatformName();
+        if (releasePlatform == GITHUB) {
+            return new GitHubPlatformValidator(repositoryContent, (GitHubPlatform) platform);
         } else {
-            throw new IllegalArgumentException(
-                    "Validation for release platform " + platform + " is not supported. Please choose one of: github");
+            throw new UnsupportedOperationException("Validation for release platform " + releasePlatform
+                    + " is not supported. Please choose one of: github");
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.exasol.git;
+package com.exasol.repository;
 
 import java.util.Optional;
 
@@ -20,14 +20,6 @@ public interface GitRepository {
      * @return name of the default branch
      */
     public String getDefaultBranchName();
-
-    /**
-     * Create a new release tag on the latest commit of the current branch.
-     *
-     * @param tag tag to release
-     * @param releaseLetter release letter
-     */
-    public void release(String tag, String releaseLetter);
 
     /**
      * Get a new instance of {@link GitRepositoryContent} based on a user-specified branch.

@@ -1,24 +1,28 @@
 package com.exasol.validation;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.git.GitRepositoryContent;
-import com.exasol.git.ReleaseChangesLetter;
+import com.exasol.github.GitHubPlatform;
+import com.exasol.repository.GitRepositoryContent;
+import com.exasol.repository.ReleaseChangesLetter;
 
 /**
- * This class checks if the GitHub project repository is ready for a release.
+ * This class checks if the project is ready for a release on GitHub.
  */
 public class GitHubPlatformValidator implements PlatformValidator {
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
+    private final GitHubPlatform gitHubPlatform;
     private final GitRepositoryContent repositoryContent;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
      * @param repositoryContent content of a repository to validate
+     * @param gitHubPlatform instance of {@link GitHubPlatform}
      */
-    public GitHubPlatformValidator(final GitRepositoryContent repositoryContent) {
+    public GitHubPlatformValidator(final GitRepositoryContent repositoryContent, final GitHubPlatform gitHubPlatform) {
+        this.gitHubPlatform = gitHubPlatform;
         this.repositoryContent = repositoryContent;
     }
 
@@ -45,6 +49,23 @@ public class GitHubPlatformValidator implements PlatformValidator {
     }
 
     private void validateGitHubTickets(final ReleaseChangesLetter changesFile) {
+        final List<String> wrongTickets = collectWrongTickets(changesFile);
+        if (!wrongTickets.isEmpty()) {
+            throw new IllegalStateException("Some of the mentioned GitHub issues are not closed or do not exists: "
+                    + String.join(", ", wrongTickets) + ", Please, check the issues numbers in your '"
+                    + changesFile.getFileName() + "' one more time.");
+        }
+    }
 
+    private List<String> collectWrongTickets(final ReleaseChangesLetter changesFile) {
+        final Set<Integer> closedTickets = this.gitHubPlatform.getClosedTickets();
+        final List<Integer> mentionedTickets = changesFile.getTicketNumbers();
+        final List<String> wrongTickets = new ArrayList<>();
+        for (final Integer ticket : mentionedTickets) {
+            if (!closedTickets.contains(ticket)) {
+                wrongTickets.add(String.valueOf(ticket));
+            }
+        }
+        return wrongTickets;
     }
 }

@@ -1,4 +1,4 @@
-package com.exasol.git;
+package com.exasol.repository;
 
 import static com.exasol.ReleaseRobotConstants.*;
 

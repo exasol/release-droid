@@ -14,8 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import com.exasol.git.GitRepository;
-import com.exasol.git.ReleaseChangesLetter;
+import com.exasol.repository.GitRepository;
+import com.exasol.repository.ReleaseChangesLetter;
 
 class GitRepositoryValidatorTest {
     private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);

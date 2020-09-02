@@ -1,4 +1,4 @@
-package com.exasol.git;
+package com.exasol.repository;
 
 /**
  * This class represents Git repository content based on the latest commit of the user-specified branch.

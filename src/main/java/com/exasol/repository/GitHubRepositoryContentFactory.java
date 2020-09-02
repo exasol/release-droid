@@ -1,8 +1,6 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import org.kohsuke.github.GHRepository;
-
-import com.exasol.git.GitRepositoryContent;
 
 /**
  * This class instantiates a {@link GitRepositoryContent} corresponding to the GitHub project's layout.

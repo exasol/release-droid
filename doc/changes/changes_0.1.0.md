@@ -15,7 +15,7 @@ Code name: GitHub validation and release support
 * Added `org.kohsuke:github-api:1.116`
 * Added `commons-cli:commons-cli:1.4`
 * Added `org.json:json:20200518`
-* Added `org.mockito:mockito-core:3.5.7`
+* Added `org.mockito:mockito-core:3.5.9`
 * Added `org.junit.jupiter:junit-jupiter:5.6.2`
 * Added `org.hamcrest:hamcrest:2.2`
 * Added `org.apache.maven.plugins:maven-compiler-plugin:3.8.1`

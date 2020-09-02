@@ -1,4 +1,4 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,8 +6,7 @@ import java.util.Map;
 
 import org.kohsuke.github.*;
 
-import com.exasol.git.GitRepositoryContent;
-import com.exasol.git.ReleaseChangesLetter;
+import com.exasol.github.GitHubException;
 
 /**
  * Contains common logic for GitHub-based repositories' content.
