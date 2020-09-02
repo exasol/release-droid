@@ -39,7 +39,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         validateGitHubTickets(changes);
     }
 
-    private void validateContainsHeader(final ReleaseChangesLetter changes) {
+    protected void validateContainsHeader(final ReleaseChangesLetter changes) {
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
             throw new IllegalStateException("The " + changes.getFileName()
@@ -48,7 +48,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         }
     }
 
-    private void validateGitHubTickets(final ReleaseChangesLetter changesFile) {
+    protected void validateGitHubTickets(final ReleaseChangesLetter changesFile) {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {
             throw new IllegalStateException("Some of the mentioned GitHub issues are not closed or do not exists: "

@@ -27,7 +27,7 @@ class ReleaseChangesLetterTest {
 
     @Test
     void testCreateNewReleaseChangesLetterEmpty() {
-        final String content = "";
+        final String content = "short content";
         final ReleaseChangesLetter letter = new ReleaseChangesLetter("name", content);
         assertAll(() -> assertThat(letter.getFileName(), equalTo("name")),
                 () -> assertThat(letter.getVersionNumber().isEmpty(), equalTo(true)),

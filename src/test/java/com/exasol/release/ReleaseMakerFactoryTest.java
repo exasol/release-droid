@@ -2,6 +2,7 @@ package com.exasol.release;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -16,5 +17,12 @@ class ReleaseMakerFactoryTest {
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(PlatformName.GITHUB);
         assertThat(ReleaseMakerFactory.createReleaseMaker(null, platform), instanceOf(GitHubReleaseMaker.class));
+    }
+
+    @Test
+    void testCreateReleaseMakerUnsupported() {
+        final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
+        when(platform.getPlatformName()).thenReturn(PlatformName.MAVEN);
+        assertThrows(UnsupportedOperationException.class, () -> ReleaseMakerFactory.createReleaseMaker(null, platform));
     }
 }

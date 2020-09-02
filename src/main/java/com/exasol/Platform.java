@@ -18,7 +18,7 @@ public interface Platform {
      * This class contains supported release platforms.
      */
     public enum PlatformName {
-        GITHUB;
+        GITHUB, MAVEN;
 
         /**
          * Create a set of {@link PlatformName}s from Strings.
