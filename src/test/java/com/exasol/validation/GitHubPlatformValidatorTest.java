@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.exasol.github.GitHubPlatform;
-import com.exasol.repository.ReleaseChangesLetter;
+import com.exasol.repository.ReleaseLetter;
 
 class GitHubPlatformValidatorTest {
     @Test
     void testValidateContainsHeader() {
-        final ReleaseChangesLetter changesLetter = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         assertDoesNotThrow(() -> validator.validateContainsHeader(changesLetter));
@@ -25,7 +25,7 @@ class GitHubPlatformValidatorTest {
 
     @Test
     void testValidateDoesNotContainHeader() {
-        final ReleaseChangesLetter changesLetter = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -36,7 +36,7 @@ class GitHubPlatformValidatorTest {
     @Test
     void testValidateGitHubTickets() {
         final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
-        final ReleaseChangesLetter changesLetter = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(platformMock.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock);
@@ -46,7 +46,7 @@ class GitHubPlatformValidatorTest {
     @Test
     void testValidateGitHubTicketsInvalidTickets() {
         final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
-        final ReleaseChangesLetter changesLetter = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(platformMock.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock);

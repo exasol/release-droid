@@ -4,14 +4,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.kohsuke.github.GHRelease;
-import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
 import com.exasol.github.GitHubException;
@@ -56,8 +56,16 @@ class GitHubGitRepositoryTest {
 
     @Test
     void testGetRepositoryContent() throws IOException {
+        final String pom = "<project><version>1.0.0</version></project>";
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
+        final GHContent contentMock = Mockito.mock(GHContent.class);
+        final GHBranch branchMock = Mockito.mock(GHBranch.class);
+        final String branchName = "dev";
+        when(branchMock.getName()).thenReturn(branchName);
+        when(contentMock.getContent()).thenReturn(pom);
+        when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
+        when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThat(repository.getRepositoryContent("dev"), instanceOf(JavaMavenGitRepositoryContent.class));
+        assertThat(repository.getRepositoryContent(branchName), instanceOf(JavaMavenGitRepositoryContent.class));
     }
 }

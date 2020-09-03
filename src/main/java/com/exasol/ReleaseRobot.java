@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.Platform.PlatformName;
-import com.exasol.github.GitHubFactory;
+import com.exasol.github.GitHubEntityFactory;
 import com.exasol.repository.GitRepository;
 
 /**
@@ -37,9 +37,10 @@ public class ReleaseRobot {
         LOGGER.fine(() -> "Release Robot has received '" + this.goal + "' request for the project "
                 + this.repositoryName + ".");
         try {
-            final GitHubFactory gitHubFactory = new GitHubFactory(this.repositoryOwner, this.repositoryName);
-            final GitRepository repository = gitHubFactory.createGitHubGitRepository();
-            final Set<Platform> platforms = createPlatforms(gitHubFactory);
+            final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(this.repositoryOwner,
+                    this.repositoryName);
+            final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
+            final Set<Platform> platforms = createPlatforms(gitHubEntityFactory);
             final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platforms);
             if (this.goal == Goal.VALIDATE) {
                 runValidation(repositoryHandler);
@@ -51,11 +52,11 @@ public class ReleaseRobot {
         }
     }
 
-    private Set<Platform> createPlatforms(final GitHubFactory gitHubFactory) {
+    private Set<Platform> createPlatforms(final GitHubEntityFactory gitHubEntityFactory) {
         final Set<Platform> platforms = new HashSet<>();
         for (final PlatformName name : this.platformNames) {
             if (name == GITHUB) {
-                final Platform gitHubPlatform = gitHubFactory.createGitHubPlatform();
+                final Platform gitHubPlatform = gitHubEntityFactory.createGitHubPlatform();
                 platforms.add(gitHubPlatform);
             }
         }
@@ -80,7 +81,7 @@ public class ReleaseRobot {
     }
 
     /**
-     * Get a {@link ReleaseRobot} builder
+     * Get a {@link ReleaseRobot} builder.
      *
      * @return builder instance
      */
@@ -89,7 +90,7 @@ public class ReleaseRobot {
     }
 
     /**
-     * Builder for {@link ReleaseRobot}
+     * Builder for {@link ReleaseRobot}.
      */
     public static final class Builder {
         private String gitBranch;

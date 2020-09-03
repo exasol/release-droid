@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.GitRepositoryContent;
-import com.exasol.repository.ReleaseChangesLetter;
+import com.exasol.repository.ReleaseLetter;
 
 /**
  * This class responds for releases on GitHub
@@ -29,9 +29,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     public void makeRelease() {
         LOGGER.fine("Releasing on GitHub.");
         final String version = this.content.getVersion();
-        final ReleaseChangesLetter changes = this.content.getReleaseChangesLetter(version);
-        final String body = changes.getBody().orElse("");
-        final String header = changes.getHeader().orElse(version);
+        final ReleaseLetter releaseLetter = this.content.getReleaseLetter(version);
+        final String body = releaseLetter.getBody().orElse("");
+        final String header = releaseLetter.getHeader().orElse(version);
         this.gitHubPlatform.release(version, header, body);
     }
 }

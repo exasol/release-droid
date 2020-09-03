@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
-class ReleaseChangesLetterTest {
+class ReleaseLetterParserTest {
     @Test
     void testCreateNewReleaseChangesLetter() {
         final String content = "# Exasol Release Robot 0.1.0, released 2020-08-20 \n"
@@ -16,7 +16,7 @@ class ReleaseChangesLetterTest {
                 + "## Features \n" //
                 + "#3: Added initial implementation og GitHub Release. \n"
                 + "#10: Added support for validation on a user-specified git branch. \n";
-        final ReleaseChangesLetter letter = new ReleaseChangesLetter("name", content);
+        final ReleaseLetter letter = ReleaseLetterParser.parseReleaseLetterContent("name", content);
         assertAll(() -> assertThat(letter.getFileName(), equalTo("name")),
                 () -> assertThat(letter.getVersionNumber().get(), equalTo("0.1.0")),
                 () -> assertThat(letter.getHeader().get(), equalTo("GitHub validation and release support")),
@@ -28,7 +28,7 @@ class ReleaseChangesLetterTest {
     @Test
     void testCreateNewReleaseChangesLetterEmpty() {
         final String content = "short content";
-        final ReleaseChangesLetter letter = new ReleaseChangesLetter("name", content);
+        final ReleaseLetter letter = ReleaseLetterParser.parseReleaseLetterContent("name", content);
         assertAll(() -> assertThat(letter.getFileName(), equalTo("name")),
                 () -> assertThat(letter.getVersionNumber().isEmpty(), equalTo(true)),
                 () -> assertThat(letter.getHeader().isEmpty(), equalTo(true)),

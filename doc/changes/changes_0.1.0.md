@@ -6,6 +6,9 @@ Code name: GitHub validation and release support
 
 #3: Added initial implementation og GitHub Release.
 #10: Added support for validation on a user-specified git branch.
+#11: Added validation for GitHub issues.
+#15: Improves GitHub release letter parsing.
+#16: Improved validation and release process for GitHub.
 
 ## Dependency updates
 

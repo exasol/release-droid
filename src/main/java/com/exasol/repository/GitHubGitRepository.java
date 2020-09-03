@@ -28,10 +28,10 @@ public class GitHubGitRepository implements GitRepository {
     public Optional<String> getLatestTag() {
         try {
             final GHRelease release = this.repository.getLatestRelease();
-            return release == null ? Optional.empty() : Optional.of(release.getTagName());
+            return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
-            throw new GitHubException("GitHub connection problem happened during retrieving the latest release. "
-                    + "Please, try again later.", exception);
+            throw new GitHubException("GitHub connection problem happened during retrieving the latest release.",
+                    exception);
         }
     }
 

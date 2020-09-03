@@ -15,7 +15,7 @@ public abstract class AbstractGitHubGitRepositoryContent implements GitRepositor
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     private final GHRepository repository;
     private final GHBranch branch;
-    private final Map<String, ReleaseChangesLetter> releaseChangesLetters = new HashMap<>();
+    private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
 
     /**
      * Create a new instance of {@link AbstractGitHubGitRepositoryContent}.
@@ -60,13 +60,13 @@ public abstract class AbstractGitHubGitRepositoryContent implements GitRepositor
     }
 
     @Override
-    public final synchronized ReleaseChangesLetter getReleaseChangesLetter(final String version) {
-        if (!this.releaseChangesLetters.containsKey(version)) {
+    public final synchronized ReleaseLetter getReleaseLetter(final String version) {
+        if (!this.releaseLetters.containsKey(version)) {
             final String fileName = "changes_" + version + ".md";
             final String filePath = "doc/changes/" + fileName;
             final String fileContent = getSingleFileContentAsString(filePath);
-            this.releaseChangesLetters.put(version, new ReleaseChangesLetter(fileName, fileContent));
+            this.releaseLetters.put(version, ReleaseLetterParser.parseReleaseLetterContent(fileName, fileContent));
         }
-        return this.releaseChangesLetters.get(version);
+        return this.releaseLetters.get(version);
     }
 }

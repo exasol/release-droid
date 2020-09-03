@@ -12,12 +12,12 @@ public interface GitRepositoryContent {
     public String getChangelogFile();
 
     /**
-     * Get a changes file in a formst of the {@link ReleaseChangesLetter}.
+     * Get a changes file as an instance of {@link ReleaseLetter}.
      *
      * @param version version as a string
      * @return release changes file
      */
-    public ReleaseChangesLetter getReleaseChangesLetter(String version);
+    public ReleaseLetter getReleaseLetter(String version);
 
     /**
      * Get a current project version.

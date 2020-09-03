@@ -1,11 +1,11 @@
 package com.exasol.github;
 
-import static com.exasol.ReleaseRobotConstants.GITHUB_API_ENTRY_URL;
-
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.kohsuke.github.*;
@@ -16,6 +16,7 @@ import com.exasol.AbstractPlatform;
  * This class controls GitHub platform.
  */
 public class GitHubPlatform extends AbstractPlatform {
+    public static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
     private final GHRepository repository;
     private final GitHubUser gitHubUser;
 
@@ -24,7 +25,7 @@ public class GitHubPlatform extends AbstractPlatform {
      * 
      * @param platformName name of the platform
      * @param repository instance of {@link GHRepository}
-     * @param gitHubUser github user
+     * @param gitHubUser GitHub user
      */
     public GitHubPlatform(final PlatformName platformName, final GHRepository repository, final GitHubUser gitHubUser) {
         super(platformName);
@@ -95,11 +96,7 @@ public class GitHubPlatform extends AbstractPlatform {
     public Set<Integer> getClosedTickets() {
         try {
             final List<GHIssue> closedIssues = this.repository.getIssues(GHIssueState.CLOSED);
-            final Set<Integer> closedIssuesNumbers = new HashSet<>();
-            for (final GHIssue issue : closedIssues) {
-                closedIssuesNumbers.add(issue.getNumber());
-            }
-            return closedIssuesNumbers;
+            return closedIssues.stream().map(GHIssue::getNumber).collect(Collectors.toSet());
         } catch (final IOException exception) {
             throw new GitHubException("Unable to retrieve a list of closed tickets. PLease, try again later.",
                     exception);

@@ -27,13 +27,13 @@ class RepositoryHandlerTest {
         when(repositoryMock.getLatestTag()).thenReturn(Optional.of("0.5.1"));
         when(contentMock.getVersion()).thenReturn("1.0.0");
         when(contentMock.getChangelogFile()).thenReturn("[1.0.0](changes_1.0.0.md)");
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("1.0.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getHeader()).thenReturn(Optional.of("Test header"));
         when(changesMock.getFileName()).thenReturn("file");
-        when(contentMock.getReleaseChangesLetter(contentMock.getVersion())).thenReturn(changesMock);
+        when(contentMock.getReleaseLetter(contentMock.getVersion())).thenReturn(changesMock);
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
         assertDoesNotThrow(() -> projectHandler.validate());
     }
@@ -47,9 +47,9 @@ class RepositoryHandlerTest {
         when(repositoryMock.getRepositoryContent(anyString())).thenReturn(contentMock);
         when(repositoryMock.getDefaultBranchName()).thenReturn("master");
         when(contentMock.getVersion()).thenReturn("1.0.0");
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
-        when(contentMock.getReleaseChangesLetter("1.0.0")).thenReturn(changesMock);
+        when(contentMock.getReleaseLetter("1.0.0")).thenReturn(changesMock);
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
         assertDoesNotThrow(projectHandler::release);
     }

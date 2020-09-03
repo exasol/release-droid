@@ -39,7 +39,7 @@ project root/
             '-- changes_<version>.md
 ```
 
-* The user must create a new `changes_<version>.md` file for each new release. The `changes_<version>.md` must contain:
+* The user must create a new [`changes_<version>.md` file](changes_file_template.md) for each new release. The `changes_<version>.md` must contain:
 
     1. Header in the following format: `# <Project name> <version>, released yyyy-mm-dd`
     
@@ -59,9 +59,10 @@ project root/
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory to upload release assets. 
-You can find examples [here](upload_release_asset_example.md).
+You can check an [examples](upload_release_asset_example.md).
 
-* A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header.
+* A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. 
+ This line should appear between the file's header and the first section describing the changes.
 
 * A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'.
   All the mentioned on the file tickets must have a closed status on the GitHub.

@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import com.exasol.repository.GitRepository;
-import com.exasol.repository.ReleaseChangesLetter;
+import com.exasol.repository.ReleaseLetter;
 
 class GitRepositoryValidatorTest {
     private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);
@@ -38,7 +38,7 @@ class GitRepositoryValidatorTest {
 
     @Test
     void testValidateChangesValid() {
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
@@ -47,7 +47,7 @@ class GitRepositoryValidatorTest {
 
     @Test
     void testValidateChangesInvalidDate() {
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
@@ -57,7 +57,7 @@ class GitRepositoryValidatorTest {
 
     @Test
     void testValidateChangesInvalidVersion() {
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
@@ -67,7 +67,7 @@ class GitRepositoryValidatorTest {
 
     @Test
     void testValidateChangesMissingBody() {
-        final ReleaseChangesLetter changesMock = Mockito.mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.empty());

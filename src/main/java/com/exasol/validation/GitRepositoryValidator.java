@@ -36,7 +36,7 @@ public class GitRepositoryValidator {
         validateNewVersion(version);
         final String changelog = content.getChangelogFile();
         validateChangelog(changelog, version);
-        final ReleaseChangesLetter changes = content.getReleaseChangesLetter(version);
+        final ReleaseLetter changes = content.getReleaseLetter(version);
         validateChanges(changes, version);
     }
 
@@ -99,14 +99,14 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validation of `changelog.md` file was successful.");
     }
 
-    protected void validateChanges(final ReleaseChangesLetter changes, final String version) {
+    protected void validateChanges(final ReleaseLetter changes, final String version) {
         LOGGER.fine("Validating " + changes.getFileName() + " file.");
         validateVersionInChanges(changes, version);
         validateDateInChanges(changes);
         validateHasBody(changes);
     }
 
-    private void validateVersionInChanges(final ReleaseChangesLetter changes, final String version) {
+    private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
             throw new IllegalStateException(changes.getFileName()
@@ -114,7 +114,7 @@ public class GitRepositoryValidator {
         }
     }
 
-    private void validateDateInChanges(final ReleaseChangesLetter changes) {
+    private void validateDateInChanges(final ReleaseLetter changes) {
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
@@ -123,7 +123,7 @@ public class GitRepositoryValidator {
         }
     }
 
-    private void validateHasBody(final ReleaseChangesLetter changes) {
+    private void validateHasBody(final ReleaseLetter changes) {
         if (changes.getBody().isEmpty()) {
             throw new IllegalStateException("Cannot find the " + changes.getFileName()
                     + " body. Please, make sure you added the changes you made to the file.");

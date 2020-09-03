@@ -48,7 +48,6 @@ class JavaMavenGitRepositoryContentTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitRepositoryContent repository = new JavaMavenGitRepositoryContent(ghRepositoryMock, branchName);
-        assertThrows(GitHubException.class, repository::getVersion);
+        assertThrows(GitHubException.class, () -> new JavaMavenGitRepositoryContent(ghRepositoryMock, branchName));
     }
 }

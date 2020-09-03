@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.GitRepositoryContent;
-import com.exasol.repository.ReleaseChangesLetter;
+import com.exasol.repository.ReleaseLetter;
 
 class GitHubReleaseMakerTest {
     @Test
@@ -19,14 +19,14 @@ class GitHubReleaseMakerTest {
     void testMakeRelease() {
         final String version = "1.0.0";
         final GitRepositoryContent contentMock = Mockito.mock(GitRepositoryContent.class);
-        final ReleaseChangesLetter changesMock = mock(ReleaseChangesLetter.class);
+        final ReleaseLetter changesMock = mock(ReleaseLetter.class);
         final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(contentMock.getVersion()).thenReturn(version);
-        when(contentMock.getReleaseChangesLetter(version)).thenReturn(changesMock);
+        when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform);
         assertAll(() -> assertDoesNotThrow(releaseMaker::makeRelease),
-                () -> verify(contentMock, times(1)).getReleaseChangesLetter(version),
+                () -> verify(contentMock, times(1)).getReleaseLetter(version),
                 () -> verify(gitHubPlatform, times(1)).release(anyString(), anyString(), anyString()));
     }
 }

@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.GitRepositoryContent;
-import com.exasol.repository.ReleaseChangesLetter;
+import com.exasol.repository.ReleaseLetter;
 
 /**
  * This class checks if the project is ready for a release on GitHub.
@@ -30,16 +30,16 @@ public class GitHubPlatformValidator implements PlatformValidator {
     public void validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final String version = this.repositoryContent.getVersion();
-        final ReleaseChangesLetter changes = this.repositoryContent.getReleaseChangesLetter(version);
-        validateChangesFile(changes);
+        final ReleaseLetter releaseLetter = this.repositoryContent.getReleaseLetter(version);
+        validateChangesFile(releaseLetter);
     }
 
-    private void validateChangesFile(final ReleaseChangesLetter changes) {
-        validateContainsHeader(changes);
-        validateGitHubTickets(changes);
+    private void validateChangesFile(final ReleaseLetter releaseLetter) {
+        validateContainsHeader(releaseLetter);
+        validateGitHubTickets(releaseLetter);
     }
 
-    protected void validateContainsHeader(final ReleaseChangesLetter changes) {
+    protected void validateContainsHeader(final ReleaseLetter changes) {
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
             throw new IllegalStateException("The " + changes.getFileName()
@@ -48,7 +48,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         }
     }
 
-    protected void validateGitHubTickets(final ReleaseChangesLetter changesFile) {
+    protected void validateGitHubTickets(final ReleaseLetter changesFile) {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {
             throw new IllegalStateException("Some of the mentioned GitHub issues are not closed or do not exists: "
@@ -57,7 +57,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         }
     }
 
-    private List<String> collectWrongTickets(final ReleaseChangesLetter changesFile) {
+    private List<String> collectWrongTickets(final ReleaseLetter changesFile) {
         final Set<Integer> closedTickets = this.gitHubPlatform.getClosedTickets();
         final List<Integer> mentionedTickets = changesFile.getTicketNumbers();
         final List<String> wrongTickets = new ArrayList<>();
