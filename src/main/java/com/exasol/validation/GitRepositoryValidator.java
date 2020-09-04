@@ -44,11 +44,7 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validating a new version.");
         validateVersionFormat(newVersion);
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
-        if (latestReleaseTag.isPresent()) {
-            validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get());
-        } else {
-            validateFirstNewVersion(newVersion);
-        }
+        latestReleaseTag.ifPresent(s -> validateNewVersionWithPreviousTag(newVersion, s));
     }
 
     private void validateVersionFormat(final String version) {
@@ -56,14 +52,6 @@ public class GitRepositoryValidator {
             throw new IllegalArgumentException("A version or tag found in this repository has invalid format. "
                     + "The valid format is: <major>.<minor>.<fix>. "
                     + "Please, refer to the user guide to check requirements.");
-        }
-    }
-
-    private void validateFirstNewVersion(final String newVersion) {
-        final Set<String> validFirstTag = Set.of("1.0.0", "0.1.0", "0.0.1");
-        if (!validFirstTag.contains(newVersion)) {
-            throw new IllegalArgumentException(
-                    "A new version has invalid format. Allowed first tags are: " + String.join(", ", validFirstTag));
         }
     }
 

@@ -93,15 +93,6 @@ class GitRepositoryValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "0.2.0", "0.0.6", "2.0.0" })
-    void testValidateVersionWithoutPreviousTagInvalid(final String version) {
-        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.validator.validateNewVersion(version));
-        assertThat(exception.getMessage(), containsString("A new version has invalid format"));
-    }
-
-    @ParameterizedTest
     @ValueSource(strings = { "1.36.13", "1.37.0", "2.0.0" })
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
