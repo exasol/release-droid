@@ -35,7 +35,7 @@ public class ReleaseLetter {
     }
 
     /**
-     * Get a name of the changes file.
+     * Get the name of the changes file.
      * 
      * @return name of the changes file
      */
