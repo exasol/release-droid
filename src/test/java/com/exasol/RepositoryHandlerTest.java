@@ -19,7 +19,7 @@ class RepositoryHandlerTest {
     @Test
     void testValidate() {
         final GitHubGitRepository repositoryMock = Mockito.mock(GitHubGitRepository.class);
-        final GitRepositoryContent contentMock = Mockito.mock(GitRepositoryContent.class);
+        final GitBranchContent contentMock = Mockito.mock(GitBranchContent.class);
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(GITHUB);
         when(repositoryMock.getRepositoryContent(anyString())).thenReturn(contentMock);
@@ -41,7 +41,7 @@ class RepositoryHandlerTest {
     @Test
     void testRelease() {
         final GitHubGitRepository repositoryMock = Mockito.mock(GitHubGitRepository.class);
-        final GitRepositoryContent contentMock = Mockito.mock(GitRepositoryContent.class);
+        final GitBranchContent contentMock = Mockito.mock(GitBranchContent.class);
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(GITHUB);
         when(repositoryMock.getRepositoryContent(anyString())).thenReturn(contentMock);

@@ -21,7 +21,6 @@ public class ReleaseLetter {
         this.versionNumber = builder.versionNumber;
         this.releaseDate = builder.releaseDate;
         this.ticketNumbers = builder.ticketNumbers;
-
     }
 
     /**

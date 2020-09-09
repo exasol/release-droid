@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.exasol.github.GitHubPlatform;
-import com.exasol.repository.GitRepositoryContent;
+import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 
 class GitHubReleaseMakerTest {
@@ -18,7 +18,7 @@ class GitHubReleaseMakerTest {
     // The changes files must be checked on the validation stage. Here we throw no exception even if it's not valid
     void testMakeRelease() {
         final String version = "1.0.0";
-        final GitRepositoryContent contentMock = Mockito.mock(GitRepositoryContent.class);
+        final GitBranchContent contentMock = Mockito.mock(GitBranchContent.class);
         final ReleaseLetter changesMock = mock(ReleaseLetter.class);
         final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
         when(changesMock.getBody()).thenReturn(Optional.empty());

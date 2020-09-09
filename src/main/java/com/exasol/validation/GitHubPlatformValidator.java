@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.github.GitHubPlatform;
-import com.exasol.repository.GitRepositoryContent;
+import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 
 /**
@@ -13,7 +13,7 @@ import com.exasol.repository.ReleaseLetter;
 public class GitHubPlatformValidator implements PlatformValidator {
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GitHubPlatform gitHubPlatform;
-    private final GitRepositoryContent repositoryContent;
+    private final GitBranchContent repositoryContent;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
@@ -21,7 +21,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
      * @param repositoryContent content of a repository to validate
      * @param gitHubPlatform instance of {@link GitHubPlatform}
      */
-    public GitHubPlatformValidator(final GitRepositoryContent repositoryContent, final GitHubPlatform gitHubPlatform) {
+    public GitHubPlatformValidator(final GitBranchContent repositoryContent, final GitHubPlatform gitHubPlatform) {
         this.gitHubPlatform = gitHubPlatform;
         this.repositoryContent = repositoryContent;
     }

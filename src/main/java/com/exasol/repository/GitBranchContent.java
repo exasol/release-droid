@@ -3,7 +3,7 @@ package com.exasol.repository;
 /**
  * This class represents Git repository content based on the latest commit of the user-specified branch.
  */
-public interface GitRepositoryContent {
+public interface GitBranchContent {
     /**
      * Get a changelog file as a string.
      *

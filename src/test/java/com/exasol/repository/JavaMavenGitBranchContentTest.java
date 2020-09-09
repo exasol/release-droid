@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 
 import com.exasol.github.GitHubException;
 
-class JavaMavenGitRepositoryContentTest {
+class JavaMavenGitBranchContentTest {
     @ParameterizedTest
     @ValueSource(strings = { "<project><version>1.0.0</version></project>", //
             "<project>\n<version>\n1.0.0\n</version>\n</project>",
@@ -31,7 +31,7 @@ class JavaMavenGitRepositoryContentTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(contentMock.getContent()).thenReturn(pomFile);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitRepositoryContent repository = new JavaMavenGitRepositoryContent(ghRepositoryMock, branchName);
+        final GitBranchContent repository = new JavaMavenGitBranchContent(ghRepositoryMock, branchName);
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
@@ -48,6 +48,6 @@ class JavaMavenGitRepositoryContentTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(contentMock.getContent()).thenReturn(version);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        assertThrows(GitHubException.class, () -> new JavaMavenGitRepositoryContent(ghRepositoryMock, branchName));
+        assertThrows(GitHubException.class, () -> new JavaMavenGitBranchContent(ghRepositoryMock, branchName));
     }
 }

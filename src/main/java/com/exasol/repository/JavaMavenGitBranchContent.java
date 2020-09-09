@@ -16,7 +16,7 @@ import com.exasol.github.GitHubException;
 /**
  * This class represents a Maven-based Java project's content.
  */
-public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryContent {
+public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
     private final String version;
 
     /**
@@ -25,7 +25,7 @@ public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryCo
      * @param repository an instance of {@link GHRepository}
      * @param branch name of a branch to get content from
      */
-    protected JavaMavenGitRepositoryContent(final GHRepository repository, final String branch) {
+    protected JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
         super(repository, branch);
         this.version = getVersionFromPomFile();
     }

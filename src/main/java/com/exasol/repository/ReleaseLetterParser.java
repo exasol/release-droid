@@ -12,9 +12,22 @@ import com.exasol.repository.ReleaseLetter.Builder;
 
 public final class ReleaseLetterParser {
     public static final String TICKET_NUMBER_REGEX = "#[1-9]\\d*\\b";
+    private static ReleaseLetterParser instance;
 
     private ReleaseLetterParser() {
         // prevent instantiation
+    }
+
+    /**
+     * Gte an instance of {@link ReleaseLetterParser}.
+     * 
+     * @return instance of {@link ReleaseLetterParser}
+     */
+    public static ReleaseLetterParser getInstance() {
+        if (instance == null) {
+            instance = new ReleaseLetterParser();
+        }
+        return instance;
     }
 
     /**
@@ -23,7 +36,7 @@ public final class ReleaseLetterParser {
      * @param fileName name of the release letter file
      * @param content file's content as a string
      */
-    public static ReleaseLetter parseReleaseLetterContent(final String fileName, final String content) {
+    public ReleaseLetter parseReleaseLetterContent(final String fileName, final String content) {
         final Builder builder = ReleaseLetter.builder(fileName);
         if (content != null && content.length() > 1) {
             parseContent(builder, content);
@@ -31,7 +44,7 @@ public final class ReleaseLetterParser {
         return builder.build();
     }
 
-    private static void parseContent(final Builder builder, final String content) {
+    private void parseContent(final Builder builder, final String content) {
         final List<String> contentParts = divideContent(content);
         if (contentParts.size() == 2) {
             parseHeaders(builder, contentParts.get(0));
@@ -39,7 +52,7 @@ public final class ReleaseLetterParser {
         }
     }
 
-    private static List<String> divideContent(final String content) {
+    private List<String> divideContent(final String content) {
         final int divideIndex = content.indexOf("##");
         if (divideIndex != -1) {
             final String headersPart = content.substring(0, divideIndex);
@@ -50,42 +63,42 @@ public final class ReleaseLetterParser {
         }
     }
 
-    private static void parseHeaders(final Builder builder, final String content) {
+    private void parseHeaders(final Builder builder, final String content) {
         final String versionNUmber = parseVersionNumber(content);
         final LocalDate releaseDate = parseReleaseDate(content);
         final String header = parseHeader(content);
         builder.versionNumber(versionNUmber).releaseDate(releaseDate).header(header);
     }
 
-    private static void parseBody(final Builder builder, final String content) {
+    private void parseBody(final Builder builder, final String content) {
         final List<Integer> ticketNumbers = parseTicketNumbers(content);
         builder.body(content).ticketNumbers(ticketNumbers);
     }
 
-    private static String parseVersionNumber(final String content) {
+    private String parseVersionNumber(final String content) {
         final String firstLine = getFirstLine(content);
         final List<String> versionNumberList = getExpressionsByRegex(firstLine, VERSION_REGEX);
         return (!versionNumberList.isEmpty()) ? versionNumberList.get(0) : null;
     }
 
-    private static LocalDate parseReleaseDate(final String content) {
+    private LocalDate parseReleaseDate(final String content) {
         final String firstLine = getFirstLine(content);
         final List<String> releaseDateList = getExpressionsByRegex(firstLine, DATE_REGEX);
         return (!releaseDateList.isEmpty()) ? LocalDate.parse(releaseDateList.get(0)) : null;
     }
 
-    private static String getFirstLine(final String content) {
+    private String getFirstLine(final String content) {
         final int firstLineEnd = content.indexOf('\n');
         return firstLineEnd == -1 ? content : content.substring(0, firstLineEnd);
     }
 
-    private static String parseHeader(final String content) {
+    private String parseHeader(final String content) {
         final String targetTag = "code name:";
         final int startIndex = content.toLowerCase().indexOf(targetTag);
         return (startIndex != -1) ? content.substring(startIndex + targetTag.length()).strip() : null;
     }
 
-    private static List<String> getExpressionsByRegex(final String content, final String regex) {
+    private List<String> getExpressionsByRegex(final String content, final String regex) {
         final Pattern versionPattern = Pattern.compile(regex);
         final Matcher matcher = versionPattern.matcher(content);
         final List<String> found = new ArrayList<>();
@@ -95,7 +108,7 @@ public final class ReleaseLetterParser {
         return found;
     }
 
-    private static List<Integer> parseTicketNumbers(final String body) {
+    private List<Integer> parseTicketNumbers(final String body) {
         final List<String> hashtags = getExpressionsByRegex(body, TICKET_NUMBER_REGEX);
         final List<Integer> numbers = new ArrayList<>();
         for (final String hashtag : hashtags) {

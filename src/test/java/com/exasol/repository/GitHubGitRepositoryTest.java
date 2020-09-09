@@ -66,6 +66,6 @@ class GitHubGitRepositoryTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThat(repository.getRepositoryContent(branchName), instanceOf(JavaMavenGitRepositoryContent.class));
+        assertThat(repository.getRepositoryContent(branchName), instanceOf(JavaMavenGitBranchContent.class));
     }
 }

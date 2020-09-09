@@ -22,10 +22,10 @@ public interface GitRepository {
     public String getDefaultBranchName();
 
     /**
-     * Get a new instance of {@link GitRepositoryContent} based on a user-specified branch.
+     * Get a new instance of {@link GitBranchContent} based on a user-specified branch.
      *
      * @param branchName name of a branch to get content from
-     * @return new instance of {@link GitRepositoryContent}
+     * @return new instance of {@link GitBranchContent}
      */
-    public GitRepositoryContent getRepositoryContent(String branchName);
+    public GitBranchContent getRepositoryContent(String branchName);
 }

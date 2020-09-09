@@ -31,7 +31,7 @@ public class GitRepositoryValidator {
      */
     public void validate(final String branch) {
         LOGGER.fine("Validating Git repository.");
-        final GitRepositoryContent content = this.repository.getRepositoryContent(branch);
+        final GitBranchContent content = this.repository.getRepositoryContent(branch);
         final String version = content.getVersion();
         validateNewVersion(version);
         final String changelog = content.getChangelogFile();

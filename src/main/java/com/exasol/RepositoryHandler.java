@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import com.exasol.release.ReleaseMaker;
 import com.exasol.release.ReleaseMakerFactory;
 import com.exasol.repository.GitRepository;
-import com.exasol.repository.GitRepositoryContent;
+import com.exasol.repository.GitBranchContent;
 import com.exasol.validation.*;
 
 /**
@@ -48,7 +48,7 @@ public class RepositoryHandler {
     }
 
     private void validatePlatforms(final String branch) {
-        final GitRepositoryContent content = this.repository.getRepositoryContent(branch);
+        final GitBranchContent content = this.repository.getRepositoryContent(branch);
         for (final Platform platform : this.platforms) {
             final PlatformValidator platformValidator = PlatformValidatorFactory.createPlatformValidator(content,
                     platform);
@@ -62,7 +62,7 @@ public class RepositoryHandler {
      */
     public void release() {
         LOGGER.info(() -> "Release started.");
-        final GitRepositoryContent content = this.repository
+        final GitBranchContent content = this.repository
                 .getRepositoryContent(this.repository.getDefaultBranchName());
         for (final Platform platform : this.platforms) {
             final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(content, platform);

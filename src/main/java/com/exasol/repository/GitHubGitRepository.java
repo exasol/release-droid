@@ -13,7 +13,7 @@ import com.exasol.github.GitHubException;
  */
 public class GitHubGitRepository implements GitRepository {
     private final GHRepository repository;
-    private final Map<String, GitRepositoryContent> gitRepositoryContents = new HashMap<>();
+    private final Map<String, GitBranchContent> gitBranchContents = new HashMap<>();
 
     /**
      * Create a new instance of {@link GitHubGitRepository}.
@@ -41,12 +41,12 @@ public class GitHubGitRepository implements GitRepository {
     }
 
     @Override
-    public synchronized GitRepositoryContent getRepositoryContent(final String branchName) {
-        if (!this.gitRepositoryContents.containsKey(branchName)) {
-            final GitRepositoryContent gitHubRepositoryContent = GitHubRepositoryContentFactory.getInstance()
+    public synchronized GitBranchContent getRepositoryContent(final String branchName) {
+        if (!this.gitBranchContents.containsKey(branchName)) {
+            final GitBranchContent gitHubRepositoryContent = GitHubRepositoryContentFactory.getInstance()
                     .getGitHubRepositoryContent(this.repository, branchName);
-            this.gitRepositoryContents.put(branchName, gitHubRepositoryContent);
+            this.gitBranchContents.put(branchName, gitHubRepositoryContent);
         }
-        return this.gitRepositoryContents.get(branchName);
+        return this.gitBranchContents.get(branchName);
     }
 }
