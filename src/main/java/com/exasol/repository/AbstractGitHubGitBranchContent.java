@@ -65,8 +65,7 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
             final String fileName = "changes_" + version + ".md";
             final String filePath = "doc/changes/" + fileName;
             final String fileContent = getSingleFileContentAsString(filePath);
-            this.releaseLetters.put(version,
-                    ReleaseLetterParser.getInstance().parseReleaseLetterContent(fileName, fileContent));
+            this.releaseLetters.put(version, new ReleaseLetterParser(fileName, fileContent).parse());
         }
         return this.releaseLetters.get(version);
     }
