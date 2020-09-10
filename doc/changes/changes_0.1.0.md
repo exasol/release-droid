@@ -9,7 +9,7 @@ Code name: GitHub validation and release support
 #11: Added validation for GitHub issues.
 #15: Improved GitHub release letter parsing.
 #16: Improved validation and release process for GitHub.
-#21: Improved errors handling according to our new standards.
+#21: Improved error handling according to our new standards.
 #17: Documented GitHub authentication details.
 
 ## Dependency updates
