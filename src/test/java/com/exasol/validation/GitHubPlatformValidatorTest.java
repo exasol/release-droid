@@ -16,6 +16,7 @@ import com.exasol.repository.ReleaseLetter;
 
 class GitHubPlatformValidatorTest {
     @Test
+    // [utest->dsn~validate-release-letter~1]
     void testValidateContainsHeader() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
@@ -24,6 +25,7 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-release-letter~1]
     void testValidateDoesNotContainHeader() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
@@ -34,6 +36,8 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-github-issues-exists~1]
+    // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTickets() {
         final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
@@ -44,6 +48,8 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-github-issues-exists~1]
+    // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsInvalidTickets() {
         final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);

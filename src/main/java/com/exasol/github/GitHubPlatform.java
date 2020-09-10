@@ -53,6 +53,7 @@ public class GitHubPlatform extends AbstractPlatform {
         }
     }
 
+    // [impl->dsn~upload-github-release-assets~1]
     private void uploadAssets(final String version, final String uploadUrl) {
         final URI uri = getAssetsUploadUri();
         final JSONObject body = new JSONObject();
@@ -79,6 +80,7 @@ public class GitHubPlatform extends AbstractPlatform {
         }
     }
 
+    // [impl->dsn~users-add-to-their-project-yml-files-that-helps-upload-deliverables~1]
     private URI getAssetsUploadUri() {
         final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
                 + "/actions/workflows/upload_release_asset.yml/dispatches";

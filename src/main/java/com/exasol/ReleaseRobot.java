@@ -75,6 +75,7 @@ public class ReleaseRobot {
         return this.gitBranch == null || this.gitBranch.isEmpty();
     }
 
+    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     private void runRelease(final RepositoryHandler repositoryHandler) {
         repositoryHandler.validate();
         repositoryHandler.release();
@@ -105,6 +106,7 @@ public class ReleaseRobot {
          * @param gitBranch name of a branch to work with.
          * @return builder instance for fluent programming
          */
+        // [impl->dsn~users-can-set-git-branch-for-validation~1]
         public Builder gitBranch(final String gitBranch) {
             this.gitBranch = gitBranch;
             return this;
@@ -116,6 +118,7 @@ public class ReleaseRobot {
          * @param goal run goal. Supported goals: release, validate
          * @return builder instance for fluent programming
          */
+        // [impl->dsn~users-set-run-goal~1]
         public Builder goal(final String goal) {
             this.goal = Goal.getGoal(goal);
             return this;
@@ -127,6 +130,7 @@ public class ReleaseRobot {
          * @param platforms one or more platforms for validation or release. Supported values: github
          * @return builder instance for fluent programming
          */
+        // [impl->dsn~users-set-release-platforms~1]
         public Builder platforms(final String... platforms) {
             this.platforms = PlatformName.toSet(platforms);
             return this;
@@ -138,6 +142,7 @@ public class ReleaseRobot {
          * @param repositoryName name of a target project from GitHub
          * @return builder instance for fluent programming
          */
+        // [impl->dsn~users-set-project~1]
         public Builder repositoryName(final String repositoryName) {
             this.repositoryName = repositoryName;
             return this;

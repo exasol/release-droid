@@ -26,6 +26,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     }
 
     @Override
+    // [impl->dsn~create-new-github-release~1]
+    // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
+    // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
     public void makeRelease() {
         LOGGER.fine("Releasing on GitHub.");
         final String version = this.content.getVersion();

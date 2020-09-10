@@ -24,5 +24,6 @@ public interface GitBranchContent {
      *
      * @return version as a string
      */
+    // [impl->dsn~gr-provides-current-version~1]
     public String getVersion();
 }

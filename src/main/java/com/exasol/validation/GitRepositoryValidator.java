@@ -40,6 +40,7 @@ public class GitRepositoryValidator {
         validateChanges(changes, version);
     }
 
+    // [impl->dsn~validate-release-version~1]
     protected void validateNewVersion(final String newVersion) {
         LOGGER.fine("Validating a new version.");
         validateVersionFormat(newVersion);
@@ -79,6 +80,7 @@ public class GitRepositoryValidator {
         return versions;
     }
 
+    // [impl->dsn~validate-changelog~1]
     protected void validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating `changelog.md` file.");
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
@@ -90,6 +92,7 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validation of `changelog.md` file was successful.");
     }
 
+    // [impl->dsn~validate-changes-file~1]
     protected void validateChanges(final ReleaseLetter changes, final String version) {
         LOGGER.fine("Validating " + changes.getFileName() + " file.");
         validateVersionInChanges(changes, version);

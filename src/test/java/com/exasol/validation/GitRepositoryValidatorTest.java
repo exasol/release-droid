@@ -22,12 +22,14 @@ class GitRepositoryValidatorTest {
     private final GitRepositoryValidator validator = new GitRepositoryValidator(this.gitRepositoryMock);
 
     @Test
+    // [utest->dsn~validate-changelog~1]
     void testValidateChangeLog() {
         final String changelog = "[4.0.1](changes_4.0.1.md)";
         assertDoesNotThrow(() -> this.validator.validateChangelog(changelog, "4.0.1"));
     }
 
     @Test
+    // [utest->dsn~validate-changelog~1]
     void testValidateChangeLogThrowsException() {
         final String changelog = "";
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -37,6 +39,7 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-changes-file~1]
     void testValidateChangesValid() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
@@ -46,6 +49,7 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-changes-file~1]
     void testValidateChangesInvalidDate() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
@@ -56,6 +60,7 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-changes-file~1]
     void testValidateChangesInvalidVersion() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
@@ -66,6 +71,7 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-changes-file~1]
     void testValidateChangesMissingBody() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
@@ -77,6 +83,7 @@ class GitRepositoryValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "{${product.version}}", "v1.4.0", "2.0.0-1", "1.2", " " })
+    // [utest->dsn~validate-release-version~1]
     void testValidateInvalidVersionFormat(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -86,6 +93,7 @@ class GitRepositoryValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "1.0.0", "0.1.0", "0.0.1" })
+    // [utest->dsn~validate-release-version~1]
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
@@ -93,6 +101,7 @@ class GitRepositoryValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "1.36.13", "1.37.0", "2.0.0" })
+    // [utest->dsn~validate-release-version~1]
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
         assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
@@ -100,11 +109,11 @@ class GitRepositoryValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "1.3.7", "1.3.4", "1.4.3", "1.2.0", "3.0.0", "2.0.1", "2.1.0" })
+    // [utest->dsn~validate-release-version~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.validator.validateNewVersion(version));
         assertThat(exception.getMessage(), containsString("E-RR-VAL-4"));
-
     }
 }
