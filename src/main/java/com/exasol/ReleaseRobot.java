@@ -168,22 +168,22 @@ public class ReleaseRobot {
         private void validateGoalAndBranch() {
             if (this.goal == Goal.RELEASE && this.gitBranch != null) {
                 throw new IllegalStateException(
-                        "E-RRB-1: Please, remove branch parameter if you want to make a release.");
+                        "E-RR-1: Please, remove branch parameter if you want to make a release.");
             }
         }
 
         private void validateMandatoryParameters() {
             if (this.goal == null) {
-                throwExceptionForMissingParameter("E-RRB-2", "goal");
+                throwExceptionForMissingParameter("E-RR-2", "goal");
             }
             if (this.platforms == null || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("E-RRB-3", "platforms");
+                throwExceptionForMissingParameter("E-RR-3", "platforms");
             }
             if (this.repositoryName == null) {
-                throwExceptionForMissingParameter("E-RRB-4", "repository name");
+                throwExceptionForMissingParameter("E-RR-4", "repository name");
             }
             if (this.repositoryOwner == null) {
-                throwExceptionForMissingParameter("E-RRB-5", "repository owner");
+                throwExceptionForMissingParameter("E-RR-5", "repository owner");
             }
         }
 

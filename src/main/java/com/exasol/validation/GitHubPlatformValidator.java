@@ -42,7 +42,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
     protected void validateContainsHeader(final ReleaseLetter changes) {
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
-            throw new IllegalStateException("E-VAL-GHPV-1: The " + changes.getFileName()
+            throw new IllegalStateException("E-RR-VAL-1: The " + changes.getFileName()
                     + " file does not contain 'Code name' section which is used as a GitHub release header."
                     + " Please, add this section to the file");
         }
@@ -52,7 +52,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {
             throw new IllegalStateException(
-                    "E-VAL-GHPV-2: Some of the mentioned GitHub issues are not closed or do not exists: "
+                    "E-RR-VAL-2: Some of the mentioned GitHub issues are not closed or do not exists: "
                             + String.join(", ", wrongTickets) + ", Please, check the issues numbers in your '"
                             + changesFile.getFileName() + "' one more time.");
         }

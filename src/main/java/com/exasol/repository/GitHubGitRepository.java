@@ -31,7 +31,7 @@ public class GitHubGitRepository implements GitRepository {
             return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
             throw new GitHubException(
-                    "E-REP-GHGR-1: GitHub connection problem happened during retrieving the latest release.",
+                    "E-REP-GH-1: GitHub connection problem happened during retrieving the latest release.",
                     exception);
         }
     }

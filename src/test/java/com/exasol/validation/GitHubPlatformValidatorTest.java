@@ -30,7 +30,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateContainsHeader(changesLetter));
-        assertThat(exception.getMessage(), containsString("E-VAL-GHPV-1"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-1"));
     }
 
     @Test
@@ -52,6 +52,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateGitHubTickets(changesLetter));
-        assertThat(exception.getMessage(), containsString("E-VAL-GHPV-2"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-2"));
     }
 }

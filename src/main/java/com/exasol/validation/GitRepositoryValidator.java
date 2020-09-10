@@ -52,7 +52,7 @@ public class GitRepositoryValidator {
     private void validateVersionFormat(final String version) {
         if (!version.matches(VERSION_REGEX)) {
             throw new IllegalArgumentException(
-                    "E-VAL-GRV-1: A version or tag found in this repository has invalid format. "
+                    "E-RR-VAL-3: A version or tag found in this repository has invalid format. "
                             + "The valid format is: <major>.<minor>.<fix>. "
                             + "Please, refer to the user guide to check requirements.");
         }
@@ -62,7 +62,7 @@ public class GitRepositoryValidator {
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (!possibleVersions.contains(newTag)) {
             throw new IllegalArgumentException(
-                    "E-VAL-GRV-2: A new version does not fit the versioning rules. Possible versions for the release are: "
+                    "E-RR-VAL-4: A new version does not fit the versioning rules. Possible versions for the release are: "
                             + possibleVersions.toString());
         }
     }
@@ -84,7 +84,7 @@ public class GitRepositoryValidator {
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
             throw new IllegalStateException(
-                    "E-VAL-GRV-3: changelog.md file doesn't contain the following link, please add it to the file: "
+                    "E-RR-VAL-5: changelog.md file doesn't contain the following link, please add it to the file: "
                             + changelogContent);
         }
         LOGGER.fine("Validation of `changelog.md` file was successful.");
@@ -100,7 +100,7 @@ public class GitRepositoryValidator {
     private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            throw new IllegalStateException("E-VAL-GRV-4: " + changes.getFileName()
+            throw new IllegalStateException("E-RR-VAL-6: " + changes.getFileName()
                     + " file does not mention the current version. Please, follow the changes file's format rules.");
         }
     }
@@ -110,14 +110,14 @@ public class GitRepositoryValidator {
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
             throw new IllegalStateException(
-                    "E-VAL-GRV-5: " + changes.getFileName() + " file doesn't contain release's date: "
+                    "E-RR-VAL-7: " + changes.getFileName() + " file doesn't contain release's date: "
                             + dateToday.toString() + ". PLease, add or update the release date.");
         }
     }
 
     private void validateHasBody(final ReleaseLetter changes) {
         if (changes.getBody().isEmpty()) {
-            throw new IllegalStateException("E-VAL-GRV-6: Cannot find the " + changes.getFileName()
+            throw new IllegalStateException("E-RR-VAL-8: Cannot find the " + changes.getFileName()
                     + " body. Please, make sure you added the changes you made to the file.");
         }
     }

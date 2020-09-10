@@ -81,7 +81,7 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.validator.validateNewVersion(version));
-        assertThat(exception.getMessage(), containsString("E-VAL-GRV-1"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-3"));
     }
 
     @ParameterizedTest
@@ -104,7 +104,7 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.validator.validateNewVersion(version));
-        assertThat(exception.getMessage(), containsString("E-VAL-GRV-2"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-4"));
 
     }
 }
