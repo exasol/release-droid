@@ -32,9 +32,8 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
         try {
             return this.repository.getBranch(branch);
         } catch (final IOException exception) {
-            throw new GitHubException(
-                    "Cannot find a branch '" + branch + "'. Please check if you specified a correct branch.",
-                    exception);
+            throw new GitHubException("E-REP-GH-1: Cannot find a branch '" + branch
+                    + "'. Please check if you specified a correct branch.", exception);
         }
     }
 
@@ -49,8 +48,10 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
             final GHContent content = this.repository.getFileContent(filePath, this.branch.getName());
             return content.getContent();
         } catch (final IOException exception) {
-            throw new GitHubException("Cannot find or read the file '" + filePath + "' in the repository "
-                    + this.repository.getName() + ". Please add this file according to the User Guide.", exception);
+            throw new GitHubException(
+                    "E-REP-GH-2: Cannot find or read the file '" + filePath + "' in the repository "
+                            + this.repository.getName() + ". Please add this file according to the User Guide.",
+                    exception);
         }
     }
 

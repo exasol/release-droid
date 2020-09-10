@@ -48,7 +48,7 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
             final Element rootElement = parsedPom.getDocumentElement();
             return rootElement.getElementsByTagName("version").item(0).getTextContent().strip();
         } catch (final ParserConfigurationException | SAXException | IOException exception) {
-            throw new GitHubException("Cannot find a project version in pom.xml file. "
+            throw new GitHubException("E-REP-JMGR-1: Cannot find a project version in pom.xml file. "
                     + "Please, check that the pom.xml file contains <version></version> tag and the tag is not empty.",
                     exception);
         }

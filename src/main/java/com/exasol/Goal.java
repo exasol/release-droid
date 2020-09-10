@@ -24,7 +24,7 @@ public enum Goal {
             final List<String> allowedGoals = Arrays.stream(Goal.values()).map(goal -> goal.toString().toLowerCase())
                     .collect(Collectors.toList());
             throw new IllegalArgumentException(
-                    MessageFormat.format("Cannot parse a goal '{}'. Please, use one of the following goals: {}",
+                    MessageFormat.format("E-RR-G-1: Cannot parse a goal '{}'. Please, use one of the following goals: {}",
                             goalAsString, String.join(",", allowedGoals)),
                     exception);
         }

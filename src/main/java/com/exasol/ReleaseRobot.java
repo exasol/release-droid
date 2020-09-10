@@ -167,28 +167,30 @@ public class ReleaseRobot {
 
         private void validateGoalAndBranch() {
             if (this.goal == Goal.RELEASE && this.gitBranch != null) {
-                throw new IllegalStateException("Please, remove branch parameter if you want to make a release.");
+                throw new IllegalStateException(
+                        "E-RR-1: Please, remove branch parameter if you want to make a release.");
             }
         }
 
         private void validateMandatoryParameters() {
             if (this.goal == null) {
-                throwExceptionForMissingParameter("goal");
+                throwExceptionForMissingParameter("E-RR-2", "goal");
             }
             if (this.platforms == null || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("platforms");
+                throwExceptionForMissingParameter("E-RR-3", "platforms");
             }
             if (this.repositoryName == null) {
-                throwExceptionForMissingParameter("repository name");
+                throwExceptionForMissingParameter("E-RR-4", "repository name");
             }
             if (this.repositoryOwner == null) {
-                throwExceptionForMissingParameter("repository owner");
+                throwExceptionForMissingParameter("E-RR-5", "repository owner");
             }
         }
 
-        private void throwExceptionForMissingParameter(final String goal) {
-            throw new IllegalStateException(MessageFormat
-                    .format("Please, specify a mandatory parameter `{}` and re0run the Release Robot", goal));
+        private void throwExceptionForMissingParameter(final String exceptionCode, final String goal) {
+            throw new IllegalStateException(
+                    MessageFormat.format("{}: Please, specify a mandatory parameter `{}` and re0run the Release Robot",
+                            exceptionCode, goal));
         }
     }
 }

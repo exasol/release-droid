@@ -28,7 +28,7 @@ public final class PlatformValidatorFactory {
         if (releasePlatform == GITHUB) {
             return new GitHubPlatformValidator(repositoryContent, (GitHubPlatform) platform);
         } else {
-            throw new UnsupportedOperationException("Validation for release platform " + releasePlatform
+            throw new UnsupportedOperationException("E-RR-VAL-9: Validation for release platform " + releasePlatform
                     + " is not supported. Please choose one of: github");
         }
     }

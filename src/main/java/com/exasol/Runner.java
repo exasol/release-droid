@@ -49,7 +49,7 @@ public class Runner {
         } catch (final ParseException exception) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Release Robot", options);
-            throw new IllegalArgumentException(exception.getMessage());
+            throw new IllegalArgumentException("E-RR-RUN-1" + exception.getMessage());
         }
     }
 }

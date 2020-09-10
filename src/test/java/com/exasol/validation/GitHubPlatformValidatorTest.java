@@ -30,7 +30,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateContainsHeader(changesLetter));
-        assertThat(exception.getMessage(), containsString("file does not contain 'Code name' section"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-1"));
     }
 
     @Test
@@ -52,6 +52,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateGitHubTickets(changesLetter));
-        assertThat(exception.getMessage(), containsString("GitHub issues are not closed or do not exists: 5, 6"));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-2"));
     }
 }
