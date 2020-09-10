@@ -37,7 +37,7 @@ public final class CredentialsProvider {
      *
      * @return new instance of {@link GitHubUser}
      */
-    public GitHubUser provideGitHubCredentials() {
+    public GitHubUser provideGitHubUserWithCredentials() {
         final Map<String, String> credentials = getCredentials(GITHUB_USERNAME_KEY, GITHUB_TOKEN_KEY);
         final String username = credentials.get(GITHUB_USERNAME_KEY);
         final String token = credentials.get(GITHUB_TOKEN_KEY);

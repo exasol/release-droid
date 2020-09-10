@@ -3,55 +3,47 @@ package com.exasol.github;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
-import org.kohsuke.github.GHRelease;
-import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.*;
 
-import com.exasol.git.GitRepository;
-import com.exasol.git.GitRepositoryContent;
+import com.exasol.AbstractPlatform;
 
 /**
- * A GitHub-based repository.
+ * This class controls GitHub platform.
  */
-public class GitHubGitRepository implements GitRepository {
-    private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
+public class GitHubPlatform extends AbstractPlatform {
+    public static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
     private final GHRepository repository;
     private final GitHubUser gitHubUser;
 
     /**
-     * Create a new instance of {@link GitHubGitRepository}.
+     * Create a new instance of {@link GitHubPlatform}.
      * 
+     * @param platformName name of the platform
      * @param repository instance of {@link GHRepository}
-     * @param gitHubUser user that stores GitHub credentials
+     * @param gitHubUser GitHub user
      */
-    public GitHubGitRepository(final GHRepository repository, final GitHubUser gitHubUser) {
+    public GitHubPlatform(final PlatformName platformName, final GHRepository repository, final GitHubUser gitHubUser) {
+        super(platformName);
         this.repository = repository;
         this.gitHubUser = gitHubUser;
     }
 
-    @Override
-    public Optional<String> getLatestTag() {
+    /**
+     * Create a new GitHub release.
+     *
+     * @param version version to release
+     * @param releaseHeader header of the release
+     * @param releaseBody body of the release letter
+     */
+    public void release(final String version, final String releaseHeader, final String releaseBody) {
         try {
-            final GHRelease release = this.repository.getLatestRelease();
-            return release == null ? Optional.empty() : Optional.of(release.getTagName());
-        } catch (final IOException exception) {
-            throw new GitHubException("GitHub connection problem happened during retrieving the latest release. "
-                    + "Please, try again later.", exception);
-        }
-    }
-
-    @Override
-    public String getDefaultBranchName() {
-        return this.repository.getDefaultBranch();
-    }
-
-    @Override
-    public void release(final String version, final String releaseLetter) {
-        try {
-            final GHRelease release = this.repository.createRelease(version).draft(true).body(releaseLetter)
-                    .name(version).create();
+            final GHRelease release = this.repository.createRelease(version).draft(true).body(releaseBody)
+                    .name(releaseHeader).create();
             final String uploadUrl = release.getUploadUrl();
             uploadAssets(version, uploadUrl);
         } catch (final IOException exception) {
@@ -96,8 +88,18 @@ public class GitHubGitRepository implements GitRepository {
         }
     }
 
-    @Override
-    public GitRepositoryContent getRepositoryContent(final String branchName) {
-        return GitHubRepositoryContentFactory.getInstance().getGitHubRepositoryContent(this.repository, branchName);
+    /**
+     * Get a set of closed issues' numbers.
+     *
+     * @return set of closed issues' numbers
+     */
+    public Set<Integer> getClosedTickets() {
+        try {
+            final List<GHIssue> closedIssues = this.repository.getIssues(GHIssueState.CLOSED);
+            return closedIssues.stream().map(GHIssue::getNumber).collect(Collectors.toSet());
+        } catch (final IOException exception) {
+            throw new GitHubException("Unable to retrieve a list of closed tickets. PLease, try again later.",
+                    exception);
+        }
     }
 }

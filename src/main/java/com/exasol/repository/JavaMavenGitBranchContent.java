@@ -1,4 +1,4 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,27 +11,28 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.exasol.github.GitHubException;
+
 /**
  * This class represents a Maven-based Java project's content.
  */
-public class JavaMavenGitRepositoryContent extends AbstractGitHubGitRepositoryContent {
+public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
+    private final String version;
+
     /**
      * Create a new instance of {@link GitHubGitRepository}.
      *
      * @param repository an instance of {@link GHRepository}
      * @param branch name of a branch to get content from
      */
-    protected JavaMavenGitRepositoryContent(final GHRepository repository, final String branch) {
+    protected JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
         super(repository, branch);
+        this.version = getVersionFromPomFile();
     }
 
     @Override
-    public synchronized String getVersion() {
-        final String versionKey = "version";
-        if (!this.filesCache.containsKey(versionKey)) {
-            this.filesCache.put(versionKey, getVersionFromPomFile());
-        }
-        return this.filesCache.get(versionKey);
+    public String getVersion() {
+        return this.version;
     }
 
     private String getVersionFromPomFile() {

@@ -3,9 +3,10 @@ package com.exasol;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.exasol.git.GitRepository;
 import com.exasol.release.ReleaseMaker;
 import com.exasol.release.ReleaseMakerFactory;
+import com.exasol.repository.GitRepository;
+import com.exasol.repository.GitBranchContent;
 import com.exasol.validation.*;
 
 /**
@@ -13,18 +14,25 @@ import com.exasol.validation.*;
  */
 public class RepositoryHandler {
     private static final Logger LOGGER = Logger.getLogger(RepositoryHandler.class.getName());
-    private final Set<ReleasePlatform> platforms;
+    private final Set<Platform> platforms;
     private final GitRepository repository;
 
     /**
      * Create a new instance of {@link RepositoryHandler}.
-     * 
+     *
      * @param repository project's repository
-     * @param platforms one or more {@link ReleasePlatform}
+     * @param platforms set of platforms to work with
      */
-    public RepositoryHandler(final GitRepository repository, final Set<ReleasePlatform> platforms) {
+    public RepositoryHandler(final GitRepository repository, final Set<Platform> platforms) {
         this.repository = repository;
         this.platforms = platforms;
+    }
+
+    /**
+     * Validate if the git project is ready for a release on specified platforms.
+     */
+    public void validate() {
+        validate(this.repository.getDefaultBranchName());
     }
 
     /**
@@ -36,22 +44,13 @@ public class RepositoryHandler {
         LOGGER.info(() -> "Validation started.");
         final GitRepositoryValidator validator = new GitRepositoryValidator(this.repository);
         validator.validate(branch);
-        validatePlatforms();
+        validatePlatforms(branch);
     }
 
-    /**
-     * Validate if the git project is ready for a release on specified platforms.
-     */
-    public void validate() {
-        LOGGER.info(() -> "Validation started.");
-        final GitRepositoryValidator validator = new GitRepositoryValidator(this.repository);
-        validator.validate();
-        validatePlatforms();
-    }
-
-    private void validatePlatforms() {
-        for (final ReleasePlatform platform : this.platforms) {
-            final PlatformValidator platformValidator = PlatformValidatorFactory.createProjectValidator(this.repository,
+    private void validatePlatforms(final String branch) {
+        final GitBranchContent content = this.repository.getRepositoryContent(branch);
+        for (final Platform platform : this.platforms) {
+            final PlatformValidator platformValidator = PlatformValidatorFactory.createPlatformValidator(content,
                     platform);
             platformValidator.validate();
         }
@@ -63,8 +62,10 @@ public class RepositoryHandler {
      */
     public void release() {
         LOGGER.info(() -> "Release started.");
-        for (final ReleasePlatform platform : this.platforms) {
-            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(this.repository, platform);
+        final GitBranchContent content = this.repository
+                .getRepositoryContent(this.repository.getDefaultBranchName());
+        for (final Platform platform : this.platforms) {
+            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(content, platform);
             releaseMaker.makeRelease();
         }
         LOGGER.info(() -> "Release completed successfully.");

@@ -1,11 +1,15 @@
 package com.exasol;
 
+import static com.exasol.Platform.PlatformName.GITHUB;
+
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.exasol.git.GitRepository;
-import com.exasol.github.GitHubRepositoryFactory;
+import com.exasol.Platform.PlatformName;
+import com.exasol.github.GitHubEntityFactory;
+import com.exasol.repository.GitRepository;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
@@ -14,14 +18,14 @@ public class ReleaseRobot {
     private static final Logger LOGGER = Logger.getLogger(ReleaseRobot.class.getName());
     private final String gitBranch;
     private final Goal goal;
-    private final Set<ReleasePlatform> platforms;
+    private final Set<PlatformName> platformNames;
     private final String repositoryName;
     private final String repositoryOwner;
 
     private ReleaseRobot(final Builder builder) {
         this.gitBranch = builder.gitBranch;
         this.goal = builder.goal;
-        this.platforms = builder.platforms;
+        this.platformNames = builder.platforms;
         this.repositoryName = builder.repositoryName;
         this.repositoryOwner = builder.repositoryOwner;
     }
@@ -33,9 +37,11 @@ public class ReleaseRobot {
         LOGGER.fine(() -> "Release Robot has received '" + this.goal + "' request for the project "
                 + this.repositoryName + ".");
         try {
-            final GitRepository repository = GitHubRepositoryFactory.getInstance()
-                    .createGitHubGitRepository(this.repositoryOwner, this.repositoryName);
-            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, this.platforms);
+            final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(this.repositoryOwner,
+                    this.repositoryName);
+            final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
+            final Set<Platform> platforms = createPlatforms(gitHubEntityFactory);
+            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platforms);
             if (this.goal == Goal.VALIDATE) {
                 runValidation(repositoryHandler);
             } else {
@@ -44,6 +50,17 @@ public class ReleaseRobot {
         } catch (final RuntimeException exception) {
             LOGGER.severe(() -> "'" + this.goal + "' request failed. Cause: " + exception.getMessage());
         }
+    }
+
+    private Set<Platform> createPlatforms(final GitHubEntityFactory gitHubEntityFactory) {
+        final Set<Platform> platforms = new HashSet<>();
+        for (final PlatformName name : this.platformNames) {
+            if (name == GITHUB) {
+                final Platform gitHubPlatform = gitHubEntityFactory.createGitHubPlatform();
+                platforms.add(gitHubPlatform);
+            }
+        }
+        return platforms;
     }
 
     private void runValidation(final RepositoryHandler repositoryHandler) {
@@ -64,7 +81,7 @@ public class ReleaseRobot {
     }
 
     /**
-     * Get a {@link ReleaseRobot} builder
+     * Get a {@link ReleaseRobot} builder.
      *
      * @return builder instance
      */
@@ -73,12 +90,12 @@ public class ReleaseRobot {
     }
 
     /**
-     * Builder for {@link ReleaseRobot}
+     * Builder for {@link ReleaseRobot}.
      */
     public static final class Builder {
         private String gitBranch;
         private Goal goal;
-        private Set<ReleasePlatform> platforms;
+        private Set<PlatformName> platforms;
         private String repositoryName;
         private String repositoryOwner;
 
@@ -111,7 +128,7 @@ public class ReleaseRobot {
          * @return builder instance for fluent programming
          */
         public Builder platforms(final String... platforms) {
-            this.platforms = ReleasePlatform.toSet(platforms);
+            this.platforms = PlatformName.toSet(platforms);
             return this;
         }
 

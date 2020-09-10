@@ -2,33 +2,36 @@ package com.exasol.release;
 
 import java.util.logging.Logger;
 
-import com.exasol.git.GitRepository;
-import com.exasol.git.GitRepositoryContent;
-import com.exasol.github.GitHubGitRepository;
+import com.exasol.github.GitHubPlatform;
+import com.exasol.repository.GitBranchContent;
+import com.exasol.repository.ReleaseLetter;
 
 /**
  * This class responds for releases on GitHub
  */
 public class GitHubReleaseMaker implements ReleaseMaker {
     private static final Logger LOGGER = Logger.getLogger(GitHubReleaseMaker.class.getName());
-    private final GitRepository repository;
+    private final GitBranchContent content;
+    private final GitHubPlatform gitHubPlatform;
 
     /**
      * Create a new {@link GitHubReleaseMaker}.
-     * 
-     * @param repository an instance of {@link GitHubGitRepository}
+     *
+     * @param content repository content to release
+     * @param gitHubPlatform instance of {@link GitHubPlatform}
      */
-    public GitHubReleaseMaker(final GitRepository repository) {
-        this.repository = repository;
+    public GitHubReleaseMaker(final GitBranchContent content, final GitHubPlatform gitHubPlatform) {
+        this.content = content;
+        this.gitHubPlatform = gitHubPlatform;
     }
 
     @Override
     public void makeRelease() {
         LOGGER.fine("Releasing on GitHub.");
-        final GitRepositoryContent content = this.repository
-                .getRepositoryContent(this.repository.getDefaultBranchName());
-        final String version = content.getVersion();
-        final String changes = content.getChangesFile(version);
-        this.repository.release(version, changes);
+        final String version = this.content.getVersion();
+        final ReleaseLetter releaseLetter = this.content.getReleaseLetter(version);
+        final String body = releaseLetter.getBody().orElse("");
+        final String header = releaseLetter.getHeader().orElse(version);
+        this.gitHubPlatform.release(version, header, body);
     }
 }

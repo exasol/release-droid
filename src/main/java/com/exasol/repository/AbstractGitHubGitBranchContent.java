@@ -1,4 +1,4 @@
-package com.exasol.github;
+package com.exasol.repository;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,24 +6,24 @@ import java.util.Map;
 
 import org.kohsuke.github.*;
 
-import com.exasol.git.GitRepositoryContent;
+import com.exasol.github.GitHubException;
 
 /**
  * Contains common logic for GitHub-based repositories' content.
  */
-public abstract class AbstractGitHubGitRepositoryContent implements GitRepositoryContent {
+public abstract class AbstractGitHubGitBranchContent implements GitBranchContent {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
-    protected Map<String, String> filesCache = new HashMap<>();
     private final GHRepository repository;
     private final GHBranch branch;
+    private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
 
     /**
-     * Create a new instance of {@link AbstractGitHubGitRepositoryContent}.
+     * Create a new instance of {@link AbstractGitHubGitBranchContent}.
      *
      * @param repository an instance of {@link GHRepository}
      * @param branch name of a branch to get content from
      */
-    protected AbstractGitHubGitRepositoryContent(final GHRepository repository, final String branch) {
+    protected AbstractGitHubGitBranchContent(final GHRepository repository, final String branch) {
         this.repository = repository;
         this.branch = getBranchByName(branch);
     }
@@ -55,19 +55,18 @@ public abstract class AbstractGitHubGitRepositoryContent implements GitRepositor
     }
 
     @Override
-    public final synchronized String getChangelogFile() {
-        if (!this.filesCache.containsKey(CHANGELOG_FILE_PATH)) {
-            this.filesCache.put(CHANGELOG_FILE_PATH, getSingleFileContentAsString(CHANGELOG_FILE_PATH));
-        }
-        return this.filesCache.get(CHANGELOG_FILE_PATH);
+    public final String getChangelogFile() {
+        return getSingleFileContentAsString(CHANGELOG_FILE_PATH);
     }
 
     @Override
-    public final synchronized String getChangesFile(final String version) {
-        final String changesFileName = "doc/changes/changes_" + version + ".md";
-        if (!this.filesCache.containsKey(changesFileName)) {
-            this.filesCache.put(changesFileName, getSingleFileContentAsString(changesFileName));
+    public final synchronized ReleaseLetter getReleaseLetter(final String version) {
+        if (!this.releaseLetters.containsKey(version)) {
+            final String fileName = "changes_" + version + ".md";
+            final String filePath = "doc/changes/" + fileName;
+            final String fileContent = getSingleFileContentAsString(filePath);
+            this.releaseLetters.put(version, new ReleaseLetterParser(fileName, fileContent).parse());
         }
-        return this.filesCache.get(changesFileName);
+        return this.releaseLetters.get(version);
     }
 }
