@@ -27,8 +27,8 @@ public final class ReleaseMakerFactory {
         if (platformName == GITHUB) {
             return new GitHubReleaseMaker(content, (GitHubPlatform) platform);
         } else {
-            throw new UnsupportedOperationException(
-                    "Release for platform " + platform + " is not supported. Please choose one of: github");
+            throw new UnsupportedOperationException("E-REL-RMF-1: Release for platform " + platform
+                    + " is not supported. Please choose one of: github");
         }
     }
 }

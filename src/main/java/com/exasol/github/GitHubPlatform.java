@@ -48,7 +48,7 @@ public class GitHubPlatform extends AbstractPlatform {
             uploadAssets(version, uploadUrl);
         } catch (final IOException exception) {
             throw new GitHubException(
-                    "GitHub connection problem happened during releasing a new tag. Please, try again later.",
+                    "E-GH-GHP-1: GitHub connection problem happened during releasing a new tag. Please, try again later.",
                     exception);
         }
     }
@@ -74,7 +74,8 @@ public class GitHubPlatform extends AbstractPlatform {
             build.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (final IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new GitHubException("Exception happened during uploading assets on the GitHub release.", exception);
+            throw new GitHubException("F-GH-GHP-1: Exception happened during uploading assets on the GitHub release.",
+                    exception);
         }
     }
 
@@ -84,7 +85,7 @@ public class GitHubPlatform extends AbstractPlatform {
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {
-            throw new IllegalArgumentException("Cannot upload assets. Invalid URI format.", exception);
+            throw new IllegalArgumentException("F-GH-GHP-2: Cannot upload assets. Invalid URI format.", exception);
         }
     }
 
@@ -98,8 +99,8 @@ public class GitHubPlatform extends AbstractPlatform {
             final List<GHIssue> closedIssues = this.repository.getIssues(GHIssueState.CLOSED);
             return closedIssues.stream().map(GHIssue::getNumber).collect(Collectors.toSet());
         } catch (final IOException exception) {
-            throw new GitHubException("Unable to retrieve a list of closed tickets. PLease, try again later.",
-                    exception);
+            throw new GitHubException(
+                    "E-GH-GHP-2: Unable to retrieve a list of closed tickets. PLease, try again later.", exception);
         }
     }
 }
