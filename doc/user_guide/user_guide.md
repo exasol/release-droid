@@ -55,6 +55,15 @@ project root/
 
 ### Rules for Release on GitHub
 
+Prerequisites:
+
+1. You need a GitHub account;
+2. You need to create a GitHub OAuth token. 
+   For that, go to `Settings` &rarr; `Developer Settings` &rarr; `Personal access tokens` &rarr; `Generate new token`. 
+   Select scope `repo:status` and `public_repo`, then create a token.
+
+Rules: 
+
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
@@ -80,6 +89,10 @@ You can check an [examples](upload_release_asset_example.md).
 1. Download the latest available [release](https://github.com/exasol/release-robot/releases) of Release Robot.
 
 1. (Optional) Place a file with credentials  in your home directory: `~/.release-robot/credentials`.
+    We recommend restricting access to this file for security purposes:
+    ```bash
+    chmod u-wx,g-rwx,o-rwx "$HOME"/.release-robot/credentials
+    ````
     The file must contain the following two properties:
 
     ```properties
