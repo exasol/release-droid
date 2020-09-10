@@ -44,7 +44,9 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validating a new version.");
         validateVersionFormat(newVersion);
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
-        latestReleaseTag.ifPresent(s -> validateNewVersionWithPreviousTag(newVersion, s));
+        if(latestReleaseTag.isPresent()){
+            validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get());
+        }
     }
 
     private void validateVersionFormat(final String version) {
