@@ -16,6 +16,9 @@ import com.exasol.repository.ReleaseLetter;
 class GitHubReleaseMakerTest {
     @Test
     // The changes files must be checked on the validation stage. Here we throw no exception even if it's not valid
+    // [utest->dsn~create-new-github-release~1]
+    // [utest->dsn~retrieve-github-release-header-from-release-letter~1]
+    // [utest->dsn~retrieve-github-release-body-from-release-letter~1]
     void testMakeRelease() {
         final String version = "1.0.0";
         final GitBranchContent contentMock = Mockito.mock(GitBranchContent.class);

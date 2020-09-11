@@ -49,6 +49,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-release-version-format~1]
     private void validateVersionFormat(final String version) {
         if (!version.matches(VERSION_REGEX)) {
             throw new IllegalArgumentException(
@@ -58,6 +59,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-release-version-increased-correctly~1]
     private void validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (!possibleVersions.contains(newTag)) {
@@ -79,6 +81,7 @@ public class GitRepositoryValidator {
         return versions;
     }
 
+    // [impl->dsn~validate-changelog~1]
     protected void validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating `changelog.md` file.");
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
@@ -97,6 +100,7 @@ public class GitRepositoryValidator {
         validateHasBody(changes);
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-version~1]
     private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
@@ -105,6 +109,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-date~1]
     private void validateDateInChanges(final ReleaseLetter changes) {
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
@@ -115,6 +120,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private void validateHasBody(final ReleaseLetter changes) {
         if (changes.getBody().isEmpty()) {
             throw new IllegalStateException("E-RR-VAL-8: Cannot find the " + changes.getFileName()

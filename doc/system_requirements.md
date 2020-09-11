@@ -66,7 +66,7 @@ RR generates releases without human interaction.
 Needs: req
 
 ### Maven Support
-`feat-maven-support~1`
+`feat~maven-support~1`
 
 RR support releases based on Apache Maven projects.
 
@@ -79,14 +79,62 @@ RR supports releasing on GitHub.
 
 Needs: req
 
-### Release Report
-`feat~release-Report~1`
-
-RR writes a report that summarizes all release steps and their results.
-
-Needs: req
-
 ## Functional Requirements
+
+### Access Project Files
+`req~access-project-files~1`
+
+RR accesses the project's files it needs for validations and releases.
+
+Covers:
+
+* [feat~release-automation~1](#release-automation)
+
+Needs: dsn
+
+### Users Provide RR Parameters
+`req~users-provide-rr-parameters~1`
+
+Users provide parameters RR needs for releases and validations.
+
+Covers:
+
+* [feat~release-automation~1](#release-automation)
+
+Needs: dsn
+
+### Validate Project
+`req~validate-project~1`
+
+RR runs validations on a user-specified project.
+
+Covers:
+
+* [feat~release-validation~1](#release-validation)
+
+Needs: dsn
+
+### Release Project
+`req~release-project~1req~release-project~1`
+
+RR releases a user-specified project.
+
+Covers:
+
+* [feat~release-automation~1](#release-automation)
+
+Needs: dsn
+
+### Users Can Set Git Branch for Validation
+`req~users-can-set-git-branch-for-validation~1`
+
+Users can set a branch to perform a validation on.
+
+Rationale:
+
+This allows users to run RR on a specified git branch and fix problems it detects before merging the branch into master.
+
+Needs: dsn
 
 ### Release Conditions Validation
 
@@ -100,16 +148,17 @@ Teams usually agree on rules that each member follows in order to have complete 
 
 Typical examples of these rules are directory layout, naming conventions, versioning rules and so forth.
 
-Often parts of these rules are enforced by the build system. This is especially true if the rules are centered around standards set by either the language in which the project is realized or the used build framework itself. The [Apache Maven](https://maven.apache.org/) framework for example is well known for its convention over configuration approach, intentionally chosen so that anyone familiar with the framework will be able to navigate and understand foreign projects built with the same tool chain.
+Often parts of these rules are enforced by the build system. This is especially true if the rules are centered around standards set by either the language in which the project is realized or the used build framework itself. 
+The [Apache Maven](https://maven.apache.org/) framework for example is well known for its convention over configuration approach, intentionally chosen so that anyone familiar with the framework will be able to navigate and understand foreign projects built with the same tool chain.
 
 Other parts however are more team-specific or company-specific like the decision about contents and layout of a release letter or versioning schemes.
 
 RR must be able to cover both ways of pre-condition validation, one where it uses the validations built into the build framework and defining additional validation rules for the parts the build framework does not cover.
 
-##### Defining Mandatory Directory Tree Elements
-`req~defining-mandatory-directory-tree-elements~1`
+##### Validate Mandatory Directory Tree Elements
+`req~validate-mandatory-directory-tree-elements~1`
 
-Integrators can define mandatory directory tree elements.
+RR validates mandatory directory tree elements.
 
 Comment:
 
@@ -118,47 +167,6 @@ Only parts of the tree can be standardized, since for example a Python project h
 Rationale:
 
 This helps ensure a uniform layout and easier navigation since team members are instantly familiar with a projects's directory structure.
-
-Covers:
-
-* [feat~release-validation~1](#release-validation)
-
-Needs: dsn
-
-##### Defining Search for Uniform Version
-`req~defining-search-for-uniform-version~1`
-
-Integrators can define the following criteria tuples that are used in searches for the use of the version number in a project:
-
-1. Paths to files with wildcards
-1. Regular expressions applied inside the file to find the version
-
-Rationale:
-
-In an ideal world each project contains the version only once and is then referenced in other parts. The problem is, that not all document types offer references. Markdown files, HTML and others don't feature an include mechanism. This leads to duplication of version numbers throughout projects. And this duplication can lead to inconsistencies if the numbers are not checked.
-
-Covers:
-
-* [feat~release-validation~1](#release-validation)
-
-Needs: dsn
-
-##### Path Wildcards can Span Multiple Path Elements
-`req~path-wildcards-can-span-multiple-path-elements~1`
-
-Path wildcards used in validation rules can span multiple path elements.
-Comment:
-
-A path consists of multiple elements, and a regular wildcard typically only is a placeholder for a single element.
-
-    src/main/*
-
-It it often useful though to formulate wildcards that dive deeper. In the example below the path pattern matches all Markdown files in any sub-directory of `doc`.
-
-    doc/**/*.md 
-Rationale:
-
-This allows defining rules before the actual directory layout is known. Project structures tend to grow with the project's age and not all path layout decisions are predictable.
 
 Covers:
 
@@ -199,26 +207,13 @@ Covers:
 
 Needs: dsn
 
-##### Version Increase Check
-`req~version-increase-check~1`
-
-Integrators decide on a per-release basis, whether the current version number is allowed to be lower as the highest one of all previous releases.
-
-Rationale:
-
-In the great majority of cases you release with a higher version than before. But valid exceptions exist, namely in case when older version branches are still maintained in a project.
-
-Covers:
-
-* [feat~release-validation~1](#release-validation)
-
-Needs: dsn
-
 #### Release Step Validation
 
 Release step validation serves two purposes. The first one is obvious: you want to validate that a step in your release process was executed successfully and that all the expected results exist and are valid.
 
-Additionally, step validation helps to recover from a release that was interrupted midway. Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time. Depending on how many steps your release process has and how complicated they are, starting over can be terribly annoying and costly.
+Additionally, step validation helps to recover from a release that was interrupted midway. 
+Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time. 
+Depending on how many steps your release process has and how complicated they are, starting over can be terribly annoying and costly.
 
 What you really want is to find out, how far you got and restart from that point.
 
@@ -230,7 +225,7 @@ Since the step validation rules depend on the platform the step is executed on, 
 
 ### Platform and Tool Support
 
-#### Maven Support
+#### Maven Project Support
 
 ##### Detect Current Version From Maven POM
 `req~detect-current-version-from-maven-pom~1`
@@ -353,15 +348,6 @@ Covers:
 * [feat~github-support~1](#github-support)
 
 Needs: dsn
-
-### Release Report
-
-Releases are a sensitive process in which a lot of things can go wrong. In order to be able to debug the release process and learn from mistakes or unexpected issues, a log that you can archive is important. We call this log the release report and it serves multiple purposes:
-
-* serve as debugging tool
-* document due diligence
-* make release runs comparable
-* make releases reproducible
 
 ## Quality Requirements
 

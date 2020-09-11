@@ -34,6 +34,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         validateChangesFile(releaseLetter);
     }
 
+    // [impl->dsn~validate-release-letter~1]
     private void validateChangesFile(final ReleaseLetter releaseLetter) {
         validateContainsHeader(releaseLetter);
         validateGitHubTickets(releaseLetter);
@@ -48,6 +49,8 @@ public class GitHubPlatformValidator implements PlatformValidator {
         }
     }
 
+    // [impl->dsn~validate-github-issues-exists~1]
+    // [impl->dsn~validate-github-issues-are-closed~1]
     protected void validateGitHubTickets(final ReleaseLetter changesFile) {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {

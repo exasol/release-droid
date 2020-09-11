@@ -22,6 +22,7 @@ class JavaMavenGitBranchContentTest {
     @ValueSource(strings = { "<project><version>1.0.0</version></project>", //
             "<project>\n<version>\n1.0.0\n</version>\n</project>",
             "<project>    <version>  1.0.0  </version>   </project>" })
+    // [utest->dsn~gr-provides-current-version~1]
     void testGetVersionWithCaching(final String pomFile) throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHContent contentMock = Mockito.mock(GHContent.class);
