@@ -25,7 +25,7 @@ public interface GitRepository {
      * Get a new instance of {@link GitBranchContent} based on a user-specified branch.
      *
      * @param branchName name of a branch to get content from
-     * @return new instance of {@link GitBranchContent}d
+     * @return new instance of {@link GitBranchContent}
      */
     // [impl->dsn~gr-retrieves-branch-content~1]
     public GitBranchContent getRepositoryContent(final String branchName);
