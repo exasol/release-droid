@@ -43,7 +43,7 @@ This section describes the runtime behavior of the software.
 ### Users Set Project 
 `dsn~users-set-project~1`
 
-Users select a GitHub-based project and provide its name to RR.
+Users select a GitHub-based project by providing its name to RR.
 
 Covers:
 
@@ -56,12 +56,31 @@ Needs: impl
 
 Users select whether they want to `validate` or `release` the project. 
 
-- RR performs only validation if it gets a `validate` goal.
-- RR performs validation and then release if it gets a `release` goal.
-
 Covers:
 
 * `req~users-provide-rr-parameters~1`
+
+Needs: impl
+
+### RR Runs Validate Goal
+`dsn~rr-runs-validate-goal~1`
+
+RR performs only validation if it gets a `validate` goal.
+
+Covers:
+
+* `req~validate-project~1`
+
+Needs: impl
+
+### RR Runs Release Goal
+`dsn~rr-runs-release-goal~1`
+
+RR performs validation and then release if it gets a `release` goal.
+
+Covers:
+
+* `req~release-project~1`
 
 Needs: impl
 
@@ -87,10 +106,10 @@ Covers:
 
 Needs: impl
 
-### Users Add to Their Project Yml Files That Helps Upload Deliverables 
-`dsn~users-add-to-their-project-yml-files-that-helps-upload-deliverables~1`
+### User add Upload Definition Files for Their Deliverables
+`dsn~users-add-upload-definition-files-for-their-deliverables~1`
 
-Users add to their project a `yml` files that helps RR uploading deliverables.
+Users add upload [definitions for deliverables](user_guide/upload_release_asset_example.md) in form of a [`.yml` file](https://yaml.org/) to their project.
 
 Covers:
 
@@ -103,7 +122,7 @@ Needs: impl
 ### GR Provides Current Version
 `dsn~gr-provides-current-version~1`
 
-The `GitRepository` detects and provides a current project's version.
+The `GitRepository` detects a current project's version depending on a project's programming language and project's structure.
 
 Covers:
 
@@ -127,7 +146,7 @@ Needs: impl, utest
 ### RR Starts Release Only If All Validation Succeed
 `dsn~rr-starts-release-only-if-all-validation-succeed~1`
 
-RR starts release if and only if all validation for the platforms users specified succeed.
+RR starts release only if all validation for the platforms users specified succeed.
 
 Covers:
 
@@ -141,10 +160,25 @@ Needs: impl
 
 Validations listed here are platform-independent.
 
-#### Validate Release Version
-`dsn~validate-release-version~1`
+#### Validate Release Version Format
+`dsn~validate-release-version-format~1`
 
-RR validates if a new version is suitable for a new release based on the information about previous releases.
+RR validates that a version consists of three parts containing only digits: <major><feature><bug>. 
+
+Covers:
+
+* `req~detect-version-conflicts-in-the-project-sources~1`
+
+Needs: impl, utest
+
+#### Validate Release Version Increased Correctly
+`dsn~validate-release-version-increased-correctly~1`
+
+RR validates that a new version differs from a previous version in one incrementing digit.
+
+Rationale:
+
+Let us assume that a previous version was 1.2.3. That means that a valid version for the next release is 1.2.4 or 1.3.0 or 2.0.0. 
 
 Covers:
 
@@ -155,7 +189,7 @@ Needs: impl, utest
 #### Validate Changelog
 `dsn~validate-changelog~1`
 
-RR validates `changelog.md` file.
+RR validates that `changelog.md` file contains a link to `changes_<version>.md` file.
 
 Covers:
 
@@ -163,10 +197,32 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate Changes File
-`dsn~validate-changes-file~1`
+#### Validate Changes File Contains Release Version
+`dsn~validate-changes-file-contains-release-version~1`
 
-RR validates `changes_<version>.md` file.
+RR validates that `changes_<version>.md` file contains a version to be released.
+
+Covers:
+
+* `req~validate-mandatory-directory-tree-elements~1`
+
+Needs: impl, utest
+
+#### Validate Changes File Contains Correct Release Date
+`dsn~validate-changes-file-contains-release-date~1`
+
+RR validates that `changes_<version>.md` file contains today's date.
+
+Covers:
+
+* `req~validate-mandatory-directory-tree-elements~1`
+
+Needs: impl, utest
+
+#### Validate Changes File Contains Release Letter Body
+`dsn~validate-changes-file-contains-release-letter-body~1`
+
+RR validates that `changes_<version>.md` file contains a release letter body.
 
 Covers:
 
@@ -178,7 +234,7 @@ Needs: impl, utest
 
 Validations listed here are necessary for a release on the GitHub.
 
-#### Validate Release Letter
+#### Validate Release Letter Contains Release Header
 `dsn~validate-release-letter~1`
 
 RR validates that a release letter for a GitHub release is present and contains all necessary information.
@@ -229,7 +285,7 @@ Needs: impl, utest
 #### Retrieve GitHub Release Header from Release Letter
 `dsn~retrieve-github-release-header-from-release-letter~1`
 
-RR parses a release letter and retrieves a header for a GitHub release.
+RR extracts the GitHub release's title from the release letter.
 
 Covers:
 
@@ -240,7 +296,7 @@ Needs: impl, utest
 #### Retrieve GitHub Release Body from Release Letter
 `dsn~retrieve-github-release-body-from-release-letter~1`
 
-RR parses a release letter and retrieves a body for a GitHub release.
+RR extracts the GitHub release's body from the release letter.
 
 Covers:
 

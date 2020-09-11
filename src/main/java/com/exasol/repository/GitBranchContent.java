@@ -17,7 +17,7 @@ public interface GitBranchContent {
      * @param version version as a string
      * @return release changes file
      */
-    public ReleaseLetter getReleaseLetter(String version);
+    public ReleaseLetter getReleaseLetter(final String version);
 
     /**
      * Get a current project version.

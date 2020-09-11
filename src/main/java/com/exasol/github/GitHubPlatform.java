@@ -80,7 +80,7 @@ public class GitHubPlatform extends AbstractPlatform {
         }
     }
 
-    // [impl->dsn~users-add-to-their-project-yml-files-that-helps-upload-deliverables~1]
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private URI getAssetsUploadUri() {
         final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
                 + "/actions/workflows/upload_release_asset.yml/dispatches";

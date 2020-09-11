@@ -63,6 +63,7 @@ public class ReleaseRobot {
         return platforms;
     }
 
+    // [impl->dsn~rr-runs-validate-goal~1]
     private void runValidation(final RepositoryHandler repositoryHandler) {
         if (hasBranch()) {
             repositoryHandler.validate();
@@ -76,6 +77,7 @@ public class ReleaseRobot {
     }
 
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
+    // [impl->dsn~rr-runs-release-goal~1]
     private void runRelease(final RepositoryHandler repositoryHandler) {
         repositoryHandler.validate();
         repositoryHandler.release();

@@ -40,7 +40,6 @@ public class GitRepositoryValidator {
         validateChanges(changes, version);
     }
 
-    // [impl->dsn~validate-release-version~1]
     protected void validateNewVersion(final String newVersion) {
         LOGGER.fine("Validating a new version.");
         validateVersionFormat(newVersion);
@@ -50,6 +49,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-release-version-format~1]
     private void validateVersionFormat(final String version) {
         if (!version.matches(VERSION_REGEX)) {
             throw new IllegalArgumentException(
@@ -59,6 +59,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-release-version-increased-correctly~1]
     private void validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (!possibleVersions.contains(newTag)) {
@@ -92,7 +93,6 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validation of `changelog.md` file was successful.");
     }
 
-    // [impl->dsn~validate-changes-file~1]
     protected void validateChanges(final ReleaseLetter changes, final String version) {
         LOGGER.fine("Validating " + changes.getFileName() + " file.");
         validateVersionInChanges(changes, version);
@@ -100,6 +100,7 @@ public class GitRepositoryValidator {
         validateHasBody(changes);
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-version~1]
     private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
@@ -108,6 +109,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-date~1]
     private void validateDateInChanges(final ReleaseLetter changes) {
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
@@ -118,6 +120,7 @@ public class GitRepositoryValidator {
         }
     }
 
+    // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private void validateHasBody(final ReleaseLetter changes) {
         if (changes.getBody().isEmpty()) {
             throw new IllegalStateException("E-RR-VAL-8: Cannot find the " + changes.getFileName()

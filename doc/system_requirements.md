@@ -103,6 +103,28 @@ Covers:
 
 Needs: dsn
 
+### Validate Project
+`req~validate-project~1`
+
+RR runs validations on a user-specified project.
+
+Covers:
+
+* [feat~release-validation~1](#release-validation)
+
+Needs: dsn
+
+### Release Project
+`req~release-project~1req~release-project~1`
+
+RR releases a user-specified project.
+
+Covers:
+
+* [feat~release-automation~1](#release-automation)
+
+Needs: dsn
+
 ### Users Can Set Git Branch for Validation
 `req~users-can-set-git-branch-for-validation~1`
 
