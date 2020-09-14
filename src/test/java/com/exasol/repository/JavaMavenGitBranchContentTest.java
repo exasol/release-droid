@@ -40,6 +40,7 @@ class JavaMavenGitBranchContentTest {
     }
 
     @Test
+    // [utest->dsn~gr-provides-deliverables-information~1]
     void testGetDeliverables() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHContent contentMock = Mockito.mock(GHContent.class);

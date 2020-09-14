@@ -34,5 +34,6 @@ public interface GitBranchContent {
      * 
      * @return map with deliverables information
      */
+    // [impl->dsn~gr-provides-deliverables-information~1]
     public Map<String, String> getDeliverables();
 }

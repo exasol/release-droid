@@ -130,6 +130,17 @@ Covers:
 
 Needs: impl, utest
 
+### GR Provides Deliverables Information
+`dsn~gr-provides-deliverables-information~1`
+
+GR provides a list of key-value pairs containing information in format `deliverable name - deliverable path` where a path is a path from project's root to the deliverable file.
+
+Covers:
+
+* `req~detect-deliverables-in-a-maven-project~1`
+
+Needs: impl, utest
+
 ### GR Retrieves Branch Content
 `dsn~gr-retrieves-branch-content~1`
 
