@@ -75,6 +75,6 @@ public final class GitHubEntityFactory {
         } else {
             newMessage = originalMessage;
         }
-        return new GitHubException(newMessage, exception);
+        return new GitHubException("E-GH-1: " + newMessage, exception);
     }
 }

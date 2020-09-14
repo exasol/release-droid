@@ -10,8 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
@@ -28,7 +27,9 @@ class GitHubPlatformTest {
         when(ghRepositoryMock.createRelease(anyString())).thenReturn(releaseBuilderMock);
         when(releaseBuilderMock.create()).thenThrow(IOException.class);
         final GitHubPlatform platform = new GitHubPlatform(GITHUB, ghRepositoryMock, new GitHubUser("", ""));
-        assertAll(() -> assertThrows(GitHubException.class, () -> platform.release("", "", "")),
+        final GitHubRelease release = GitHubRelease.builder().version("1.0.0").header("header").releaseLetter("")
+                .assets(Map.of("assets", "path")).build();
+        assertAll(() -> assertThrows(GitHubException.class, () -> platform.release(release)),
                 () -> verify(releaseBuilderMock, times(1)).draft(true),
                 () -> verify(releaseBuilderMock, times(1)).name(anyString()),
                 () -> verify(releaseBuilderMock, times(1)).body(anyString()),

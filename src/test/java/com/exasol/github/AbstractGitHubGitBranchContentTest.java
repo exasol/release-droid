@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
@@ -79,6 +80,11 @@ class AbstractGitHubGitBranchContentTest {
         @Override
         public String getVersion() {
             return "1.0.0";
+        }
+
+        @Override
+        public Map<String, String> getDeliverables() {
+            return null;
         }
     }
 }

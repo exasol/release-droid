@@ -10,6 +10,7 @@ Code name: GitHub validation and release support
 * #15: Improved GitHub release letter parsing.
 * #16: Improved validation and release process for GitHub.
 * #21: Improved error handling according to our new standards.
+* #26: Added automatic detection for asset's name of jar file.
 
 ## Documentation
 

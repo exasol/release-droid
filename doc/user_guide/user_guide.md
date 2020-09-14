@@ -25,7 +25,7 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
 
 * The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. 
-  The version can contain only digits and dots.
+  The version must contain only digits and dots.
 
 #### Changes Log
 
@@ -51,7 +51,9 @@ project root/
 
 * The project must be a valid [Maven](https://maven.apache.org/) project.
 
-* The main file `pom.xml` of the project must contain a `<version></version>` tag containing a valid version as a constant.
+* The main `pom.xml` file must contain:
+    1. a `<version></version>` tag with a valid version as a constant;
+    1. `<artifactId></artifactId>` tag with a project name;
 
 ### Rules for Release on GitHub
 
@@ -68,7 +70,7 @@ Rules:
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory to upload release assets. 
-You can check an [examples](upload_release_asset_example.md).
+Please check [templates](upload_release_asset_template.md).
 
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. 
  This line should appear between the file's header and the first section describing the changes.

@@ -109,7 +109,7 @@ Needs: impl
 ### User add Upload Definition Files for Their Deliverables
 `dsn~users-add-upload-definition-files-for-their-deliverables~1`
 
-Users add upload [definitions for deliverables](user_guide/upload_release_asset_example.md) in form of a [`.yml` file](https://yaml.org/) to their project.
+Users add upload [definitions for deliverables](user_guide/upload_release_asset_template.md) in form of a [`.yml` file](https://yaml.org/) to their project.
 
 Covers:
 

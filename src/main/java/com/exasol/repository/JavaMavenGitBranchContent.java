@@ -1,23 +1,14 @@
 package com.exasol.repository;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Map;
 
-import javax.xml.parsers.*;
-
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHRepository;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import com.exasol.github.GitHubException;
 
 /**
  * This class represents a Maven-based Java project's content.
  */
 public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
-    private final String version;
+    private final MavenPom pom;
 
     /**
      * Create a new instance of {@link GitHubGitRepository}.
@@ -27,30 +18,23 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
      */
     protected JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
         super(repository, branch);
-        this.version = getVersionFromPomFile();
+        this.pom = parsePom();
+    }
+
+    private MavenPom parsePom() {
+        final String pomContent = getSingleFileContentAsString("pom.xml");
+        return new MavenPomParser(pomContent).parse();
     }
 
     @Override
     public String getVersion() {
-        return this.version;
+        return this.pom.getVersion();
     }
 
-    private String getVersionFromPomFile() {
-        final String pom = getSingleFileContentAsString("pom.xml");
-        final InputStream inputStream = IOUtils.toInputStream(pom);
-        return parsePom(inputStream);
-    }
-
-    private String parsePom(final InputStream inputStream) {
-        try {
-            final DocumentBuilder documentBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
-            final Document parsedPom = documentBuilder.parse(inputStream);
-            final Element rootElement = parsedPom.getDocumentElement();
-            return rootElement.getElementsByTagName("version").item(0).getTextContent().strip();
-        } catch (final ParserConfigurationException | SAXException | IOException exception) {
-            throw new GitHubException("E-REP-JMGR-1: Cannot find a project version in pom.xml file. "
-                    + "Please, check that the pom.xml file contains <version></version> tag and the tag is not empty.",
-                    exception);
-        }
+    @Override
+    public Map<String, String> getDeliverables() {
+        final String assetName = this.pom.getDeliverableName() + ".jar";
+        final String assetPath = "./target/" + assetName;
+        return Map.of(assetName, assetPath);
     }
 }

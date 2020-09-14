@@ -57,7 +57,7 @@ class GitHubGitRepositoryTest {
     @Test
     // [utest->dsn~gr-retrieves-branch-content~1]
     void testGetRepositoryContent() throws IOException {
-        final String pom = "<project><version>1.0.0</version></project>";
+        final String pom = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHContent contentMock = Mockito.mock(GHContent.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);

@@ -6,8 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,6 +44,7 @@ class RepositoryHandlerTest {
         when(contentMock.getVersion()).thenReturn("1.0.0");
         final ReleaseLetter releaseLetter = ReleaseLetter.builder("name").body("## Features").build();
         when(contentMock.getReleaseLetter("1.0.0")).thenReturn(releaseLetter);
+        when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
         assertDoesNotThrow(projectHandler::release);
     }
