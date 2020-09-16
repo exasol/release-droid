@@ -3,6 +3,7 @@ package com.exasol.release;
 import java.util.logging.Logger;
 
 import com.exasol.github.GitHubPlatform;
+import com.exasol.github.GitHubRelease;
 import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 
@@ -35,6 +36,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final ReleaseLetter releaseLetter = this.content.getReleaseLetter(version);
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
-        this.gitHubPlatform.release(version, header, body);
+        final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
+                .assets(this.content.getDeliverables()).build();
+        this.gitHubPlatform.release(release);
     }
 }

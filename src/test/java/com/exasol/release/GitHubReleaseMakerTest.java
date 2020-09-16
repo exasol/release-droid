@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -26,10 +27,11 @@ class GitHubReleaseMakerTest {
         final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(contentMock.getVersion()).thenReturn(version);
+        when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
         when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform);
         assertAll(() -> assertDoesNotThrow(releaseMaker::makeRelease),
                 () -> verify(contentMock, times(1)).getReleaseLetter(version),
-                () -> verify(gitHubPlatform, times(1)).release(anyString(), anyString(), anyString()));
+                () -> verify(gitHubPlatform, times(1)).release(any()));
     }
 }

@@ -1,5 +1,7 @@
 package com.exasol.repository;
 
+import java.util.Map;
+
 /**
  * This class represents Git repository content based on the latest commit of the user-specified branch.
  */
@@ -26,4 +28,12 @@ public interface GitBranchContent {
      */
     // [impl->dsn~gr-provides-current-version~1]
     public String getVersion();
+
+    /**
+     * Get key-value pairs for deliverable names and corresponding deliverable pathes.
+     * 
+     * @return map with deliverables information
+     */
+    // [impl->dsn~gr-provides-deliverables-information~1]
+    public Map<String, String> getDeliverables();
 }

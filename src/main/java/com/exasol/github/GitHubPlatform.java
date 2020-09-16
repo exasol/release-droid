@@ -3,8 +3,7 @@ package com.exasol.github;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -36,16 +35,20 @@ public class GitHubPlatform extends AbstractPlatform {
     /**
      * Create a new GitHub release.
      *
-     * @param version version to release
-     * @param releaseHeader header of the release
-     * @param releaseBody body of the release letter
+     * @param gitHubRelease {@link GitHubRelease} instance with information about the release
      */
-    public void release(final String version, final String releaseHeader, final String releaseBody) {
+    public void release(final GitHubRelease gitHubRelease) {
         try {
-            final GHRelease release = this.repository.createRelease(version).draft(true).body(releaseBody)
-                    .name(releaseHeader).create();
+            final GHRelease release = this.repository //
+                    .createRelease(gitHubRelease.getVersion()) //
+                    .draft(true) //
+                    .body(gitHubRelease.getReleaseLetter()) //
+                    .name(gitHubRelease.getHeader()) //
+                    .create();
             final String uploadUrl = release.getUploadUrl();
-            uploadAssets(version, uploadUrl);
+            for (Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {
+                uploadAssets(uploadUrl, asset.getKey(), asset.getValue());
+            }
         } catch (final IOException exception) {
             throw new GitHubException(
                     "E-GH-PLF-1: GitHub connection problem happened during releasing a new tag. Please, try again later.",
@@ -54,13 +57,14 @@ public class GitHubPlatform extends AbstractPlatform {
     }
 
     // [impl->dsn~upload-github-release-assets~1]
-    private void uploadAssets(final String version, final String uploadUrl) {
+    private void uploadAssets(final String uploadUrl, final String assetName, final String assetPath) {
         final URI uri = getAssetsUploadUri();
         final JSONObject body = new JSONObject();
         body.put("ref", "master");
         final JSONObject inputs = new JSONObject();
-        inputs.put("version", version);
         inputs.put("upload_url", uploadUrl);
+        inputs.put("asset_name", assetName);
+        inputs.put("asset_path", assetPath);
         body.put("inputs", inputs);
         final String json = body.toString();
         final HttpRequest request = HttpRequest.newBuilder() //

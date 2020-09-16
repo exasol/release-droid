@@ -10,6 +10,7 @@ Code name: GitHub validation and release support
 * #15: Improved GitHub release letter parsing.
 * #16: Improved validation and release process for GitHub.
 * #21: Improved error handling according to our new standards.
+* #26: Added automatic detection for asset's name of jar file.
 
 ## Documentation
 
@@ -25,7 +26,7 @@ Code name: GitHub validation and release support
 * Added `commons-cli:commons-cli:1.4`
 * Added `org.json:json:20200518`
 * Added `org.mockito:mockito-core:3.5.10`
-* Added `org.junit.jupiter:junit-jupiter:5.6.2`
+* Added `org.junit.jupiter:junit-jupiter:5.7.0`
 * Added `org.hamcrest:hamcrest:2.2`
 * Added `org.apache.maven.plugins:maven-compiler-plugin:3.8.1`
 * Added `org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M4`
