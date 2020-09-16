@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ class AbstractGitHubGitBranchContentTest {
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
         final String branchName = "my_branch";
         final String textContent = "Text content";
-        when(contentMock.getContent()).thenReturn(textContent);
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream(textContent.getBytes()));
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
@@ -59,7 +60,7 @@ class AbstractGitHubGitBranchContentTest {
         final GHContent contentMock = Mockito.mock(GHContent.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
         final String branchName = "my_branch";
-        when(contentMock.getContent()).thenReturn("");
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream("".getBytes()));
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);

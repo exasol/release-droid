@@ -7,15 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.exasol.repository.maven.JavaMavenGitBranchContent;
 import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
 import com.exasol.github.GitHubException;
+import com.exasol.repository.maven.JavaMavenGitBranchContent;
 
 class GitHubGitRepositoryTest {
     @Test
@@ -64,7 +65,7 @@ class GitHubGitRepositoryTest {
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
         final String branchName = "dev";
         when(branchMock.getName()).thenReturn(branchName);
-        when(contentMock.getContent()).thenReturn(pom);
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
