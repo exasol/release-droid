@@ -27,43 +27,90 @@ public class GitHubRelease {
         return new Builder();
     }
 
+    /**
+     * Get a version.
+     * 
+     * @return version
+     */
     public String getVersion() {
         return this.version;
     }
 
+    /**
+     * Get a release header.
+     * 
+     * @return header
+     */
     public String getHeader() {
         return this.header;
     }
 
+    /**
+     * Get a release letter.
+     * 
+     * @return release letter
+     */
     public String getReleaseLetter() {
         return this.releaseLetter;
     }
 
+    /**
+     * Get assets.
+     * 
+     * @return assets map
+     */
     public Map<String, String> getAssets() {
         return this.assets;
     }
 
+    /**
+     * A builder for {@link GitHubRelease}.
+     */
     public static class Builder {
         private String version;
         private String header;
         private String releaseLetter = "";
         private Map<String, String> assets;
 
+        /**
+         * Set a version.
+         * 
+         * @param version release version
+         * @return builder instance for fluent programming
+         */
         public Builder version(final String version) {
             this.version = version;
             return this;
         }
 
+        /**
+         * Set a header
+         *
+         * @param header release header
+         * @return builder instance for fluent programming
+         */
         public Builder header(final String header) {
             this.header = header;
             return this;
         }
 
+        /**
+         * Set a release letter.
+         *
+         * @param releaseLetter release letter
+         * @return builder instance for fluent programming
+         */
         public Builder releaseLetter(final String releaseLetter) {
             this.releaseLetter = releaseLetter;
             return this;
         }
 
+        /**
+         * Set assets.
+         *
+         * @param assets map of assets
+         * @return builder instance for fluent programming
+         */
         public Builder assets(final Map<String, String> assets) {
             this.assets = assets;
             return this;

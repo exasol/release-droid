@@ -1,4 +1,4 @@
-package com.exasol.repository;
+package com.exasol.repository.maven;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -10,6 +10,8 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Map;
 
+import com.exasol.repository.GitBranchContent;
+import com.exasol.repository.maven.JavaMavenGitBranchContent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -46,7 +48,7 @@ class JavaMavenGitBranchContentTest {
         final GHContent contentMock = Mockito.mock(GHContent.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
         final String branchName = "my_branch";
-        String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
+        final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(contentMock.getContent()).thenReturn(pomFile);

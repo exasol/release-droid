@@ -1,13 +1,17 @@
-package com.exasol.repository;
+package com.exasol.repository.maven;
 
 import java.util.Map;
 
+import com.exasol.repository.AbstractGitHubGitBranchContent;
+import com.exasol.repository.GitHubGitRepository;
 import org.kohsuke.github.GHRepository;
 
 /**
  * This class represents a Maven-based Java project's content.
  */
 public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
+    private static final String POM_PATH = "pom.xml";
+    private static final String PATH_TO_TARGET_DIR = "./target/";
     private final MavenPom pom;
 
     /**
@@ -22,7 +26,7 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
     }
 
     private MavenPom parsePom() {
-        final String pomContent = getSingleFileContentAsString("pom.xml");
+        final String pomContent = getSingleFileContentAsString(POM_PATH);
         return new MavenPomParser(pomContent).parse();
     }
 
@@ -34,7 +38,7 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
     @Override
     public Map<String, String> getDeliverables() {
         final String assetName = this.pom.getDeliverableName() + ".jar";
-        final String assetPath = "./target/" + assetName;
+        final String assetPath = PATH_TO_TARGET_DIR + assetName;
         return Map.of(assetName, assetPath);
     }
 }

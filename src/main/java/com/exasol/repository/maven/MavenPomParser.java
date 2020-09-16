@@ -1,4 +1,4 @@
-package com.exasol.repository;
+package com.exasol.repository.maven;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,13 +28,12 @@ public class MavenPomParser {
     }
 
     private Element parsePom(final String pom) {
-        final InputStream inputStream = IOUtils.toInputStream(pom);
-        try {
+        try (final InputStream inputStream = IOUtils.toInputStream(pom)) {
             final DocumentBuilder documentBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
             final Document parsedPom = documentBuilder.parse(inputStream);
             return parsedPom.getDocumentElement();
         } catch (final ParserConfigurationException | SAXException | IOException exception) {
-            throw new GitHubException("E-REP-POM-1: Cannot parse pom.xml file. "
+            throw new GitHubException("E-REP-MAV-1: Cannot parse pom.xml file. "
                     + "Please, check that the pom.xml file in a valid format.", exception);
         }
     }
@@ -66,7 +65,7 @@ public class MavenPomParser {
     private String parseChildElement(final String elementName) {
         final Node item = getMandatoryChildNode(elementName);
         final String element = item.getTextContent().strip();
-        if (element != null && !element.isEmpty()) {
+        if ((element != null) && !element.isEmpty()) {
             return element;
         } else {
             throw throwParsingException(elementName);
@@ -84,7 +83,7 @@ public class MavenPomParser {
 
     private IllegalStateException throwParsingException(final String elementName) {
         return new IllegalStateException(
-                "E-REP-POM-2: Unable to parse pom file because of a missing element: " + elementName);
+                "E-REP-MAV-2: Unable to parse pom file because of a missing element: " + elementName);
     }
 
     private Optional<String> parseDeliverableName() {

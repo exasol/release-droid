@@ -1,4 +1,4 @@
-package com.exasol.repository;
+package com.exasol.repository.maven;
 
 /**
  * Represents maven pom.xml file.

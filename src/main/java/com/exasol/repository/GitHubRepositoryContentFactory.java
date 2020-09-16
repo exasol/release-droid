@@ -1,5 +1,6 @@
 package com.exasol.repository;
 
+import com.exasol.repository.maven.JavaMavenGitBranchContent;
 import org.kohsuke.github.GHRepository;
 
 /**

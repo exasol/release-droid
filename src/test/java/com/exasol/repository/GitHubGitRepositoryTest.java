@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.exasol.repository.maven.JavaMavenGitBranchContent;
 import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
