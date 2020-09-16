@@ -19,7 +19,7 @@ Code name: GitHub validation and release support
 
 ## Refactoring
 
-* #27: Removed a deprecated method getContent.
+* #27: Removed use of deprecated method getContent.
 
 ## Dependency updates
 
