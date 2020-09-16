@@ -2,9 +2,10 @@ package com.exasol.repository.maven;
 
 import java.util.Map;
 
+import org.kohsuke.github.GHRepository;
+
 import com.exasol.repository.AbstractGitHubGitBranchContent;
 import com.exasol.repository.GitHubGitRepository;
-import org.kohsuke.github.GHRepository;
 
 /**
  * This class represents a Maven-based Java project's content.
@@ -20,7 +21,7 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
      * @param repository an instance of {@link GHRepository}
      * @param branch name of a branch to get content from
      */
-    protected JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
+    public JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
         super(repository, branch);
         this.pom = parsePom();
     }

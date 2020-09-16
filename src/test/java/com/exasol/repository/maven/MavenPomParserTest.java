@@ -132,7 +132,7 @@ class MavenPomParserTest {
     void testParseMavenPomInvalidPomNoElements(final String pom) {
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> new MavenPomParser(pom).parse());
-        assertThat(exception.getMessage(), containsString("E-REP-POM-2"));
+        assertThat(exception.getMessage(), containsString("E-REP-MAV-2"));
     }
 
     @Test
@@ -143,6 +143,6 @@ class MavenPomParserTest {
                 + "</project>";
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> new MavenPomParser(pom).parse());
-        assertThat(exception.getMessage(), containsString("E-REP-POM-2"));
+        assertThat(exception.getMessage(), containsString("E-REP-MAV-2"));
     }
 }
