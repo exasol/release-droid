@@ -7,11 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import com.exasol.repository.GitBranchContent;
-import com.exasol.repository.maven.JavaMavenGitBranchContent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,6 +18,7 @@ import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
 import com.exasol.github.GitHubException;
+import com.exasol.repository.GitBranchContent;
 
 class JavaMavenGitBranchContentTest {
     @ParameterizedTest
@@ -33,7 +33,7 @@ class JavaMavenGitBranchContentTest {
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
-        when(contentMock.getContent()).thenReturn(pomFile);
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitBranchContent repository = new JavaMavenGitBranchContent(ghRepositoryMock, branchName);
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
@@ -51,7 +51,7 @@ class JavaMavenGitBranchContentTest {
         final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
-        when(contentMock.getContent()).thenReturn(pomFile);
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         final GitBranchContent repository = new JavaMavenGitBranchContent(ghRepositoryMock, branchName);
         assertThat(repository.getDeliverables(), equalTo(Map.of("project-1.0.0.jar", "./target/project-1.0.0.jar")));
@@ -66,7 +66,7 @@ class JavaMavenGitBranchContentTest {
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
-        when(contentMock.getContent()).thenReturn(version);
+        when(contentMock.read()).thenReturn(new ByteArrayInputStream(version.getBytes()));
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
         assertThrows(GitHubException.class, () -> new JavaMavenGitBranchContent(ghRepositoryMock, branchName));
     }

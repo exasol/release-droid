@@ -17,6 +17,10 @@ Code name: GitHub validation and release support
 * #9: Added requirements and design.
 * #17: Documented GitHub authentication details.
 
+## Refactoring
+
+* #27: Removed use of deprecated method getContent.
+
 ## Dependency updates
 
 <details>

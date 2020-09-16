@@ -1,6 +1,6 @@
 package com.exasol.repository;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,13 +46,26 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
     protected String getSingleFileContentAsString(final String filePath) {
         try {
             final GHContent content = this.repository.getFileContent(filePath, this.branch.getName());
-            return content.getContent();
+            return getContent(content.read());
         } catch (final IOException exception) {
             throw new GitHubException(
                     "E-REP-GH-2: Cannot find or read the file '" + filePath + "' in the repository "
                             + this.repository.getName() + ". Please add this file according to the User Guide.",
                     exception);
         }
+    }
+
+    private String getContent(final InputStream stream) throws IOException {
+        final StringBuilder result = new StringBuilder();
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            String line = reader.readLine();
+            while (line != null) {
+                result.append(line);
+                result.append("\n");
+                line = reader.readLine();
+            }
+        }
+        return result.toString().stripTrailing();
     }
 
     @Override
