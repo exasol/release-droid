@@ -46,7 +46,7 @@ public class GitHubPlatform extends AbstractPlatform {
                     .name(gitHubRelease.getHeader()) //
                     .create();
             final String uploadUrl = release.getUploadUrl();
-            for (Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {
+            for (final Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {
                 uploadAssets(uploadUrl, asset.getKey(), asset.getValue());
             }
         } catch (final IOException exception) {
@@ -87,7 +87,7 @@ public class GitHubPlatform extends AbstractPlatform {
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private URI getAssetsUploadUri() {
         final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
-                + "/actions/workflows/upload_release_asset.yml/dispatches";
+                + "/actions/workflows/github_release.yml/dispatches";
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {

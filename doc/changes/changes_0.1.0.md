@@ -20,6 +20,7 @@ Code name: GitHub validation and release support
 ## Refactoring
 
 * #27: Removed use of deprecated method getContent.
+* #33: Renamed 'Upload_release_assets.yml' to 'github_release.yml'
 
 ## Dependency updates
 

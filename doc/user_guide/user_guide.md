@@ -69,8 +69,8 @@ Rules:
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
-* The project must contain a `/.github/workflows/upload_release_asset.yml` file in the root directory to upload release assets. 
-Please check [templates](upload_release_asset_template.md).
+* The project must contain a `/.github/workflows/github_release.yml` file in the root directory to upload release assets. 
+Please check [templates](github_release_template.md).
 
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. 
  This line should appear between the file's header and the first section describing the changes.
