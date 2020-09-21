@@ -1,4 +1,4 @@
-# Exasol Release Robot 0.1.0, released 2020-09-??
+# Exasol Release Robot 0.1.0, released 2020-09-21
 
 Code name: GitHub validation and release support
 
