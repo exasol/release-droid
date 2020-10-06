@@ -7,6 +7,14 @@ import java.util.Map;
  */
 public interface GitBranchContent {
     /**
+     * Get the content of a file in this repository.
+     *
+     * @param filePath path of the file as a string
+     * @return content as a string
+     */
+    String getSingleFileContentAsString(String filePath);
+
+    /**
      * Check if the branch is the default branch.
      *
      * @return true if the branch is default

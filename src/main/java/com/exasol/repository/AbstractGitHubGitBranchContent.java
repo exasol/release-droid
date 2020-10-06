@@ -37,13 +37,8 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
         }
     }
 
-    /**
-     * Get the content of a file in this repository.
-     *
-     * @param filePath path of the file as a string
-     * @return content as a string
-     */
-    protected String getSingleFileContentAsString(final String filePath) {
+    @Override
+    public String getSingleFileContentAsString(final String filePath) {
         try {
             final GHContent content = this.repository.getFileContent(filePath, this.branch.getName());
             return getContent(content.read());

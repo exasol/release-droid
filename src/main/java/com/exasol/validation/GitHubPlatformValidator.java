@@ -3,6 +3,7 @@ package com.exasol.validation;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.exasol.github.GitHubException;
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
@@ -12,6 +13,7 @@ import com.exasol.repository.ReleaseLetter;
  */
 public class GitHubPlatformValidator implements PlatformValidator {
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
+    protected static final String GITHUB_WORKFLOW_PATH = ".github/workflows/github_release.yml";
     private final GitHubPlatform gitHubPlatform;
     private final GitBranchContent branchContent;
 
@@ -32,6 +34,19 @@ public class GitHubPlatformValidator implements PlatformValidator {
         final String version = this.branchContent.getVersion();
         final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         validateChangesFile(releaseLetter);
+        validateWorkflowFileExists();
+    }
+
+    /**
+     * Check that the workflow file exists and is reachable.
+     */
+    protected void validateWorkflowFileExists() {
+        try {
+            this.branchContent.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH);
+        } catch (final GitHubException exception) {
+            throw new IllegalStateException("E-RR-VAL-3: '" + GITHUB_WORKFLOW_PATH
+                    + "' file does not exist in the project. Please, add this file to release on the GitHub.");
+        }
     }
 
     // [impl->dsn~validate-release-letter~1]
