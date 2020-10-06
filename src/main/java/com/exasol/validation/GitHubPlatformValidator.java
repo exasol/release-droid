@@ -13,31 +13,33 @@ import com.exasol.repository.ReleaseLetter;
 public class GitHubPlatformValidator implements PlatformValidator {
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GitHubPlatform gitHubPlatform;
-    private final GitBranchContent repositoryContent;
+    private final GitBranchContent branchContent;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
-     * @param repositoryContent content of a repository to validate
+     * @param branchContent content of a branch to validate
      * @param gitHubPlatform instance of {@link GitHubPlatform}
      */
-    public GitHubPlatformValidator(final GitBranchContent repositoryContent, final GitHubPlatform gitHubPlatform) {
+    public GitHubPlatformValidator(final GitBranchContent branchContent, final GitHubPlatform gitHubPlatform) {
         this.gitHubPlatform = gitHubPlatform;
-        this.repositoryContent = repositoryContent;
+        this.branchContent = branchContent;
     }
 
     @Override
     public void validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
-        final String version = this.repositoryContent.getVersion();
-        final ReleaseLetter releaseLetter = this.repositoryContent.getReleaseLetter(version);
+        final String version = this.branchContent.getVersion();
+        final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         validateChangesFile(releaseLetter);
     }
 
     // [impl->dsn~validate-release-letter~1]
     private void validateChangesFile(final ReleaseLetter releaseLetter) {
         validateContainsHeader(releaseLetter);
-        validateGitHubTickets(releaseLetter);
+        if (this.branchContent.isDefaultBranch()) {
+            validateGitHubTickets(releaseLetter);
+        }
     }
 
     protected void validateContainsHeader(final ReleaseLetter changes) {

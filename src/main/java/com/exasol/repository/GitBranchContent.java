@@ -7,6 +7,13 @@ import java.util.Map;
  */
 public interface GitBranchContent {
     /**
+     * Check if the branch is the default branch.
+     *
+     * @return true if the branch is default
+     */
+    public boolean isDefaultBranch();
+
+    /**
      * Get a changelog file as a string.
      *
      * @return changelog file as a string
