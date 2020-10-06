@@ -24,7 +24,31 @@ class AbstractGitHubGitBranchContentTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
-        assertThrows(GitHubException.class, () -> new DummyGitBranch(ghRepositoryMock, branchName));
+        assertThrows(GitHubException.class, () -> new DummyGitBranchContent(ghRepositoryMock, branchName));
+    }
+
+    @Test
+    void testIsDefaultBranchTrue() throws IOException {
+        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
+        final GHBranch branchMock = Mockito.mock(GHBranch.class);
+        final String branchName = "my_branch";
+        when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
+        when(ghRepositoryMock.getDefaultBranch()).thenReturn(branchName);
+        when(branchMock.getName()).thenReturn(branchName);
+        final GitBranchContent content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        assertThat(content.isDefaultBranch(), equalTo(true));
+    }
+
+    @Test
+    void testIsDefaultBranchFalse() throws IOException {
+        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
+        final GHBranch branchMock = Mockito.mock(GHBranch.class);
+        final String branchName = "my_branch";
+        when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
+        when(ghRepositoryMock.getDefaultBranch()).thenReturn("main");
+        when(branchMock.getName()).thenReturn(branchName);
+        final GitBranchContent content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        assertThat(content.isDefaultBranch(), equalTo(false));
     }
 
     @Test
@@ -38,7 +62,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitBranchContent repository = new DummyGitBranch(ghRepositoryMock, branchName);
+        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThat(repository.getChangelogFile(), equalTo(textContent));
     }
 
@@ -50,7 +74,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenThrow(IOException.class);
-        final GitBranchContent repository = new DummyGitBranch(ghRepositoryMock, branchName);
+        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThrows(GitHubException.class, repository::getChangelogFile);
     }
 
@@ -64,7 +88,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitBranchContent repository = new DummyGitBranch(ghRepositoryMock, branchName);
+        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertAll(
                 () -> assertThat(repository.getReleaseLetter(repository.getVersion()).getFileName(),
                         equalTo("changes_1.0.0.md")),
@@ -73,8 +97,8 @@ class AbstractGitHubGitBranchContentTest {
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
     }
 
-    private static final class DummyGitBranch extends AbstractGitHubGitBranchContent {
-        protected DummyGitBranch(final GHRepository repository, final String branch) {
+    private static final class DummyGitBranchContent extends AbstractGitHubGitBranchContent {
+        protected DummyGitBranchContent(final GHRepository repository, final String branch) {
             super(repository, branch);
         }
 

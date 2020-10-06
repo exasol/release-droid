@@ -21,18 +21,18 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
      * Create a new instance of {@link AbstractGitHubGitBranchContent}.
      *
      * @param repository an instance of {@link GHRepository}
-     * @param branch name of a branch to get content from
+     * @param branchName name of a branch to get content from
      */
-    protected AbstractGitHubGitBranchContent(final GHRepository repository, final String branch) {
+    protected AbstractGitHubGitBranchContent(final GHRepository repository, final String branchName) {
         this.repository = repository;
-        this.branch = getBranchByName(branch);
+        this.branch = getBranchByName(branchName);
     }
 
-    private GHBranch getBranchByName(final String branch) {
+    private GHBranch getBranchByName(final String branchName) {
         try {
-            return this.repository.getBranch(branch);
+            return this.repository.getBranch(branchName);
         } catch (final IOException exception) {
-            throw new GitHubException("E-REP-GH-1: Cannot find a branch '" + branch
+            throw new GitHubException("E-REP-GH-1: Cannot find a branch '" + branchName
                     + "'. Please check if you specified a correct branch.", exception);
         }
     }
@@ -66,6 +66,11 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
             }
         }
         return result.toString().stripTrailing();
+    }
+
+    @Override
+    public boolean isDefaultBranch() {
+        return this.repository.getDefaultBranch().equals(this.branch.getName());
     }
 
     @Override
