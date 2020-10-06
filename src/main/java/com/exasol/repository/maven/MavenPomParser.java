@@ -68,7 +68,7 @@ public class MavenPomParser {
         if ((element != null) && !element.isEmpty()) {
             return element;
         } else {
-            throw throwParsingException(elementName);
+            throw createParsingException(elementName);
         }
     }
 
@@ -77,11 +77,11 @@ public class MavenPomParser {
         if (item != null) {
             return item;
         } else {
-            throw throwParsingException(elementName);
+            throw createParsingException(elementName);
         }
     }
 
-    private IllegalStateException throwParsingException(final String elementName) {
+    private IllegalStateException createParsingException(final String elementName) {
         return new IllegalStateException(
                 "E-REP-MAV-2: Unable to parse pom file because of a missing element: " + elementName);
     }
@@ -153,7 +153,7 @@ public class MavenPomParser {
             final Element properties = (Element) getMandatoryChildNode("properties");
             final Node tagNode = properties.getElementsByTagName(tag).item(0);
             if (tagNode == null) {
-                throw throwParsingException(tag);
+                throw createParsingException(tag);
             } else {
                 return tagNode.getTextContent().strip();
             }
