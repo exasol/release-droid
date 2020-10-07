@@ -123,7 +123,7 @@ public class GitRepositoryValidator {
             throw new IllegalStateException("E-RR-VAL-7: " + fileName + " file doesn't contain release's date: "
                     + dateToday.toString() + ". PLease, add or update the release date.");
         } else {
-            LOGGER.info("Don't forget to change the date in the `" + fileName + "` file before you release.");
+            LOGGER.warning("Don't forget to change the date in the `" + fileName + "` file before you release.");
         }
     }
 

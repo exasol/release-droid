@@ -81,7 +81,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
                             + wrongTicketsString + ", Please, check the issues numbers in your '" + fileName
                             + "' one more time.");
         } else {
-            LOGGER.info("Don't forget to close the tickets mentioned in the '" + fileName
+            LOGGER.warning("Don't forget to close the tickets mentioned in the '" + fileName
                     + "' file before you release: " + wrongTicketsString);
         }
     }
