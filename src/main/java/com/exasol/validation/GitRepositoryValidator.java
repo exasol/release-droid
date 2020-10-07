@@ -37,7 +37,7 @@ public class GitRepositoryValidator {
         final String changelog = content.getChangelogFile();
         validateChangelog(changelog, version);
         final ReleaseLetter changes = content.getReleaseLetter(version);
-        validateChanges(changes, version);
+        validateChanges(changes, version, content.isDefaultBranch());
     }
 
     protected void validateNewVersion(final String newVersion) {
@@ -93,10 +93,10 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validation of `changelog.md` file was successful.");
     }
 
-    protected void validateChanges(final ReleaseLetter changes, final String version) {
+    protected void validateChanges(final ReleaseLetter changes, final String version, final boolean isDefaultBranch) {
         LOGGER.fine("Validating " + changes.getFileName() + " file.");
         validateVersionInChanges(changes, version);
-        validateDateInChanges(changes);
+        validateDateInChanges(changes, isDefaultBranch);
         validateHasBody(changes);
     }
 
@@ -110,13 +110,20 @@ public class GitRepositoryValidator {
     }
 
     // [impl->dsn~validate-changes-file-contains-release-date~1]
-    private void validateDateInChanges(final ReleaseLetter changes) {
+    private void validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
-            throw new IllegalStateException(
-                    "E-RR-VAL-7: " + changes.getFileName() + " file doesn't contain release's date: "
-                            + dateToday.toString() + ". PLease, add or update the release date.");
+            reportWrongDate(changes.getFileName(), isDefaultBranch, dateToday);
+        }
+    }
+
+    private void reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
+        if (isDefaultBranch) {
+            throw new IllegalStateException("E-RR-VAL-7: " + fileName + " file doesn't contain release's date: "
+                    + dateToday.toString() + ". PLease, add or update the release date.");
+        } else {
+            LOGGER.info("Don't forget to change the date in the `" + fileName + "` file before you release.");
         }
     }
 

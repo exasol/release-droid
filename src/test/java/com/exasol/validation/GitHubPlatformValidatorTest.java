@@ -53,15 +53,31 @@ class GitHubPlatformValidatorTest {
     @Test
     // [utest->dsn~validate-github-issues-exists~1]
     // [utest->dsn~validate-github-issues-are-closed~1]
-    void testValidateGitHubTicketsInvalidTickets() {
+    void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() {
         final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
+        final GitBranchContent branchContent = Mockito.mock(GitBranchContent.class);
+        when(branchContent.isDefaultBranch()).thenReturn(true);
         when(platformMock.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, platformMock);
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateGitHubTickets(changesLetter));
         assertThat(exception.getMessage(), containsString("E-RR-VAL-2"));
+    }
+
+    @Test
+    // [utest->dsn~validate-github-issues-exists~1]
+    // [utest->dsn~validate-github-issues-are-closed~1]
+    void testValidateGitHubTicketsInvalidTickets() {
+        final GitHubPlatform platformMock = Mockito.mock(GitHubPlatform.class);
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
+        final GitBranchContent branchContent = Mockito.mock(GitBranchContent.class);
+        when(branchContent.isDefaultBranch()).thenReturn(false);
+        when(platformMock.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
+        when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, platformMock);
+        assertDoesNotThrow(() -> validator.validateGitHubTickets(changesLetter));
     }
 
     @Test
