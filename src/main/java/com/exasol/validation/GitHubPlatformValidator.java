@@ -52,9 +52,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
     // [impl->dsn~validate-release-letter~1]
     private void validateChangesFile(final ReleaseLetter releaseLetter) {
         validateContainsHeader(releaseLetter);
-        if (this.branchContent.isDefaultBranch()) {
-            validateGitHubTickets(releaseLetter);
-        }
+        validateGitHubTickets(releaseLetter);
     }
 
     protected void validateContainsHeader(final ReleaseLetter changes) {
@@ -71,10 +69,20 @@ public class GitHubPlatformValidator implements PlatformValidator {
     protected void validateGitHubTickets(final ReleaseLetter changesFile) {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {
+            reportWrongTickets(changesFile.getFileName(), wrongTickets);
+        }
+    }
+
+    private void reportWrongTickets(final String fileName, final List<String> wrongTickets) {
+        final String wrongTicketsString = String.join(", ", wrongTickets);
+        if (this.branchContent.isDefaultBranch()) {
             throw new IllegalStateException(
                     "E-RR-VAL-2: Some of the mentioned GitHub issues are not closed or do not exists: "
-                            + String.join(", ", wrongTickets) + ", Please, check the issues numbers in your '"
-                            + changesFile.getFileName() + "' one more time.");
+                            + wrongTicketsString + ", Please, check the issues numbers in your '" + fileName
+                            + "' one more time.");
+        } else {
+            LOGGER.warning("Don't forget to close the tickets mentioned in the '" + fileName
+                    + "' file before you release: " + wrongTicketsString);
         }
     }
 

@@ -47,7 +47,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
-        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0"));
+        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0", true));
     }
 
     @Test
@@ -58,7 +58,20 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "2.1.0"));
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> this.validator.validateChanges(changesMock, "2.1.0", true));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-7"));
+    }
+
+    @Test
+    // [utest->dsn~validate-changes-file-contains-release-date~1]
+    void testValidateChangesInvalidDateWarning() {
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
+        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
+        when(changesMock.getFileName()).thenReturn("file");
+        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0", false));
     }
 
     @Test
@@ -69,7 +82,10 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "3.1.0"));
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> this.validator.validateChanges(changesMock, "3.1.0", true));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-6"));
+
     }
 
     @Test
@@ -80,7 +96,9 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(changesMock.getFileName()).thenReturn("file");
-        assertThrows(IllegalStateException.class, () -> this.validator.validateChanges(changesMock, "2.1.0"));
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> this.validator.validateChanges(changesMock, "2.1.0", true));
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-8"));
     }
 
     @ParameterizedTest

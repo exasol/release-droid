@@ -5,6 +5,7 @@ Code name:
 ## Features / Enhancements
 
 * #35: Added validation that checks ".github/workflows/github_release.yml" file exists.
+* #43: Added a logger message instead of throwing an exception when validating a release date and a list of closed tickets on the not-default branches. 
 
 ## Bugs
 

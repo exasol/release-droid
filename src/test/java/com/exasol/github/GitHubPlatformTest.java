@@ -42,7 +42,9 @@ class GitHubPlatformTest {
         final GHIssue firstIssue = Mockito.mock(GHIssue.class);
         final GHIssue secondIssue = Mockito.mock(GHIssue.class);
         when(firstIssue.getNumber()).thenReturn(24);
+        when(firstIssue.isPullRequest()).thenReturn(false);
         when(secondIssue.getNumber()).thenReturn(31);
+        when(secondIssue.isPullRequest()).thenReturn(false);
         when(ghRepositoryMock.getIssues(GHIssueState.CLOSED)).thenReturn(List.of(firstIssue, secondIssue));
         final GitHubPlatform platform = new GitHubPlatform(GITHUB, ghRepositoryMock, new GitHubUser("", ""));
         assertThat(platform.getClosedTickets(), equalTo(Set.of(24, 31)));

@@ -103,7 +103,8 @@ public class GitHubPlatform extends AbstractPlatform {
     public Set<Integer> getClosedTickets() {
         try {
             final List<GHIssue> closedIssues = this.repository.getIssues(GHIssueState.CLOSED);
-            return closedIssues.stream().map(GHIssue::getNumber).collect(Collectors.toSet());
+            return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
+                    .collect(Collectors.toSet());
         } catch (final IOException exception) {
             throw new GitHubException(
                     "E-GH-PLF-2: Unable to retrieve a list of closed tickets. PLease, try again later.", exception);
