@@ -1,5 +1,6 @@
 package com.exasol.validation;
 
+import static com.exasol.validation.GitHubPlatformValidator.GITHUB_WORKFLOW_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -11,7 +12,9 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.exasol.github.GitHubException;
 import com.exasol.github.GitHubPlatform;
+import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 
 class GitHubPlatformValidatorTest {
@@ -59,5 +62,23 @@ class GitHubPlatformValidatorTest {
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> validator.validateGitHubTickets(changesLetter));
         assertThat(exception.getMessage(), containsString("E-RR-VAL-2"));
+    }
+
+    @Test
+    void testValidateWorkflowFileExists() {
+        final GitBranchContent branchContentMock = Mockito.mock(GitBranchContent.class);
+        when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);
+        assertDoesNotThrow(validator::validateWorkflowFileExists);
+    }
+
+    @Test
+    void testValidateWorkflowFileExistsThrowsException() {
+        final GitBranchContent branchContentMock = Mockito.mock(GitBranchContent.class);
+        when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitHubException.class);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                validator::validateWorkflowFileExists);
+        assertThat(exception.getMessage(), containsString("E-RR-VAL-3"));
     }
 }
