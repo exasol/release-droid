@@ -1,5 +1,7 @@
 package com.exasol;
 
+import static com.exasol.UserInput.Builder;
+import static com.exasol.UserInput.builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -16,8 +18,8 @@ class UserInputTest {
 
     @Test
     void testValidUserInput() {
-        final UserInput userInput = UserInput.builder().repositoryOwner(OWNER).repositoryName(REPOSITORY_NAME)
-                .platforms(PLATFORM).goal(GOAL).gitBranch(BRANCH).build();
+        final UserInput userInput = builder().repositoryOwner(OWNER).repositoryName(REPOSITORY_NAME).platforms(PLATFORM)
+                .goal(GOAL).gitBranch(BRANCH).build();
         assertAll(() -> assertThat(userInput.getRepositoryOwner(), equalTo(OWNER)), //
                 () -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
                 () -> assertThat(userInput.getGoal(), equalTo(Goal.VALIDATE)), //
@@ -29,37 +31,37 @@ class UserInputTest {
 
     @Test
     void testUserInputWithoutGoal() {
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> UserInput.builder().build());
+        Builder builder = builder();
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-2"));
     }
 
     @Test
     void testUserInputWithoutPlatforms() {
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> UserInput.builder().goal(GOAL).build());
+        Builder builder = builder().goal(GOAL);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-3"));
     }
 
     @Test
     void testUserInputWithoutRepositoryName() {
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> UserInput.builder().goal(GOAL).platforms(PLATFORM).build());
+        Builder builder = builder().goal(GOAL).platforms(PLATFORM);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-4"));
     }
 
     @Test
     void testUserInputWithoutRepositoryOwner() {
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> UserInput.builder().goal(GOAL).platforms(PLATFORM).repositoryName(REPOSITORY_NAME).build());
+        Builder builder = builder().goal(GOAL).platforms(PLATFORM).repositoryName(REPOSITORY_NAME);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-5"));
     }
 
     @Test
     void testUserInputWithReleaseAndBranch() {
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> UserInput.builder().goal("RELEASE").platforms(PLATFORM).repositoryOwner(OWNER)
-                        .repositoryName(REPOSITORY_NAME).gitBranch(BRANCH).build());
+        Builder builder = builder().goal("RELEASE").platforms(PLATFORM).repositoryOwner(OWNER)
+                .repositoryName(REPOSITORY_NAME).gitBranch(BRANCH);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-1"));
     }
 }

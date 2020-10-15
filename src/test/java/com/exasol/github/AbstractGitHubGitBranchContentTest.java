@@ -15,8 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.repository.AbstractGitHubGitBranchContent;
-import com.exasol.repository.GitBranchContent;
+import com.exasol.repository.*;
 
 class AbstractGitHubGitBranchContentTest {
     @Test
@@ -24,7 +23,7 @@ class AbstractGitHubGitBranchContentTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
-        assertThrows(GitHubException.class, () -> new DummyGitBranchContent(ghRepositoryMock, branchName));
+        assertThrows(GitRepositoryException.class, () -> new DummyGitBranchContent(ghRepositoryMock, branchName));
     }
 
     @Test
@@ -75,7 +74,7 @@ class AbstractGitHubGitBranchContentTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenThrow(IOException.class);
         final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
-        assertThrows(GitHubException.class, repository::getChangelogFile);
+        assertThrows(GitRepositoryException.class, repository::getChangelogFile);
     }
 
     @Test

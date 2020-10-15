@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import com.exasol.github.GitHubException;
+import com.exasol.repository.GitRepositoryException;
 
 /**
  * Parser for {@link MavenPom}.
@@ -33,8 +33,8 @@ public class MavenPomParser {
             final Document parsedPom = documentBuilder.parse(inputStream);
             return parsedPom.getDocumentElement();
         } catch (final ParserConfigurationException | SAXException | IOException exception) {
-            throw new GitHubException("E-REP-MAV-1: Cannot parse pom.xml file. "
-                    + "Please, check that the pom.xml file in a valid format.", exception);
+            throw new GitRepositoryException("E-REP-MAV-1: Cannot parse pom.xml file. "
+                    + "Please, check that the 'pom.xml' file has a valid format.", exception);
         }
     }
 
