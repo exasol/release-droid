@@ -59,7 +59,7 @@ public class RepositoryHandler {
                     platform, this.validationReport);
             platformValidator.validate();
         }
-        LOGGER.info(() -> "Validation completed successfully.");
+        LOGGER.info(() -> "Validation completed.");
     }
 
     /**
