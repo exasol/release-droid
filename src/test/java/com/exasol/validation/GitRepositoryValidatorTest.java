@@ -2,13 +2,14 @@ package com.exasol.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,23 +20,30 @@ import com.exasol.repository.ReleaseLetter;
 
 class GitRepositoryValidatorTest {
     private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);
-    private final GitRepositoryValidator validator = new GitRepositoryValidator(this.gitRepositoryMock);
+    private ValidationReport validationReport;
+    private GitRepositoryValidator validator;
+
+    @BeforeEach
+    void beforeEach() {
+        this.validationReport = new ValidationReport();
+        this.validator = new GitRepositoryValidator(this.gitRepositoryMock, this.validationReport);
+    }
 
     @Test
     // [utest->dsn~validate-changelog~1]
     void testValidateChangeLog() {
         final String changelog = "[4.0.1](changes_4.0.1.md)";
-        assertDoesNotThrow(() -> this.validator.validateChangelog(changelog, "4.0.1"));
+        this.validator.validateChangelog(changelog, "4.0.1");
+        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
     }
 
     @Test
     // [utest->dsn~validate-changelog~1]
     void testValidateChangeLogThrowsException() {
         final String changelog = "";
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> this.validator.validateChangelog(changelog, "1.0.0"));
-        assertThat(exception.getMessage(), containsString("changelog.md file "
-                + "doesn't contain the following link, please add it to the file: [1.0.0](changes_1.0.0.md)"));
+        this.validator.validateChangelog(changelog, "1.0.0");
+        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-5: The file "
+                + "'changelog.md' doesn't contain the following link, please add '[1.0.0](changes_1.0.0.md)' to the file"));
     }
 
     @Test
@@ -47,7 +55,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
-        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0", true));
+        this.validator.validateChanges(changesMock, "2.1.0", true);
+        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
     }
 
     @Test
@@ -58,9 +67,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> this.validator.validateChanges(changesMock, "2.1.0", true));
-        assertThat(exception.getMessage(), containsString("E-RR-VAL-7"));
+        this.validator.validateChanges(changesMock, "2.1.0", true);
+        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-7"));
     }
 
     @Test
@@ -71,7 +79,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        assertDoesNotThrow(() -> this.validator.validateChanges(changesMock, "2.1.0", false));
+        this.validator.validateChanges(changesMock, "2.1.0", false);
+        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
     }
 
     @Test
@@ -82,9 +91,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> this.validator.validateChanges(changesMock, "3.1.0", true));
-        assertThat(exception.getMessage(), containsString("E-RR-VAL-6"));
+        this.validator.validateChanges(changesMock, "3.1.0", true);
+        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-6"));
 
     }
 
@@ -96,9 +104,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(changesMock.getFileName()).thenReturn("file");
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> this.validator.validateChanges(changesMock, "2.1.0", true));
-        assertThat(exception.getMessage(), containsString("E-RR-VAL-8"));
+        this.validator.validateChanges(changesMock, "2.1.0", true);
+        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-8"));
     }
 
     @ParameterizedTest
@@ -106,9 +113,9 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-format~1]
     void testValidateInvalidVersionFormat(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.validator.validateNewVersion(version));
-        assertThat(exception.getMessage(), containsString("E-RR-VAL-3"));
+        final boolean validationResult = this.validator.validateNewVersion(version);
+        assertAll(() -> assertThat(validationResult, equalTo(false)),
+                () -> assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-3")));
     }
 
     @ParameterizedTest
@@ -116,7 +123,8 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-format~1]
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-        assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
+        this.validator.validateNewVersion(version);
+        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -124,7 +132,8 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
-        assertDoesNotThrow(() -> this.validator.validateNewVersion(version));
+        this.validator.validateNewVersion(version);
+        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -132,8 +141,8 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.validator.validateNewVersion(version));
-        assertThat(exception.getMessage(), containsString("E-RR-VAL-4"));
+        final boolean validationResult = this.validator.validateNewVersion(version);
+        assertAll(() -> assertThat(validationResult, equalTo(false)),
+                () -> assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-4")));
     }
 }

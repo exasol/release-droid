@@ -2,7 +2,6 @@ package com.exasol;
 
 import static com.exasol.Platform.PlatformName.GITHUB;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -10,51 +9,48 @@ import java.util.logging.Logger;
 import com.exasol.Platform.PlatformName;
 import com.exasol.github.GitHubEntityFactory;
 import com.exasol.repository.GitRepository;
+import com.exasol.validation.ValidationReport;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
  */
 public class ReleaseRobot {
     private static final Logger LOGGER = Logger.getLogger(ReleaseRobot.class.getName());
-    private final String gitBranch;
-    private final Goal goal;
-    private final Set<PlatformName> platformNames;
-    private final String repositoryName;
-    private final String repositoryOwner;
+    private final UserInput userInput;
 
-    private ReleaseRobot(final Builder builder) {
-        this.gitBranch = builder.gitBranch;
-        this.goal = builder.goal;
-        this.platformNames = builder.platforms;
-        this.repositoryName = builder.repositoryName;
-        this.repositoryOwner = builder.repositoryOwner;
+    public ReleaseRobot(final UserInput userInput) {
+        this.userInput = userInput;
     }
 
     /**
      * Main entry point for all Release Robot's calls.
      */
+    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     public void run() {
-        LOGGER.fine(() -> "Release Robot has received '" + this.goal + "' request for the project "
-                + this.repositoryName + ".");
-        try {
-            final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(this.repositoryOwner,
-                    this.repositoryName);
-            final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
-            final Set<Platform> platforms = createPlatforms(gitHubEntityFactory);
-            final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platforms);
-            if (this.goal == Goal.VALIDATE) {
-                runValidation(repositoryHandler);
-            } else {
-                runRelease(repositoryHandler);
-            }
-        } catch (final RuntimeException exception) {
-            LOGGER.severe(() -> "'" + this.goal + "' request failed. Cause: " + exception.getMessage());
+        LOGGER.fine(() -> "Release Robot has received '" + this.userInput.getGoal() + "' request for the project "
+                + this.userInput.getRepositoryName() + ".");
+        final RepositoryHandler repositoryHandler = createRepositoryHandler();
+        final ValidationReport validationReport = runValidation(repositoryHandler);
+        if (validationReport.hasFailedValidations()) {
+            logFailedValidation(validationReport);
+        } else {
+            runReleaseIfNeeded(repositoryHandler);
         }
+        final ReportWriter reportWriter = new ReportWriter(this.userInput);
+        reportWriter.writeValidationReportToFile(validationReport);
+    }
+
+    private RepositoryHandler createRepositoryHandler() {
+        final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(this.userInput.getRepositoryOwner(),
+                this.userInput.getRepositoryName());
+        final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
+        final Set<Platform> platforms = createPlatforms(gitHubEntityFactory);
+        return new RepositoryHandler(repository, platforms);
     }
 
     private Set<Platform> createPlatforms(final GitHubEntityFactory gitHubEntityFactory) {
         final Set<Platform> platforms = new HashSet<>();
-        for (final PlatformName name : this.platformNames) {
+        for (final PlatformName name : this.userInput.getPlatformNames()) {
             if (name == GITHUB) {
                 final Platform gitHubPlatform = gitHubEntityFactory.createGitHubPlatform();
                 platforms.add(gitHubPlatform);
@@ -64,140 +60,31 @@ public class ReleaseRobot {
     }
 
     // [impl->dsn~rr-runs-validate-goal~1]
-    private void runValidation(final RepositoryHandler repositoryHandler) {
-        if (hasBranch()) {
-            repositoryHandler.validate();
+    private ValidationReport runValidation(final RepositoryHandler repositoryHandler) {
+        if (validateUserSpecifiedBranch()) {
+            return repositoryHandler.validate(this.userInput.getGitBranch());
         } else {
-            repositoryHandler.validate(this.gitBranch);
+            return repositoryHandler.validate();
         }
     }
 
-    private boolean hasBranch() {
-        return this.gitBranch == null || this.gitBranch.isEmpty();
+    private void logFailedValidation(final ValidationReport validationReport) {
+        LOGGER.severe(() -> "'" + this.userInput.getGoal() + "' request failed. Validation report: "
+                + validationReport.getFailedValidations());
     }
 
-    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
+    private boolean validateUserSpecifiedBranch() {
+        if (this.userInput.getGoal() == Goal.RELEASE) {
+            return false;
+        } else {
+            return this.userInput.hasGitBranch();
+        }
+    }
+
     // [impl->dsn~rr-runs-release-goal~1]
-    private void runRelease(final RepositoryHandler repositoryHandler) {
-        repositoryHandler.validate();
-        repositoryHandler.release();
-    }
-
-    /**
-     * Get a {@link ReleaseRobot} builder.
-     *
-     * @return builder instance
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * Builder for {@link ReleaseRobot}.
-     */
-    public static final class Builder {
-        private String gitBranch;
-        private Goal goal;
-        private Set<PlatformName> platforms;
-        private String repositoryName;
-        private String repositoryOwner;
-
-        /**
-         * Add a git branch.
-         *
-         * @param gitBranch name of a branch to work with.
-         * @return builder instance for fluent programming
-         */
-        // [impl->dsn~users-can-set-git-branch-for-validation~1]
-        public Builder gitBranch(final String gitBranch) {
-            this.gitBranch = gitBranch;
-            return this;
-        }
-
-        /**
-         * Add a run goal.
-         *
-         * @param goal run goal. Supported goals: release, validate
-         * @return builder instance for fluent programming
-         */
-        // [impl->dsn~users-set-run-goal~1]
-        public Builder goal(final String goal) {
-            this.goal = Goal.getGoal(goal);
-            return this;
-        }
-
-        /**
-         * Add release platforms.
-         *
-         * @param platforms one or more platforms for validation or release. Supported values: github
-         * @return builder instance for fluent programming
-         */
-        // [impl->dsn~users-set-release-platforms~1]
-        public Builder platforms(final String... platforms) {
-            this.platforms = PlatformName.toSet(platforms);
-            return this;
-        }
-
-        /**
-         * Add a name of a repository.
-         *
-         * @param repositoryName name of a target project from GitHub
-         * @return builder instance for fluent programming
-         */
-        // [impl->dsn~users-set-project~1]
-        public Builder repositoryName(final String repositoryName) {
-            this.repositoryName = repositoryName;
-            return this;
-        }
-
-        /**
-         * Add an owner of a GitHub repository.
-         *
-         * @param repositoryOwner an owner of a GitHub repository
-         * @return builder instance for fluent programming
-         */
-        public Builder repositoryOwner(final String repositoryOwner) {
-            this.repositoryOwner = repositoryOwner;
-            return this;
-        }
-
-        /**
-         * Create a new {@link ReleaseRobot} instance.
-         *
-         * @return new {@link ReleaseRobot} instance
-         */
-        public ReleaseRobot build() {
-            validateMandatoryParameters();
-            validateGoalAndBranch();
-            return new ReleaseRobot(this);
-        }
-
-        private void validateGoalAndBranch() {
-            if (this.goal == Goal.RELEASE && this.gitBranch != null) {
-                throw new IllegalStateException(
-                        "E-RR-1: Please, remove branch parameter if you want to make a release.");
-            }
-        }
-
-        private void validateMandatoryParameters() {
-            if (this.goal == null) {
-                throwExceptionForMissingParameter("E-RR-2", "goal");
-            }
-            if (this.platforms == null || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("E-RR-3", "platforms");
-            }
-            if (this.repositoryName == null) {
-                throwExceptionForMissingParameter("E-RR-4", "repository name");
-            }
-            if (this.repositoryOwner == null) {
-                throwExceptionForMissingParameter("E-RR-5", "repository owner");
-            }
-        }
-
-        private void throwExceptionForMissingParameter(final String exceptionCode, final String goal) {
-            throw new IllegalStateException(
-                    MessageFormat.format("{}: Please, specify a mandatory parameter `{}` and re0run the Release Robot",
-                            exceptionCode, goal));
+    private void runReleaseIfNeeded(final RepositoryHandler repositoryHandler) {
+        if (this.userInput.getGoal() == Goal.RELEASE) {
+            repositoryHandler.release();
         }
     }
 }
