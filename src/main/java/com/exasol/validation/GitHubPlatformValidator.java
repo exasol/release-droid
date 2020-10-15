@@ -77,7 +77,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
                     "Some of the mentioned GitHub issues are not closed or do not exists: " + wrongTicketsString
                             + ", Please, check the issues numbers in your '" + fileName + "' one more time.");
         } else {
-            final String warningMessage = "Don't forget to close the tickets mentioned in the '" + fileName
+            final String warningMessage = "W-RR-VAL-1. Don't forget to close the tickets mentioned in the '" + fileName
                     + "' file before you release: " + wrongTicketsString + ".";
             this.validationReport
                     .addSuccessfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage);

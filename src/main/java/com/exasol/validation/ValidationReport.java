@@ -8,6 +8,7 @@ import java.util.List;
  */
 // [impl->dsn~rr-creates-validation-report~1]
 public class ValidationReport {
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private final List<ValidationResult> validationResults = new LinkedList<>();
     private boolean hasFailedValidations = false;
 
@@ -47,11 +48,11 @@ public class ValidationReport {
      */
     public String getFailedValidations() {
         final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\n");
+        stringBuilder.append(LINE_SEPARATOR);
         for (final ValidationResult validationResult : this.validationResults) {
             if (!validationResult.isSuccessful()) {
                 stringBuilder.append(validationResult.toString());
-                stringBuilder.append("\n");
+                stringBuilder.append(LINE_SEPARATOR);
             }
         }
         return stringBuilder.toString();
@@ -66,7 +67,7 @@ public class ValidationReport {
         final StringBuilder stringBuilder = new StringBuilder();
         for (final ValidationResult validationResult : this.validationResults) {
             stringBuilder.append(validationResult.toString());
-            stringBuilder.append("\n");
+            stringBuilder.append(LINE_SEPARATOR);
         }
         return stringBuilder.toString();
     }

@@ -11,7 +11,9 @@ import com.exasol.github.GitHubUser;
  */
 public final class CredentialsProvider {
     private static final Logger LOGGER = Logger.getLogger(CredentialsProvider.class.getName());
-    private static final String RELEASE_ROBOT_CREDENTIALS = "/.release-robot/credentials";
+    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
+    private static final String RELEASE_ROBOT_CREDENTIALS = FILE_SEPARATOR + ".release-robot" + FILE_SEPARATOR
+            + "credentials";
     private static final String GITHUB_USERNAME_KEY = "github_username";
     private static final String GITHUB_TOKEN_KEY = "github_oauth_access_token";
     private static CredentialsProvider credentialsProvider;

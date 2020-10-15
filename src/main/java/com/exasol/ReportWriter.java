@@ -13,10 +13,11 @@ import com.exasol.validation.ValidationReport;
  */
 public class ReportWriter {
     private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());
-    private static final String RELEASE_ROBOT_REPORT = "/.release-robot/last_report.txt";
     private static final String HOME_DIRECTORY = System.getProperty("user.home");
+    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
+    private static final String RELEASE_ROBOT_REPORT = FILE_SEPARATOR + ".release-robot" + FILE_SEPARATOR
+            + "last_report.txt";
     private static final String REPORT_PATH = HOME_DIRECTORY + RELEASE_ROBOT_REPORT;
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private final UserInput userInput;
 
     /**
@@ -36,34 +37,32 @@ public class ReportWriter {
     // [impl->dsn~rr-writes-validation-report-to-file~1]
     public void writeValidationReportToFile(final ValidationReport validationReport) {
         final File reportFile = prepareFile();
-        try (final FileWriter writer = new FileWriter(reportFile, false)) {
+        try (final PrintWriter writer = new PrintWriter(reportFile.getAbsoluteFile())) {
             writeReport(validationReport, writer);
-        } catch (final IOException exception) {
-            throw new IllegalStateException("E-RR-RW-2: Unable to write a report.");
+        } catch (final FileNotFoundException exception) {
+            throw new IllegalStateException("E-RR-RW-2: Unable to write a report.", exception);
         }
         LOGGER.info("A full report is available: " + REPORT_PATH);
     }
 
-    private void writeReport(final ValidationReport validationReport, final FileWriter writer) throws IOException {
+    private void writeReport(final ValidationReport validationReport, final PrintWriter writer) {
         final String now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        writer.write(now + LINE_SEPARATOR);
-        writer.write(LINE_SEPARATOR);
-        writer.write("Goal: " + this.userInput.getGoal() + LINE_SEPARATOR);
-        writer.write("Repository: " + this.userInput.getRepositoryOwner() + "." + this.userInput.getRepositoryName()
-                + LINE_SEPARATOR);
-        writer.write("Platforms: "
-                + this.userInput.getPlatformNames().stream().map(Enum::name).collect(Collectors.joining(", "))
-                + LINE_SEPARATOR);
+        writer.println(now);
+        writer.println();
+        writer.println("Goal: " + this.userInput.getGoal());
+        writer.println("Repository: " + this.userInput.getRepositoryOwner() + "." + this.userInput.getRepositoryName());
+        writer.println("Platforms: "
+                + this.userInput.getPlatformNames().stream().map(Enum::name).collect(Collectors.joining(", ")));
         if (this.userInput.hasGitBranch()) {
-            writer.write("Git branch: " + this.userInput.getGitBranch() + LINE_SEPARATOR);
+            writer.println("Git branch: " + this.userInput.getGitBranch());
         }
         if (validationReport.hasFailedValidations()) {
-            writer.write("VALIDATION FAILED!" + LINE_SEPARATOR);
+            writer.println("VALIDATION FAILED!");
         } else {
-            writer.write("Validation is successful!" + LINE_SEPARATOR);
+            writer.println("Validation is successful!");
         }
-        writer.write(LINE_SEPARATOR);
-        writer.write(validationReport.getFullReport());
+        writer.println();
+        writer.println(validationReport.getFullReport());
     }
 
     private File prepareFile() {
@@ -72,7 +71,7 @@ public class ReportWriter {
             final boolean createdNewFile = reportFile.createNewFile();
             logFilePreparation(createdNewFile);
         } catch (final IOException exception) {
-            throw new IllegalStateException("E-RR-RW-1: Unable to prepare a file for a report.");
+            throw new IllegalStateException("E-RR-RW-1: Unable to prepare a file for a report.", exception);
         }
         return reportFile;
     }

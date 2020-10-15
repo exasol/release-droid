@@ -1,5 +1,6 @@
 package com.exasol;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**

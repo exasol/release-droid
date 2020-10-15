@@ -61,8 +61,8 @@ public class GitRepositoryValidator {
             return true;
         } else {
             this.validationReport.addFailedValidations("E-RR-VAL-3",
-                    "A version or tag found in this repository has invalid format. "
-                            + "The valid format is: <major>.<minor>.<fix>. "
+                    "A version or tag found in this repository has invalid format: " + version
+                            + ". The valid format is: <major>.<minor>.<fix>. "
                             + "Please, refer to the user guide to check requirements.");
             return false;
         }
@@ -154,7 +154,7 @@ public class GitRepositoryValidator {
                     "The file '" + fileName + "' doesn't contain release's date: " + dateToday.toString()
                             + ". PLease, add or update the release date.");
         } else {
-            final String warningMessage = "Don't forget to change the date in the '" + fileName
+            final String warningMessage = "W-RR-VAL-2. Don't forget to change the date in the '" + fileName
                     + "' file before you release.";
             this.validationReport.addSuccessfulValidation(
                     "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage);
