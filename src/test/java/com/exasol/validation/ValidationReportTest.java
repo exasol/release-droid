@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+// [utest->dsn~rr-creates-validation-report~1]
 class ValidationReportTest {
     private ValidationReport report;
 

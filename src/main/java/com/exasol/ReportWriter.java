@@ -33,6 +33,7 @@ public class ReportWriter {
      * 
      * @param validationReport report to write
      */
+    // [impl->dsn~rr-writes-validation-report-to-file~1]
     public void writeValidationReportToFile(final ValidationReport validationReport) {
         final File reportFile = prepareFile();
         try (final FileWriter writer = new FileWriter(reportFile, false)) {

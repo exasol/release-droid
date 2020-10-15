@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Represents a validation report.
  */
+// [impl->dsn~rr-creates-validation-report~1]
 public class ValidationReport {
     private final List<ValidationResult> validationResults = new LinkedList<>();
     private boolean hasFailedValidations = false;
