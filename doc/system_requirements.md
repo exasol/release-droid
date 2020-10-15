@@ -128,7 +128,7 @@ RR creates a validation report containing all successful and failed validations.
 
 Covers:
 
-* [feat~release-validation~1](#report)
+* [feat~report~1](#report)
 
 Needs: dsn
 
