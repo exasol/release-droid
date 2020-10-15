@@ -143,6 +143,8 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final boolean validationResult = this.validator.validateNewVersion(version);
         assertAll(() -> assertThat(validationResult, equalTo(false)),
-                () -> assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-4")));
+                () -> assertThat(this.validationReport.getFailedValidations(),
+                        containsString("E-RR-VAL-4: " + "A new version does not fit the versioning rules. "
+                                + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }
 }

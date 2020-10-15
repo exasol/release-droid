@@ -24,11 +24,12 @@ public final class PlatformValidatorFactory {
      * @return new instance of {@link PlatformValidator}
      */
     public static PlatformValidator createPlatformValidator(final GitBranchContent repositoryContent,
-            final Platform platform, ValidationReport validationReport) {
+            final Platform platform, final ValidationReport validationReport) {
         final PlatformName releasePlatform = platform.getPlatformName();
         if (releasePlatform == GITHUB) {
             return new GitHubPlatformValidator(repositoryContent, (GitHubPlatform) platform, validationReport);
         } else {
+            //TODO replace the hardcoded list with the list of {@link Platform}s
             throw new UnsupportedOperationException("E-RR-VAL-9: Validation for release platform " + releasePlatform
                     + " is not supported. Please choose one of: github");
         }
