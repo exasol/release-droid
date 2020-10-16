@@ -17,8 +17,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.github.GitHubException;
 import com.exasol.repository.GitBranchContent;
+import com.exasol.repository.GitRepositoryException;
 
 class JavaMavenGitBranchContentTest {
     @ParameterizedTest
@@ -68,6 +68,6 @@ class JavaMavenGitBranchContentTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(contentMock.read()).thenReturn(new ByteArrayInputStream(version.getBytes()));
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        assertThrows(GitHubException.class, () -> new JavaMavenGitBranchContent(ghRepositoryMock, branchName));
+        assertThrows(GitRepositoryException.class, () -> new JavaMavenGitBranchContent(ghRepositoryMock, branchName));
     }
 }

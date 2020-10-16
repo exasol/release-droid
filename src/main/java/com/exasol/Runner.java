@@ -20,14 +20,14 @@ public class Runner {
     public static void main(final String[] args) {
         final Options options = createOptions();
         final CommandLine cmd = getCommandLine(args, options);
-        final ReleaseRobot releaseRobot = ReleaseRobot.builder() //
+        final UserInput userInput = UserInput.builder() //
                 .repositoryName(cmd.getOptionValue(NAME_SHORT_OPTION)) //
                 .goal(cmd.getOptionValue(GOAL_SHORT_OPTION)) //
                 .platforms(cmd.getOptionValue(PLATFORM_SHORT_OPTION).split(",")) //
                 .gitBranch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
                 .repositoryOwner(REPOSITORY_OWNER) //
                 .build();
-        releaseRobot.run();
+        new ReleaseRobot(userInput).run();
     }
 
     private static Options createOptions() {

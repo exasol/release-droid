@@ -165,6 +165,28 @@ Covers:
 
 Needs: impl
 
+### RR Creates Validation Report
+`dsn~rr-creates-validation-report~1`
+
+RR creates a validation report containing a summary of all validations and their results.
+
+Covers:
+
+* `req~validation-report~1`
+
+Needs: impl, utest
+
+### RR Writes Validation Report to a File
+`dsn~rr-writes-validation-report-to-file~1`
+
+RR writes validation report to a `home/.release-robot/last_report.txt` file.
+
+Covers:
+
+* `req~validation-report~1`
+
+Needs: impl
+
 ## Validation
 
 ### Git Repository Validation

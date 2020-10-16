@@ -16,16 +16,20 @@ public class GitHubPlatformValidator implements PlatformValidator {
     protected static final String GITHUB_WORKFLOW_PATH = ".github/workflows/github_release.yml";
     private final GitHubPlatform gitHubPlatform;
     private final GitBranchContent branchContent;
+    private final ValidationReport validationReport;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
-     *
-     * @param branchContent content of a branch to validate
-     * @param gitHubPlatform instance of {@link GitHubPlatform}
+     * 
+     * @param branchContent    content of a branch to validate
+     * @param gitHubPlatform   instance of {@link GitHubPlatform}
+     * @param validationReport instance of {@link ValidationReport}
      */
-    public GitHubPlatformValidator(final GitBranchContent branchContent, final GitHubPlatform gitHubPlatform) {
+    public GitHubPlatformValidator(final GitBranchContent branchContent, final GitHubPlatform gitHubPlatform,
+            final ValidationReport validationReport) {
         this.gitHubPlatform = gitHubPlatform;
         this.branchContent = branchContent;
+        this.validationReport = validationReport;
     }
 
     @Override
@@ -37,18 +41,6 @@ public class GitHubPlatformValidator implements PlatformValidator {
         validateWorkflowFileExists();
     }
 
-    /**
-     * Check that the workflow file exists and is reachable.
-     */
-    protected void validateWorkflowFileExists() {
-        try {
-            this.branchContent.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH);
-        } catch (final GitHubException exception) {
-            throw new IllegalStateException("E-RR-VAL-3: '" + GITHUB_WORKFLOW_PATH
-                    + "' file does not exist in the project. Please, add this file to release on the GitHub.");
-        }
-    }
-
     // [impl->dsn~validate-release-letter~1]
     private void validateChangesFile(final ReleaseLetter releaseLetter) {
         validateContainsHeader(releaseLetter);
@@ -58,9 +50,12 @@ public class GitHubPlatformValidator implements PlatformValidator {
     protected void validateContainsHeader(final ReleaseLetter changes) {
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
-            throw new IllegalStateException("E-RR-VAL-1: The " + changes.getFileName()
-                    + " file does not contain 'Code name' section which is used as a GitHub release header."
-                    + " Please, add this section to the file");
+            this.validationReport.addFailedValidations("E-RR-VAL-1",
+                    "The file '" + changes.getFileName()
+                            + "' does not contain 'Code name' section which is used as a GitHub release header."
+                            + " Please, add this section to the file.");
+        } else {
+            this.validationReport.addSuccessfulValidation("Release letter header.");
         }
     }
 
@@ -70,19 +65,23 @@ public class GitHubPlatformValidator implements PlatformValidator {
         final List<String> wrongTickets = collectWrongTickets(changesFile);
         if (!wrongTickets.isEmpty()) {
             reportWrongTickets(changesFile.getFileName(), wrongTickets);
+        } else {
+            this.validationReport.addSuccessfulValidation("Mentioned GitHub tickets.");
         }
     }
 
     private void reportWrongTickets(final String fileName, final List<String> wrongTickets) {
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (this.branchContent.isDefaultBranch()) {
-            throw new IllegalStateException(
-                    "E-RR-VAL-2: Some of the mentioned GitHub issues are not closed or do not exists: "
-                            + wrongTicketsString + ", Please, check the issues numbers in your '" + fileName
-                            + "' one more time.");
+            this.validationReport.addFailedValidations("E-RR-VAL-2",
+                    "Some of the mentioned GitHub issues are not closed or do not exists: " + wrongTicketsString
+                            + ", Please, check the issues numbers in your '" + fileName + "' one more time.");
         } else {
-            LOGGER.warning("Don't forget to close the tickets mentioned in the '" + fileName
-                    + "' file before you release: " + wrongTicketsString);
+            final String warningMessage = "W-RR-VAL-1. Don't forget to close the tickets mentioned in the '" + fileName
+                    + "' file before you release: " + wrongTicketsString + ".";
+            this.validationReport
+                    .addSuccessfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage);
+            LOGGER.warning(warningMessage);
         }
     }
 
@@ -96,5 +95,18 @@ public class GitHubPlatformValidator implements PlatformValidator {
             }
         }
         return wrongTickets;
+    }
+
+    /**
+     * Check that the workflow file exists and is reachable.
+     */
+    protected void validateWorkflowFileExists() {
+        try {
+            this.branchContent.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH);
+            this.validationReport.addSuccessfulValidation("Workflow for a GitHub release.");
+        } catch (final GitHubException exception) {
+            this.validationReport.addFailedValidations("E-RR-VAL-3", "The file '" + GITHUB_WORKFLOW_PATH
+                    + "' does not exist in the project. Please, add this file to release on the GitHub.");
+        }
     }
 }

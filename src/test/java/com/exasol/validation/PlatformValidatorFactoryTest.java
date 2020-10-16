@@ -16,7 +16,7 @@ class PlatformValidatorFactoryTest {
     void testCreateProjectValidatorGitHub() {
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(Platform.PlatformName.GITHUB);
-        assertThat(PlatformValidatorFactory.createPlatformValidator(null, platform),
+        assertThat(PlatformValidatorFactory.createPlatformValidator(null, platform, null),
                 instanceOf(GitHubPlatformValidator.class));
     }
 
@@ -25,6 +25,6 @@ class PlatformValidatorFactoryTest {
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(Platform.PlatformName.MAVEN);
         assertThrows(UnsupportedOperationException.class,
-                () -> PlatformValidatorFactory.createPlatformValidator(null, platform));
+                () -> PlatformValidatorFactory.createPlatformValidator(null, platform, null));
     }
 }

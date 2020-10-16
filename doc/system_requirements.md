@@ -79,6 +79,13 @@ RR supports releasing on GitHub.
 
 Needs: req
 
+### Report
+`feat~report~1`
+
+RR writes a report that summarizes all steps and their results.
+
+Needs: req
+
 ## Functional Requirements
 
 ### Access Project Files
@@ -111,6 +118,17 @@ RR runs validations on a user-specified project.
 Covers:
 
 * [feat~release-validation~1](#release-validation)
+
+Needs: dsn
+
+### Validation Report
+`req~validation-report~1`
+
+RR creates a validation report containing all successful and failed validations.
+
+Covers:
+
+* [feat~report~1](#report)
 
 Needs: dsn
 

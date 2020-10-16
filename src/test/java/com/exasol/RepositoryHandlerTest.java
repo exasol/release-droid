@@ -1,6 +1,8 @@
 package com.exasol;
 
 import static com.exasol.Platform.PlatformName.GITHUB;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -13,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.*;
+import com.exasol.validation.ValidationReport;
 
 class RepositoryHandlerTest {
     @Test
@@ -30,7 +33,8 @@ class RepositoryHandlerTest {
                 .releaseDate(LocalDate.now()).body("## Features").header("Test header").build();
         when(contentMock.getReleaseLetter(contentMock.getVersion())).thenReturn(releaseLetter);
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
-        assertDoesNotThrow(() -> projectHandler.validate());
+        ValidationReport validate = projectHandler.validate();
+        assertThat(validate.hasFailedValidations(), equalTo(false));
     }
 
     @Test
