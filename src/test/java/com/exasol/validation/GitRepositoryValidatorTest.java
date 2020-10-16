@@ -15,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
+import com.exasol.report.ValidationReport;
 import com.exasol.repository.GitRepository;
 import com.exasol.repository.ReleaseLetter;
 
@@ -34,7 +35,7 @@ class GitRepositoryValidatorTest {
     void testValidateChangeLog() {
         final String changelog = "[4.0.1](changes_4.0.1.md)";
         this.validator.validateChangelog(changelog, "4.0.1");
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -42,7 +43,7 @@ class GitRepositoryValidatorTest {
     void testValidateChangeLogThrowsException() {
         final String changelog = "";
         this.validator.validateChangelog(changelog, "1.0.0");
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-5: The file "
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-5: The file "
                 + "'changelog.md' doesn't contain the following link, please add '[1.0.0](changes_1.0.0.md)' to the file"));
     }
 
@@ -56,7 +57,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -68,7 +69,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-7"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-7"));
     }
 
     @Test
@@ -80,7 +81,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", false);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -92,7 +93,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "3.1.0", true);
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-6"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-6"));
 
     }
 
@@ -105,7 +106,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-8"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-8"));
     }
 
     @ParameterizedTest
@@ -115,7 +116,7 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         final boolean validationResult = this.validator.validateNewVersion(version);
         assertAll(() -> assertThat(validationResult, equalTo(false)),
-                () -> assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-3")));
+                () -> assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-3")));
     }
 
     @ParameterizedTest
@@ -124,7 +125,7 @@ class GitRepositoryValidatorTest {
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         this.validator.validateNewVersion(version);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -133,7 +134,7 @@ class GitRepositoryValidatorTest {
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
         this.validator.validateNewVersion(version);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -143,7 +144,7 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final boolean validationResult = this.validator.validateNewVersion(version);
         assertAll(() -> assertThat(validationResult, equalTo(false)),
-                () -> assertThat(this.validationReport.getFailedValidations(),
+                () -> assertThat(this.validationReport.getFailuresReport(),
                         containsString("E-RR-VAL-4: " + "A new version does not fit the versioning rules. "
                                 + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }

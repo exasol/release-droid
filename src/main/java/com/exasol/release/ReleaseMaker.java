@@ -7,5 +7,5 @@ public interface ReleaseMaker {
     /**
      * Make a release.
      */
-    void makeRelease();
+    boolean makeRelease();
 }

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 
+import com.exasol.report.ValidationReport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,7 +33,7 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null, this.validationReport);
         validator.validateContainsHeader(changesLetter);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -42,7 +43,7 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null, this.validationReport);
         validator.validateContainsHeader(changesLetter);
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-1"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-1"));
     }
 
     @Test
@@ -56,7 +57,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, platformMock,
                 this.validationReport);
         validator.validateGitHubTickets(changesLetter);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -72,7 +73,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, platformMock,
                 this.validationReport);
         validator.validateGitHubTickets(changesLetter);
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-2"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-2"));
     }
 
     @Test
@@ -88,7 +89,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, platformMock,
                 this.validationReport);
         validator.validateGitHubTickets(changesLetter);
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -98,7 +99,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null,
                 this.validationReport);
         validator.validateWorkflowFileExists();
-        assertThat(this.validationReport.hasFailedValidations(), equalTo(false));
+        assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -108,6 +109,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null,
                 this.validationReport);
         validator.validateWorkflowFileExists();
-        assertThat(this.validationReport.getFailedValidations(), containsString("E-RR-VAL-3"));
+        assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-3"));
     }
 }

@@ -11,7 +11,7 @@ public abstract class AbstractPlatform implements Platform {
      * 
      * @param platformName name of the platform
      */
-    public AbstractPlatform(final PlatformName platformName) {
+    protected AbstractPlatform(final PlatformName platformName) {
         this.platformName = platformName;
     }
 

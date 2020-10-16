@@ -1,7 +1,8 @@
 package com.exasol.release;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
@@ -10,7 +11,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.exasol.github.GitHubException;
 import com.exasol.github.GitHubPlatform;
+import com.exasol.report.ReleaseReport;
 import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 
@@ -29,9 +32,27 @@ class GitHubReleaseMakerTest {
         when(contentMock.getVersion()).thenReturn(version);
         when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
         when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
-        final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform);
-        assertAll(() -> assertDoesNotThrow(releaseMaker::makeRelease),
+        final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform, new ReleaseReport());
+        assertAll(() -> assertThat(releaseMaker.makeRelease(), equalTo(true)),
                 () -> verify(contentMock, times(1)).getReleaseLetter(version),
                 () -> verify(gitHubPlatform, times(1)).release(any()));
+    }
+
+    @Test
+    void testMakeReleaseFailedRelease() {
+        final String version = "1.0.0";
+        final GitBranchContent contentMock = mock(GitBranchContent.class);
+        final ReleaseLetter changesMock = mock(ReleaseLetter.class);
+        final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
+        doThrow(GitHubException.class).when(gitHubPlatform).release(any());
+        when(changesMock.getBody()).thenReturn(Optional.empty());
+        when(contentMock.getVersion()).thenReturn(version);
+        when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
+        when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
+        final ReleaseReport releaseReport = new ReleaseReport();
+        final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform, releaseReport);
+        assertAll(() -> assertThat(releaseMaker.makeRelease(), equalTo(false)),
+                () -> verify(gitHubPlatform, times(1)).release(any()),
+                () -> assertThat(releaseReport.hasFailures(), equalTo(true)));
     }
 }

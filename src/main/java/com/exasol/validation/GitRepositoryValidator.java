@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.exasol.report.ValidationReport;
 import com.exasol.repository.*;
 
 /**

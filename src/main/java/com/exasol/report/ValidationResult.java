@@ -1,26 +1,16 @@
-package com.exasol.validation;
+package com.exasol.report;
 
 /**
  * Represents a result of a single validation.
  */
-public class ValidationResult {
+public class ValidationResult extends AbstractResult {
     private final String errorCode;
     private final String message;
-    private final boolean successful;
 
     private ValidationResult(final String errorCode, final String message, final boolean successful) {
+        super(successful);
         this.errorCode = errorCode;
         this.message = message;
-        this.successful = successful;
-    }
-
-    /**
-     * Check is a validation is successful.
-     * 
-     * @return true if a validation is successful
-     */
-    public boolean isSuccessful() {
-        return this.successful;
     }
 
     /**
@@ -46,7 +36,7 @@ public class ValidationResult {
 
     @Override
     public String toString() {
-        if (this.successful) {
+        if (isSuccessful()) {
             return "Success. " + this.message;
         } else {
             return "Fail.    " + this.errorCode + ": " + this.message;

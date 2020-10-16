@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.kohsuke.github.*;
 
-import com.exasol.github.GitHubException;
-
 /**
  * Contains common logic for GitHub-based repositories' content.
  */

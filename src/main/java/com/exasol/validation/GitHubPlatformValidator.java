@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.exasol.github.GitHubException;
 import com.exasol.github.GitHubPlatform;
+import com.exasol.report.ValidationReport;
 import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.ReleaseLetter;
 

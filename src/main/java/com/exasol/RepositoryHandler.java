@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import com.exasol.release.ReleaseMaker;
 import com.exasol.release.ReleaseMakerFactory;
+import com.exasol.report.ReleaseReport;
+import com.exasol.report.ValidationReport;
 import com.exasol.repository.GitBranchContent;
 import com.exasol.repository.GitRepository;
 import com.exasol.validation.*;
@@ -15,6 +17,7 @@ import com.exasol.validation.*;
 public class RepositoryHandler {
     private static final Logger LOGGER = Logger.getLogger(RepositoryHandler.class.getName());
     private final ValidationReport validationReport = new ValidationReport();
+    private final ReleaseReport releaseReport = new ReleaseReport();
     private final Set<Platform> platforms;
     private final GitRepository repository;
 
@@ -59,19 +62,24 @@ public class RepositoryHandler {
                     platform, this.validationReport);
             platformValidator.validate();
         }
-        LOGGER.info(() -> "Validation completed.");
     }
 
     /**
      * Release the project.
+     * 
+     * @return release report
      */
-    public void release() {
+    public ReleaseReport release() {
         LOGGER.info(() -> "Release started.");
         final GitBranchContent content = this.repository.getRepositoryContent(this.repository.getDefaultBranchName());
         for (final Platform platform : this.platforms) {
-            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(content, platform);
-            releaseMaker.makeRelease();
+            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(content, platform,
+                    this.releaseReport);
+            boolean success = releaseMaker.makeRelease();
+            if (!success) {
+                break;
+            }
         }
-        LOGGER.info(() -> "Release completed successfully.");
+        return this.releaseReport;
     }
 }

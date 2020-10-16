@@ -16,13 +16,14 @@ class ReleaseMakerFactoryTest {
     void testCreateReleaseMakerGitHub() {
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(PlatformName.GITHUB);
-        assertThat(ReleaseMakerFactory.createReleaseMaker(null, platform), instanceOf(GitHubReleaseMaker.class));
+        assertThat(ReleaseMakerFactory.createReleaseMaker(null, platform, null), instanceOf(GitHubReleaseMaker.class));
     }
 
     @Test
     void testCreateReleaseMakerUnsupported() {
         final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
         when(platform.getPlatformName()).thenReturn(PlatformName.MAVEN);
-        assertThrows(UnsupportedOperationException.class, () -> ReleaseMakerFactory.createReleaseMaker(null, platform));
+        assertThrows(UnsupportedOperationException.class,
+                () -> ReleaseMakerFactory.createReleaseMaker(null, platform, null));
     }
 }

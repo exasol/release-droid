@@ -2,20 +2,23 @@ package com.exasol;
 
 import static com.exasol.Platform.PlatformName.GITHUB;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.Platform.PlatformName;
 import com.exasol.github.GitHubEntityFactory;
+import com.exasol.report.*;
 import com.exasol.repository.GitRepository;
-import com.exasol.validation.ValidationReport;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
  */
 public class ReleaseRobot {
     private static final Logger LOGGER = Logger.getLogger(ReleaseRobot.class.getName());
+    private static final String HOME_DIRECTORY = System.getProperty("user.home");
+    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-robot", "last_report.txt");
     private final UserInput userInput;
 
     public ReleaseRobot(final UserInput userInput) {
@@ -26,18 +29,21 @@ public class ReleaseRobot {
      * Main entry point for all Release Robot's calls.
      */
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
+    // [impl->dsn~rr-runs-release-goal~1]
     public void run() {
         LOGGER.fine(() -> "Release Robot has received '" + this.userInput.getGoal() + "' request for the project "
                 + this.userInput.getRepositoryName() + ".");
         final RepositoryHandler repositoryHandler = createRepositoryHandler();
+        final List<Report> reports = new ArrayList<>();
         final ValidationReport validationReport = runValidation(repositoryHandler);
-        if (validationReport.hasFailedValidations()) {
-            logFailedValidation(validationReport);
-        } else {
-            runReleaseIfNeeded(repositoryHandler);
+        reports.add(validationReport);
+        logResults(validationReport);
+        if (this.userInput.getGoal() == Goal.RELEASE && !validationReport.hasFailures()) {
+            final ReleaseReport releaseReport = repositoryHandler.release();
+            reports.add(releaseReport);
+            logResults(releaseReport);
         }
-        final ReportWriter reportWriter = new ReportWriter(this.userInput);
-        reportWriter.writeValidationReportToFile(validationReport);
+        new ReportWriter(this.userInput, REPORT_PATH).writeValidationReportToFile(reports);
     }
 
     private RepositoryHandler createRepositoryHandler() {
@@ -68,11 +74,6 @@ public class ReleaseRobot {
         }
     }
 
-    private void logFailedValidation(final ValidationReport validationReport) {
-        LOGGER.severe(() -> "'" + this.userInput.getGoal() + "' request failed. Validation report: "
-                + validationReport.getFailedValidations());
-    }
-
     private boolean validateUserSpecifiedBranch() {
         if (this.userInput.getGoal() == Goal.RELEASE) {
             return false;
@@ -81,10 +82,11 @@ public class ReleaseRobot {
         }
     }
 
-    // [impl->dsn~rr-runs-release-goal~1]
-    private void runReleaseIfNeeded(final RepositoryHandler repositoryHandler) {
-        if (this.userInput.getGoal() == Goal.RELEASE) {
-            repositoryHandler.release();
+    private void logResults(final Report report) {
+        if (report.hasFailures()) {
+            LOGGER.severe(() -> "'" + this.userInput.getGoal() + "' request failed: " + report.getFailuresReport());
+        } else {
+            LOGGER.info(report.getShortDescription());
         }
     }
 }

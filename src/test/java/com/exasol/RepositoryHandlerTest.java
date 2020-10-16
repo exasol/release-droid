@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 
 import com.exasol.github.GitHubPlatform;
 import com.exasol.repository.*;
-import com.exasol.validation.ValidationReport;
+import com.exasol.report.ValidationReport;
 
 class RepositoryHandlerTest {
     @Test
@@ -33,8 +33,8 @@ class RepositoryHandlerTest {
                 .releaseDate(LocalDate.now()).body("## Features").header("Test header").build();
         when(contentMock.getReleaseLetter(contentMock.getVersion())).thenReturn(releaseLetter);
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
-        ValidationReport validate = projectHandler.validate();
-        assertThat(validate.hasFailedValidations(), equalTo(false));
+        final ValidationReport validate = projectHandler.validate();
+        assertThat(validate.hasFailures(), equalTo(false));
     }
 
     @Test

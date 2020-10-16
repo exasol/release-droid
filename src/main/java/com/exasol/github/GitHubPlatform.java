@@ -23,8 +23,8 @@ public class GitHubPlatform extends AbstractPlatform {
      * Create a new instance of {@link GitHubPlatform}.
      * 
      * @param platformName name of the platform
-     * @param repository instance of {@link GHRepository}
-     * @param gitHubUser GitHub user
+     * @param repository   instance of {@link GHRepository}
+     * @param gitHubUser   GitHub user
      */
     public GitHubPlatform(final PlatformName platformName, final GHRepository repository, final GitHubUser gitHubUser) {
         super(platformName);
@@ -91,7 +91,7 @@ public class GitHubPlatform extends AbstractPlatform {
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {
-            throw new IllegalArgumentException("F-GH-PLF-2: Cannot upload assets. Invalid URI format.", exception);
+            throw new GitHubException("F-GH-PLF-2: Cannot upload assets. Invalid URI format.", exception);
         }
     }
 

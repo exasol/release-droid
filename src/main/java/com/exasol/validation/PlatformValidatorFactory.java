@@ -5,6 +5,7 @@ import static com.exasol.Platform.PlatformName.GITHUB;
 import com.exasol.Platform;
 import com.exasol.Platform.PlatformName;
 import com.exasol.github.GitHubPlatform;
+import com.exasol.report.ValidationReport;
 import com.exasol.repository.GitBranchContent;
 
 /**
