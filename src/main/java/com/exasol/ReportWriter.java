@@ -1,6 +1,8 @@
 package com.exasol;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
@@ -14,10 +16,7 @@ import com.exasol.validation.ValidationReport;
 public class ReportWriter {
     private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());
     private static final String HOME_DIRECTORY = System.getProperty("user.home");
-    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
-    private static final String RELEASE_ROBOT_REPORT = FILE_SEPARATOR + ".release-robot" + FILE_SEPARATOR
-            + "last_report.txt";
-    private static final String REPORT_PATH = HOME_DIRECTORY + RELEASE_ROBOT_REPORT;
+    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-robot", "last_report.txt");
     private final UserInput userInput;
 
     /**
@@ -42,7 +41,7 @@ public class ReportWriter {
         } catch (final FileNotFoundException exception) {
             throw new IllegalStateException("E-RR-RW-2: Unable to write a report.", exception);
         }
-        LOGGER.info("A full report is available: " + REPORT_PATH);
+        LOGGER.info("A full report is available: " + REPORT_PATH.toString());
     }
 
     private void writeReport(final ValidationReport validationReport, final PrintWriter writer) {
@@ -66,7 +65,7 @@ public class ReportWriter {
     }
 
     private File prepareFile() {
-        final File reportFile = new File(REPORT_PATH);
+        final File reportFile = REPORT_PATH.toFile();
         try {
             final boolean createdNewFile = reportFile.createNewFile();
             logFilePreparation(createdNewFile);
