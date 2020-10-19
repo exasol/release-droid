@@ -74,7 +74,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.exasol.release.robot.Runner</mainClass>
+                            <mainClass>com.exasol.releaserobot.Runner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
