@@ -43,6 +43,7 @@ class ReportWriterTest {
     }
 
     @Test
+    // [utest->dsn~rr-writes-report-to-file~1]
     void testWriteValidationReportToFile() throws IOException {
         final ReportWriter reportWriter = new ReportWriter(this.userInput, this.reportPath);
         reportWriter.writeValidationReportToFile(List.of(this.validationReport, this.releaseReport));

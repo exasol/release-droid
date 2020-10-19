@@ -82,6 +82,8 @@ public class ReleaseRobot {
         }
     }
 
+    // [impl->dsn~rr-creates-validation-report~1]
+    // [impl->dsn~rr-creates-release-report~1]
     private void logResults(final Report report) {
         if (report.hasFailures()) {
             LOGGER.severe(() -> "'" + this.userInput.getGoal() + "' request failed: " + report.getFailuresReport());

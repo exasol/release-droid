@@ -176,16 +176,28 @@ Covers:
 
 Needs: impl, utest
 
-### RR Writes Validation Report to a File
-`dsn~rr-writes-validation-report-to-file~1`
+### RR Creates Release Report
+`dsn~rr-creates-release-report~1`
 
-RR writes validation report to a `home/.release-robot/last_report.txt` file.
+RR creates a release report containing a summary of all releases and their results.
+
+Covers:
+
+* `req~release-report~1`
+
+Needs: impl, utest
+
+### RR Writes Report to a File
+`dsn~rr-writes-report-to-file~1`
+
+RR writes a full report to a `home/.release-robot/last_report.txt` file.
 
 Covers:
 
 * `req~validation-report~1`
+* `req~release-report~1`
 
-Needs: impl
+Needs: impl, utest
 
 ## Validation
 

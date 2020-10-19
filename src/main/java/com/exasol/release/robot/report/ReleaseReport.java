@@ -5,6 +5,7 @@ import static com.exasol.release.robot.Platform.PlatformName;
 /**
  * Represents a release report.
  */
+// [impl->dsn~rr-creates-release-report~1]
 public class ReleaseReport extends AbstractReport {
     /**
      * Register a new successful release.

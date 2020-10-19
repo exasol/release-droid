@@ -35,7 +35,7 @@ public class ReportWriter {
      *
      * @param reports one or more reports to write
      */
-    // [impl->dsn~rr-writes-validation-report-to-file~1]
+    // [impl->dsn~rr-writes-report-to-file~1]
     public void writeValidationReportToFile(final List<Report> reports) {
         final File reportFile = prepareFile();
         try (final FileWriter writer = new FileWriter(reportFile.getAbsoluteFile())) {
