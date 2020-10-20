@@ -143,6 +143,17 @@ Covers:
 
 Needs: dsn
 
+### Release Report
+`req~release-report~1`
+
+RR creates a release report containing information about releases.
+
+Covers:
+
+* [feat~report~1](#report)
+
+Needs: dsn
+
 ### Users Can Set Git Branch for Validation
 `req~users-can-set-git-branch-for-validation~1`
 
