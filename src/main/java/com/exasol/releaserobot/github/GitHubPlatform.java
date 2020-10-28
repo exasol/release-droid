@@ -1,8 +1,7 @@
 package com.exasol.releaserobot.github;
 
 import java.io.IOException;
-import java.net.*;
-import java.net.http.*;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,21 +14,16 @@ import com.exasol.releaserobot.AbstractPlatform;
  * This class controls GitHub platform.
  */
 public class GitHubPlatform extends AbstractPlatform {
-    public static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
-    private final GHRepository repository;
-    private final GitHubUser gitHubUser;
+    private static final PlatformName PLATFORM_NAME = PlatformName.GITHUB;
 
     /**
      * Create a new instance of {@link GitHubPlatform}.
      * 
-     * @param platformName name of the platform
-     * @param repository   instance of {@link GHRepository}
-     * @param gitHubUser   GitHub user
+     * @param repository instance of {@link GHRepository}
+     * @param gitHubUser GitHub user
      */
-    public GitHubPlatform(final PlatformName platformName, final GHRepository repository, final GitHubUser gitHubUser) {
-        super(platformName);
-        this.repository = repository;
-        this.gitHubUser = gitHubUser;
+    public GitHubPlatform(final GHRepository repository, final GitHubUser gitHubUser) {
+        super(PLATFORM_NAME, repository, gitHubUser);
     }
 
     /**
@@ -37,7 +31,7 @@ public class GitHubPlatform extends AbstractPlatform {
      *
      * @param gitHubRelease {@link GitHubRelease} instance with information about the release
      */
-    public void release(final GitHubRelease gitHubRelease) {
+    public void makeNewGitHubRelease(final GitHubRelease gitHubRelease) {
         try {
             final GHRelease release = this.repository //
                     .createRelease(gitHubRelease.getVersion()) //
@@ -57,8 +51,9 @@ public class GitHubPlatform extends AbstractPlatform {
     }
 
     // [impl->dsn~upload-github-release-assets~1]
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private void uploadAssets(final String uploadUrl, final String assetName, final String assetPath) {
-        final URI uri = getAssetsUploadUri();
+        final URI uri = getWorkflowUri("github_release.yml");
         final JSONObject body = new JSONObject();
         body.put("ref", "master");
         final JSONObject inputs = new JSONObject();
@@ -67,32 +62,7 @@ public class GitHubPlatform extends AbstractPlatform {
         inputs.put("asset_path", assetPath);
         body.put("inputs", inputs);
         final String json = body.toString();
-        final HttpRequest request = HttpRequest.newBuilder() //
-                .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
-                .POST(HttpRequest.BodyPublishers.ofString(json)) //
-                .build();
-        final HttpClient build = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).build();
-        try {
-            build.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (final IOException | InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new GitHubException("F-GH-PLF-1: Exception happened during uploading assets on the GitHub release.",
-                    exception);
-        }
-    }
-
-    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private URI getAssetsUploadUri() {
-        final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
-                + "/actions/workflows/github_release.yml/dispatches";
-        try {
-            return new URI(uriString);
-        } catch (final URISyntaxException exception) {
-            throw new GitHubException("F-GH-PLF-2: Cannot upload assets. Invalid URI format.", exception);
-        }
+        sendGitHubRequest(uri, json);
     }
 
     /**

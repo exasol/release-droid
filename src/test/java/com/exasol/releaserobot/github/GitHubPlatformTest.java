@@ -1,6 +1,5 @@
 package com.exasol.releaserobot.github;
 
-import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,10 +25,10 @@ class GitHubPlatformTest {
         when(releaseBuilderMock.name(anyString())).thenReturn(releaseBuilderMock);
         when(ghRepositoryMock.createRelease(anyString())).thenReturn(releaseBuilderMock);
         when(releaseBuilderMock.create()).thenThrow(IOException.class);
-        final GitHubPlatform platform = new GitHubPlatform(GITHUB, ghRepositoryMock, new GitHubUser("", ""));
+        final GitHubPlatform platform = new GitHubPlatform(ghRepositoryMock, new GitHubUser("", ""));
         final GitHubRelease release = GitHubRelease.builder().version("1.0.0").header("header").releaseLetter("")
                 .assets(Map.of("assets", "path")).build();
-        assertAll(() -> assertThrows(GitHubException.class, () -> platform.release(release)),
+        assertAll(() -> assertThrows(GitHubException.class, () -> platform.makeNewGitHubRelease(release)),
                 () -> verify(releaseBuilderMock, times(1)).draft(true),
                 () -> verify(releaseBuilderMock, times(1)).name(anyString()),
                 () -> verify(releaseBuilderMock, times(1)).body(anyString()),
@@ -46,7 +45,7 @@ class GitHubPlatformTest {
         when(secondIssue.getNumber()).thenReturn(31);
         when(secondIssue.isPullRequest()).thenReturn(false);
         when(ghRepositoryMock.getIssues(GHIssueState.CLOSED)).thenReturn(List.of(firstIssue, secondIssue));
-        final GitHubPlatform platform = new GitHubPlatform(GITHUB, ghRepositoryMock, new GitHubUser("", ""));
+        final GitHubPlatform platform = new GitHubPlatform(ghRepositoryMock, new GitHubUser("", ""));
         assertThat(platform.getClosedTickets(), equalTo(Set.of(24, 31)));
     }
 
@@ -54,7 +53,7 @@ class GitHubPlatformTest {
     void testGetClosedTicketsThrowsException() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getIssues(GHIssueState.CLOSED)).thenThrow(IOException.class);
-        final GitHubPlatform platform = new GitHubPlatform(GITHUB, ghRepositoryMock, new GitHubUser("", ""));
+        final GitHubPlatform platform = new GitHubPlatform(ghRepositoryMock, new GitHubUser("", ""));
         final GitHubException exception = assertThrows(GitHubException.class, platform::getClosedTickets);
         assertThat(exception.getMessage(), containsString("Unable to retrieve a list of closed tickets"));
     }

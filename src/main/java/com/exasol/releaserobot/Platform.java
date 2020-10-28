@@ -1,7 +1,7 @@
 package com.exasol.releaserobot;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Marker for classes representing platforms. As all the platforms are unique, there are no common methods here.
@@ -32,6 +32,16 @@ public interface Platform {
                 platformsList.add(PlatformName.valueOf(platform.toUpperCase().trim()));
             }
             return platformsList;
+        }
+
+        /**
+         * Get a list of available platform names.
+         * 
+         * @return list of available platform names
+         */
+        public static Set<String> availablePlatformNames() {
+            return Arrays.stream(PlatformName.values()).map(name -> name.toString().toLowerCase())
+                    .collect(Collectors.toSet());
         }
     }
 }

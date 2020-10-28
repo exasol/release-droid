@@ -1,6 +1,7 @@
 package com.exasol.releaserobot;
 
 import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
+import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,8 +59,9 @@ public class ReleaseRobot {
         final Set<Platform> platforms = new HashSet<>();
         for (final PlatformName name : this.userInput.getPlatformNames()) {
             if (name == GITHUB) {
-                final Platform gitHubPlatform = gitHubEntityFactory.createGitHubPlatform();
-                platforms.add(gitHubPlatform);
+                platforms.add(gitHubEntityFactory.createGitHubPlatform());
+            } else if (name == MAVEN) {
+                platforms.add(gitHubEntityFactory.createMavenPlatform());
             }
         }
         return platforms;

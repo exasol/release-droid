@@ -3,7 +3,6 @@ package com.exasol.releaserobot.validation;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GitHubPlatform;
 import com.exasol.releaserobot.report.ValidationReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
@@ -12,12 +11,10 @@ import com.exasol.releaserobot.repository.ReleaseLetter;
 /**
  * This class checks if the project is ready for a release on GitHub.
  */
-public class GitHubPlatformValidator implements PlatformValidator {
+public class GitHubPlatformValidator extends AbstractPlatformValidator {
     protected static final String GITHUB_WORKFLOW_PATH = ".github/workflows/github_release.yml";
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GitHubPlatform gitHubPlatform;
-    private final GitBranchContent branchContent;
-    private final ValidationReport validationReport;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
@@ -28,9 +25,8 @@ public class GitHubPlatformValidator implements PlatformValidator {
      */
     public GitHubPlatformValidator(final GitBranchContent branchContent, final GitHubPlatform gitHubPlatform,
             final ValidationReport validationReport) {
+        super(branchContent, validationReport);
         this.gitHubPlatform = gitHubPlatform;
-        this.branchContent = branchContent;
-        this.validationReport = validationReport;
     }
 
     @Override
@@ -39,7 +35,7 @@ public class GitHubPlatformValidator implements PlatformValidator {
         final String version = this.branchContent.getVersion();
         final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         validateChangesFile(releaseLetter);
-        validateWorkflowFileExists();
+        validateFileExists(GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release.");
     }
 
     // [impl->dsn~validate-release-letter~1]
@@ -96,18 +92,5 @@ public class GitHubPlatformValidator implements PlatformValidator {
             }
         }
         return wrongTickets;
-    }
-
-    /**
-     * Check that the workflow file exists and is reachable.
-     */
-    protected void validateWorkflowFileExists() {
-        try {
-            this.branchContent.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH);
-            this.validationReport.addSuccessfulValidation("Workflow for a GitHub release.");
-        } catch (final GitHubException exception) {
-            this.validationReport.addFailedValidations("E-RR-VAL-3", "The file '" + GITHUB_WORKFLOW_PATH
-                    + "' does not exist in the project. Please, add this file to release on the GitHub.");
-        }
     }
 }

@@ -35,7 +35,7 @@ class GitHubReleaseMakerTest {
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform, new ReleaseReport());
         assertAll(() -> assertThat(releaseMaker.makeRelease(), equalTo(true)),
                 () -> verify(contentMock, times(1)).getReleaseLetter(version),
-                () -> verify(gitHubPlatform, times(1)).release(any()));
+                () -> verify(gitHubPlatform, times(1)).makeNewGitHubRelease(any()));
     }
 
     @Test
@@ -44,7 +44,7 @@ class GitHubReleaseMakerTest {
         final GitBranchContent contentMock = mock(GitBranchContent.class);
         final ReleaseLetter changesMock = mock(ReleaseLetter.class);
         final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
-        doThrow(GitHubException.class).when(gitHubPlatform).release(any());
+        doThrow(GitHubException.class).when(gitHubPlatform).makeNewGitHubRelease(any());
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(contentMock.getVersion()).thenReturn(version);
         when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
@@ -52,7 +52,7 @@ class GitHubReleaseMakerTest {
         final ReleaseReport releaseReport = new ReleaseReport();
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform, releaseReport);
         assertAll(() -> assertThat(releaseMaker.makeRelease(), equalTo(false)),
-                () -> verify(gitHubPlatform, times(1)).release(any()),
+                () -> verify(gitHubPlatform, times(1)).makeNewGitHubRelease(any()),
                 () -> assertThat(releaseReport.hasFailures(), equalTo(true)));
     }
 }

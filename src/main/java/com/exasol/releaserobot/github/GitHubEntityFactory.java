@@ -1,13 +1,12 @@
 package com.exasol.releaserobot.github;
 
-import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
-
 import java.io.IOException;
 
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import com.exasol.releaserobot.CredentialsProvider;
+import com.exasol.releaserobot.MavenPlatform;
 import com.exasol.releaserobot.repository.GitHubGitRepository;
 
 /**
@@ -34,7 +33,16 @@ public final class GitHubEntityFactory {
      * @return new instance of {@link GitHubPlatform}
      */
     public GitHubPlatform createGitHubPlatform() {
-        return new GitHubPlatform(GITHUB, this.repository, this.user);
+        return new GitHubPlatform(this.repository, this.user);
+    }
+
+    /**
+     * Create a new instance of {@link MavenPlatform}.
+     *
+     * @return new instance of {@link MavenPlatform}
+     */
+    public MavenPlatform createMavenPlatform() {
+        return new MavenPlatform(this.repository, this.user);
     }
 
     /**

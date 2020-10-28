@@ -42,4 +42,13 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
         final String assetPath = PATH_TO_TARGET_DIR + assetName;
         return Map.of(assetName, assetPath);
     }
+
+    /**
+     * Get a parsed Maven pom file.
+     * 
+     * @return instance of {@link MavenPom}
+     */
+    public MavenPom getMavenPom() {
+        return this.pom;
+    }
 }
