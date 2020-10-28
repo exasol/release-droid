@@ -13,7 +13,7 @@ import com.exasol.releaserobot.report.ReleaseReport;
 
 class MavenReleaseMakerTest {
     @Test
-    void testMakeRelease() {
+    void testMakeReleaseShouldSucceed() {
         final MavenPlatform mavenPlatform = mock(MavenPlatform.class);
         final ReleaseMaker releaseMaker = new MavenReleaseMaker(mavenPlatform, new ReleaseReport());
         assertAll(() -> assertThat(releaseMaker.makeRelease(), equalTo(true)),
@@ -21,7 +21,7 @@ class MavenReleaseMakerTest {
     }
 
     @Test
-    void testMakeReleaseFailed() {
+    void testMakeReleaseShouldFail() {
         final MavenPlatform mavenPlatform = mock(MavenPlatform.class);
         final ReleaseReport releaseReport = new ReleaseReport();
         final ReleaseMaker releaseMaker = new MavenReleaseMaker(mavenPlatform, releaseReport);
