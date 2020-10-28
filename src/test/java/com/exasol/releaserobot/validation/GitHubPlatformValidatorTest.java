@@ -98,7 +98,7 @@ class GitHubPlatformValidatorTest {
         when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null,
                 this.validationReport);
-        validator.validateWorkflowFileExists();
+        validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");
         assertThat(this.validationReport.hasFailures(), equalTo(false));
     }
 
@@ -108,7 +108,7 @@ class GitHubPlatformValidatorTest {
         when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitHubException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null,
                 this.validationReport);
-        validator.validateWorkflowFileExists();
+        validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");
         assertThat(this.validationReport.getFailuresReport(), containsString("E-RR-VAL-3"));
     }
 }

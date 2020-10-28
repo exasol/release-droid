@@ -1,7 +1,9 @@
 package com.exasol.releaserobot.release;
 
 import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
+import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
 
+import com.exasol.releaserobot.MavenPlatform;
 import com.exasol.releaserobot.Platform;
 import com.exasol.releaserobot.Platform.PlatformName;
 import com.exasol.releaserobot.github.GitHubPlatform;
@@ -29,10 +31,11 @@ public final class ReleaseMakerFactory {
         final PlatformName platformName = platform.getPlatformName();
         if (platformName == GITHUB) {
             return new GitHubReleaseMaker(content, (GitHubPlatform) platform, releaseReport);
+        } else if (platformName == MAVEN) {
+            return new MavenReleaseMaker((MavenPlatform) platform, releaseReport);
         } else {
-            // TODO: remove hardcoded list of supported platforms
-            throw new UnsupportedOperationException(
-                    "E-RR-REL-1: Release for platform " + platform + " is not supported. Please choose one of: github");
+            throw new UnsupportedOperationException("E-RR-REL-1: Release for platform " + platform
+                    + " is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
         }
     }
 }

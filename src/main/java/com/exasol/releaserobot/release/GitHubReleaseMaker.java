@@ -11,7 +11,7 @@ import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 
 /**
- * This class responds for releases on GitHub
+ * This class is responsible for releases on GitHub.
  */
 public class GitHubReleaseMaker implements ReleaseMaker {
     private static final Logger LOGGER = Logger.getLogger(GitHubReleaseMaker.class.getName());
@@ -46,7 +46,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
                 .assets(this.content.getDeliverables()).build();
         try {
-            this.gitHubPlatform.release(release);
+            this.gitHubPlatform.makeNewGitHubRelease(release);
             this.releaseReport.addSuccessfulRelease(this.gitHubPlatform.getPlatformName());
             return true;
         } catch (final RuntimeException runtimeException) {

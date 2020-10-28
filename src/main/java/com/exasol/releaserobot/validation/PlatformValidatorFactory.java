@@ -1,6 +1,7 @@
 package com.exasol.releaserobot.validation;
 
 import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
+import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
 
 import com.exasol.releaserobot.Platform;
 import com.exasol.releaserobot.Platform.PlatformName;
@@ -29,10 +30,11 @@ public final class PlatformValidatorFactory {
         final PlatformName releasePlatform = platform.getPlatformName();
         if (releasePlatform == GITHUB) {
             return new GitHubPlatformValidator(repositoryContent, (GitHubPlatform) platform, validationReport);
+        } else if (releasePlatform == MAVEN) {
+            return new MavenPlatformValidator(repositoryContent, validationReport);
         } else {
-            // TODO replace the hardcoded list with the list of {@link Platform}s
             throw new UnsupportedOperationException("E-RR-VAL-9: Validation for release platform " + releasePlatform
-                    + " is not supported. Please choose one of: github");
+                    + " is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
         }
     }
 }
