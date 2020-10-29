@@ -33,7 +33,7 @@ public final class GitHubEntityFactory {
      * @return new instance of {@link GitHubPlatform}
      */
     public GitHubPlatform createGitHubPlatform() {
-        return new GitHubPlatform(this.repository, this.user);
+        return new GitHubPlatform(new GithubAPIAdapter(this.repository, this.user));
     }
 
     /**
@@ -42,7 +42,7 @@ public final class GitHubEntityFactory {
      * @return new instance of {@link MavenPlatform}
      */
     public MavenPlatform createMavenPlatform() {
-        return new MavenPlatform(this.repository, this.user);
+        return new MavenPlatform(new GithubAPIAdapter(this.repository, this.user));
     }
 
     /**
