@@ -22,6 +22,13 @@ public interface GitBranchContent {
     public boolean isDefaultBranch();
 
     /**
+     * Get the branch name.
+     * 
+     * @return branch name as a string
+     */
+    String getBranchName();
+
+    /**
      * Get a changelog file as a string.
      *
      * @return changelog file as a string

@@ -32,17 +32,17 @@ public class GitHubPlatform implements Platform {
     public void makeNewGitHubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
         final String uploadUrl = this.githubGateway.createGithubRelease(gitHubRelease);
         for (final Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {
-            uploadAssets(uploadUrl, asset.getKey(), asset.getValue());
+            uploadAssets(uploadUrl, asset.getKey(), asset.getValue(), gitHubRelease.getDefaultBranchName());
         }
     }
 
     // [impl->dsn~upload-github-release-assets~1]
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private void uploadAssets(final String uploadUrl, final String assetName, final String assetPath)
-            throws GitHubException {
+    private void uploadAssets(final String uploadUrl, final String assetName, final String assetPath,
+            final String defaultBranchName) throws GitHubException {
         final URI uri = this.githubGateway.getWorkflowURI("github_release.yml");
         final JSONObject body = new JSONObject();
-        body.put("ref", "master");
+        body.put("ref", defaultBranchName);
         final JSONObject inputs = new JSONObject();
         inputs.put("upload_url", uploadUrl);
         inputs.put("asset_name", assetName);

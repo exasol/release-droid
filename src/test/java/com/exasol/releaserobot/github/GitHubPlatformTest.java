@@ -18,7 +18,7 @@ class GitHubPlatformTest {
     void testReleaseThrowsException() throws IOException, GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final GitHubRelease release = GitHubRelease.builder().version("1.0.0").header("header").releaseLetter("")
-                .assets(Map.of("assets", "path")).build();
+                .defaultBranchName("main").assets(Map.of("assets", "path")).build();
         when(githubGateway.createGithubRelease(release)).thenThrow(GitHubException.class);
         final GitHubPlatform platform = new GitHubPlatform(githubGateway);
         assertAll(() -> assertThrows(GitHubException.class, () -> platform.makeNewGitHubRelease(release)),

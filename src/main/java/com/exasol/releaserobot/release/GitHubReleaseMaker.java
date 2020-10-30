@@ -43,7 +43,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
-                .assets(this.content.getDeliverables()).build();
+                .defaultBranchName(this.content.getBranchName()).assets(this.content.getDeliverables()).build();
         try {
             this.gitHubPlatform.makeNewGitHubRelease(release);
             this.releaseReport.addSuccessfulRelease(this.gitHubPlatform.getPlatformName());

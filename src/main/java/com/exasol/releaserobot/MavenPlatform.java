@@ -27,10 +27,10 @@ public class MavenPlatform implements Platform {
      * 
      * @throws GitHubException when release process fails
      */
-    public void makeNewMavenRelease() throws GitHubException {
+    public void makeNewMavenRelease(final String defaultBranchName) throws GitHubException {
         final URI uri = this.githubGateway.getWorkflowURI("maven_central_release.yml");
         final JSONObject body = new JSONObject();
-        body.put("ref", "master");
+        body.put("ref", defaultBranchName);
         final String json = body.toString();
         this.githubGateway.sendGitHubRequest(uri, json);
     }

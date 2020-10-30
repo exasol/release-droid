@@ -32,7 +32,7 @@ public final class ReleaseMakerFactory {
         if (platformName == GITHUB) {
             return new GitHubReleaseMaker(content, (GitHubPlatform) platform, releaseReport);
         } else if (platformName == MAVEN) {
-            return new MavenReleaseMaker((MavenPlatform) platform, releaseReport);
+            return new MavenReleaseMaker(content, (MavenPlatform) platform, releaseReport);
         } else {
             throw new UnsupportedOperationException("E-RR-REL-1: Release for platform " + platform
                     + " is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
