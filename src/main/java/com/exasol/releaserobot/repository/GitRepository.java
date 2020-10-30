@@ -2,6 +2,8 @@ package com.exasol.releaserobot.repository;
 
 import java.util.Optional;
 
+import com.exasol.releaserobot.ReleaseMaker;
+
 /**
  * Represents a repository where a Git-based project is stored. A repository can be local or remote (GitHub, for
  * example).
@@ -29,4 +31,5 @@ public interface GitRepository {
      */
     // [impl->dsn~gr-retrieves-branch-content~1]
     public GitBranchContent getRepositoryContent(final String branchName);
+
 }

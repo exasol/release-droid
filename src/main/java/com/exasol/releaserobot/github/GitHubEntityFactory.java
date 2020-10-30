@@ -6,7 +6,10 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import com.exasol.releaserobot.CredentialsProvider;
-import com.exasol.releaserobot.MavenPlatform;
+import com.exasol.releaserobot.github.release.GitHubReleaseMaker;
+import com.exasol.releaserobot.maven.MavenPlatform;
+import com.exasol.releaserobot.maven.release.MavenReleaseMaker;
+import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitHubGitRepository;
 
 /**
@@ -29,11 +32,13 @@ public final class GitHubEntityFactory {
 
     /**
      * Create a new instance of {@link GitHubPlatform}.
+     * @param content 
      * 
      * @return new instance of {@link GitHubPlatform}
      */
-    public GitHubPlatform createGitHubPlatform() {
-        return new GitHubPlatform(new GithubAPIAdapter(this.repository, this.user));
+    public GitHubPlatform createGitHubPlatform(final GitBranchContent content) {
+    	final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
+		return new GitHubPlatform(new GitHubReleaseMaker(content, githubGateway), githubGateway);
     }
 
     /**
@@ -41,8 +46,9 @@ public final class GitHubEntityFactory {
      *
      * @return new instance of {@link MavenPlatform}
      */
-    public MavenPlatform createMavenPlatform() {
-        return new MavenPlatform(new GithubAPIAdapter(this.repository, this.user));
+    public MavenPlatform createMavenPlatform(final GitBranchContent content) {
+    	final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
+        return new MavenPlatform(new MavenReleaseMaker(content, githubGateway));
     }
 
     /**

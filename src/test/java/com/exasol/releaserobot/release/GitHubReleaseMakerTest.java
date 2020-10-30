@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.exasol.releaserobot.ReleaseMaker;
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GitHubPlatform;
 import com.exasol.releaserobot.report.ReleaseReport;

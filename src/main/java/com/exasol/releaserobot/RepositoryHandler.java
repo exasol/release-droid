@@ -3,8 +3,6 @@ package com.exasol.releaserobot;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.release.ReleaseMaker;
-import com.exasol.releaserobot.release.ReleaseMakerFactory;
 import com.exasol.releaserobot.report.ReleaseReport;
 import com.exasol.releaserobot.report.ValidationReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
@@ -64,22 +62,4 @@ public class RepositoryHandler {
         }
     }
 
-    /**
-     * Release the project.
-     * 
-     * @return release report
-     */
-    public ReleaseReport release() {
-        LOGGER.info(() -> "Release started.");
-        final GitBranchContent content = this.repository.getRepositoryContent(this.repository.getDefaultBranchName());
-        for (final Platform platform : this.platforms) {
-            final ReleaseMaker releaseMaker = ReleaseMakerFactory.createReleaseMaker(content, platform,
-                    this.releaseReport);
-            final boolean success = releaseMaker.makeRelease();
-            if (!success) {
-                break;
-            }
-        }
-        return this.releaseReport;
-    }
 }
