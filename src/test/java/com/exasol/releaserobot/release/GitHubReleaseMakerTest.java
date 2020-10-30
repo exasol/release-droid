@@ -39,7 +39,7 @@ class GitHubReleaseMakerTest {
     }
 
     @Test
-    void testMakeReleaseFailedRelease() {
+    void testMakeReleaseFailedRelease() throws GitHubException {
         final String version = "1.0.0";
         final GitBranchContent contentMock = mock(GitBranchContent.class);
         final ReleaseLetter changesMock = mock(ReleaseLetter.class);

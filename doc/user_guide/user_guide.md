@@ -77,7 +77,7 @@ Please check [templates](github_release_template.md).
 
 * A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'.
   All the mentioned on the file tickets must have a closed status on the GitHub.
-
+  
 ## How to Use Release Robot
 
 ### Run from Terminal
@@ -118,7 +118,11 @@ Please check [templates](github_release_template.md).
 | --branch    | -b           | No        | Git branch to work with (only for `validate` goal) | Any valid git branch name     |
 | --goal      | -g           | Yes       | Goal to execute                                    | `validate`, `release`         |
 | --name      | -n           | Yes       | GitHub project name                                | Any valid GitHub project name |
-| --platforms | -p           | Yes       | Comma-separated list of release platforms          | `github`                      |
+| --platforms | -p           | Yes       | Comma-separated list of release platforms          | `github`   `maven`            |
+
+Notice:
+
+* Please, specify the platforms list **without spaces**. This is a valid input:  `github,maven`. This is invalid input: `github, maven`
 
 #### Release Goals
 

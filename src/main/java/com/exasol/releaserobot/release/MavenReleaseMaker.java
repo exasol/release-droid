@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releaserobot.MavenPlatform;
+import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.report.ReleaseReport;
 
 /**
@@ -33,9 +34,9 @@ public class MavenReleaseMaker implements ReleaseMaker {
             this.platform.makeNewMavenRelease();
             this.releaseReport.addSuccessfulRelease(this.platform.getPlatformName());
             return true;
-        } catch (final RuntimeException runtimeException) {
+        } catch (final GitHubException exception) {
             this.releaseReport.addFailedRelease(this.platform.getPlatformName(),
-                    ExceptionUtils.getStackTrace(runtimeException));
+                    ExceptionUtils.getStackTrace(exception));
             return false;
         }
     }

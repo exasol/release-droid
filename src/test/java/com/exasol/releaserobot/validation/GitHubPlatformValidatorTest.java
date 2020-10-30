@@ -12,11 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GitHubPlatform;
 import com.exasol.releaserobot.report.ValidationReport;
-import com.exasol.releaserobot.repository.GitBranchContent;
-import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.repository.*;
 
 class GitHubPlatformValidatorTest {
     private ValidationReport validationReport;
@@ -105,7 +103,8 @@ class GitHubPlatformValidatorTest {
     @Test
     void testValidateWorkflowFileExistsThrowsException() {
         final GitBranchContent branchContentMock = Mockito.mock(GitBranchContent.class);
-        when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitHubException.class);
+        when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH))
+                .thenThrow(GitRepositoryException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null,
                 this.validationReport);
         validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");

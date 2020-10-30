@@ -21,7 +21,7 @@ class MavenReleaseMakerTest {
     }
 
     @Test
-    void testMakeReleaseShouldFail() {
+    void testMakeReleaseShouldFail() throws GitHubException {
         final MavenPlatform mavenPlatform = mock(MavenPlatform.class);
         final ReleaseReport releaseReport = new ReleaseReport();
         final ReleaseMaker releaseMaker = new MavenReleaseMaker(mavenPlatform, releaseReport);

@@ -1,8 +1,8 @@
 package com.exasol.releaserobot.validation;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.report.ValidationReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
+import com.exasol.releaserobot.repository.GitRepositoryException;
 
 /**
  * Contains a common logic for classes implementing {@link PlatformValidator}.
@@ -29,7 +29,7 @@ public abstract class AbstractPlatformValidator implements PlatformValidator {
         try {
             this.branchContent.getSingleFileContentAsString(filePath);
             this.validationReport.addSuccessfulValidation(fileDescription);
-        } catch (final GitHubException exception) {
+        } catch (final GitRepositoryException exception) {
             this.validationReport.addFailedValidations("E-RR-VAL-3",
                     "The file '" + filePath + "' does not exist in the project. Please, add this file.");
         }

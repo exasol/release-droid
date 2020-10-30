@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Marker for classes representing platforms. As all the platforms are unique, there are no common methods here.
+ * Marker for classes representing platforms.
  */
 public interface Platform {
     /**

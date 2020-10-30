@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.ReleaseReport;
-import com.exasol.releaserobot.report.Report;
-import com.exasol.releaserobot.report.ReportWriter;
-import com.exasol.releaserobot.report.ValidationReport;
+import com.exasol.releaserobot.report.*;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
@@ -20,8 +17,8 @@ public class ReleaseRobot {
     private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-robot", "last_report.txt");
     private final RepositoryHandler repositoryHandler;
 
-    public ReleaseRobot(final RepositoryHandler repositoryHandler ) {
-    	this.repositoryHandler = repositoryHandler;
+    public ReleaseRobot(final RepositoryHandler repositoryHandler) {
+        this.repositoryHandler = repositoryHandler;
     }
 
     /**
@@ -34,21 +31,21 @@ public class ReleaseRobot {
                 + userInput.getRepositoryName() + ".");
         final List<Report> reports = new ArrayList<>();
         final ValidationReport validationReport = this.validate(userInput);
-        
+        reports.add(validationReport);
         if (userInput.getGoal() == Goal.RELEASE && !validationReport.hasFailures()) {
             reports.add(this.release(this.repositoryHandler));
         }
         new ReportWriter(userInput, REPORT_PATH).writeValidationReportToFile(reports);
     }
-    
-    private ValidationReport validate(UserInput userInput) {
-		final ValidationReport validationReport = runValidation(userInput, this.repositoryHandler);
-		logResults(Goal.VALIDATE, validationReport);
-		return validationReport;
-	}
 
-	private ReleaseReport release(final RepositoryHandler repositoryHandler) {
-    	final ReleaseReport releaseReport = repositoryHandler.release();
+    private ValidationReport validate(final UserInput userInput) {
+        final ValidationReport validationReport = runValidation(userInput, this.repositoryHandler);
+        logResults(Goal.VALIDATE, validationReport);
+        return validationReport;
+    }
+
+    private ReleaseReport release(final RepositoryHandler repositoryHandler) {
+        final ReleaseReport releaseReport = repositoryHandler.release();
         logResults(Goal.RELEASE, releaseReport);
         return releaseReport;
     }
@@ -63,7 +60,7 @@ public class ReleaseRobot {
     }
 
     private boolean validateUserSpecifiedBranch(final UserInput userInput) {
-    	return userInput.getGoal() != Goal.RELEASE && userInput.hasGitBranch();
+        return userInput.getGoal() != Goal.RELEASE && userInput.hasGitBranch();
     }
 
     // [impl->dsn~rr-creates-validation-report~1]

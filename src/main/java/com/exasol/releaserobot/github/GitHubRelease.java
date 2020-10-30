@@ -138,8 +138,8 @@ public class GitHubRelease {
             }
         }
 
-        private GitHubException createExceptionWithInvalidField(final String fieldName) {
-            return new GitHubException("E-GH-REL-1: Cannot create a GitHubRelease class, because '" + fieldName
+        private IllegalArgumentException createExceptionWithInvalidField(final String fieldName) {
+            return new IllegalArgumentException("E-GH-REL-1: Cannot create a GitHubRelease class, because '" + fieldName
                     + "' field is null or empty.");
         }
     }

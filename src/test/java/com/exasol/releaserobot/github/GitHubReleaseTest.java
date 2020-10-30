@@ -24,21 +24,21 @@ class GitHubReleaseTest {
     @Test
     void testGitHubReleaseEmptyVersion() {
         final GitHubRelease.Builder builder = GitHubRelease.builder();
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'version' field is null or empty"));
     }
 
     @Test
     void testGitHubReleaseEmptyHeader() {
         final GitHubRelease.Builder builder = GitHubRelease.builder().version("1.0.0").header("");
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'header' field is null or empty"));
     }
 
     @Test
     void testGitHubReleaseEmptyAssets() {
         final GitHubRelease.Builder builder = GitHubRelease.builder().version("1.0.0").header("header");
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'assets' field is null or empty"));
     }
 }
