@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Set;
 
 /**
- * Provides a GitHun related functionality.
+ * Gateway for interacting with Github.
  */
 public interface GithubGateway {
     /**

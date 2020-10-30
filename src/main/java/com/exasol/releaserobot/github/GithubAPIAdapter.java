@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 
 /**
- * Implements a GitHun related functionality.
+ * Implements an adapter to interact with Github.
  */
 public class GithubAPIAdapter implements GithubGateway {
     private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
