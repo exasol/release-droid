@@ -3,34 +3,40 @@ package com.exasol.releaserobot;
 import java.net.URI;
 
 import org.json.JSONObject;
-import org.kohsuke.github.GHRepository;
 
-import com.exasol.releaserobot.github.GitHubUser;
+import com.exasol.releaserobot.github.GitHubException;
+import com.exasol.releaserobot.github.GithubGateway;
 
 /**
  * This class controls Maven platform.
  */
-public class MavenPlatform extends AbstractPlatform {
-    private static final PlatformName PLATFORM_NAME = PlatformName.MAVEN;
+public class MavenPlatform implements Platform {
+    private final GithubGateway githubGateway;
 
     /**
      * Create a new instance of {@link MavenPlatform}.
      *
-     * @param repository instance of {@link GHRepository}
-     * @param gitHubUser GitHub user
+     * @param githubGateway instance of {@link GithubGateway}
      */
-    public MavenPlatform(final GHRepository repository, final GitHubUser gitHubUser) {
-        super(PLATFORM_NAME, repository, gitHubUser);
+    public MavenPlatform(final GithubGateway githubGateway) {
+        this.githubGateway = githubGateway;
     }
 
     /**
      * Create a new Maven Central release.
+     * 
+     * @throws GitHubException when release process fails
      */
-    public void makeNewMavenRelease() {
-        final URI uri = getWorkflowUri("maven_central_release.yml");
+    public void makeNewMavenRelease(final String defaultBranchName) throws GitHubException {
+        final URI uri = this.githubGateway.getWorkflowURI("maven_central_release.yml");
         final JSONObject body = new JSONObject();
-        body.put("ref", "master");
+        body.put("ref", defaultBranchName);
         final String json = body.toString();
-        sendGitHubRequest(uri, json);
+        this.githubGateway.sendGitHubRequest(uri, json);
+    }
+
+    @Override
+    public PlatformName getPlatformName() {
+        return PlatformName.MAVEN;
     }
 }

@@ -22,7 +22,7 @@ public final class GitHubEntityFactory {
      * @param repositoryOwner owner of the GitHub repository
      * @param repositoryName  name of the GitHubRepository
      */
-    public GitHubEntityFactory(final String repositoryOwner, final String repositoryName) {
+    public GitHubEntityFactory(final String repositoryOwner, final String repositoryName) throws GitHubException {
         this.user = getUser();
         this.repository = getGhRepository(repositoryOwner, repositoryName, this.user);
     }
@@ -33,7 +33,7 @@ public final class GitHubEntityFactory {
      * @return new instance of {@link GitHubPlatform}
      */
     public GitHubPlatform createGitHubPlatform() {
-        return new GitHubPlatform(this.repository, this.user);
+        return new GitHubPlatform(new GithubAPIAdapter(this.repository, this.user));
     }
 
     /**
@@ -42,7 +42,7 @@ public final class GitHubEntityFactory {
      * @return new instance of {@link MavenPlatform}
      */
     public MavenPlatform createMavenPlatform() {
-        return new MavenPlatform(this.repository, this.user);
+        return new MavenPlatform(new GithubAPIAdapter(this.repository, this.user));
     }
 
     /**
@@ -58,12 +58,13 @@ public final class GitHubEntityFactory {
         return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
     }
 
-    private GHRepository getGhRepository(final String owner, final String name, final GitHubUser user) {
+    private GHRepository getGhRepository(final String owner, final String name, final GitHubUser user)
+            throws GitHubException {
         return createGHRepository(owner, name, user);
     }
 
     private GHRepository createGHRepository(final String repositoryOwner, final String repositoryName,
-            final GitHubUser user) {
+            final GitHubUser user) throws GitHubException {
         try {
             final GitHub gitHub = GitHub.connect(user.getUsername(), user.getToken());
             return gitHub.getRepository(repositoryOwner + "/" + repositoryName);

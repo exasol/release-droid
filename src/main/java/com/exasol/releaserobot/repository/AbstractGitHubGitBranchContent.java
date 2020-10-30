@@ -67,6 +67,11 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
     }
 
     @Override
+    public String getBranchName() {
+        return this.branch.getName();
+    }
+
+    @Override
     public final String getChangelogFile() {
         return getSingleFileContentAsString(CHANGELOG_FILE_PATH);
     }

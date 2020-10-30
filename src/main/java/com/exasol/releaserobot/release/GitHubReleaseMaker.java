@@ -4,8 +4,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.github.GitHubPlatform;
-import com.exasol.releaserobot.github.GitHubRelease;
+import com.exasol.releaserobot.github.*;
 import com.exasol.releaserobot.report.ReleaseReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
@@ -44,12 +43,12 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
-                .assets(this.content.getDeliverables()).build();
+                .defaultBranchName(this.content.getBranchName()).assets(this.content.getDeliverables()).build();
         try {
             this.gitHubPlatform.makeNewGitHubRelease(release);
             this.releaseReport.addSuccessfulRelease(this.gitHubPlatform.getPlatformName());
             return true;
-        } catch (final RuntimeException runtimeException) {
+        } catch (final GitHubException runtimeException) {
             this.releaseReport.addFailedRelease(this.gitHubPlatform.getPlatformName(),
                     ExceptionUtils.getStackTrace(runtimeException));
             return false;

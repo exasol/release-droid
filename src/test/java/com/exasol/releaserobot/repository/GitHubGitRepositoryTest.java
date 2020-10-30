@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 
 class GitHubGitRepositoryTest {
@@ -45,7 +44,7 @@ class GitHubGitRepositoryTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getLatestRelease()).thenThrow(IOException.class);
         final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThrows(GitHubException.class, repository::getLatestTag);
+        assertThrows(GitRepositoryException.class, repository::getLatestTag);
     }
 
     @Test

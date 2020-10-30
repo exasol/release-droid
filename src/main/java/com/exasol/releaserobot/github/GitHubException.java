@@ -1,10 +1,10 @@
 package com.exasol.releaserobot.github;
 
 /**
- * A GitHub project related exception.
+ * A GitHub related exception.
  */
-public class GitHubException extends RuntimeException {
-    private static final long serialVersionUID = 8858322121654692542L;
+public class GitHubException extends Exception {
+    private static final long serialVersionUID = -4376831034407541999L;
 
     /**
      * Create a new instance of {@link GitHubException}.

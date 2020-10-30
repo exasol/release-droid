@@ -30,6 +30,7 @@ class GitHubReleaseMakerTest {
         final GitHubPlatform gitHubPlatform = mock(GitHubPlatform.class);
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(contentMock.getVersion()).thenReturn(version);
+        when(contentMock.getBranchName()).thenReturn("main");
         when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
         when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
         final ReleaseMaker releaseMaker = new GitHubReleaseMaker(contentMock, gitHubPlatform, new ReleaseReport());
@@ -39,7 +40,7 @@ class GitHubReleaseMakerTest {
     }
 
     @Test
-    void testMakeReleaseFailedRelease() {
+    void testMakeReleaseFailedRelease() throws GitHubException {
         final String version = "1.0.0";
         final GitBranchContent contentMock = mock(GitBranchContent.class);
         final ReleaseLetter changesMock = mock(ReleaseLetter.class);
@@ -47,6 +48,7 @@ class GitHubReleaseMakerTest {
         doThrow(GitHubException.class).when(gitHubPlatform).makeNewGitHubRelease(any());
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(contentMock.getVersion()).thenReturn(version);
+        when(contentMock.getBranchName()).thenReturn("main");
         when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
         when(contentMock.getReleaseLetter(version)).thenReturn(changesMock);
         final ReleaseReport releaseReport = new ReleaseReport();

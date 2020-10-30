@@ -49,6 +49,7 @@ class RepositoryHandlerTest {
         final ReleaseLetter releaseLetter = ReleaseLetter.builder("name").body("## Features").build();
         when(contentMock.getReleaseLetter("1.0.0")).thenReturn(releaseLetter);
         when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
+        when(contentMock.getBranchName()).thenReturn("main");
         final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
         assertDoesNotThrow(projectHandler::release);
     }

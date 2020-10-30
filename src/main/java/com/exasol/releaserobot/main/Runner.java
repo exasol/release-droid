@@ -1,6 +1,17 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.main;
+
+import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
+import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
+
+import java.util.*;
 
 import org.apache.commons.cli.*;
+
+import com.exasol.releaserobot.*;
+import com.exasol.releaserobot.Platform.PlatformName;
+import com.exasol.releaserobot.github.GitHubEntityFactory;
+import com.exasol.releaserobot.github.GitHubException;
+import com.exasol.releaserobot.repository.GitRepository;
 
 /**
  * This class contains main method.
@@ -17,7 +28,7 @@ public class Runner {
      *
      * @param args arguments
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws GitHubException {
         final Options options = createOptions();
         final CommandLine cmd = getCommandLine(args, options);
         final UserInput userInput = UserInput.builder() //
@@ -27,7 +38,29 @@ public class Runner {
                 .gitBranch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
                 .repositoryOwner(REPOSITORY_OWNER) //
                 .build();
-        new ReleaseRobot(userInput).run();
+        final RepositoryHandler repositoryHandler = createRepositoryHandler(userInput);
+        new ReleaseRobot(repositoryHandler).run(userInput);
+    }
+
+    private static RepositoryHandler createRepositoryHandler(final UserInput userInput) throws GitHubException {
+        final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(userInput.getRepositoryOwner(),
+                userInput.getRepositoryName());
+        final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
+        final Set<Platform> platforms = createPlatforms(userInput, gitHubEntityFactory);
+        return new RepositoryHandler(repository, platforms);
+    }
+
+    private static Set<Platform> createPlatforms(final UserInput userInput,
+            final GitHubEntityFactory gitHubEntityFactory) {
+        final Set<Platform> platforms = new HashSet<>();
+        for (final PlatformName name : userInput.getPlatformNames()) {
+            if (name == GITHUB) {
+                platforms.add(gitHubEntityFactory.createGitHubPlatform());
+            } else if (name == MAVEN) {
+                platforms.add(gitHubEntityFactory.createMavenPlatform());
+            }
+        }
+        return platforms;
     }
 
     private static Options createOptions() {

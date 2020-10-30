@@ -14,7 +14,7 @@ class GitHubReleaseTest {
     @Test
     void testValidGitHubRelease() {
         final GitHubRelease release = GitHubRelease.builder().version("1.0.0").header("header")
-                .releaseLetter("release letter").assets(Map.of("name", "path")).build();
+                .releaseLetter("release letter").defaultBranchName("main").assets(Map.of("name", "path")).build();
         assertAll(() -> assertThat(release.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(release.getHeader(), equalTo("header")),
                 () -> assertThat(release.getReleaseLetter(), equalTo("release letter")),
@@ -24,21 +24,29 @@ class GitHubReleaseTest {
     @Test
     void testGitHubReleaseEmptyVersion() {
         final GitHubRelease.Builder builder = GitHubRelease.builder();
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'version' field is null or empty"));
     }
 
     @Test
     void testGitHubReleaseEmptyHeader() {
         final GitHubRelease.Builder builder = GitHubRelease.builder().version("1.0.0").header("");
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'header' field is null or empty"));
     }
 
     @Test
     void testGitHubReleaseEmptyAssets() {
         final GitHubRelease.Builder builder = GitHubRelease.builder().version("1.0.0").header("header");
-        final GitHubException exception = assertThrows(GitHubException.class, builder::build);
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'assets' field is null or empty"));
+    }
+
+    @Test
+    void testGitHubReleaseEmptyDefaultBranchName() {
+        final GitHubRelease.Builder builder = GitHubRelease.builder().version("1.0.0").header("header")
+                .assets(Map.of("key", "value"));
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
+        assertThat(exception.getMessage(), containsString("'defaultBranchName' field is null or empty"));
     }
 }
