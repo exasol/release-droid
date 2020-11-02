@@ -3,6 +3,8 @@ package com.exasol.releaserobot;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.exasol.releaserobot.github.GitHubException;
+
 /**
  * Marker for classes representing platforms.
  */
@@ -44,4 +46,12 @@ public interface Platform {
                     .collect(Collectors.toSet());
         }
     }
+
+    /**
+     * Perform a release on the platform.
+     * 
+     * @param userInput user input
+     * @throws GitHubException if the release fails
+     */
+    public void release(UserInput userInput) throws GitHubException;
 }

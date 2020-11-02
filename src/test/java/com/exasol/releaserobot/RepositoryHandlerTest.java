@@ -36,21 +36,4 @@ class RepositoryHandlerTest {
         final ValidationReport validate = projectHandler.validate();
         assertThat(validate.hasFailures(), equalTo(false));
     }
-
-    @Test
-    void testRelease() {
-        final GitHubGitRepository repositoryMock = Mockito.mock(GitHubGitRepository.class);
-        final GitBranchContent contentMock = Mockito.mock(GitBranchContent.class);
-        final GitHubPlatform platform = Mockito.mock(GitHubPlatform.class);
-        when(platform.getPlatformName()).thenReturn(GITHUB);
-        when(repositoryMock.getRepositoryContent(anyString())).thenReturn(contentMock);
-        when(repositoryMock.getDefaultBranchName()).thenReturn("master");
-        when(contentMock.getVersion()).thenReturn("1.0.0");
-        final ReleaseLetter releaseLetter = ReleaseLetter.builder("name").body("## Features").build();
-        when(contentMock.getReleaseLetter("1.0.0")).thenReturn(releaseLetter);
-        when(contentMock.getDeliverables()).thenReturn(Map.of("name", "path"));
-        when(contentMock.getBranchName()).thenReturn("main");
-        final RepositoryHandler projectHandler = new RepositoryHandler(repositoryMock, Set.of(platform));
-        assertDoesNotThrow(projectHandler::release);
-    }
 }

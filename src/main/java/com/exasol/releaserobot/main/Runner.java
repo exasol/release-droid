@@ -3,7 +3,8 @@ package com.exasol.releaserobot.main;
 import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
 import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.cli.*;
 
@@ -11,6 +12,7 @@ import com.exasol.releaserobot.*;
 import com.exasol.releaserobot.Platform.PlatformName;
 import com.exasol.releaserobot.github.GitHubEntityFactory;
 import com.exasol.releaserobot.github.GitHubException;
+import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitRepository;
 
 /**
@@ -38,26 +40,34 @@ public class Runner {
                 .gitBranch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
                 .repositoryOwner(REPOSITORY_OWNER) //
                 .build();
-        final RepositoryHandler repositoryHandler = createRepositoryHandler(userInput);
-        new ReleaseRobot(repositoryHandler).run(userInput);
+        createReleaseRobot(userInput).run(userInput);
     }
 
-    private static RepositoryHandler createRepositoryHandler(final UserInput userInput) throws GitHubException {
+    private static ReleaseRobot createReleaseRobot(final UserInput userInput) throws GitHubException {
         final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(userInput.getRepositoryOwner(),
                 userInput.getRepositoryName());
         final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
-        final Set<Platform> platforms = createPlatforms(userInput, gitHubEntityFactory);
-        return new RepositoryHandler(repository, platforms);
+        final Set<Platform> platforms = createPlatforms(userInput, gitHubEntityFactory, repository);
+        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platforms);
+        final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryHandler);
+        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, platforms);
+        return new ReleaseRobot(releaseUseCase, validateUseCase);
     }
 
     private static Set<Platform> createPlatforms(final UserInput userInput,
-            final GitHubEntityFactory gitHubEntityFactory) {
+            final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
         final Set<Platform> platforms = new HashSet<>();
+        final GitBranchContent defaultBranchContent = repository
+                .getRepositoryContent(repository.getDefaultBranchName());
         for (final PlatformName name : userInput.getPlatformNames()) {
             if (name == GITHUB) {
-                platforms.add(gitHubEntityFactory.createGitHubPlatform());
+                platforms.add(gitHubEntityFactory.createGitHubPlatform(defaultBranchContent));
             } else if (name == MAVEN) {
-                platforms.add(gitHubEntityFactory.createMavenPlatform());
+                platforms.add(gitHubEntityFactory.createMavenPlatform(defaultBranchContent));
+            } else {
+                throw new UnsupportedOperationException(
+                        "E-RR-RUN-2: Platform '" + name + "' is not supported. Please choose one of: "
+                                + PlatformName.availablePlatformNames().toString());
             }
         }
         return platforms;
@@ -82,7 +92,7 @@ public class Runner {
         } catch (final ParseException exception) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Release Robot", options);
-            throw new IllegalArgumentException("E-RR-RUN-1" + exception.getMessage());
+            throw new IllegalArgumentException("E-RR-RUN-1: " + exception.getMessage());
         }
     }
 }
