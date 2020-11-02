@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.exasol.releaserobot.github.GitHubException;
+import com.exasol.releaserobot.report.ValidationReport;
 
 /**
  * Marker for classes representing platforms.
@@ -15,6 +16,8 @@ public interface Platform {
      * @return name from the {@link PlatformName}s
      */
     public PlatformName getPlatformName();
+
+    public void validate(ValidationReport validationReport);
 
     /**
      * This class contains supported release platforms.

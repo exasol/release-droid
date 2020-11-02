@@ -8,6 +8,7 @@ import org.kohsuke.github.GitHub;
 import com.exasol.releaserobot.CredentialsProvider;
 import com.exasol.releaserobot.github.release.GitHubReleaseMaker;
 import com.exasol.releaserobot.maven.MavenPlatform;
+import com.exasol.releaserobot.maven.MavenPlatformValidator;
 import com.exasol.releaserobot.maven.release.MavenReleaseMaker;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitHubGitRepository;
@@ -39,7 +40,8 @@ public final class GitHubEntityFactory {
     public GitHubPlatform createGitHubPlatform(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
         final GitHubReleaseMaker releaseMaker = new GitHubReleaseMaker(content, githubGateway);
-        return new GitHubPlatform(releaseMaker, githubGateway);
+        final GitHubPlatformValidator platformValidator = new GitHubPlatformValidator(content, githubGateway);
+        return new GitHubPlatform(releaseMaker, platformValidator);
     }
 
     /**
@@ -51,7 +53,8 @@ public final class GitHubEntityFactory {
     public MavenPlatform createMavenPlatform(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
         final MavenReleaseMaker releaseMaker = new MavenReleaseMaker(content, githubGateway);
-        return new MavenPlatform(releaseMaker);
+        final MavenPlatformValidator platformValidator = new MavenPlatformValidator(content);
+        return new MavenPlatform(releaseMaker, platformValidator);
     }
 
     /**

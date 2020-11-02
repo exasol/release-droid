@@ -1,5 +1,6 @@
-package com.exasol.releaserobot.validation;
+package com.exasol.releaserobot.maven;
 
+import com.exasol.releaserobot.AbstractPlatformValidator;
 import com.exasol.releaserobot.report.ValidationReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
@@ -14,16 +15,15 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     /**
      * Create a new instance of {@link MavenPlatformValidator}.
      *
-     * @param branchContent    content of a branch to validate
-     * @param validationReport instance of {@link ValidationReport}
+     * @param branchContent content of a branch to validate
      */
-    public MavenPlatformValidator(final GitBranchContent branchContent, final ValidationReport validationReport) {
-        super(branchContent, validationReport);
+    public MavenPlatformValidator(final GitBranchContent branchContent) {
+        super(branchContent);
     }
 
     @Override
-    public void validate() {
-        validateFileExists(MAVEN_WORKFLOW_PATH, "Workflow for a Maven release.");
+    public void validate(final ValidationReport validationReport) {
+        validateFileExists(MAVEN_WORKFLOW_PATH, "Workflow for a Maven release.", validationReport);
         validateMavenPom(((JavaMavenGitBranchContent) this.branchContent).getMavenPom());
     }
 

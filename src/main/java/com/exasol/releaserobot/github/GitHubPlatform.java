@@ -1,25 +1,24 @@
 package com.exasol.releaserobot.github;
 
-import java.util.Set;
-
 import com.exasol.releaserobot.*;
+import com.exasol.releaserobot.report.ValidationReport;
 
 /**
  * This class controls GitHub platform.
  */
 public class GitHubPlatform implements Platform {
     private final ReleaseMaker releaseMaker;
-    private final GithubGateway githubGateway;
+    private final PlatformValidator platformValidator;
 
     /**
      * Create a new instance of {@link GitHubPlatform}.
-     *
-     * @param releaseMaker  instance of {@link ReleaseMaker}
-     * @param githubGateway instance of {@link GithubGateway}
+     * 
+     * @param releaseMaker      instance of {@link ReleaseMaker}
+     * @param platformValidator instance of {@link PlatformValidator}
      */
-    protected GitHubPlatform(final ReleaseMaker releaseMaker, final GithubGateway githubGateway) {
+    protected GitHubPlatform(final ReleaseMaker releaseMaker, final PlatformValidator platformValidator) {
         this.releaseMaker = releaseMaker;
-        this.githubGateway = githubGateway;
+        this.platformValidator = platformValidator;
     }
 
     @Override
@@ -27,21 +26,13 @@ public class GitHubPlatform implements Platform {
         this.releaseMaker.makeRelease();
     }
 
-    /**
-     * Get a set of closed issues' numbers.
-     *
-     * @return set of closed issues' numbers
-     */
-    public Set<Integer> getClosedTickets() {
-        try {
-            return this.githubGateway.getClosedTickets();
-        } catch (final GitHubException exception) {
-            throw new IllegalStateException(exception.getMessage(), exception);
-        }
-    }
-
     @Override
     public PlatformName getPlatformName() {
         return PlatformName.GITHUB;
+    }
+
+    @Override
+    public void validate(final ValidationReport validationReport) {
+        this.platformValidator.validate(validationReport);
     }
 }

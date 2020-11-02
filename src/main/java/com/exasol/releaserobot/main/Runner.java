@@ -48,8 +48,7 @@ public class Runner {
                 userInput.getRepositoryName());
         final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
         final Set<Platform> platforms = createPlatforms(userInput, gitHubEntityFactory, repository);
-        final RepositoryHandler repositoryHandler = new RepositoryHandler(repository, platforms);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryHandler);
+        final ValidateUseCase validateUseCase = new ValidateInteractor(platforms, repository);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, platforms);
         return new ReleaseRobot(releaseUseCase, validateUseCase);
     }

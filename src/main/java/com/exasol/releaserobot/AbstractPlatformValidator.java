@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.validation;
+package com.exasol.releaserobot;
 
 import com.exasol.releaserobot.report.ValidationReport;
 import com.exasol.releaserobot.repository.GitBranchContent;
@@ -9,28 +9,26 @@ import com.exasol.releaserobot.repository.GitRepositoryException;
  */
 public abstract class AbstractPlatformValidator implements PlatformValidator {
     protected final GitBranchContent branchContent;
-    protected final ValidationReport validationReport;
 
     /**
      * Create a new instance of {@link AbstractPlatformValidator}.
      *
-     * @param branchContent    content of a branch to validate
-     * @param validationReport instance of {@link ValidationReport}
+     * @param branchContent content of a branch to validate
      */
-    protected AbstractPlatformValidator(final GitBranchContent branchContent, final ValidationReport validationReport) {
+    protected AbstractPlatformValidator(final GitBranchContent branchContent) {
         this.branchContent = branchContent;
-        this.validationReport = validationReport;
     }
 
     /**
      * Check that the workflow file exists and is reachable.
      */
-    protected void validateFileExists(final String filePath, final String fileDescription) {
+    public void validateFileExists(final String filePath, final String fileDescription,
+            final ValidationReport validationReport) {
         try {
             this.branchContent.getSingleFileContentAsString(filePath);
-            this.validationReport.addSuccessfulValidation(fileDescription);
+            validationReport.addSuccessfulValidation(fileDescription);
         } catch (final GitRepositoryException exception) {
-            this.validationReport.addFailedValidations("E-RR-VAL-3",
+            validationReport.addFailedValidations("E-RR-VAL-3",
                     "The file '" + filePath + "' does not exist in the project. Please, add this file.");
         }
     }
