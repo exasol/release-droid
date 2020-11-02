@@ -2,33 +2,31 @@ package com.exasol.releaserobot.github;
 
 import java.util.Set;
 
-import com.exasol.releaserobot.Platform;
-import com.exasol.releaserobot.ReleaseMaker;
-import com.exasol.releaserobot.UserInput;
+import com.exasol.releaserobot.*;
 
 /**
  * This class controls GitHub platform.
  */
 public class GitHubPlatform implements Platform {
-	
-	private final ReleaseMaker releaseMaker;
-	private final GithubGateway githubGateway;
+    private final ReleaseMaker releaseMaker;
+    private final GithubGateway githubGateway;
 
     /**
      * Create a new instance of {@link GitHubPlatform}.
      *
+     * @param releaseMaker  instance of {@link ReleaseMaker}
      * @param githubGateway instance of {@link GithubGateway}
      */
-    protected GitHubPlatform(final ReleaseMaker releaseMaker,  final GithubGateway githubGateway) {
+    protected GitHubPlatform(final ReleaseMaker releaseMaker, final GithubGateway githubGateway) {
         this.releaseMaker = releaseMaker;
         this.githubGateway = githubGateway;
     }
 
     @Override
-	public void release(UserInput userInput) throws GitHubException {
-		this.releaseMaker.makeRelease();
-	}
-    
+    public void release(final UserInput userInput) throws GitHubException {
+        this.releaseMaker.makeRelease();
+    }
+
     /**
      * Get a set of closed issues' numbers.
      *

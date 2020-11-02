@@ -7,10 +7,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 import com.exasol.releaserobot.ReleaseMaker;
-import com.exasol.releaserobot.github.GitHubException;
-import com.exasol.releaserobot.github.GitHubPlatform;
-import com.exasol.releaserobot.github.GitHubRelease;
-import com.exasol.releaserobot.github.GithubGateway;
+import com.exasol.releaserobot.github.*;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 
@@ -25,9 +22,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     /**
      * Create a new {@link GitHubReleaseMaker}.
      * 
-     * @param content        repository content to release
-     * @param gitHubPlatform instance of {@link GitHubPlatform}
-     * @param releaseReport  release report
+     * @param content       repository content to release
+     * @param githubGateway instance of {@link GithubGateway}
      */
     public GitHubReleaseMaker(final GitBranchContent content, final GithubGateway githubGateway) {
         this.content = content;
@@ -43,18 +39,12 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String version = this.content.getVersion();
         final ReleaseLetter releaseLetter = this.content.getReleaseLetter(version);
         final String body = releaseLetter.getBody().orElse("");
-		final String header = releaseLetter.getHeader().orElse(version);
-		final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
-				.defaultBranchName(this.content.getBranchName()).assets(this.content.getDeliverables()).build();
-		this.makeNewGitHubRelease(release);
+        final String header = releaseLetter.getHeader().orElse(version);
+        final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
+                .defaultBranchName(this.content.getBranchName()).assets(this.content.getDeliverables()).build();
+        this.makeNewGitHubRelease(release);
     }
-    
-    /**
-     * Create a new GitHub release.
-     *
-     * @throws GitHubException when release process fails
-     * @param gitHubRelease {@link GitHubRelease} instance with information about the release
-     */
+
     private void makeNewGitHubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
         final String uploadUrl = this.githubGateway.createGithubRelease(gitHubRelease);
         for (final Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {

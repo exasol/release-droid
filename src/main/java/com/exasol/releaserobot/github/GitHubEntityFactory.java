@@ -32,23 +32,26 @@ public final class GitHubEntityFactory {
 
     /**
      * Create a new instance of {@link GitHubPlatform}.
-     * @param content 
      * 
+     * @param content repository content
      * @return new instance of {@link GitHubPlatform}
      */
     public GitHubPlatform createGitHubPlatform(final GitBranchContent content) {
-    	final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
-		return new GitHubPlatform(new GitHubReleaseMaker(content, githubGateway), githubGateway);
+        final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
+        final GitHubReleaseMaker releaseMaker = new GitHubReleaseMaker(content, githubGateway);
+        return new GitHubPlatform(releaseMaker, githubGateway);
     }
 
     /**
      * Create a new instance of {@link MavenPlatform}.
-     *
+     * 
+     * @param content repository content
      * @return new instance of {@link MavenPlatform}
      */
     public MavenPlatform createMavenPlatform(final GitBranchContent content) {
-    	final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
-        return new MavenPlatform(new MavenReleaseMaker(content, githubGateway));
+        final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
+        final MavenReleaseMaker releaseMaker = new MavenReleaseMaker(content, githubGateway);
+        return new MavenPlatform(releaseMaker);
     }
 
     /**

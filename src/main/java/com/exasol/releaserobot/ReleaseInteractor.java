@@ -1,67 +1,66 @@
 package com.exasol.releaserobot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.report.ReleaseReport;
-import com.exasol.releaserobot.report.Report;
-import com.exasol.releaserobot.report.ValidationReport;
+import com.exasol.releaserobot.report.*;
 
-public class ReleaseInteractor implements ReleaseUseCase{
-	private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
-	private ValidateUseCase validateUseCase;
-	private Set<Platform> platforms;
-	
-	public ReleaseInteractor(ValidateUseCase validateUseCase, Set<Platform> platforms) {
-		super();
-		this.validateUseCase = validateUseCase;
-		this.platforms = platforms;
-	}
+/**
+ * Implements release-related logic.
+ */
+public class ReleaseInteractor implements ReleaseUseCase {
+    private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
+    private final ValidateUseCase validateUseCase;
+    private final Set<Platform> platforms;
 
-	@Override
-	public List<Report> release(UserInput userInput) {
-		LOGGER.info(() -> "Release started.");
-		List<Report> reports = new ArrayList<>();
-		
-		ValidationReport validationReport = this.validateUseCase.validate(userInput);
-		reports.add(validationReport);
-		
-		if(!validationReport.hasFailures()) {
-			ReleaseReport releaseReport = this.makeRelease(userInput);
-			logResults(Goal.RELEASE, releaseReport);
-			reports.add(releaseReport);
-		}
-		return reports;
-	}
+    /**
+     * Create a new instance of {@link ReleaseInteractor}.
+     * 
+     * @param validateUseCase validate use case for validating the platforms
+     * @param platforms       set of platforms to perform release on
+     */
+    public ReleaseInteractor(final ValidateUseCase validateUseCase, final Set<Platform> platforms) {
+        this.validateUseCase = validateUseCase;
+        this.platforms = platforms;
+    }
 
-	private ReleaseReport makeRelease(final UserInput userInput) {
-		ReleaseReport releaseReport = new ReleaseReport();
-		
-		for (Platform platform : this.platforms) {
-			try {
-				platform.release(userInput);
-				releaseReport.addSuccessfulRelease(platform.getPlatformName());
-			} catch (final Exception runtimeException) {
-				releaseReport.addFailedRelease(platform.getPlatformName(),
-						ExceptionUtils.getStackTrace(runtimeException));
-				break;
-			}
-		}
-		return releaseReport;
-	}
-	
-	// [impl->dsn~rr-creates-validation-report~1]
-	// [impl->dsn~rr-creates-release-report~1]
-	private void logResults(final Goal goal, final Report report) {
-		if (report.hasFailures()) {
-			LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());
-		} else {
-			LOGGER.info(report.getShortDescription());
-		}
-	}
+    @Override
+    public List<Report> release(final UserInput userInput) {
+        final List<Report> reports = new ArrayList<>();
+        final ValidationReport validationReport = this.validateUseCase.validate(userInput);
+        reports.add(validationReport);
+        if (!validationReport.hasFailures()) {
+            LOGGER.info(() -> "Release started.");
+            final ReleaseReport releaseReport = this.makeRelease(userInput);
+            logResults(Goal.RELEASE, releaseReport);
+            reports.add(releaseReport);
+        }
+        return reports;
+    }
 
+    private ReleaseReport makeRelease(final UserInput userInput) {
+        final ReleaseReport releaseReport = new ReleaseReport();
+        for (final Platform platform : this.platforms) {
+            try {
+                platform.release(userInput);
+                releaseReport.addSuccessfulRelease(platform.getPlatformName());
+            } catch (final Exception exception) {
+                releaseReport.addFailedRelease(platform.getPlatformName(), ExceptionUtils.getStackTrace(exception));
+                break;
+            }
+        }
+        return releaseReport;
+    }
+
+    // [impl->dsn~rr-creates-validation-report~1]
+    // [impl->dsn~rr-creates-release-report~1]
+    private void logResults(final Goal goal, final Report report) {
+        if (report.hasFailures()) {
+            LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());
+        } else {
+            LOGGER.info(report.getShortDescription());
+        }
+    }
 }

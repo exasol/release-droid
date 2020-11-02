@@ -8,7 +8,8 @@ import com.exasol.releaserobot.github.GitHubException;
 public interface ReleaseMaker {
     /**
      * Make a release.
-     * @throws GitHubException 
+     * 
+     * @throws GitHubException if release fails
      */
-    void makeRelease() throws GitHubException;
+    public void makeRelease() throws GitHubException;
 }

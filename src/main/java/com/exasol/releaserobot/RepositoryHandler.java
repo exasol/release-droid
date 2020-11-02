@@ -15,7 +15,6 @@ import com.exasol.releaserobot.validation.*;
 public class RepositoryHandler {
     private static final Logger LOGGER = Logger.getLogger(RepositoryHandler.class.getName());
     private final ValidationReport validationReport = new ValidationReport();
-    private final ReleaseReport releaseReport = new ReleaseReport();
     private final Set<Platform> platforms;
     private final GitRepository repository;
 
@@ -61,5 +60,4 @@ public class RepositoryHandler {
             platformValidator.validate();
         }
     }
-
 }

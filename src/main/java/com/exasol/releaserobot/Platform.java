@@ -47,5 +47,11 @@ public interface Platform {
         }
     }
 
-	public void release(UserInput userInput) throws GitHubException;
+    /**
+     * Perform a release on the platform.
+     * 
+     * @param userInput user input
+     * @throws GitHubException if the release fails
+     */
+    public void release(UserInput userInput) throws GitHubException;
 }
