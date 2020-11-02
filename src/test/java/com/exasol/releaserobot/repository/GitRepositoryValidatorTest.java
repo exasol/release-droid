@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.validation;
+package com.exasol.releaserobot.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.exasol.releaserobot.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +17,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import com.exasol.releaserobot.report.ValidationReport;
-import com.exasol.releaserobot.repository.GitRepository;
-import com.exasol.releaserobot.repository.ReleaseLetter;
 
 class GitRepositoryValidatorTest {
     private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);

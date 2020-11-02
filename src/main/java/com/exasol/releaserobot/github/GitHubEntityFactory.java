@@ -5,9 +5,9 @@ import java.io.IOException;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
-import com.exasol.releaserobot.CredentialsProvider;
+import com.exasol.releaserobot.*;
 import com.exasol.releaserobot.github.release.GitHubReleaseMaker;
-import com.exasol.releaserobot.maven.MavenPlatform;
+import com.exasol.releaserobot.maven.MavenPlatformValidator;
 import com.exasol.releaserobot.maven.release.MavenReleaseMaker;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitHubGitRepository;
@@ -21,7 +21,7 @@ public final class GitHubEntityFactory {
 
     /**
      * Create a new instance of {@link GitHubEntityFactory}
-     * 
+     *
      * @param repositoryOwner owner of the GitHub repository
      * @param repositoryName  name of the GitHubRepository
      */
@@ -31,27 +31,46 @@ public final class GitHubEntityFactory {
     }
 
     /**
-     * Create a new instance of {@link GitHubPlatform}.
-     * 
+     * Create a new instance of {@link GitHubReleaseMaker}.
+     *
      * @param content repository content
-     * @return new instance of {@link GitHubPlatform}
+     * @return new instance of {@link GitHubReleaseMaker}
      */
-    public GitHubPlatform createGitHubPlatform(final GitBranchContent content) {
+    public ReleaseMaker createGithubReleaseMaker(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
-        final GitHubReleaseMaker releaseMaker = new GitHubReleaseMaker(content, githubGateway);
-        return new GitHubPlatform(releaseMaker, githubGateway);
+        return new GitHubReleaseMaker(content, githubGateway);
     }
 
     /**
-     * Create a new instance of {@link MavenPlatform}.
-     * 
+     * Create a new instance of {@link GitHubPlatformValidator}.
+     *
      * @param content repository content
-     * @return new instance of {@link MavenPlatform}
+     * @return new instance of {@link GitHubPlatformValidator}
      */
-    public MavenPlatform createMavenPlatform(final GitBranchContent content) {
+    public PlatformValidator createGithubPlatformValidator(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
-        final MavenReleaseMaker releaseMaker = new MavenReleaseMaker(content, githubGateway);
-        return new MavenPlatform(releaseMaker);
+        return new GitHubPlatformValidator(content, githubGateway);
+    }
+
+    /**
+     * Create a new instance of {@link MavenPlatformValidator}.
+     *
+     * @param content repository content
+     * @return new instance of {@link MavenPlatformValidator}
+     */
+    public PlatformValidator createMavenPlatformValidator(final GitBranchContent content) {
+        return new MavenPlatformValidator(content);
+    }
+
+    /**
+     * Create a new instance of {@link MavenReleaseMaker}.
+     *
+     * @param content repository content
+     * @return new instance of {@link MavenReleaseMaker}
+     */
+    public ReleaseMaker createMavenReleaseMaker(final GitBranchContent content) {
+        final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
+        return new MavenReleaseMaker(content, githubGateway);
     }
 
     /**

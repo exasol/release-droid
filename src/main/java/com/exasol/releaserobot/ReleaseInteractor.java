@@ -13,17 +13,18 @@ import com.exasol.releaserobot.report.*;
 public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
-    private final Set<Platform> platforms;
+    private final Map<PlatformName, ReleaseMaker> releaseMakers;
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
-     * 
+     *
      * @param validateUseCase validate use case for validating the platforms
-     * @param platforms       set of platforms to perform release on
+     * @param releaseMakers   map with platform names and release makers
      */
-    public ReleaseInteractor(final ValidateUseCase validateUseCase, final Set<Platform> platforms) {
+    public ReleaseInteractor(final ValidateUseCase validateUseCase,
+            final Map<PlatformName, ReleaseMaker> releaseMakers) {
         this.validateUseCase = validateUseCase;
-        this.platforms = platforms;
+        this.releaseMakers = releaseMakers;
     }
 
     @Override
@@ -33,25 +34,29 @@ public class ReleaseInteractor implements ReleaseUseCase {
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final ReleaseReport releaseReport = this.makeRelease(userInput);
+            final ReleaseReport releaseReport = this.makeRelease(userInput.getPlatformNames());
             logResults(Goal.RELEASE, releaseReport);
             reports.add(releaseReport);
         }
         return reports;
     }
 
-    private ReleaseReport makeRelease(final UserInput userInput) {
+    private ReleaseReport makeRelease(final Set<PlatformName> platformNames) {
         final ReleaseReport releaseReport = new ReleaseReport();
-        for (final Platform platform : this.platforms) {
+        for (final PlatformName platformName : platformNames) {
             try {
-                platform.release(userInput);
-                releaseReport.addSuccessfulRelease(platform.getPlatformName());
+                this.getReleaseMaker(platformName).makeRelease();
+                releaseReport.addSuccessfulRelease(platformName);
             } catch (final Exception exception) {
-                releaseReport.addFailedRelease(platform.getPlatformName(), ExceptionUtils.getStackTrace(exception));
+                releaseReport.addFailedRelease(platformName, ExceptionUtils.getStackTrace(exception));
                 break;
             }
         }
         return releaseReport;
+    }
+
+    private ReleaseMaker getReleaseMaker(final PlatformName platformName) {
+        return this.releaseMakers.get(platformName);
     }
 
     // [impl->dsn~rr-creates-validation-report~1]

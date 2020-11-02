@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.validation;
+package com.exasol.releaserobot.repository;
 
 import static com.exasol.releaserobot.ReleaseRobotConstants.VERSION_REGEX;
 
@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.releaserobot.report.ValidationReport;
-import com.exasol.releaserobot.repository.*;
 
 /**
  * Contains validations for a Git project.
