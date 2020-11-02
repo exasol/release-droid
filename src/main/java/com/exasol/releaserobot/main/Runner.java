@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.commons.cli.*;
 
 import com.exasol.releaserobot.*;
-import com.exasol.releaserobot.Platform.PlatformName;
 import com.exasol.releaserobot.github.GitHubEntityFactory;
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.repository.GitBranchContent;
@@ -44,13 +43,10 @@ public class Runner {
         final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(userInput.getRepositoryOwner(),
                 userInput.getRepositoryName());
         final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
-
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, gitHubEntityFactory,
                 repository);
-
         final Map<PlatformName, PlatformValidator> platformValidators = createPlatformValidators(userInput,
                 gitHubEntityFactory, repository);
-
         final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repository);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers);
         return new ReleaseRobot(releaseUseCase, validateUseCase);
@@ -58,11 +54,8 @@ public class Runner {
 
     private static Map<PlatformName, PlatformValidator> createPlatformValidators(final UserInput userInput,
             final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
-
         final Map<PlatformName, PlatformValidator> platformValidators = new HashMap<>();
-
         final GitBranchContent branchContent = getBranchContent(userInput, repository);
-
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:
@@ -83,18 +76,16 @@ public class Runner {
     private static GitBranchContent getBranchContent(final UserInput userInput, final GitRepository repository) {
         if (userInput.hasGitBranch()) {
             return repository.getRepositoryContent(userInput.getGitBranch());
+        } else {
+            return repository.getRepositoryContent(repository.getDefaultBranchName());
         }
-        return repository.getRepositoryContent(repository.getDefaultBranchName());
     }
 
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final UserInput userInput,
             final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
-
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
-
         final GitBranchContent defaultBranchContent = repository
                 .getRepositoryContent(repository.getDefaultBranchName());
-
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:

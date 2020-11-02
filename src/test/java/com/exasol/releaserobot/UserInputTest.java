@@ -23,7 +23,7 @@ class UserInputTest {
         assertAll(() -> assertThat(userInput.getRepositoryOwner(), equalTo(OWNER)), //
                 () -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
                 () -> assertThat(userInput.getGoal(), equalTo(Goal.VALIDATE)), //
-                () -> assertThat(userInput.getPlatformNames(), contains(Platform.PlatformName.GITHUB)), //
+                () -> assertThat(userInput.getPlatformNames(), contains(PlatformName.GITHUB)), //
                 () -> assertThat(userInput.hasGitBranch(), equalTo(true)), //
                 () -> assertThat(userInput.getGitBranch(), equalTo(BRANCH)) //
         );

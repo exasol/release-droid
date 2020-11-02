@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.Platform.PlatformName;
 import com.exasol.releaserobot.report.*;
 
 /**
@@ -20,7 +19,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
      * Create a new instance of {@link ReleaseInteractor}.
      *
      * @param validateUseCase validate use case for validating the platforms
-     * @param platforms       set of platforms to perform release on
+     * @param releaseMakers   map with platform names and release makers
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase,
             final Map<PlatformName, ReleaseMaker> releaseMakers) {

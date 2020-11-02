@@ -9,8 +9,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.releaserobot.Platform.PlatformName;
-
 class PlatformNameTest {
     @Test
     void testGetPlatformNamesList() {

@@ -1,6 +1,6 @@
 package com.exasol.releaserobot.report;
 
-import com.exasol.releaserobot.Platform.PlatformName;
+import com.exasol.releaserobot.PlatformName;
 
 /**
  * Represents a result of a single release.

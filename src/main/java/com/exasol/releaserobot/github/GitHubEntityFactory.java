@@ -31,30 +31,42 @@ public final class GitHubEntityFactory {
     }
 
     /**
-     * Create a new instance of {@link GitHubPlatform}.
+     * Create a new instance of {@link GitHubReleaseMaker}.
      *
      * @param content repository content
-     * @return new instance of {@link GitHubPlatform}
+     * @return new instance of {@link GitHubReleaseMaker}
      */
     public ReleaseMaker createGithubReleaseMaker(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
         return new GitHubReleaseMaker(content, githubGateway);
     }
 
+    /**
+     * Create a new instance of {@link GitHubPlatformValidator}.
+     *
+     * @param content repository content
+     * @return new instance of {@link GitHubPlatformValidator}
+     */
     public PlatformValidator createGithubPlatformValidator(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);
         return new GitHubPlatformValidator(content, githubGateway);
     }
 
+    /**
+     * Create a new instance of {@link MavenPlatformValidator}.
+     *
+     * @param content repository content
+     * @return new instance of {@link MavenPlatformValidator}
+     */
     public PlatformValidator createMavenPlatformValidator(final GitBranchContent content) {
         return new MavenPlatformValidator(content);
     }
 
     /**
-     * Create a new instance of {@link MavenPlatform}.
+     * Create a new instance of {@link MavenReleaseMaker}.
      *
      * @param content repository content
-     * @return new instance of {@link MavenPlatform}
+     * @return new instance of {@link MavenReleaseMaker}
      */
     public ReleaseMaker createMavenReleaseMaker(final GitBranchContent content) {
         final GithubGateway githubGateway = new GithubAPIAdapter(this.repository, this.user);

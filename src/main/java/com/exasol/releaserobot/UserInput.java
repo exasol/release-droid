@@ -8,7 +8,7 @@ import java.util.Set;
 public class UserInput {
     private final String gitBranch;
     private final Goal goal;
-    private final Set<Platform.PlatformName> platformNames;
+    private final Set<PlatformName> platformNames;
     private final String repositoryName;
     private final String repositoryOwner;
 
@@ -35,7 +35,7 @@ public class UserInput {
      *
      * @return platforms' names
      */
-    public Set<Platform.PlatformName> getPlatformNames() {
+    public Set<PlatformName> getPlatformNames() {
         return this.platformNames;
     }
 
@@ -89,7 +89,7 @@ public class UserInput {
     public static final class Builder {
         private String gitBranch;
         private Goal goal;
-        private Set<Platform.PlatformName> platforms;
+        private Set<PlatformName> platforms;
         private String repositoryName;
         private String repositoryOwner;
 
@@ -125,7 +125,7 @@ public class UserInput {
          */
         // [impl->dsn~users-set-release-platforms~1]
         public Builder platforms(final String... platforms) {
-            this.platforms = Platform.PlatformName.toSet(platforms);
+            this.platforms = PlatformName.toSet(platforms);
             return this;
         }
 

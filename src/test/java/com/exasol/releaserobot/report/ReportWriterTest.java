@@ -1,7 +1,7 @@
 package com.exasol.releaserobot.report;
 
-import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
-import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
+import static com.exasol.releaserobot.PlatformName.GITHUB;
+import static com.exasol.releaserobot.PlatformName.MAVEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
