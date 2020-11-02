@@ -5,7 +5,7 @@ import java.util.List;
 import com.exasol.releaserobot.report.Report;
 
 /**
- * Contains release-related methods.
+ * Interface for the Release use case.
  */
 public interface ReleaseUseCase {
     /**

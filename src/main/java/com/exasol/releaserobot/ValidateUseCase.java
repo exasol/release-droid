@@ -3,7 +3,7 @@ package com.exasol.releaserobot;
 import com.exasol.releaserobot.report.ValidationReport;
 
 /**
- * Contains validation-related methods.
+ * Interface for the Validate use case.
  */
 public interface ValidateUseCase {
     /**

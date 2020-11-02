@@ -21,7 +21,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
     /**
      * Create a new instance of {@link MavenReleaseMaker}.
      *
-     * @param content       repository content
+     * @param content repository content
      * @param githubGateway instance of {@link GithubGateway}
      */
     public MavenReleaseMaker(final GitBranchContent content, final GithubGateway githubGateway) {

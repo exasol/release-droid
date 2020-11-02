@@ -8,7 +8,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.exasol.releaserobot.report.*;
 
 /**
- * Implements release-related logic.
+ * Implements the Release use case.
  */
 public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
