@@ -14,7 +14,7 @@ public class UserInput {
 
     /**
      * Get a git branch.
-     * 
+     *
      * @return git branch
      */
     public String getGitBranch() {
@@ -23,7 +23,7 @@ public class UserInput {
 
     /**
      * Get a goal.
-     * 
+     *
      * @return goal
      */
     public Goal getGoal() {
@@ -32,7 +32,7 @@ public class UserInput {
 
     /**
      * Get platforms' names.
-     * 
+     *
      * @return platforms' names
      */
     public Set<Platform.PlatformName> getPlatformNames() {
@@ -41,7 +41,7 @@ public class UserInput {
 
     /**
      * Get a repository name.
-     * 
+     *
      * @return repository name
      */
     public String getRepositoryName() {
@@ -50,7 +50,7 @@ public class UserInput {
 
     /**
      * Get a repository owner.
-     * 
+     *
      * @return repository owner
      */
     public String getRepositoryOwner() {
@@ -59,11 +59,11 @@ public class UserInput {
 
     /**
      * Check if input contains a git branch.
-     * 
+     *
      * @return true if a git branch presents
      */
     public boolean hasGitBranch() {
-        return this.gitBranch != null && !this.gitBranch.isEmpty();
+        return (this.gitBranch != null) && !this.gitBranch.isEmpty();
     }
 
     private UserInput(final Builder builder) {
@@ -164,7 +164,7 @@ public class UserInput {
         }
 
         private void validateGoalAndBranch() {
-            if (this.goal == Goal.RELEASE && this.gitBranch != null) {
+            if ((this.goal == Goal.RELEASE) && (this.gitBranch != null)) {
                 throw new IllegalArgumentException(
                         "E-RR-1: Please, remove branch parameter if you want to make a release.");
             }
@@ -174,7 +174,7 @@ public class UserInput {
             if (this.goal == null) {
                 throwExceptionForMissingParameter("E-RR-2", "goal");
             }
-            if (this.platforms == null || this.platforms.isEmpty()) {
+            if ((this.platforms == null) || this.platforms.isEmpty()) {
                 throwExceptionForMissingParameter("E-RR-3", "platforms");
             }
             if (this.repositoryName == null) {

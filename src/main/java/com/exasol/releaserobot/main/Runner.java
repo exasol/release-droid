@@ -1,10 +1,7 @@
 package com.exasol.releaserobot.main;
 
-import static com.exasol.releaserobot.Platform.PlatformName.GITHUB;
-import static com.exasol.releaserobot.Platform.PlatformName.MAVEN;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.cli.*;
 
@@ -47,29 +44,72 @@ public class Runner {
         final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(userInput.getRepositoryOwner(),
                 userInput.getRepositoryName());
         final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
-        final Set<Platform> platforms = createPlatforms(userInput, gitHubEntityFactory, repository);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(platforms, repository);
-        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, platforms);
+
+        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, gitHubEntityFactory,
+                repository);
+
+        final Map<PlatformName, PlatformValidator> platformValidators = createPlatformValidators(userInput,
+                gitHubEntityFactory, repository);
+
+        final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repository);
+        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers);
         return new ReleaseRobot(releaseUseCase, validateUseCase);
     }
 
-    private static Set<Platform> createPlatforms(final UserInput userInput,
+    private static Map<PlatformName, PlatformValidator> createPlatformValidators(final UserInput userInput,
             final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
-        final Set<Platform> platforms = new HashSet<>();
-        final GitBranchContent defaultBranchContent = repository
-                .getRepositoryContent(repository.getDefaultBranchName());
+
+        final Map<PlatformName, PlatformValidator> platformValidators = new HashMap<>();
+
+        final GitBranchContent branchContent = getBranchContent(userInput, repository);
+
         for (final PlatformName name : userInput.getPlatformNames()) {
-            if (name == GITHUB) {
-                platforms.add(gitHubEntityFactory.createGitHubPlatform(defaultBranchContent));
-            } else if (name == MAVEN) {
-                platforms.add(gitHubEntityFactory.createMavenPlatform(defaultBranchContent));
-            } else {
+            switch (name) {
+            case GITHUB:
+                platformValidators.put(name, gitHubEntityFactory.createGithubPlatformValidator(branchContent));
+                break;
+            case MAVEN:
+                platformValidators.put(name, gitHubEntityFactory.createMavenPlatformValidator(branchContent));
+                break;
+            default:
                 throw new UnsupportedOperationException(
                         "E-RR-RUN-2: Platform '" + name + "' is not supported. Please choose one of: "
                                 + PlatformName.availablePlatformNames().toString());
             }
         }
-        return platforms;
+        return platformValidators;
+    }
+
+    private static GitBranchContent getBranchContent(final UserInput userInput, final GitRepository repository) {
+        if (userInput.hasGitBranch()) {
+            return repository.getRepositoryContent(userInput.getGitBranch());
+        }
+        return repository.getRepositoryContent(repository.getDefaultBranchName());
+    }
+
+    private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final UserInput userInput,
+            final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
+
+        final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
+
+        final GitBranchContent defaultBranchContent = repository
+                .getRepositoryContent(repository.getDefaultBranchName());
+
+        for (final PlatformName name : userInput.getPlatformNames()) {
+            switch (name) {
+            case GITHUB:
+                releaseMakers.put(name, gitHubEntityFactory.createGithubReleaseMaker(defaultBranchContent));
+                break;
+            case MAVEN:
+                releaseMakers.put(name, gitHubEntityFactory.createMavenReleaseMaker(defaultBranchContent));
+                break;
+            default:
+                throw new UnsupportedOperationException(
+                        "E-RR-RUN-2: Platform '" + name + "' is not supported. Please choose one of: "
+                                + PlatformName.availablePlatformNames().toString());
+            }
+        }
+        return releaseMakers;
     }
 
     private static Options createOptions() {

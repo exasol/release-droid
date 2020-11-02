@@ -3,21 +3,10 @@ package com.exasol.releaserobot;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.exasol.releaserobot.github.GitHubException;
-import com.exasol.releaserobot.report.ValidationReport;
-
 /**
  * Marker for classes representing platforms.
  */
 public interface Platform {
-    /**
-     * Get a name of the platform this class represents.
-     * 
-     * @return name from the {@link PlatformName}s
-     */
-    public PlatformName getPlatformName();
-
-    public void validate(ValidationReport validationReport);
 
     /**
      * This class contains supported release platforms.
@@ -41,7 +30,7 @@ public interface Platform {
 
         /**
          * Get a list of available platform names.
-         * 
+         *
          * @return list of available platform names
          */
         public static Set<String> availablePlatformNames() {
@@ -49,12 +38,4 @@ public interface Platform {
                     .collect(Collectors.toSet());
         }
     }
-
-    /**
-     * Perform a release on the platform.
-     * 
-     * @param userInput user input
-     * @throws GitHubException if the release fails
-     */
-    public void release(UserInput userInput) throws GitHubException;
 }

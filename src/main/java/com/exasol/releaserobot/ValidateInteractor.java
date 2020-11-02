@@ -1,58 +1,55 @@
 package com.exasol.releaserobot;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.exasol.releaserobot.Platform.PlatformName;
 import com.exasol.releaserobot.report.Report;
 import com.exasol.releaserobot.report.ValidationReport;
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.GitRepository;
+import com.exasol.releaserobot.repository.GitRepositoryValidator;
 
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
-    private final Set<Platform> platforms;
+    private final Map<PlatformName, PlatformValidator> platformValidators;
     private final GitRepository repository;
 
-    public ValidateInteractor(final Set<Platform> platforms, final GitRepository repository) {
-        this.platforms = platforms;
+    public ValidateInteractor(final Map<PlatformName, PlatformValidator> platformValidators,
+            final GitRepository repository) {
+        this.platformValidators = platformValidators;
         this.repository = repository;
     }
 
     @Override
     public ValidationReport validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
-        final ValidationReport validationReport = runValidation(userInput);
+        final ValidationReport validationReport = validateOnPlatforms(userInput.getPlatformNames());
         logResults(Goal.VALIDATE, validationReport);
         return validationReport;
     }
 
-    // [impl->dsn~rr-runs-validate-goal~1]
-    private ValidationReport runValidation(final UserInput userInput) {
-        if (validateUserSpecifiedBranch(userInput)) {
-            return validate(userInput.getGitBranch());
-        }
-        return validate();
+    private ValidationReport validateOnPlatforms(final Set<PlatformName> platformNames) {
+        return validateOnPlatforms(this.repository.getDefaultBranchName(), platformNames);
     }
 
-    private boolean validateUserSpecifiedBranch(final UserInput userInput) {
-        return userInput.getGoal() != Goal.RELEASE && userInput.hasGitBranch();
-    }
-
-    private ValidationReport validate() {
-        return validate(this.repository.getDefaultBranchName());
-    }
-
-    private ValidationReport validate(final String branch) {
+    private ValidationReport validateOnPlatforms(final String branch, final Set<PlatformName> platformNames) {
         final ValidationReport validationReport = new ValidationReport();
         final GitRepositoryValidator validator = new GitRepositoryValidator(this.repository, validationReport);
         validator.validate(branch);
-        validatePlatforms(branch, validationReport);
+        validatePlatforms(branch, validationReport, platformNames);
         return validationReport;
     }
 
-    private void validatePlatforms(final String branch, final ValidationReport validationReport) {
-        for (final Platform platform : this.platforms) {
-            platform.validate(validationReport);
+    private void validatePlatforms(final String branch, final ValidationReport validationReport,
+            final Set<PlatformName> platformNames) {
+        for (final PlatformName platformName : platformNames) {
+            this.getPlatformValidator(platformName).validate(validationReport);
         }
+    }
+
+    private PlatformValidator getPlatformValidator(final PlatformName platformName) {
+        return this.platformValidators.get(platformName);
     }
 
     // [impl->dsn~rr-creates-validation-report~1]
