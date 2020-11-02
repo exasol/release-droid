@@ -8,9 +8,23 @@ import java.util.List;
 /**
  * An abstract base for a report.
  */
-public abstract class AbstractReport implements Report {
+public class ReportImpl implements Report {
     protected final List<Result> results = new LinkedList<>();
-    protected boolean hasFailures;
+    private final ReportName reportName;
+
+    public ReportImpl(final ReportName reportName) {
+        this.reportName = reportName;
+    }
+
+    @Override
+    public void addResult(final Result result) {
+        this.results.add(result);
+    }
+
+    @Override
+    public void addResults(final List<? extends Result> results) {
+        this.results.addAll(results);
+    }
 
     @Override
     public String getFullReport() {
@@ -24,7 +38,12 @@ public abstract class AbstractReport implements Report {
 
     @Override
     public boolean hasFailures() {
-        return this.hasFailures;
+        for (final Result result : this.results) {
+            if (!result.isSuccessful()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -40,12 +59,17 @@ public abstract class AbstractReport implements Report {
         return stringBuilder.toString();
     }
 
-    protected String getShortDescription(final String goal) {
-        final String reportName = goal + " Report: ";
+    @Override
+    public String getShortDescription() {
+        final String header = this.reportName.name() + " Report: ";
         if (this.hasFailures()) {
-            return reportName + goal.toUpperCase() + " FAILED!";
+            return header + this.reportName.name() + " FAILED!";
         } else {
-            return reportName + goal + " is successful!";
+            return header + this.reportName.name().toLowerCase() + " is successful!";
         }
+    }
+
+    public enum ReportName {
+        VALIDATION, RELEASE
     }
 }

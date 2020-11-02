@@ -1,9 +1,25 @@
 package com.exasol.releaserobot.report;
 
+import java.util.List;
+
 /**
  * Represents a report.
  */
 public interface Report {
+    /**
+     * Add a new result.
+     *
+     * @param result result
+     */
+    void addResult(Result result);
+
+    /**
+     * Add a list of results.
+     *
+     * @param results list of results
+     */
+    void addResults(List<? extends Result> results);
+
     /**
      * Get a formatted report as a string.
      *

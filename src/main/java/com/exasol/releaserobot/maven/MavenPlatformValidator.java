@@ -1,7 +1,9 @@
 package com.exasol.releaserobot.maven;
 
+import java.util.List;
+
 import com.exasol.releaserobot.AbstractPlatformValidator;
-import com.exasol.releaserobot.report.ValidationReport;
+import com.exasol.releaserobot.report.ValidationResult;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 import com.exasol.releaserobot.repository.maven.MavenPom;
@@ -22,9 +24,10 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     }
 
     @Override
-    public void validate(final ValidationReport validationReport) {
-        validateFileExists(MAVEN_WORKFLOW_PATH, "Workflow for a Maven release.", validationReport);
+    public List<ValidationResult> validate() {
+        validateFileExists(MAVEN_WORKFLOW_PATH, "Workflow for a Maven release.");
         validateMavenPom(((JavaMavenGitBranchContent) this.branchContent).getMavenPom());
+        return this.validationResults;
     }
 
     // TODO: add a pom file validation

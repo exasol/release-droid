@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.ValidationReport;
+import com.exasol.releaserobot.report.ValidationResult;
 
 /**
  * Contains validations for a Git project.
@@ -14,25 +14,25 @@ import com.exasol.releaserobot.report.ValidationReport;
 public class GitRepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
     private final GitRepository repository;
-    private final ValidationReport validationReport;
+    public final List<ValidationResult> validationResults = new ArrayList<>();
 
     /**
      * Create a new instance of {@link GitRepositoryValidator}.
+     * 
+     * @param repository instance of {@link GitRepository} to validate
      *
-     * @param repository       instance of {@link GitRepository} to validate
-     * @param validationReport instance of {@link ValidationReport}
      */
-    public GitRepositoryValidator(final GitRepository repository, final ValidationReport validationReport) {
+    public GitRepositoryValidator(final GitRepository repository) {
         this.repository = repository;
-        this.validationReport = validationReport;
     }
 
     /**
      * Validate content of a Git-based repository.
      *
      * @param branch name of a branch to validate on
+     * @return list of validation results
      */
-    public void validate(final String branch) {
+    public List<ValidationResult> validate(final String branch) {
         LOGGER.fine("Validating Git repository.");
         final GitBranchContent content = this.repository.getRepositoryContent(branch);
         final String version = content.getVersion();
@@ -43,6 +43,7 @@ public class GitRepositoryValidator {
             final ReleaseLetter changes = content.getReleaseLetter(version);
             validateChanges(changes, version, content.isDefaultBranch());
         }
+        return this.validationResults;
     }
 
     protected boolean validateNewVersion(final String newVersion) {
@@ -57,13 +58,13 @@ public class GitRepositoryValidator {
 
     private boolean validateVersionFormat(final String version) {
         if (version.matches(VERSION_REGEX)) {
-            this.validationReport.addSuccessfulValidation("Version format.");
+            this.validationResults.add(ValidationResult.successfulValidation("Version format."));
             return true;
         } else {
-            this.validationReport.addFailedValidations("E-RR-VAL-3",
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-3",
                     "A version or tag found in this repository has invalid format: " + version
                             + ". The valid format is: <major>.<minor>.<fix>. "
-                            + "Please, refer to the user guide to check requirements.");
+                            + "Please, refer to the user guide to check requirements."));
             return false;
         }
     }
@@ -73,7 +74,7 @@ public class GitRepositoryValidator {
         if (latestReleaseTag.isPresent()) {
             return validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get());
         } else {
-            this.validationReport.addSuccessfulValidation("A new tag. This is the first release.");
+            this.validationResults.add(ValidationResult.successfulValidation("A new tag. This is the first release."));
             return true;
         }
     }
@@ -83,12 +84,12 @@ public class GitRepositoryValidator {
     private boolean validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (possibleVersions.contains(newTag)) {
-            this.validationReport.addSuccessfulValidation("A new tag.");
+            this.validationResults.add(ValidationResult.successfulValidation("A new tag."));
             return true;
         } else {
-            this.validationReport.addFailedValidations("E-RR-VAL-4",
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-4",
                     "A new version does not fit the versioning rules. Possible versions for the release are: "
-                            + possibleVersions.toString());
+                            + possibleVersions.toString()));
             return false;
         }
     }
@@ -110,11 +111,11 @@ public class GitRepositoryValidator {
         LOGGER.fine("Validating 'changelog.md' file.");
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
-            this.validationReport.addFailedValidations("E-RR-VAL-5",
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-5",
                     "The file 'changelog.md' doesn't contain the following link, please add '" + changelogContent
-                            + "' to the file.");
+                            + "' to the file."));
         } else {
-            this.validationReport.addSuccessfulValidation("'changelog.md' file.");
+            this.validationResults.add(ValidationResult.successfulValidation("'changelog.md' file."));
             LOGGER.fine("Validation of 'changelog.md' file was successful.");
         }
     }
@@ -130,10 +131,11 @@ public class GitRepositoryValidator {
     private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            this.validationReport.addFailedValidations("E-RR-VAL-6", "The file '" + changes.getFileName()
-                    + "' does not mention the current version. Please, follow the changes file's format rules.");
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-6", "The file '"
+                    + changes.getFileName()
+                    + "' does not mention the current version. Please, follow the changes file's format rules."));
         } else {
-            this.validationReport.addSuccessfulValidation("'" + changes.getFileName() + "' file.");
+            this.validationResults.add(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
         }
     }
 
@@ -144,20 +146,21 @@ public class GitRepositoryValidator {
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
             reportWrongDate(changes.getFileName(), isDefaultBranch, dateToday);
         } else {
-            this.validationReport.addSuccessfulValidation("Release date in '" + changes.getFileName() + "' file.");
+            this.validationResults.add(
+                    ValidationResult.successfulValidation("Release date in '" + changes.getFileName() + "' file."));
         }
     }
 
     private void reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
         if (isDefaultBranch) {
-            this.validationReport.addFailedValidations("E-RR-VAL-7",
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-7",
                     "The file '" + fileName + "' doesn't contain release's date: " + dateToday.toString()
-                            + ". PLease, add or update the release date.");
+                            + ". PLease, add or update the release date."));
         } else {
             final String warningMessage = "W-RR-VAL-2. Don't forget to change the date in the '" + fileName
                     + "' file before you release.";
-            this.validationReport.addSuccessfulValidation(
-                    "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage);
+            this.validationResults.add(ValidationResult.successfulValidation(
+                    "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
             LOGGER.warning(warningMessage);
         }
     }
@@ -165,10 +168,11 @@ public class GitRepositoryValidator {
     // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private void validateHasBody(final ReleaseLetter changes) {
         if (changes.getBody().isEmpty()) {
-            this.validationReport.addFailedValidations("E-RR-VAL-8", "Cannot find the '" + changes.getFileName()
-                    + "' body. Please, make sure you added the changes you made to the file.");
+            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-8", "Cannot find the '"
+                    + changes.getFileName() + "' body. Please, make sure you added the changes you made to the file."));
         } else {
-            this.validationReport.addSuccessfulValidation("Release body in '" + changes.getFileName() + "' file.");
+            this.validationResults.add(
+                    ValidationResult.successfulValidation("Release body in '" + changes.getFileName() + "' file."));
 
         }
     }
