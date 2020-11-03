@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.github.release;
+package com.exasol.releaserobot.github;
 
 import java.net.URI;
 import java.util.Map;
@@ -6,10 +6,10 @@ import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import com.exasol.releaserobot.ReleaseMaker;
 import com.exasol.releaserobot.github.*;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
 /**
  * This class is responsible for releases on GitHub.
@@ -21,7 +21,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     /**
      * Create a new {@link GitHubReleaseMaker}.
-     * 
+     *
      * @param content       repository content to release
      * @param githubGateway instance of {@link GithubGateway}
      */

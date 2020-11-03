@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.report;
+package com.exasol.releaserobot.usecases;
 
 /**
  * A common interface for Release Robot actions results.

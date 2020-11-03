@@ -1,11 +1,12 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.release;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.report.*;
+import com.exasol.releaserobot.usecases.*;
+import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
 
 /**
  * Implements the Release use case.

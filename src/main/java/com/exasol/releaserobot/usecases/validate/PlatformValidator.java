@@ -1,6 +1,6 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.report.Report;
+import com.exasol.releaserobot.usecases.Report;
 
 /**
  * A common interface for classes performing validation depending on a platform.
@@ -8,7 +8,7 @@ import com.exasol.releaserobot.report.Report;
 public interface PlatformValidator {
     /**
      * Validate a project.
-     * 
+     *
      * @return validation report
      */
     public Report validate();

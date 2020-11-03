@@ -1,13 +1,14 @@
-package com.exasol.releaserobot.repository;
+package com.exasol.releaserobot.usecases.validate;
 
-import static com.exasol.releaserobot.ReleaseRobotConstants.VERSION_REGEX;
-import static com.exasol.releaserobot.report.ReportImpl.ReportName.VALIDATION;
+import static com.exasol.releaserobot.usecases.ReleaseRobotConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.*;
+import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.usecases.*;
+import com.exasol.releaserobot.usecases.ReportImpl.ReportName;
 
 /**
  * Contains validations for a Git project.
@@ -15,11 +16,10 @@ import com.exasol.releaserobot.report.*;
 public class GitRepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
     private final GitRepository repository;
-    public final Report validationReport = new ReportImpl(VALIDATION);
 
     /**
      * Create a new instance of {@link GitRepositoryValidator}.
-     * 
+     *
      * @param repository instance of {@link GitRepository} to validate
      *
      */
@@ -35,65 +35,69 @@ public class GitRepositoryValidator {
      */
     public Report validate(final String branch) {
         LOGGER.fine("Validating Git repository.");
+        final Report report = new ReportImpl(ReportName.VALIDATION);
+
         final GitBranchContent content = this.repository.getRepositoryContent(branch);
         final String version = content.getVersion();
-        final boolean versionIsValid = validateNewVersion(version);
-        if (versionIsValid) {
+        report.merge(validateNewVersion(version));
+        if (!report.hasFailures()) {
             final String changelog = content.getChangelogFile();
-            validateChangelog(changelog, version);
+            report.merge(validateChangelog(changelog, version));
             final ReleaseLetter changes = content.getReleaseLetter(version);
-            validateChanges(changes, version, content.isDefaultBranch());
+            report.merge(validateChanges(changes, version, content.isDefaultBranch()));
         }
-        return this.validationReport;
+        return report;
     }
 
-    protected boolean validateNewVersion(final String newVersion) {
+    protected Report validateNewVersion(final String newVersion) {
         LOGGER.fine("Validating a new version.");
-        final boolean correctVersionFormat = validateVersionFormat(newVersion);
-        boolean newReleaseTagIsValid = false;
-        if (correctVersionFormat) {
-            newReleaseTagIsValid = validateIfNewReleaseTagValid(newVersion);
+        final Report report = new ReportImpl(ReportName.VALIDATION);
+
+        report.merge(validateVersionFormat(newVersion));
+
+        if (!report.hasFailures()) {
+            report.merge(validateIfNewReleaseTagValid(newVersion));
         }
-        return correctVersionFormat && newReleaseTagIsValid;
+        return report;
     }
 
-    private boolean validateVersionFormat(final String version) {
+    private Report validateVersionFormat(final String version) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         if (version.matches(VERSION_REGEX)) {
-            this.validationReport.addResult(ValidationResult.successfulValidation("Version format."));
-            return true;
+            report.addResult(ValidationResult.successfulValidation("Version format."));
         } else {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
                     "A version or tag found in this repository has invalid format: " + version
                             + ". The valid format is: <major>.<minor>.<fix>. "
                             + "Please, refer to the user guide to check requirements."));
-            return false;
         }
+        return report;
     }
 
-    private boolean validateIfNewReleaseTagValid(final String newVersion) {
+    private Report validateIfNewReleaseTagValid(final String newVersion) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
-            return validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get());
+            report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
         } else {
-            this.validationReport
-                    .addResult(ValidationResult.successfulValidation("A new tag. This is the first release."));
-            return true;
+            report.addResult(ValidationResult.successfulValidation("A new tag. This is the first release."));
         }
+        return report;
     }
     // [impl->dsn~validate-release-version-format~1]
 
     // [impl->dsn~validate-release-version-increased-correctly~1]
-    private boolean validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
+    private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (possibleVersions.contains(newTag)) {
-            this.validationReport.addResult(ValidationResult.successfulValidation("A new tag."));
-            return true;
+            report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-4",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-4",
                     "A new version does not fit the versioning rules. Possible versions for the release are: "
                             + possibleVersions.toString()));
-            return false;
         }
+        return report;
     }
 
     private Set<String> getPossibleVersions(final String previousVersion) {
@@ -109,74 +113,84 @@ public class GitRepositoryValidator {
     }
 
     // [impl->dsn~validate-changelog~1]
-    protected void validateChangelog(final String changelog, final String version) {
+    protected Report validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating 'changelog.md' file.");
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-5",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-5",
                     "The file 'changelog.md' doesn't contain the following link, please add '" + changelogContent
                             + "' to the file."));
         } else {
-            this.validationReport.addResult(ValidationResult.successfulValidation("'changelog.md' file."));
+            report.addResult(ValidationResult.successfulValidation("'changelog.md' file."));
             LOGGER.fine("Validation of 'changelog.md' file was successful.");
         }
+        return report;
     }
 
-    protected void validateChanges(final ReleaseLetter changes, final String version, final boolean isDefaultBranch) {
+    protected Report validateChanges(final ReleaseLetter changes, final String version, final boolean isDefaultBranch) {
         LOGGER.fine("Validating '" + changes.getFileName() + "' file.");
-        validateVersionInChanges(changes, version);
-        validateDateInChanges(changes, isDefaultBranch);
-        validateHasBody(changes);
+        final Report report = new ReportImpl(ReportName.VALIDATION);
+        report.merge(validateVersionInChanges(changes, version));
+        report.merge(validateDateInChanges(changes, isDefaultBranch));
+        report.merge(validateHasBody(changes));
+        return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-version~1]
-    private void validateVersionInChanges(final ReleaseLetter changes, final String version) {
+    private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
+
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-6", "The file '"
-                    + changes.getFileName()
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-6", "The file '" + changes.getFileName()
                     + "' does not mention the current version. Please, follow the changes file's format rules."));
         } else {
-            this.validationReport
-                    .addResult(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
+            report.addResult(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
         }
+        return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-date~1]
-    private void validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
+    private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
-            reportWrongDate(changes.getFileName(), isDefaultBranch, dateToday);
+            report.merge(reportWrongDate(changes.getFileName(), isDefaultBranch, dateToday));
         } else {
-            this.validationReport.addResult(
+            report.addResult(
                     ValidationResult.successfulValidation("Release date in '" + changes.getFileName() + "' file."));
         }
+        return report;
     }
 
-    private void reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
+    private Report reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         if (isDefaultBranch) {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-7",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-7",
                     "The file '" + fileName + "' doesn't contain release's date: " + dateToday.toString()
                             + ". PLease, add or update the release date."));
         } else {
             final String warningMessage = "W-RR-VAL-2. Don't forget to change the date in the '" + fileName
                     + "' file before you release.";
-            this.validationReport.addResult(ValidationResult.successfulValidation(
+            report.addResult(ValidationResult.successfulValidation(
                     "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
             LOGGER.warning(warningMessage);
         }
+        return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
-    private void validateHasBody(final ReleaseLetter changes) {
+    private Report validateHasBody(final ReleaseLetter changes) {
+        final Report report = new ReportImpl(ReportName.VALIDATION);
         if (changes.getBody().isEmpty()) {
-            this.validationReport.addResult(ValidationResult.failedValidation("E-RR-VAL-8", "Cannot find the '"
-                    + changes.getFileName() + "' body. Please, make sure you added the changes you made to the file."));
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-8", "Cannot find the '" + changes.getFileName()
+                    + "' body. Please, make sure you added the changes you made to the file."));
         } else {
-            this.validationReport.addResult(
+            report.addResult(
                     ValidationResult.successfulValidation("Release body in '" + changes.getFileName() + "' file."));
-
         }
+        return report;
     }
 }

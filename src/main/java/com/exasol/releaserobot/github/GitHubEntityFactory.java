@@ -5,12 +5,13 @@ import java.io.IOException;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
-import com.exasol.releaserobot.*;
-import com.exasol.releaserobot.github.release.GitHubReleaseMaker;
 import com.exasol.releaserobot.maven.MavenPlatformValidator;
-import com.exasol.releaserobot.maven.release.MavenReleaseMaker;
+import com.exasol.releaserobot.maven.MavenReleaseMaker;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitHubGitRepository;
+import com.exasol.releaserobot.usecases.CredentialsProvider;
+import com.exasol.releaserobot.usecases.release.ReleaseMaker;
+import com.exasol.releaserobot.usecases.validate.PlatformValidator;
 
 /**
  * Responsible for an instantiation of the GitHub related classes.

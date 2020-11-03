@@ -1,15 +1,13 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.validate;
 
-import static com.exasol.releaserobot.report.ReportImpl.ReportName.VALIDATION;
+import static com.exasol.releaserobot.usecases.ReportImpl.ReportName.VALIDATION;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.Report;
-import com.exasol.releaserobot.report.ReportImpl;
 import com.exasol.releaserobot.repository.GitRepository;
-import com.exasol.releaserobot.repository.GitRepositoryValidator;
+import com.exasol.releaserobot.usecases.*;
 
 /**
  * Implements the Validate use case.
@@ -21,7 +19,7 @@ public class ValidateInteractor implements ValidateUseCase {
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
-     * 
+     *
      * @param platformValidators map of platform names and platform validators
      * @param repository         instance of {@link GitRepository}
      */

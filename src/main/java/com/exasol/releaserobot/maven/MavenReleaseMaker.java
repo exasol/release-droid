@@ -1,14 +1,14 @@
-package com.exasol.releaserobot.maven.release;
+package com.exasol.releaserobot.maven;
 
 import java.net.URI;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import com.exasol.releaserobot.ReleaseMaker;
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GithubGateway;
 import com.exasol.releaserobot.repository.GitBranchContent;
+import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
 /**
  * This class is responsible for releases on Maven Central.
@@ -21,7 +21,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
     /**
      * Create a new instance of {@link MavenReleaseMaker}.
      *
-     * @param content repository content
+     * @param content       repository content
      * @param githubGateway instance of {@link GithubGateway}
      */
     public MavenReleaseMaker(final GitBranchContent content, final GithubGateway githubGateway) {

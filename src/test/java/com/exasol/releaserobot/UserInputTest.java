@@ -1,13 +1,15 @@
 package com.exasol.releaserobot;
 
-import static com.exasol.releaserobot.UserInput.Builder;
-import static com.exasol.releaserobot.UserInput.builder;
+import static com.exasol.releaserobot.usecases.UserInput.Builder;
+import static com.exasol.releaserobot.usecases.UserInput.builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+
+import com.exasol.releaserobot.usecases.*;
 
 class UserInputTest {
     private static final String OWNER = "owner";

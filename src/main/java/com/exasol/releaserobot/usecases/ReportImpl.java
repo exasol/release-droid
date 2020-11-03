@@ -1,6 +1,6 @@
-package com.exasol.releaserobot.report;
+package com.exasol.releaserobot.usecases;
 
-import static com.exasol.releaserobot.ReleaseRobotConstants.LINE_SEPARATOR;
+import static com.exasol.releaserobot.usecases.ReleaseRobotConstants.LINE_SEPARATOR;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,11 +24,6 @@ public class ReportImpl implements Report {
     @Override
     public List<Result> getResults() {
         return this.results;
-    }
-
-    @Override
-    public void addResults(final List<? extends Result> results) {
-        this.results.addAll(results);
     }
 
     @Override
@@ -69,7 +64,7 @@ public class ReportImpl implements Report {
         if (getReportName() != report.getReportName()) {
             throw new IllegalStateException("F-REP-1: Unable to merge two reports.");
         }
-        addResults(report.getResults());
+        this.results.addAll(report.getResults());
     }
 
     @Override

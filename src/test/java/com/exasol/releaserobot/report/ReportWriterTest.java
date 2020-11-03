@@ -1,7 +1,7 @@
 package com.exasol.releaserobot.report;
 
-import static com.exasol.releaserobot.PlatformName.GITHUB;
-import static com.exasol.releaserobot.PlatformName.MAVEN;
+import static com.exasol.releaserobot.usecases.PlatformName.GITHUB;
+import static com.exasol.releaserobot.usecases.PlatformName.MAVEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.releaserobot.UserInput;
+import com.exasol.releaserobot.usecases.*;
 
 class ReportWriterTest {
     @TempDir
