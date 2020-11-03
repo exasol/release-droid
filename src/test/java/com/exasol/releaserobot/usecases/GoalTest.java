@@ -1,4 +1,4 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.in;
@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.exasol.releaserobot.usecases.Goal;
 
 class GoalTest {
     @ParameterizedTest

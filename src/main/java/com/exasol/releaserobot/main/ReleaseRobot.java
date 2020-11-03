@@ -1,4 +1,4 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.main;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.Report;
 import com.exasol.releaserobot.report.ReportWriter;
+import com.exasol.releaserobot.usecases.*;
+import com.exasol.releaserobot.usecases.release.ReleaseUseCase;
+import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
 
 /**
  * This class is the main entry point for calls to a Release Robot.
@@ -38,6 +40,7 @@ public class ReleaseRobot {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
+        // TODO: this should part of the usecases
         new ReportWriter(userInput, REPORT_PATH).writeValidationReportToFile(reports);
     }
 }

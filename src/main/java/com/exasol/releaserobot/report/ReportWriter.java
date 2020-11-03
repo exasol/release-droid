@@ -1,6 +1,6 @@
 package com.exasol.releaserobot.report;
 
-import static com.exasol.releaserobot.ReleaseRobotConstants.LINE_SEPARATOR;
+import static com.exasol.releaserobot.usecases.ReleaseRobotConstants.LINE_SEPARATOR;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.exasol.releaserobot.UserInput;
+import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.UserInput;
 
 /**
- * This class writes reports from {@link ValidationReport} to a file.
+ * This class writes reports from {@link Report} to a file.
  */
 public class ReportWriter {
     private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());

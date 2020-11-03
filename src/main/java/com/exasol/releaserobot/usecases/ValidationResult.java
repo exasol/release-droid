@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.report;
+package com.exasol.releaserobot.usecases;
 
 /**
  * Represents a result of a single validation.

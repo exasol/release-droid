@@ -1,4 +1,4 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.release;
 
 import com.exasol.releaserobot.github.GitHubException;
 
@@ -8,7 +8,7 @@ import com.exasol.releaserobot.github.GitHubException;
 public interface ReleaseMaker {
     /**
      * Make a release.
-     * 
+     *
      * @throws GitHubException if release fails
      */
     public void makeRelease() throws GitHubException;

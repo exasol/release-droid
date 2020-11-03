@@ -1,11 +1,12 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.release;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.report.*;
+import com.exasol.releaserobot.usecases.*;
+import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
 
 /**
  * Implements the Release use case.
@@ -30,25 +31,26 @@ public class ReleaseInteractor implements ReleaseUseCase {
     @Override
     public List<Report> release(final UserInput userInput) {
         final List<Report> reports = new ArrayList<>();
-        final ValidationReport validationReport = this.validateUseCase.validate(userInput);
+        final Report validationReport = this.validateUseCase.validate(userInput);
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final ReleaseReport releaseReport = this.makeRelease(userInput.getPlatformNames());
+            final Report releaseReport = this.makeRelease(userInput.getPlatformNames());
             logResults(Goal.RELEASE, releaseReport);
             reports.add(releaseReport);
         }
         return reports;
     }
 
-    private ReleaseReport makeRelease(final Set<PlatformName> platformNames) {
-        final ReleaseReport releaseReport = new ReleaseReport();
+    private Report makeRelease(final Set<PlatformName> platformNames) {
+        final Report releaseReport = new ReportImpl(ReportImpl.ReportName.RELEASE);
         for (final PlatformName platformName : platformNames) {
             try {
                 this.getReleaseMaker(platformName).makeRelease();
-                releaseReport.addSuccessfulRelease(platformName);
+                releaseReport.addResult(ReleaseResult.successfulRelease(platformName));
             } catch (final Exception exception) {
-                releaseReport.addFailedRelease(platformName, ExceptionUtils.getStackTrace(exception));
+                releaseReport
+                        .addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
                 break;
             }
         }

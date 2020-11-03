@@ -1,7 +1,7 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases;
 
-import static com.exasol.releaserobot.UserInput.Builder;
-import static com.exasol.releaserobot.UserInput.builder;
+import static com.exasol.releaserobot.usecases.UserInput.Builder;
+import static com.exasol.releaserobot.usecases.UserInput.builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;

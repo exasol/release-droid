@@ -1,4 +1,4 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases;
 
 import java.util.Set;
 

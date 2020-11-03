@@ -1,8 +1,9 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases.release;
 
 import java.util.List;
 
-import com.exasol.releaserobot.report.Report;
+import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.UserInput;
 
 /**
  * Interface for the Release use case.

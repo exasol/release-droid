@@ -1,7 +1,7 @@
 package com.exasol.releaserobot.repository;
 
-import static com.exasol.releaserobot.ReleaseRobotConstants.DATE_REGEX;
-import static com.exasol.releaserobot.ReleaseRobotConstants.VERSION_REGEX;
+import static com.exasol.releaserobot.usecases.ReleaseRobotConstants.DATE_REGEX;
+import static com.exasol.releaserobot.usecases.ReleaseRobotConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
 import java.util.*;

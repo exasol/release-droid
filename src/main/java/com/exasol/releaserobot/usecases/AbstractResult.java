@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.report;
+package com.exasol.releaserobot.usecases;
 
 /**
  * An abstract base for Release Robot actions results.

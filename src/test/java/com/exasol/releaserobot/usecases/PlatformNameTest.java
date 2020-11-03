@@ -1,4 +1,4 @@
-package com.exasol.releaserobot;
+package com.exasol.releaserobot.usecases;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import com.exasol.releaserobot.usecases.PlatformName;
 
 class PlatformNameTest {
     @Test
