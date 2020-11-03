@@ -29,7 +29,7 @@ class GitRepositoryValidatorTest {
     void testValidateChangeLog() {
         final String changelog = "[4.0.1](changes_4.0.1.md)";
         this.validator.validateChangelog(changelog, "4.0.1");
-        assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(this.validator.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -37,8 +37,8 @@ class GitRepositoryValidatorTest {
     void testValidateChangeLogThrowsException() {
         final String changelog = "";
         this.validator.validateChangelog(changelog, "1.0.0");
-        assertAll(() -> assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(0).toString(), containsString("E-RR-VAL-5: The file "
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)), () -> assertThat(
+                this.validator.validationReport.getFailuresReport(), containsString("E-RR-VAL-5: The file "
                         + "'changelog.md' doesn't contain the following link, please add '[1.0.0](changes_1.0.0.md)' to the file")));
     }
 
@@ -52,7 +52,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(this.validator.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -64,8 +64,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertAll(() -> assertThat(this.validator.validationResults.get(1).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(1).toString(), containsString("E-RR-VAL-7")));
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)),
+                () -> assertThat(this.validator.validationReport.getFailuresReport(), containsString("E-RR-VAL-7")));
     }
 
     @Test
@@ -77,7 +77,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", false);
-        assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(this.validator.validationReport.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -89,8 +89,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "3.1.0", true);
-        assertAll(() -> assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(0).toString(), containsString("E-RR-VAL-6")));
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)),
+                () -> assertThat(this.validator.validationReport.getFailuresReport(), containsString("E-RR-VAL-6")));
     }
 
     @Test
@@ -102,8 +102,8 @@ class GitRepositoryValidatorTest {
         when(changesMock.getBody()).thenReturn(Optional.empty());
         when(changesMock.getFileName()).thenReturn("file");
         this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertAll(() -> assertThat(this.validator.validationResults.get(2).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(2).toString(), containsString("E-RR-VAL-8")));
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)),
+                () -> assertThat(this.validator.validationReport.getFailuresReport(), containsString("E-RR-VAL-8")));
     }
 
     @ParameterizedTest
@@ -112,8 +112,8 @@ class GitRepositoryValidatorTest {
     void testValidateInvalidVersionFormat(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         final boolean validationResult = this.validator.validateNewVersion(version);
-        assertAll(() -> assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(0).toString(), containsString("E-RR-VAL-3")));
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)),
+                () -> assertThat(this.validator.validationReport.getFailuresReport(), containsString("E-RR-VAL-3")));
     }
 
     @ParameterizedTest
@@ -122,7 +122,7 @@ class GitRepositoryValidatorTest {
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
         this.validator.validateNewVersion(version);
-        assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(this.validator.validationReport.hasFailures(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -131,7 +131,7 @@ class GitRepositoryValidatorTest {
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
         this.validator.validateNewVersion(version);
-        assertThat(this.validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(this.validator.validationReport.hasFailures(), equalTo(false));
     }
 
     @ParameterizedTest
@@ -140,8 +140,8 @@ class GitRepositoryValidatorTest {
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final boolean validationResult = this.validator.validateNewVersion(version);
-        assertAll(() -> assertThat(this.validator.validationResults.get(1).isSuccessful(), equalTo(false)),
-                () -> assertThat(this.validator.validationResults.get(1).toString(),
+        assertAll(() -> assertThat(this.validator.validationReport.hasFailures(), equalTo(true)),
+                () -> assertThat(this.validator.validationReport.getFailuresReport(),
                         containsString("E-RR-VAL-4: " + "A new version does not fit the versioning rules. "
                                 + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }

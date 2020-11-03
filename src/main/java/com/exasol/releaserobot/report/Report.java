@@ -2,6 +2,8 @@ package com.exasol.releaserobot.report;
 
 import java.util.List;
 
+import com.exasol.releaserobot.report.ReportImpl.ReportName;
+
 /**
  * Represents a report.
  */
@@ -11,14 +13,14 @@ public interface Report {
      *
      * @param result result
      */
-    void addResult(Result result);
+    public void addResult(Result result);
 
     /**
      * Add a list of results.
      *
      * @param results list of results
      */
-    void addResults(List<? extends Result> results);
+    public void addResults(List<? extends Result> results);
 
     /**
      * Get a formatted report as a string.
@@ -39,12 +41,33 @@ public interface Report {
      *
      * @return true if one or more failed result exists
      */
-    boolean hasFailures();
+    public boolean hasFailures();
 
     /**
      * Get a failed validations report.
      *
      * @return report as a string
      */
-    String getFailuresReport();
+    public String getFailuresReport();
+
+    /**
+     * Merge two reports.
+     * 
+     * @param report report to be merged
+     */
+    public void merge(Report report);
+
+    /**
+     * Get a report's name.
+     * 
+     * @return report name
+     */
+    public ReportName getReportName();
+
+    /**
+     * Get a list of results.
+     * 
+     * @return list of results
+     */
+    public List<Result> getResults();
 }

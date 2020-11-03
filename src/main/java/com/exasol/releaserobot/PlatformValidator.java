@@ -1,8 +1,6 @@
 package com.exasol.releaserobot;
 
-import java.util.List;
-
-import com.exasol.releaserobot.report.ValidationResult;
+import com.exasol.releaserobot.report.Report;
 
 /**
  * A common interface for classes performing validation depending on a platform.
@@ -11,7 +9,7 @@ public interface PlatformValidator {
     /**
      * Validate a project.
      * 
-     * @return list of validation results
+     * @return validation report
      */
-    public List<ValidationResult> validate();
+    public Report validate();
 }

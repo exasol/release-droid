@@ -1,9 +1,8 @@
 package com.exasol.releaserobot;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.exasol.releaserobot.report.ReportImpl.ReportName.VALIDATION;
 
-import com.exasol.releaserobot.report.ValidationResult;
+import com.exasol.releaserobot.report.*;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitRepositoryException;
 
@@ -12,7 +11,7 @@ import com.exasol.releaserobot.repository.GitRepositoryException;
  */
 public abstract class AbstractPlatformValidator implements PlatformValidator {
     protected final GitBranchContent branchContent;
-    public final List<ValidationResult> validationResults = new ArrayList<>();
+    public final Report report = new ReportImpl(VALIDATION);
 
     /**
      * Create a new instance of {@link AbstractPlatformValidator}.
@@ -29,9 +28,9 @@ public abstract class AbstractPlatformValidator implements PlatformValidator {
     public void validateFileExists(final String filePath, final String fileDescription) {
         try {
             this.branchContent.getSingleFileContentAsString(filePath);
-            this.validationResults.add(ValidationResult.successfulValidation(fileDescription));
+            this.report.addResult(ValidationResult.successfulValidation(fileDescription));
         } catch (final GitRepositoryException exception) {
-            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-3",
+            this.report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
                     "The file '" + filePath + "' does not exist in the project. Please, add this file."));
         }
     }

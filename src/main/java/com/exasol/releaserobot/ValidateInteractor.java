@@ -1,9 +1,13 @@
 package com.exasol.releaserobot;
 
-import java.util.*;
+import static com.exasol.releaserobot.report.ReportImpl.ReportName.VALIDATION;
+
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.*;
+import com.exasol.releaserobot.report.Report;
+import com.exasol.releaserobot.report.ReportImpl;
 import com.exasol.releaserobot.repository.GitRepository;
 import com.exasol.releaserobot.repository.GitRepositoryValidator;
 
@@ -39,22 +43,18 @@ public class ValidateInteractor implements ValidateUseCase {
         final String branch = userInput.hasGitBranch() ? userInput.getGitBranch()
                 : this.repository.getDefaultBranchName();
         final GitRepositoryValidator repositoryValidator = new GitRepositoryValidator(this.repository);
-        final List<ValidationResult> validationResults = repositoryValidator.validate(branch);
-        validatePlatforms(platformNames, validationResults);
-        return createValidationReport(validationResults);
+        final Report repositoryValidationReport = repositoryValidator.validate(branch);
+        final Report platformsValidationReport = validatePlatforms(platformNames);
+        repositoryValidationReport.merge(platformsValidationReport);
+        return repositoryValidationReport;
     }
 
-    private void validatePlatforms(final Set<PlatformName> platformNames,
-            final List<ValidationResult> validationResults) {
+    private Report validatePlatforms(final Set<PlatformName> platformNames) {
+        final Report report = new ReportImpl(VALIDATION);
         for (final PlatformName platformName : platformNames) {
-            validationResults.addAll(this.platformValidators.get(platformName).validate());
+            report.merge(this.platformValidators.get(platformName).validate());
         }
-    }
-
-    private Report createValidationReport(final List<ValidationResult> validationResults) {
-        final Report validationReport = new ReportImpl(ReportImpl.ReportName.VALIDATION);
-        validationReport.addResults(validationResults);
-        return validationReport;
+        return report;
     }
 
     // [impl->dsn~rr-creates-validation-report~1]

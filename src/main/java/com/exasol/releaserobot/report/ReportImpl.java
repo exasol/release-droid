@@ -22,6 +22,11 @@ public class ReportImpl implements Report {
     }
 
     @Override
+    public List<Result> getResults() {
+        return this.results;
+    }
+
+    @Override
     public void addResults(final List<? extends Result> results) {
         this.results.addAll(results);
     }
@@ -57,6 +62,19 @@ public class ReportImpl implements Report {
             }
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public void merge(final Report report) {
+        if (getReportName() != report.getReportName()) {
+            throw new IllegalStateException("F-REP-1: Unable to merge two reports.");
+        }
+        addResults(report.getResults());
+    }
+
+    @Override
+    public ReportName getReportName() {
+        return this.reportName;
     }
 
     @Override

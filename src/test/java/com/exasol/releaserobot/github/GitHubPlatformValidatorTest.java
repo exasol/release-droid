@@ -22,7 +22,7 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         validator.validateContainsHeader(changesLetter);
-        assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(validator.report.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -32,8 +32,8 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         validator.validateContainsHeader(changesLetter);
-        assertAll(() -> assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(validator.validationResults.get(0).toString(), containsString("E-RR-VAL-1")));
+        assertAll(() -> assertThat(validator.report.hasFailures(), equalTo(true)),
+                () -> assertThat(validator.report.getFailuresReport(), containsString("E-RR-VAL-1")));
     }
 
     @Test
@@ -46,7 +46,7 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, githubGateway);
         validator.validateGitHubTickets(changesLetter);
-        assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(validator.report.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -61,8 +61,8 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, githubGateway);
         validator.validateGitHubTickets(changesLetter);
-        assertAll(() -> assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(validator.validationResults.get(0).toString(), containsString("E-RR-VAL-2")));
+        assertAll(() -> assertThat(validator.report.hasFailures(), equalTo(true)),
+                () -> assertThat(validator.report.getFailuresReport(), containsString("E-RR-VAL-2")));
 
     }
 
@@ -78,7 +78,7 @@ class GitHubPlatformValidatorTest {
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContent, githubGateway);
         validator.validateGitHubTickets(changesLetter);
-        assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(validator.report.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -87,7 +87,7 @@ class GitHubPlatformValidatorTest {
         when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);
         validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");
-        assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(true));
+        assertThat(validator.report.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -97,7 +97,7 @@ class GitHubPlatformValidatorTest {
                 .thenThrow(GitRepositoryException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);
         validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");
-        assertAll(() -> assertThat(validator.validationResults.get(0).isSuccessful(), equalTo(false)),
-                () -> assertThat(validator.validationResults.get(0).toString(), containsString("E-RR-VAL-3")));
+        assertAll(() -> assertThat(validator.report.hasFailures(), equalTo(true)),
+                () -> assertThat(validator.report.getFailuresReport(), containsString("E-RR-VAL-3")));
     }
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.releaserobot.AbstractPlatformValidator;
+import com.exasol.releaserobot.report.Report;
 import com.exasol.releaserobot.report.ValidationResult;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
@@ -28,13 +29,13 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     }
 
     @Override
-    public List<ValidationResult> validate() {
+    public Report validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final String version = this.branchContent.getVersion();
         final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         validateChangesFile(releaseLetter);
         validateFileExists(GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release.");
-        return this.validationResults;
+        return this.report;
     }
 
     // [impl->dsn~validate-release-letter~1]
@@ -46,12 +47,12 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     protected void validateContainsHeader(final ReleaseLetter changes) {
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
-            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-1",
+            this.report.addResult(ValidationResult.failedValidation("E-RR-VAL-1",
                     "The file '" + changes.getFileName()
                             + "' does not contain 'Code name' section which is used as a GitHub release header."
                             + " Please, add this section to the file."));
         } else {
-            this.validationResults.add(ValidationResult.successfulValidation("Release letter header."));
+            this.report.addResult(ValidationResult.successfulValidation("Release letter header."));
         }
     }
 
@@ -63,10 +64,10 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
             if (!wrongTickets.isEmpty()) {
                 reportWrongTickets(changesFile.getFileName(), wrongTickets);
             } else {
-                this.validationResults.add(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
+                this.report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
         } catch (final GitHubException exception) {
-            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-3",
+            this.report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
                     "Unable to retrieve a a list of closed tickets on GitHub:" + exception.getMessage()));
         }
 
@@ -75,13 +76,13 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     private void reportWrongTickets(final String fileName, final List<String> wrongTickets) {
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (this.branchContent.isDefaultBranch()) {
-            this.validationResults.add(ValidationResult.failedValidation("E-RR-VAL-2",
+            this.report.addResult(ValidationResult.failedValidation("E-RR-VAL-2",
                     "Some of the mentioned GitHub issues are not closed or do not exists: " + wrongTicketsString
                             + ", Please, check the issues numbers in your '" + fileName + "' one more time."));
         } else {
             final String warningMessage = "W-RR-VAL-1. Don't forget to close the tickets mentioned in the '" + fileName
                     + "' file before you release: " + wrongTicketsString + ".";
-            this.validationResults.add(ValidationResult
+            this.report.addResult(ValidationResult
                     .successfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage));
             LOGGER.warning(warningMessage);
         }
