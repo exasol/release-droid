@@ -3,7 +3,6 @@ package com.exasol.releaserobot.github;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.report.*;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.*;
@@ -33,7 +32,6 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     public Report validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = new ReportImpl(ReportName.VALIDATION);
-
         final String version = this.branchContent.getVersion();
         final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         report.merge(validateChangesFile(releaseLetter));
@@ -51,7 +49,6 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     protected Report validateContainsHeader(final ReleaseLetter changes) {
         final Report report = new ReportImpl(ReportName.VALIDATION);
-
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-1",
@@ -76,7 +73,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
         } catch (final GitHubException exception) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-10",
                     "Unable to retrieve a a list of closed tickets on GitHub:" + exception.getMessage()));
         }
         return report;

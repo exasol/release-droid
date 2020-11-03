@@ -14,7 +14,7 @@ import com.exasol.releaserobot.usecases.Report;
 import com.exasol.releaserobot.usecases.UserInput;
 
 /**
- * This class writes reports from {@link ValidationReport} to a file.
+ * This class writes reports from {@link Report} to a file.
  */
 public class ReportWriter {
     private static final Logger LOGGER = Logger.getLogger(ReportWriter.class.getName());

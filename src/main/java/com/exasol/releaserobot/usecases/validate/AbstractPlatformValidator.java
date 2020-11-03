@@ -30,7 +30,7 @@ public abstract class AbstractPlatformValidator implements PlatformValidator {
             this.branchContent.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));
         } catch (final GitRepositoryException exception) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-9",
                     "The file '" + filePath + "' does not exist in the project. Please, add this file."));
         }
         return report;
