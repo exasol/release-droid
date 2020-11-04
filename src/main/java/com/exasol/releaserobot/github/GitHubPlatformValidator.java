@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.*;
-import com.exasol.releaserobot.usecases.ReportImpl.ReportName;
 import com.exasol.releaserobot.usecases.validate.AbstractPlatformValidator;
 
 /**
@@ -31,7 +30,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     @Override
     public Report validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final String version = this.branchContent.getVersion();
         final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
         report.merge(validateChangesFile(releaseLetter));
@@ -41,14 +40,14 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-release-letter~1]
     private Report validateChangesFile(final ReleaseLetter releaseLetter) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
         report.merge(validateGitHubTickets(releaseLetter));
         return report;
     }
 
     protected Report validateContainsHeader(final ReleaseLetter changes) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-1",
@@ -64,7 +63,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
     protected Report validateGitHubTickets(final ReleaseLetter changesFile) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         try {
             final List<String> wrongTickets = collectWrongTickets(changesFile);
             if (!wrongTickets.isEmpty()) {
@@ -80,7 +79,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     }
 
     private Report reportWrongTickets(final String fileName, final List<String> wrongTickets) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (this.branchContent.isDefaultBranch()) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-2",

@@ -32,12 +32,12 @@ class ReportWriterTest {
         this.reportPath = Path.of(this.tempDir.toString(), "test-report.txt");
         this.userInput = UserInput.builder().repositoryName("my-repository").repositoryOwner("me").goal("validate")
                 .platforms("github").build();
-        this.validationReport = new ReportImpl(ReportImpl.ReportName.VALIDATION);
+        this.validationReport = ReportImpl.validationReport();
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1", "Validations 1"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 2"));
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-2", "Validations 3"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 4"));
-        this.releaseReport = new ReportImpl(ReportImpl.ReportName.RELEASE);
+        this.releaseReport = ReportImpl.releaseReport();
         this.releaseReport.addResult(ReleaseResult.successfulRelease(GITHUB));
         this.releaseReport.addResult(ReleaseResult.failedRelease(MAVEN, "Wrong credentials"));
     }

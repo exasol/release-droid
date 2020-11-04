@@ -1,12 +1,8 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import static com.exasol.releaserobot.usecases.ReportImpl.ReportName.VALIDATION;
-
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.GitRepository;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -14,43 +10,52 @@ import com.exasol.releaserobot.usecases.*;
  */
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
-    private final Map<PlatformName, PlatformValidator> platformValidators;
-    private final GitRepository repository;
+    private final List<PlatformValidator> platformValidators;
+    private final List<RepositoryValidator> repositoryValidators;
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
-     *
-     * @param platformValidators map of platform names and platform validators
-     * @param repository         instance of {@link GitRepository}
+     * 
+     * @param platformValidators   list of platform validators
+     * @param repositoryValidators list of repository validators
      */
-    public ValidateInteractor(final Map<PlatformName, PlatformValidator> platformValidators,
-            final GitRepository repository) {
+    public ValidateInteractor(final List<PlatformValidator> platformValidators,
+            final List<RepositoryValidator> repositoryValidators) {
         this.platformValidators = platformValidators;
-        this.repository = repository;
+        this.repositoryValidators = repositoryValidators;
     }
 
     @Override
     public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
-        final Report validationReport = validate(userInput.getPlatformNames(), userInput);
+        final Report validationReport = runValidation(userInput);
         logResults(Goal.VALIDATE, validationReport);
         return validationReport;
     }
 
-    private Report validate(final Set<PlatformName> platformNames, final UserInput userInput) {
-        final String branch = userInput.hasGitBranch() ? userInput.getGitBranch()
-                : this.repository.getDefaultBranchName();
-        final GitRepositoryValidator repositoryValidator = new GitRepositoryValidator(this.repository);
-        final Report repositoryValidationReport = repositoryValidator.validate(branch);
-        final Report platformsValidationReport = validatePlatforms(platformNames);
+    private Report runValidation(final UserInput userInput) {
+        final Report repositoryValidationReport = validateRepositories(userInput);
+        final Report platformsValidationReport = validatePlatforms();
         repositoryValidationReport.merge(platformsValidationReport);
         return repositoryValidationReport;
     }
 
-    private Report validatePlatforms(final Set<PlatformName> platformNames) {
-        final Report report = new ReportImpl(VALIDATION);
-        for (final PlatformName platformName : platformNames) {
-            report.merge(this.platformValidators.get(platformName).validate());
+    private Report validateRepositories(final UserInput userInput) {
+        final Report report = ReportImpl.validationReport();
+        for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
+            if (userInput.hasGitBranch()) {
+                report.merge(repositoryValidator.validateBranch(userInput.getGitBranch()));
+            } else {
+                report.merge(repositoryValidator.validateDefaultBranch());
+            }
+        }
+        return report;
+    }
+
+    private Report validatePlatforms() {
+        final Report report = ReportImpl.validationReport();
+        for (final PlatformValidator platformValidator : this.platformValidators) {
+            report.merge(platformValidator.validate());
         }
         return report;
     }

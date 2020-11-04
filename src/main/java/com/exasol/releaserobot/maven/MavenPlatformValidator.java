@@ -5,7 +5,6 @@ import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
 import com.exasol.releaserobot.usecases.ReportImpl;
-import com.exasol.releaserobot.usecases.ReportImpl.ReportName;
 import com.exasol.releaserobot.usecases.validate.AbstractPlatformValidator;
 
 /**
@@ -25,7 +24,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
 
     @Override
     public Report validate() {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         report.merge(validateFileExists(MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
         report.merge(validateMavenPom(((JavaMavenGitBranchContent) this.branchContent).getMavenPom()));
         return report;
@@ -34,6 +33,6 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     // TODO: add a pom file validation
     // https://github.com/exasol/release-robot/issues/50
     private Report validateMavenPom(final MavenPom mavenPom) {
-        return new ReportImpl(ReportName.VALIDATION);
+        return ReportImpl.validationReport();
     }
 }

@@ -1,7 +1,6 @@
 package com.exasol.releaserobot.main;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.cli.*;
 
@@ -9,6 +8,7 @@ import com.exasol.releaserobot.github.GitHubEntityFactory;
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitRepository;
+import com.exasol.releaserobot.usecases.validate.BasicMavenPomValidator;
 import com.exasol.releaserobot.usecases.PlatformName;
 import com.exasol.releaserobot.usecases.UserInput;
 import com.exasol.releaserobot.usecases.release.*;
@@ -48,24 +48,32 @@ public class Runner {
         final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, gitHubEntityFactory,
                 repository);
-        final Map<PlatformName, PlatformValidator> platformValidators = createPlatformValidators(userInput,
-                gitHubEntityFactory, repository);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repository);
+        final List<PlatformValidator> platformValidators = createPlatformValidators(userInput, gitHubEntityFactory,
+                repository);
+        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators(repository);
+        final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repositoryValidators);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers);
         return new ReleaseRobot(releaseUseCase, validateUseCase);
     }
 
-    private static Map<PlatformName, PlatformValidator> createPlatformValidators(final UserInput userInput,
+    private static List<RepositoryValidator> createRepositoryValidators(final GitRepository repository) {
+        final List<RepositoryValidator> repositoryValidators = new ArrayList<>();
+        repositoryValidators.add(new GitRepositoryValidator(repository));
+        repositoryValidators.add(new BasicMavenPomValidator(repository));
+        return repositoryValidators;
+    }
+
+    private static List<PlatformValidator> createPlatformValidators(final UserInput userInput,
             final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
-        final Map<PlatformName, PlatformValidator> platformValidators = new HashMap<>();
+        final List<PlatformValidator> platformValidators = new ArrayList<>();
         final GitBranchContent branchContent = getBranchContent(userInput, repository);
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:
-                platformValidators.put(name, gitHubEntityFactory.createGithubPlatformValidator(branchContent));
+                platformValidators.add(gitHubEntityFactory.createGithubPlatformValidator(branchContent));
                 break;
             case MAVEN:
-                platformValidators.put(name, gitHubEntityFactory.createMavenPlatformValidator(branchContent));
+                platformValidators.add(gitHubEntityFactory.createMavenPlatformValidator(branchContent));
                 break;
             default:
                 throw new UnsupportedOperationException(

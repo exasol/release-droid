@@ -26,17 +26,28 @@
             <artifactId>json</artifactId>
             <version>20200518</version>
         </dependency>
-        <!--Unit test dependencies-->
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.5.10</version>
-            <scope>test</scope>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>3.6.3</version>
         </dependency>
+        <!--Unit test dependencies-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>3.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -154,22 +165,22 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.itsallcode</groupId>-->
-<!--                <artifactId>openfasttrace-maven-plugin</artifactId>-->
-<!--                <version>1.0.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>trace-requirements</id>-->
-<!--                        <goals>-->
-<!--                            <goal>trace</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <reportOutputFormat>html</reportOutputFormat>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.itsallcode</groupId>-->
+            <!--                <artifactId>openfasttrace-maven-plugin</artifactId>-->
+            <!--                <version>1.0.0</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>trace-requirements</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>trace</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <reportOutputFormat>html</reportOutputFormat>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 </project>

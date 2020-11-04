@@ -1,6 +1,6 @@
-# Exasol Release Robot 0.2.0, released 2020-??-??
+# Exasol Release Robot 0.2.0, released 2020-11-??
 
-Code name: 
+Code name: Maven Central Release
 
 ## Features / Enhancements
 
@@ -16,4 +16,12 @@ Code name:
 
 ## Refactoring
 
-* #37: Renamed throwParsingException to createParsingException
+* #37: Renamed `throwParsingException` to `createParsingException`.
+* #52: Refactored the project's structure.
+* #46: Separated pom parsing and validation.
+
+## Dependencies updates
+
+* Added org.apache.maven:maven-model:3.6.3
+* Added org.mockito:mockito-junit-jupiter:3.6.0
+* Updated org.mockito:mockito-core:3.5.10 to version 3.6.0

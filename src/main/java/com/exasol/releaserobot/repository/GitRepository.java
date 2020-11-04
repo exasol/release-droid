@@ -29,5 +29,4 @@ public interface GitRepository {
      */
     // [impl->dsn~gr-retrieves-branch-content~1]
     public GitBranchContent getRepositoryContent(final String branchName);
-
 }
