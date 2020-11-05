@@ -43,18 +43,17 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Report makeRelease(final Set<PlatformName> platformNames) {
-        final Report releaseReport = new ReportImpl(ReportImpl.ReportName.RELEASE);
+        final Report report = ReportImpl.releaseReport();
         for (final PlatformName platformName : platformNames) {
             try {
                 this.getReleaseMaker(platformName).makeRelease();
-                releaseReport.addResult(ReleaseResult.successfulRelease(platformName));
+                report.addResult(ReleaseResult.successfulRelease(platformName));
             } catch (final Exception exception) {
-                releaseReport
-                        .addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
+                report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
                 break;
             }
         }
-        return releaseReport;
+        return report;
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {

@@ -1,14 +1,12 @@
 package com.exasol.releaserobot.repository.maven;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 
-import javax.xml.parsers.*;
-
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+import org.apache.maven.model.*;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.exasol.releaserobot.repository.GitRepositoryException;
 
@@ -16,25 +14,24 @@ import com.exasol.releaserobot.repository.GitRepositoryException;
  * Parser for {@link MavenPom}.
  */
 public class MavenPomParser {
-    private final Element parsedPomRoot;
+    private final Model model;
 
     /**
      * Create a new instance of {@link MavenPomParser}.
      * 
-     * @param pom pom file as a string
+     * @param pom pom file
      */
-    public MavenPomParser(final String pom) {
-        this.parsedPomRoot = parsePom(pom);
+    public MavenPomParser(final File pom) {
+        this.model = createModel(pom);
     }
 
-    private Element parsePom(final String pom) {
-        try (final InputStream inputStream = IOUtils.toInputStream(pom)) {
-            final DocumentBuilder documentBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
-            final Document parsedPom = documentBuilder.parse(inputStream);
-            return parsedPom.getDocumentElement();
-        } catch (final ParserConfigurationException | SAXException | IOException exception) {
-            throw new GitRepositoryException("E-REP-MAV-1: Cannot parse pom.xml file. "
-                    + "Please, check that the 'pom.xml' file has a valid format.", exception);
+    private Model createModel(final File tempPomFile) {
+        try (final Reader reader = new FileReader(tempPomFile)) {
+            final MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+            return xpp3Reader.read(reader);
+        } catch (final XmlPullParserException | IOException exception) {
+            throw new GitRepositoryException("E-POM-1: Cannot parse pom.xml file. "
+                    + "Please, check if the 'pom.xml' file exists and has a valid format.", exception);
         }
     }
 
@@ -44,119 +41,36 @@ public class MavenPomParser {
      * @return new instance of {@link MavenPom}
      */
     public MavenPom parse() {
-        final String artifactId = parseChildElement("artifactId");
-        final String version = parseChildElement("version");
-        final String deliverableName = parseDeliverableName(artifactId, version);
-        final MavenPom.Builder builder = MavenPom.builder();
-        return builder.version(version).artifactId(artifactId).deliverableName(deliverableName).build();
+        final String artifactId = this.model.getArtifactId();
+        final String version = this.model.getVersion();
+        final Map<String, String> properties = parseProperties();
+        final List<MavenPlugin> plugins = parsePlugins();
+        return MavenPom.builder().version(version).artifactId(artifactId).properties(properties).plugins(plugins)
+                .build();
     }
 
-    private String parseDeliverableName(final String artifactId, final String version) {
-        final Optional<String> deliverableNameOptional = parseDeliverableName();
-        final String deliverableName;
-        if (deliverableNameOptional.isEmpty()) {
-            deliverableName = artifactId + "-" + version;
-        } else {
-            deliverableName = deliverableNameOptional.get();
+    private Map<String, String> parseProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        final Properties modelProperties = this.model.getProperties();
+        for (final String propertyName : modelProperties.stringPropertyNames()) {
+            properties.put(propertyName, modelProperties.getProperty(propertyName));
         }
-        return deliverableName;
+        return properties;
     }
 
-    private String parseChildElement(final String elementName) {
-        final Node item = getMandatoryChildNode(elementName);
-        final String element = item.getTextContent().strip();
-        if ((element != null) && !element.isEmpty()) {
-            return element;
-        } else {
-            throw createParsingException(elementName);
-        }
-    }
-
-    private Node getMandatoryChildNode(final String elementName) {
-        final Node item = this.parsedPomRoot.getElementsByTagName(elementName).item(0);
-        if (item != null) {
-            return item;
-        } else {
-            throw createParsingException(elementName);
-        }
-    }
-
-    private IllegalStateException createParsingException(final String elementName) {
-        return new IllegalStateException(
-                "E-REP-MAV-2: Unable to parse pom file because of a missing element: " + elementName);
-    }
-
-    private Optional<String> parseDeliverableName() {
-        final Element build = (Element) this.parsedPomRoot.getElementsByTagName("build").item(0);
+    private List<MavenPlugin> parsePlugins() {
+        final Build build = this.model.getBuild();
         if (build == null) {
-            return Optional.empty();
-        } else {
-            return parsePlugins(build);
+            return Collections.emptyList();
         }
-    }
-
-    private Optional<String> parsePlugins(final Element build) {
-        final NodeList plugins = build.getElementsByTagName("plugins").item(0).getChildNodes();
-        for (int i = 0; i < plugins.getLength(); i++) {
-            final Node next = plugins.item(i);
-            if (next.getNodeType() == Node.ELEMENT_NODE) {
-                final Element plugin = (Element) next;
-                final Node artifactIdNode = plugin.getElementsByTagName("artifactId").item(0);
-                final String artifactId = artifactIdNode.getTextContent().strip();
-                if (artifactId.equals("maven-assembly-plugin")) {
-                    return parseMavenAssemblyPlugin(plugin);
-                }
-            }
+        final List<MavenPlugin> plugins = new ArrayList<>();
+        for (final Plugin plugin : build.getPlugins()) {
+            final String artifactId = plugin.getArtifactId();
+            final Xpp3Dom configurations = (Xpp3Dom) plugin.getConfiguration();
+            final MavenPlugin mavenPlugin = MavenPlugin.builder().artifactId(artifactId).configuration(configurations)
+                    .build();
+            plugins.add(mavenPlugin);
         }
-        return Optional.empty();
-    }
-
-    private Optional<String> parseMavenAssemblyPlugin(final Element plugin) {
-        final Element configurations = (Element) plugin.getElementsByTagName("configuration").item(0);
-        if (configurations == null) {
-            return Optional.empty();
-        } else {
-            return getParseConfigurations(configurations);
-        }
-    }
-
-    private Optional<String> getParseConfigurations(final Element configurations) {
-        final Node finalNameNode = configurations.getElementsByTagName("finalName").item(0);
-        if ((finalNameNode == null) || (finalNameNode.getTextContent() == null)
-                || (finalNameNode.getTextContent().isEmpty())) {
-            return Optional.empty();
-        } else {
-            return parseFinalName(finalNameNode);
-        }
-    }
-
-    private Optional<String> parseFinalName(final Node finalNameNode) {
-        String finalName = finalNameNode.getTextContent().strip();
-        while (finalName.contains("${")) {
-            finalName = replaceVariable(finalName);
-        }
-        return Optional.of(finalName);
-    }
-
-    private String replaceVariable(final String finalName) {
-        final int startIndex = finalName.indexOf("${") + 2;
-        final int endIndex = finalName.indexOf('}');
-        final String tag = finalName.substring(startIndex, endIndex);
-        final String replacement = findReplacement(tag);
-        return finalName.replace("${" + tag + "}", replacement);
-    }
-
-    private String findReplacement(final String tag) {
-        if (tag.equals("version")) {
-            return parseChildElement("version");
-        } else {
-            final Element properties = (Element) getMandatoryChildNode("properties");
-            final Node tagNode = properties.getElementsByTagName(tag).item(0);
-            if (tagNode == null) {
-                throw createParsingException(tag);
-            } else {
-                return tagNode.getTextContent().strip();
-            }
-        }
+        return plugins;
     }
 }

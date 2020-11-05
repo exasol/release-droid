@@ -1,17 +1,21 @@
 package com.exasol.releaserobot.repository.maven;
 
+import java.util.*;
+
 /**
  * Represents maven pom.xml file.
  */
 public class MavenPom {
     private final String artifactId;
     private final String version;
-    private final String deliverableName;
+    private final Map<String, String> properties;
+    private final List<MavenPlugin> plugins;
 
     private MavenPom(final Builder builder) {
         this.artifactId = builder.artifactId;
         this.version = builder.version;
-        this.deliverableName = builder.deliverableName;
+        this.properties = builder.properties;
+        this.plugins = builder.plugins;
     }
 
     /**
@@ -24,6 +28,15 @@ public class MavenPom {
     }
 
     /**
+     * Check if artifact id presents.
+     * 
+     * @return true if artifactId presents
+     */
+    public boolean hasArtifactId() {
+        return this.artifactId != null && !this.artifactId.isEmpty();
+    }
+
+    /**
      * Get version.
      * 
      * @return version
@@ -33,12 +46,43 @@ public class MavenPom {
     }
 
     /**
-     * Get deliverable name.
-     * 
-     * @return deliverable name
+     * Check if version presents.
+     *
+     * @return true if version presents
      */
-    public String getDeliverableName() {
-        return this.deliverableName;
+    public boolean hasVersion() {
+        return this.version != null && !this.version.isEmpty();
+    }
+
+    /**
+     * Get properties map.
+     * 
+     * @return properties map
+     */
+    public Map<String, String> getProperties() {
+        return this.properties;
+    }
+
+    /**
+     * Check if properties present.
+     *
+     * @return true if properties present
+     */
+    public boolean hasProperties() {
+        return !this.properties.isEmpty();
+    }
+
+    public List<MavenPlugin> getPlugins() {
+        return this.plugins;
+    }
+
+    /**
+     * Check if plugins present.
+     *
+     * @return true if plugins present
+     */
+    public boolean hasPlugins() {
+        return !this.plugins.isEmpty();
     }
 
     /**
@@ -56,7 +100,8 @@ public class MavenPom {
     public static class Builder {
         private String artifactId;
         private String version;
-        private String deliverableName;
+        private Map<String, String> properties = new HashMap<>();
+        private List<MavenPlugin> plugins = new ArrayList<>();
 
         /**
          * Add version.
@@ -81,13 +126,13 @@ public class MavenPom {
         }
 
         /**
-         * Add deliverable name.
+         * Add properties map.
          *
-         * @param deliverableName deliverable name
+         * @param properties properties as a map
          * @return builder instance for fluent programming
          */
-        public Builder deliverableName(final String deliverableName) {
-            this.deliverableName = deliverableName;
+        public Builder properties(final Map<String, String> properties) {
+            this.properties = properties;
             return this;
         }
 
@@ -98,6 +143,17 @@ public class MavenPom {
          */
         public MavenPom build() {
             return new MavenPom(this);
+        }
+
+        /**
+         * Add plugins.
+         *
+         * @param plugins list of plugins
+         * @return builder instance for fluent programming
+         */
+        public Builder plugins(final List<MavenPlugin> plugins) {
+            this.plugins = plugins;
+            return this;
         }
     }
 }

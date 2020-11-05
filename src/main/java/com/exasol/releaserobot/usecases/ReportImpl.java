@@ -12,8 +12,26 @@ public class ReportImpl implements Report {
     protected final List<Result> results = new LinkedList<>();
     private final ReportName reportName;
 
-    public ReportImpl(final ReportName reportName) {
+    private ReportImpl(final ReportName reportName) {
         this.reportName = reportName;
+    }
+
+    /**
+     * Create a new report with the name VALIDATION.
+     * 
+     * @return new report
+     */
+    public static Report validationReport() {
+        return new ReportImpl(ReportName.VALIDATION);
+    }
+
+    /**
+     * Create a new report with the name RELEASE.
+     *
+     * @return new report
+     */
+    public static Report releaseReport() {
+        return new ReportImpl(ReportName.RELEASE);
     }
 
     @Override
@@ -82,6 +100,9 @@ public class ReportImpl implements Report {
         }
     }
 
+    /**
+     * Available report names.
+     */
     public enum ReportName {
         VALIDATION, RELEASE
     }

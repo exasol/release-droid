@@ -8,12 +8,11 @@ import java.util.logging.Logger;
 
 import com.exasol.releaserobot.repository.*;
 import com.exasol.releaserobot.usecases.*;
-import com.exasol.releaserobot.usecases.ReportImpl.ReportName;
 
 /**
  * Contains validations for a Git project.
  */
-public class GitRepositoryValidator {
+public class GitRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
     private final GitRepository repository;
 
@@ -27,17 +26,16 @@ public class GitRepositoryValidator {
         this.repository = repository;
     }
 
-    /**
-     * Validate content of a Git-based repository.
-     *
-     * @param branch name of a branch to validate on
-     * @return list of validation results
-     */
-    public Report validate(final String branch) {
-        LOGGER.fine("Validating Git repository.");
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+    @Override
+    public Report validateDefaultBranch() {
+        return validateBranch(this.repository.getDefaultBranchName());
+    }
 
-        final GitBranchContent content = this.repository.getRepositoryContent(branch);
+    @Override
+    public Report validateBranch(final String branchName) {
+        LOGGER.fine("Validating Git repository on branch '" + branchName + "'.");
+        final Report report = ReportImpl.validationReport();
+        final GitBranchContent content = this.repository.getRepositoryContent(branchName);
         final String version = content.getVersion();
         report.merge(validateNewVersion(version));
         if (!report.hasFailures()) {
@@ -51,10 +49,8 @@ public class GitRepositoryValidator {
 
     protected Report validateNewVersion(final String newVersion) {
         LOGGER.fine("Validating a new version.");
-        final Report report = new ReportImpl(ReportName.VALIDATION);
-
+        final Report report = ReportImpl.validationReport();
         report.merge(validateVersionFormat(newVersion));
-
         if (!report.hasFailures()) {
             report.merge(validateIfNewReleaseTagValid(newVersion));
         }
@@ -62,7 +58,7 @@ public class GitRepositoryValidator {
     }
 
     private Report validateVersionFormat(final String version) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         if (version.matches(VERSION_REGEX)) {
             report.addResult(ValidationResult.successfulValidation("Version format."));
         } else {
@@ -75,7 +71,7 @@ public class GitRepositoryValidator {
     }
 
     private Report validateIfNewReleaseTagValid(final String newVersion) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
             report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
@@ -88,7 +84,7 @@ public class GitRepositoryValidator {
 
     // [impl->dsn~validate-release-version-increased-correctly~1]
     private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (possibleVersions.contains(newTag)) {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
@@ -115,7 +111,7 @@ public class GitRepositoryValidator {
     // [impl->dsn~validate-changelog~1]
     protected Report validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating 'changelog.md' file.");
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-5",
@@ -130,7 +126,7 @@ public class GitRepositoryValidator {
 
     protected Report validateChanges(final ReleaseLetter changes, final String version, final boolean isDefaultBranch) {
         LOGGER.fine("Validating '" + changes.getFileName() + "' file.");
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         report.merge(validateVersionInChanges(changes, version));
         report.merge(validateDateInChanges(changes, isDefaultBranch));
         report.merge(validateHasBody(changes));
@@ -139,8 +135,7 @@ public class GitRepositoryValidator {
 
     // [impl->dsn~validate-changes-file-contains-release-version~1]
     private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
-
+        final Report report = ReportImpl.validationReport();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-6", "The file '" + changes.getFileName()
@@ -153,7 +148,7 @@ public class GitRepositoryValidator {
 
     // [impl->dsn~validate-changes-file-contains-release-date~1]
     private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
@@ -166,7 +161,7 @@ public class GitRepositoryValidator {
     }
 
     private Report reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         if (isDefaultBranch) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-7",
                     "The file '" + fileName + "' doesn't contain release's date: " + dateToday.toString()
@@ -183,7 +178,7 @@ public class GitRepositoryValidator {
 
     // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private Report validateHasBody(final ReleaseLetter changes) {
-        final Report report = new ReportImpl(ReportName.VALIDATION);
+        final Report report = ReportImpl.validationReport();
         if (changes.getBody().isEmpty()) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-8", "Cannot find the '" + changes.getFileName()
                     + "' body. Please, make sure you added the changes you made to the file."));

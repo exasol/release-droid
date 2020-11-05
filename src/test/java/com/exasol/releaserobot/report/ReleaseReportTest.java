@@ -18,7 +18,7 @@ class ReportTest {
 
     @BeforeEach
     void beforeEach() {
-        this.report = new ReportImpl(ReportImpl.ReportName.RELEASE);
+        this.report = ReportImpl.releaseReport();
     }
 
     @Test

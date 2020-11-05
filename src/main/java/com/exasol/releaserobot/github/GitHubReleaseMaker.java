@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import com.exasol.releaserobot.github.*;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
