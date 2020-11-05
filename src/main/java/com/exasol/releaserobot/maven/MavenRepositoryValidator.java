@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.usecases.validate;
+package com.exasol.releaserobot.maven;
 
 import java.util.logging.Logger;
 
@@ -6,21 +6,22 @@ import com.exasol.releaserobot.repository.GitRepository;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.*;
+import com.exasol.releaserobot.usecases.validate.RepositoryValidator;
 
 /**
- * This class validates a pom file.
+ * This class validates a maven repository.
  */
-public class BasicMavenPomValidator implements RepositoryValidator {
-    private static final Logger LOGGER = Logger.getLogger(BasicMavenPomValidator.class.getName());
+public class MavenRepositoryValidator implements RepositoryValidator {
+    private static final Logger LOGGER = Logger.getLogger(MavenRepositoryValidator.class.getName());
     private final GitRepository repository;
 
     /**
-     * Create a new instance of {@link BasicMavenPomValidator}.
+     * Create a new instance of {@link MavenRepositoryValidator}.
      *
      * @param repository instance of {@link GitRepository} to validate
      *
      */
-    public BasicMavenPomValidator(final GitRepository repository) {
+    public MavenRepositoryValidator(final GitRepository repository) {
         this.repository = repository;
     }
 

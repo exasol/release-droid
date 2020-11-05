@@ -8,7 +8,7 @@ import com.exasol.releaserobot.github.GitHubEntityFactory;
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.repository.GitBranchContent;
 import com.exasol.releaserobot.repository.GitRepository;
-import com.exasol.releaserobot.usecases.validate.BasicMavenPomValidator;
+import com.exasol.releaserobot.maven.MavenRepositoryValidator;
 import com.exasol.releaserobot.usecases.PlatformName;
 import com.exasol.releaserobot.usecases.UserInput;
 import com.exasol.releaserobot.usecases.release.*;
@@ -59,7 +59,7 @@ public class Runner {
     private static List<RepositoryValidator> createRepositoryValidators(final GitRepository repository) {
         final List<RepositoryValidator> repositoryValidators = new ArrayList<>();
         repositoryValidators.add(new GitRepositoryValidator(repository));
-        repositoryValidators.add(new BasicMavenPomValidator(repository));
+        repositoryValidators.add(new MavenRepositoryValidator(repository));
         return repositoryValidators;
     }
 

@@ -6,8 +6,7 @@ import java.util.*;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
-import com.exasol.releaserobot.repository.AbstractGitHubGitBranchContent;
-import com.exasol.releaserobot.repository.GitHubGitRepository;
+import com.exasol.releaserobot.repository.*;
 
 /**
  * This class represents a Maven-based Java project's content.
@@ -50,7 +49,11 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
 
     @Override
     public String getVersion() {
-        return this.pom.getVersion();
+        if (this.pom.hasVersion()) {
+            return this.pom.getVersion();
+        } else {
+            throw new GitRepositoryException("E-REP-GH-4: Cannot find the current version in the repository.");
+        }
     }
 
     @Override
@@ -62,7 +65,16 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
 
     private String getAssetName() {
         final Optional<String> deliverableName = parseDeliverableName(this.pom.getPlugins());
-        return deliverableName.orElse(this.pom.getArtifactId() + "-" + this.pom.getVersion());
+        final String artifactId = getArtifactId();
+        return deliverableName.orElse(artifactId + "-" + getVersion());
+    }
+
+    private String getArtifactId() {
+        if (this.pom.hasArtifactId()) {
+            return this.pom.getArtifactId();
+        } else {
+            throw new GitRepositoryException("E-REP-GH-5: Cannot find the project's artifactId.");
+        }
     }
 
     private Optional<String> parseDeliverableName(final List<MavenPlugin> plugins) {
@@ -110,13 +122,13 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
 
     private String findReplacement(final String tag) {
         if (tag.equals("version")) {
-            return this.pom.getVersion();
+            return getVersion();
         } else {
             final Map<String, String> properties = this.pom.getProperties();
             if (properties.containsKey(tag)) {
                 return properties.get(tag);
             } else {
-                throw new IllegalStateException("F-POM-1: Cannot detect deliverable's name.");
+                throw new IllegalStateException("F-POM-2: Cannot detect deliverable's name.");
             }
         }
     }

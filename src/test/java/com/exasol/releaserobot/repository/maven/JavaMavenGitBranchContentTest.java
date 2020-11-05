@@ -112,7 +112,7 @@ class JavaMavenGitBranchContentTest {
                 + "</project>";
         final GitBranchContent repository = createGitBranchContent(pom);
         final IllegalStateException exception = assertThrows(IllegalStateException.class, repository::getDeliverables);
-        assertThat(exception.getMessage(), containsString("F-POM-1"));
+        assertThat(exception.getMessage(), containsString("F-POM-2"));
     }
 
     @Test

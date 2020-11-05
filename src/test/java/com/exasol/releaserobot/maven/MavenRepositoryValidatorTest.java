@@ -1,4 +1,4 @@
-package com.exasol.releaserobot.usecases.validate;
+package com.exasol.releaserobot.maven;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -18,7 +18,7 @@ import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
 
 @ExtendWith(MockitoExtension.class)
-class BasicMavenPomValidatorTest {
+class MavenRepositoryValidatorTest {
     @Mock
     private GitRepository gitRepository;
     @Mock
@@ -35,7 +35,7 @@ class BasicMavenPomValidatorTest {
     private Report getReport(final MavenPom mavenPom) {
         when(this.gitRepository.getDefaultBranchName()).thenReturn("main");
         when(this.gitRepository.getRepositoryContent("main")).thenReturn(this.content);
-        final BasicMavenPomValidator pomValidator = new BasicMavenPomValidator(this.gitRepository);
+        final MavenRepositoryValidator pomValidator = new MavenRepositoryValidator(this.gitRepository);
         return pomValidator.validateDefaultBranch();
     }
 

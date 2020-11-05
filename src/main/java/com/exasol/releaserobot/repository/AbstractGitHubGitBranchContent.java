@@ -30,7 +30,7 @@ public abstract class AbstractGitHubGitBranchContent implements GitBranchContent
         try {
             return this.repository.getBranch(branchName);
         } catch (final IOException exception) {
-            throw new GitRepositoryException("E-REP-GH-1: Cannot find a branch '" + branchName
+            throw new GitRepositoryException("E-REP-GH-3: Cannot find a branch '" + branchName
                     + "'. Please check if you specified a correct branch.", exception);
         }
     }

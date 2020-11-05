@@ -1,7 +1,6 @@
 package com.exasol.releaserobot.repository.maven;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents maven pom.xml file.
@@ -70,7 +69,7 @@ public class MavenPom {
      * @return true if properties present
      */
     public boolean hasProperties() {
-        return this.properties != null && !this.properties.isEmpty();
+        return !this.properties.isEmpty();
     }
 
     public List<MavenPlugin> getPlugins() {
@@ -83,7 +82,7 @@ public class MavenPom {
      * @return true if plugins present
      */
     public boolean hasPlugins() {
-        return this.plugins != null && !this.plugins.isEmpty();
+        return !this.plugins.isEmpty();
     }
 
     /**
@@ -101,8 +100,8 @@ public class MavenPom {
     public static class Builder {
         private String artifactId;
         private String version;
-        private Map<String, String> properties;
-        private List<MavenPlugin> plugins;
+        private Map<String, String> properties = new HashMap<>();
+        private List<MavenPlugin> plugins = new ArrayList<>();
 
         /**
          * Add version.
