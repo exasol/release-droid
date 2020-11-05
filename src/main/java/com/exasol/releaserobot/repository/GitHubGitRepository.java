@@ -2,8 +2,6 @@ package com.exasol.releaserobot.repository;
 
 import java.util.Optional;
 
-import org.kohsuke.github.GHRepository;
-
 /**
  * A GitHub-based repository.
  */
@@ -14,7 +12,8 @@ public class GitHubGitRepository implements Repository {
     /**
      * Create a new instance of {@link GitHubGitRepository}.
      *
-     * @param repository instance of {@link GHRepository}
+     * @param latestTag latest tag
+     * @param branch    instance of {@link Branch}
      */
     public GitHubGitRepository(final Optional<String> latestTag, final Branch branch) {
         this.latestTag = latestTag;
@@ -30,5 +29,4 @@ public class GitHubGitRepository implements Repository {
     public Branch getBranch() {
         return this.branch;
     }
-
 }

@@ -10,7 +10,8 @@ public interface ReleaseMaker {
     /**
      * Make a release.
      *
+     * @param branch instance of {@link Branch}
      * @throws GitHubException if release fails
      */
-    void makeRelease(final Branch branch) throws GitHubException;
+    public void makeRelease(final Branch branch) throws GitHubException;
 }

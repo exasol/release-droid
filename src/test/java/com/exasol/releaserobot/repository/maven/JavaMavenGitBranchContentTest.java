@@ -55,7 +55,7 @@ class JavaMavenGitBranchContentTest {
 
     private Branch createGitBranchContent(final String pomFile) throws IOException {
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
-        return new JavaMavenGitBranchContent(this.ghRepositoryMock, BRANCH_NAME);
+        return new JavaMavenGitBranch(this.ghRepositoryMock, BRANCH_NAME);
     }
 
     @Test
@@ -120,6 +120,6 @@ class JavaMavenGitBranchContentTest {
         final String pom = "nothing here";
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         assertThrows(GitRepositoryException.class,
-                () -> new JavaMavenGitBranchContent(this.ghRepositoryMock, BRANCH_NAME));
+                () -> new JavaMavenGitBranch(this.ghRepositoryMock, BRANCH_NAME));
     }
 }

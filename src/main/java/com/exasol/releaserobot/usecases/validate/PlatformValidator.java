@@ -10,7 +10,7 @@ public interface PlatformValidator {
     /**
      * Validate a project.
      *
-     * @param repository
+     * @param repository instance of {@link Repository}
      *
      * @return validation report
      */

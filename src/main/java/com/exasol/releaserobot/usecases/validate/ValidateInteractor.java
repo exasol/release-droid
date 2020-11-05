@@ -33,21 +33,20 @@ public class ValidateInteractor implements ValidateUseCase {
     public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        final Report validationReport = runValidation(repository, userInput);
+        final Report validationReport = runValidation(repository);
         logResults(Goal.VALIDATE, validationReport);
         return validationReport;
     }
 
-    private Report runValidation(final Repository repository, final UserInput userInput) {
+    private Report runValidation(final Repository repository) {
         final Report report = ReportImpl.validationReport();
-        report.merge(validateRepositories(repository, userInput));
+        report.merge(validateRepositories(repository));
         report.merge(validatePlatforms(repository));
         return report;
     }
 
-    private Report validateRepositories(final Repository repository, final UserInput userInput) {
+    private Report validateRepositories(final Repository repository) {
         final Report report = ReportImpl.validationReport();
-
         for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
             report.merge(repositoryValidator.validate(repository));
         }

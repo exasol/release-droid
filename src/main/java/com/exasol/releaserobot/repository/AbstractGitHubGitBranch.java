@@ -9,19 +9,19 @@ import org.kohsuke.github.*;
 /**
  * Contains common logic for GitHub-based repositories' content.
  */
-public abstract class AbstractGitHubGitBranchContent implements Branch {
+public abstract class AbstractGitHubGitBranch implements Branch {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     private final GHRepository repository;
     private final GHBranch branch;
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
 
     /**
-     * Create a new instance of {@link AbstractGitHubGitBranchContent}.
+     * Create a new instance of {@link AbstractGitHubGitBranch}.
      *
      * @param repository an instance of {@link GHRepository}
      * @param branchName name of a branch to get content from
      */
-    protected AbstractGitHubGitBranchContent(final GHRepository repository, final String branchName) {
+    protected AbstractGitHubGitBranch(final GHRepository repository, final String branchName) {
         this.repository = repository;
         this.branch = getBranchByName(branchName);
     }

@@ -43,11 +43,27 @@ public interface GithubGateway {
      * @return set of closed tickets' numbers*
      * @throws GitHubException when some problems occur
      */
-    Set<Integer> getClosedTickets() throws GitHubException;
+    public Set<Integer> getClosedTickets() throws GitHubException;
 
-    Optional<String> getLatestTag();
+    /**
+     * Get latest tag.
+     * 
+     * @return latest tag
+     */
+    public Optional<String> getLatestTag();
 
-    Branch getBranch(String branchName);
+    /**
+     * Get a repository branch.
+     * 
+     * @param branchName branch name
+     * @return instance of {@link Branch}
+     */
+    public Branch getBranch(String branchName);
 
-    Branch getDefaultBranch();
+    /**
+     * Get a default repository branch.
+     *
+     * @return instance of {@link Branch}
+     */
+    public Branch getDefaultBranch();
 }

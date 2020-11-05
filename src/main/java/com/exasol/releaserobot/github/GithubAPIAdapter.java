@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import org.kohsuke.github.*;
 
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.Branch;
+import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
 
 /**
  * Implements an adapter to interact with Github.
@@ -21,9 +23,10 @@ public class GithubAPIAdapter implements GithubGateway {
     /**
      * Create a new instance of {@link GithubAPIAdapter}.
      *
-     * @param repository instance of {@link GHRepository}
-     * @param gitHubUser instance of {@link GitHubUser}
-     * @throws GitHubException
+     * @param repositoryOwner repository owner
+     * @param repositoryName  repository name
+     * @param gitHubUser      instance of {@link GitHubUser}
+     * @throws GitHubException if some connection problems occur
      */
     public GithubAPIAdapter(final String repositoryOwner, final String repositoryName, final GitHubUser gitHubUser)
             throws GitHubException {
@@ -127,13 +130,11 @@ public class GithubAPIAdapter implements GithubGateway {
 
     @Override
     public Branch getBranch(final String branchName) {
-        return GitHubRepositoryContentFactory.getInstance().getGitHubRepositoryContent(this.repository, branchName);
+        return new JavaMavenGitBranch(this.repository, branchName);
     }
 
     @Override
     public Branch getDefaultBranch() {
-        return GitHubRepositoryContentFactory.getInstance().getGitHubRepositoryContent(this.repository,
-                this.repository.getDefaultBranch());
+        return new JavaMavenGitBranch(this.repository, this.repository.getDefaultBranch());
     }
-
 }

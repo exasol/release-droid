@@ -6,11 +6,18 @@ import com.exasol.releaserobot.repository.*;
 import com.exasol.releaserobot.usecases.UserInput;
 import com.exasol.releaserobot.usecases.validate.RepositoryGateway;
 
+/**
+ * Implements a GitHub-based repository gateway.
+ */
 public class GithubRepositoryGateway implements RepositoryGateway {
     private final GithubGateway githubGateway;
 
+    /**
+     * Create a new instance of {@link GithubGateway}.
+     * 
+     * @param githubGateway instance of {@link GithubGateway}
+     */
     public GithubRepositoryGateway(final GithubGateway githubGateway) {
-        super();
         this.githubGateway = githubGateway;
     }
 
@@ -24,13 +31,13 @@ public class GithubRepositoryGateway implements RepositoryGateway {
     private Branch getBranch(final UserInput userInput) {
         if (userInput.hasGitBranch()) {
             return this.githubGateway.getBranch(userInput.getGitBranch());
+        } else {
+            return this.getDefaultBranch();
         }
-        return this.getDefaultBranch();
     }
 
     @Override
     public Branch getDefaultBranch() {
         return this.githubGateway.getDefaultBranch();
     }
-
 }

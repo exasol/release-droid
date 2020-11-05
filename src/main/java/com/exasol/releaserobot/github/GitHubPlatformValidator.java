@@ -18,7 +18,6 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
-     * @param branchContent content of a branch to validate
      * @param githubGateway instance of {@link GithubGateway}
      */
     public GitHubPlatformValidator(final GithubGateway githubGateway) {

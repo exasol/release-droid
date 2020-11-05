@@ -41,9 +41,7 @@ public class Runner {
     private static ReleaseRobot createReleaseRobot(final UserInput userInput) throws GitHubException {
         final GithubGateway githubGateway = createGithubGateway(userInput.getRepositoryOwner(),
                 userInput.getRepositoryName(), getGithubUser());
-
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, githubGateway);
-
         final List<PlatformValidator> platformValidators = createPlatformValidators(userInput, githubGateway);
         final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
         final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
@@ -92,7 +90,6 @@ public class Runner {
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final UserInput userInput,
             final GithubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
-        // TODO:
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:

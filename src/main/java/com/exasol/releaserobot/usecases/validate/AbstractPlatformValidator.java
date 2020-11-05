@@ -8,7 +8,6 @@ import com.exasol.releaserobot.usecases.*;
  * Contains a common logic for classes implementing {@link PlatformValidator}.
  */
 public abstract class AbstractPlatformValidator implements PlatformValidator {
-
     /**
      * Check that the workflow file exists and is reachable.
      */

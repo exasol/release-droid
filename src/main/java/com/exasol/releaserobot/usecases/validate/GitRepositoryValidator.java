@@ -18,7 +18,6 @@ public class GitRepositoryValidator implements RepositoryValidator {
     @Override
     public Report validate(final Repository repository) {
         final Branch branch = repository.getBranch();
-
         LOGGER.fine("Validating Git repository on branch '" + branch.getBranchName() + "'.");
         final Report report = ReportImpl.validationReport();
         final String version = branch.getVersion();
@@ -65,8 +64,8 @@ public class GitRepositoryValidator implements RepositoryValidator {
         }
         return report;
     }
-    // [impl->dsn~validate-release-version-format~1]
 
+    // [impl->dsn~validate-release-version-format~1]
     // [impl->dsn~validate-release-version-increased-correctly~1]
     private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
         final Report report = ReportImpl.validationReport();

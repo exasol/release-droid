@@ -19,6 +19,7 @@ Code name: Maven Central Release
 * #37: Renamed `throwParsingException` to `createParsingException`.
 * #52: Refactored the project's structure.
 * #46: Separated pom parsing and validation.
+* #70: Removed internal state dependencies.
 
 ## Dependencies updates
 

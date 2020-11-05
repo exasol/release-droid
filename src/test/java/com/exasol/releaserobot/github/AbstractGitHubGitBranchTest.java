@@ -17,13 +17,13 @@ import org.mockito.Mockito;
 
 import com.exasol.releaserobot.repository.*;
 
-class AbstractGitHubGitBranchContentTest {
+class AbstractGitHubGitBranchTest {
     @Test
     void testCreateAbstractGitHubGitRepositoryContentWithInvalidBranch() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
-        assertThrows(GitRepositoryException.class, () -> new DummyGitBranchContent(ghRepositoryMock, branchName));
+        assertThrows(GitRepositoryException.class, () -> new DummyGitBranch(ghRepositoryMock, branchName));
     }
 
     @Test
@@ -34,7 +34,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getDefaultBranch()).thenReturn(branchName);
         when(branchMock.getName()).thenReturn(branchName);
-        final Branch content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch content = new DummyGitBranch(ghRepositoryMock, branchName);
         assertThat(content.isDefaultBranch(), equalTo(true));
     }
 
@@ -46,7 +46,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getDefaultBranch()).thenReturn("main");
         when(branchMock.getName()).thenReturn(branchName);
-        final Branch content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch content = new DummyGitBranch(ghRepositoryMock, branchName);
         assertThat(content.isDefaultBranch(), equalTo(false));
     }
 
@@ -61,7 +61,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranch(ghRepositoryMock, branchName);
         assertThat(repository.getChangelogFile(), equalTo(textContent));
     }
 
@@ -73,7 +73,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenThrow(IOException.class);
-        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranch(ghRepositoryMock, branchName);
         assertThrows(GitRepositoryException.class, repository::getChangelogFile);
     }
 
@@ -87,7 +87,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranch(ghRepositoryMock, branchName);
         assertAll(
                 () -> assertThat(repository.getReleaseLetter(repository.getVersion()).getFileName(),
                         equalTo("changes_1.0.0.md")),
@@ -96,8 +96,8 @@ class AbstractGitHubGitBranchContentTest {
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
     }
 
-    private static final class DummyGitBranchContent extends AbstractGitHubGitBranchContent {
-        protected DummyGitBranchContent(final GHRepository repository, final String branch) {
+    private static final class DummyGitBranch extends AbstractGitHubGitBranch {
+        protected DummyGitBranch(final GHRepository repository, final String branch) {
             super(repository, branch);
         }
 

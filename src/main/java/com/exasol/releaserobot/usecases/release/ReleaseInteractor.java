@@ -21,8 +21,9 @@ public class ReleaseInteractor implements ReleaseUseCase {
     /**
      * Create a new instance of {@link ReleaseInteractor}.
      *
-     * @param validateUseCase validate use case for validating the platforms
-     * @param releaseMakers   map with platform names and release makers
+     * @param validateUseCase   validate use case for validating the platforms
+     * @param releaseMakers     map with platform names and release makers
+     * @param repositoryGateway instance of {@link RepositoryGateway]}
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final RepositoryGateway repositoryGateway) {

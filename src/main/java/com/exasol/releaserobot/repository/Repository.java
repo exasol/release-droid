@@ -15,10 +15,9 @@ public interface Repository {
     public Optional<String> getLatestTag();
 
     /**
-     * Get a new instance of {@link Branch} based on a user-specified branch.
+     * Get a branch.
      *
-     * @param branchName name of a branch to get content from
-     * @return new instance of {@link Branch}
+     * @return instance of {@link Branch}
      */
     // [impl->dsn~gr-retrieves-branch-content~1]
     public Branch getBranch();
