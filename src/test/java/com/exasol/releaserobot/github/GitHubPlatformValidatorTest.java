@@ -21,7 +21,7 @@ class GitHubPlatformValidatorTest {
     void testValidateContainsHeader() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertThat(report.hasFailures(), equalTo(false));
     }
@@ -31,7 +31,7 @@ class GitHubPlatformValidatorTest {
     void testValidateContainHeaderFails() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-1")));
@@ -45,7 +45,7 @@ class GitHubPlatformValidatorTest {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, githubGateway);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
         final Report report = validator.validateGitHubTickets(changesLetter);
         assertThat(report.hasFailures(), equalTo(false));
     }
@@ -56,7 +56,7 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final GitBranchContent branchContent = Mockito.mock(GitBranchContent.class);
+        final Branch branchContent = Mockito.mock(Branch.class);
         when(branchContent.isDefaultBranch()).thenReturn(true);
         when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
@@ -72,7 +72,7 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsFails() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final GitBranchContent branchContent = Mockito.mock(GitBranchContent.class);
+        final Branch branchContent = Mockito.mock(Branch.class);
         when(branchContent.isDefaultBranch()).thenReturn(false);
         when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
@@ -93,7 +93,7 @@ class GitHubPlatformValidatorTest {
 
     @Test
     void testValidateWorkflowFile() {
-        final GitBranchContent branchContentMock = Mockito.mock(GitBranchContent.class);
+        final Branch branchContentMock = Mockito.mock(Branch.class);
         when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);
         final Report report = validator.validateFileExists(GITHUB_WORKFLOW_PATH, "file");
@@ -102,7 +102,7 @@ class GitHubPlatformValidatorTest {
 
     @Test
     void testValidateWorkflowFileFails() {
-        final GitBranchContent branchContentMock = Mockito.mock(GitBranchContent.class);
+        final Branch branchContentMock = Mockito.mock(Branch.class);
         when(branchContentMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH))
                 .thenThrow(GitRepositoryException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(branchContentMock, null);

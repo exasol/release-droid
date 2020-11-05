@@ -4,13 +4,9 @@ import java.util.*;
 
 import org.apache.commons.cli.*;
 
-import com.exasol.releaserobot.github.GitHubEntityFactory;
-import com.exasol.releaserobot.github.GitHubException;
-import com.exasol.releaserobot.repository.GitBranchContent;
-import com.exasol.releaserobot.repository.GitRepository;
-import com.exasol.releaserobot.maven.MavenRepositoryValidator;
-import com.exasol.releaserobot.usecases.PlatformName;
-import com.exasol.releaserobot.usecases.UserInput;
+import com.exasol.releaserobot.github.*;
+import com.exasol.releaserobot.maven.*;
+import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.release.*;
 import com.exasol.releaserobot.usecases.validate.*;
 
@@ -43,37 +39,46 @@ public class Runner {
     }
 
     private static ReleaseRobot createReleaseRobot(final UserInput userInput) throws GitHubException {
-        final GitHubEntityFactory gitHubEntityFactory = new GitHubEntityFactory(userInput.getRepositoryOwner(),
-                userInput.getRepositoryName());
-        final GitRepository repository = gitHubEntityFactory.createGitHubGitRepository();
-        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, gitHubEntityFactory,
-                repository);
-        final List<PlatformValidator> platformValidators = createPlatformValidators(userInput, gitHubEntityFactory,
-                repository);
-        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators(repository);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repositoryValidators);
-        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers);
+        final GithubGateway githubGateway = createGithubGateway(userInput.getRepositoryOwner(),
+                userInput.getRepositoryName(), getGithubUser());
+
+        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, githubGateway);
+
+        final List<PlatformValidator> platformValidators = createPlatformValidators(userInput, githubGateway);
+        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
+        final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
+        final ValidateUseCase validateUseCase = new ValidateInteractor(platformValidators, repositoryValidators,
+                repositoryGateway);
+        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, repositoryGateway);
         return new ReleaseRobot(releaseUseCase, validateUseCase);
     }
 
-    private static List<RepositoryValidator> createRepositoryValidators(final GitRepository repository) {
+    private static GitHubUser getGithubUser() {
+        return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
+    }
+
+    private static GithubGateway createGithubGateway(final String repositoryOwner, final String repositoryName,
+            final GitHubUser githubUser) throws GitHubException {
+        return new GithubAPIAdapter(repositoryOwner, repositoryName, githubUser);
+    }
+
+    private static List<RepositoryValidator> createRepositoryValidators() {
         final List<RepositoryValidator> repositoryValidators = new ArrayList<>();
-        repositoryValidators.add(new GitRepositoryValidator(repository));
-        repositoryValidators.add(new MavenRepositoryValidator(repository));
+        repositoryValidators.add(new GitRepositoryValidator());
+        repositoryValidators.add(new MavenRepositoryValidator());
         return repositoryValidators;
     }
 
     private static List<PlatformValidator> createPlatformValidators(final UserInput userInput,
-            final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
+            final GithubGateway githubGateway) {
         final List<PlatformValidator> platformValidators = new ArrayList<>();
-        final GitBranchContent branchContent = getBranchContent(userInput, repository);
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:
-                platformValidators.add(gitHubEntityFactory.createGithubPlatformValidator(branchContent));
+                platformValidators.add(new GitHubPlatformValidator(githubGateway));
                 break;
             case MAVEN:
-                platformValidators.add(gitHubEntityFactory.createMavenPlatformValidator(branchContent));
+                platformValidators.add(new MavenPlatformValidator());
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -84,26 +89,17 @@ public class Runner {
         return platformValidators;
     }
 
-    private static GitBranchContent getBranchContent(final UserInput userInput, final GitRepository repository) {
-        if (userInput.hasGitBranch()) {
-            return repository.getRepositoryContent(userInput.getGitBranch());
-        } else {
-            return repository.getRepositoryContent(repository.getDefaultBranchName());
-        }
-    }
-
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final UserInput userInput,
-            final GitHubEntityFactory gitHubEntityFactory, final GitRepository repository) {
+            final GithubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
-        final GitBranchContent defaultBranchContent = repository
-                .getRepositoryContent(repository.getDefaultBranchName());
+        // TODO:
         for (final PlatformName name : userInput.getPlatformNames()) {
             switch (name) {
             case GITHUB:
-                releaseMakers.put(name, gitHubEntityFactory.createGithubReleaseMaker(defaultBranchContent));
+                releaseMakers.put(name, new GitHubReleaseMaker(githubGateway));
                 break;
             case MAVEN:
-                releaseMakers.put(name, gitHubEntityFactory.createMavenReleaseMaker(defaultBranchContent));
+                releaseMakers.put(name, new MavenReleaseMaker(githubGateway));
                 break;
             default:
                 throw new UnsupportedOperationException(

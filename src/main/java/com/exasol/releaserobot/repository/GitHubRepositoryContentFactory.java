@@ -5,9 +5,9 @@ import org.kohsuke.github.GHRepository;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 
 /**
- * This class instantiates a {@link GitBranchContent} corresponding to the GitHub project's layout.
+ * This class instantiates a {@link Branch} corresponding to the GitHub project's layout.
  */
-final class GitHubRepositoryContentFactory {
+public final class GitHubRepositoryContentFactory {
     private static GitHubRepositoryContentFactory instance;
 
     private GitHubRepositoryContentFactory() {
@@ -16,10 +16,10 @@ final class GitHubRepositoryContentFactory {
 
     /**
      * Get an instance of {@link GitHubRepositoryContentFactory}.
-     * 
+     *
      * @return instance of {@link GitHubRepositoryContentFactory}
      */
-    static synchronized GitHubRepositoryContentFactory getInstance() {
+    public static synchronized GitHubRepositoryContentFactory getInstance() {
         if (instance == null) {
             instance = new GitHubRepositoryContentFactory();
         }
@@ -27,14 +27,14 @@ final class GitHubRepositoryContentFactory {
     }
 
     /**
-     * Create a new instance of {@link GitBranchContent} from a GitHub repository depending on the repository's layout.
-     * Currently always returns {@link JavaMavenGitBranchContent}.
-     * 
+     * Create a new instance of {@link Branch} from a GitHub repository depending on the repository's layout. Currently
+     * always returns {@link JavaMavenGitBranchContent}.
+     *
      * @param repository instance of {@link GHRepository}
      * @param branchName name of a branch to read content from
-     * @return new instance of {@link GitBranchContent}
+     * @return new instance of {@link Branch}
      */
-    GitBranchContent getGitHubRepositoryContent(final GHRepository repository, final String branchName) {
+    public Branch getGitHubRepositoryContent(final GHRepository repository, final String branchName) {
         return new JavaMavenGitBranchContent(repository, branchName);
     }
 }

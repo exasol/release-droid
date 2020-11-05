@@ -9,7 +9,7 @@ import org.kohsuke.github.*;
 /**
  * Contains common logic for GitHub-based repositories' content.
  */
-public abstract class AbstractGitHubGitBranchContent implements GitBranchContent {
+public abstract class AbstractGitHubGitBranchContent implements Branch {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     private final GHRepository repository;
     private final GHBranch branch;

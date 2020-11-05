@@ -24,7 +24,7 @@ class GitHubGitRepositoryTest {
         final GHRelease releaseMock = Mockito.mock(GHRelease.class);
         when(releaseMock.getTagName()).thenReturn("1.0.0");
         when(ghRepositoryMock.getLatestRelease()).thenReturn(releaseMock);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+        final Repository repository = new GitHubGitRepository(ghRepositoryMock);
         final Optional<String> latestReleaseTag = repository.getLatestTag();
         assertThat(latestReleaseTag.isPresent(), equalTo(true));
         assertThat(latestReleaseTag.get(), equalTo("1.0.0"));
@@ -34,7 +34,7 @@ class GitHubGitRepositoryTest {
     void testGetLatestReleaseVersionEmpty() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getLatestRelease()).thenReturn(null);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+        final Repository repository = new GitHubGitRepository(ghRepositoryMock);
         final Optional<String> latestReleaseTag = repository.getLatestTag();
         assertThat(latestReleaseTag.isPresent(), equalTo(false));
     }
@@ -43,7 +43,7 @@ class GitHubGitRepositoryTest {
     void testGetLatestReleaseVersionThrowsException() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getLatestRelease()).thenThrow(IOException.class);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+        final Repository repository = new GitHubGitRepository(ghRepositoryMock);
         assertThrows(GitRepositoryException.class, repository::getLatestTag);
     }
 
@@ -51,7 +51,7 @@ class GitHubGitRepositoryTest {
     void testGetDefaultBranchName() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         when(ghRepositoryMock.getDefaultBranch()).thenReturn("dev");
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+        final Repository repository = new GitHubGitRepository(ghRepositoryMock);
         assertThat(repository.getDefaultBranchName(), equalTo("dev"));
     }
 
@@ -67,7 +67,7 @@ class GitHubGitRepositoryTest {
         when(contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+        final Repository repository = new GitHubGitRepository(ghRepositoryMock);
         assertThat(repository.getRepositoryContent(branchName), instanceOf(JavaMavenGitBranchContent.class));
     }
 }

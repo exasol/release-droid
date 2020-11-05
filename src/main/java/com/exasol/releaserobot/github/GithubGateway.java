@@ -1,7 +1,10 @@
 package com.exasol.releaserobot.github;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.Set;
+
+import com.exasol.releaserobot.repository.Branch;
 
 /**
  * Gateway for interacting with Github.
@@ -9,7 +12,7 @@ import java.util.Set;
 public interface GithubGateway {
     /**
      * Get a GitHub workflow URI by a workflow name.
-     * 
+     *
      * @param workflowName name of a workflow
      * @return new {@link URI}
      * @throws GitHubException when some problems occur
@@ -18,7 +21,7 @@ public interface GithubGateway {
 
     /**
      * Send a POST HTTP request to the provided URI.
-     * 
+     *
      * @param uri  used-provided URI
      * @param json request body
      * @throws GitHubException when some problems occur
@@ -27,7 +30,7 @@ public interface GithubGateway {
 
     /**
      * Make a GitHub release.
-     * 
+     *
      * @param gitHubRelease instance of {@link GitHubRelease} with release information
      * @return URl for attaching assets to the release as a string
      * @throws GitHubException when some problems occur
@@ -36,9 +39,15 @@ public interface GithubGateway {
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
-     * 
+     *
      * @return set of closed tickets' numbers*
      * @throws GitHubException when some problems occur
      */
-    public Set<Integer> getClosedTickets() throws GitHubException;
+    Set<Integer> getClosedTickets() throws GitHubException;
+
+    Optional<String> getLatestTag();
+
+    Branch getBranch(String branchName);
+
+    Branch getDefaultBranch();
 }

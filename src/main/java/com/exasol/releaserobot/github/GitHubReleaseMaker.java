@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import com.exasol.releaserobot.repository.GitBranchContent;
+import com.exasol.releaserobot.repository.Branch;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
@@ -15,17 +15,14 @@ import com.exasol.releaserobot.usecases.release.ReleaseMaker;
  */
 public class GitHubReleaseMaker implements ReleaseMaker {
     private static final Logger LOGGER = Logger.getLogger(GitHubReleaseMaker.class.getName());
-    private final GitBranchContent content;
     private final GithubGateway githubGateway;
 
     /**
      * Create a new {@link GitHubReleaseMaker}.
      *
-     * @param content       repository content to release
      * @param githubGateway instance of {@link GithubGateway}
      */
-    public GitHubReleaseMaker(final GitBranchContent content, final GithubGateway githubGateway) {
-        this.content = content;
+    public GitHubReleaseMaker(final GithubGateway githubGateway) {
         this.githubGateway = githubGateway;
     }
 
@@ -33,14 +30,14 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void makeRelease() throws GitHubException {
+    public void makeRelease(final Branch branch) throws GitHubException {
         LOGGER.fine("Releasing on GitHub.");
-        final String version = this.content.getVersion();
-        final ReleaseLetter releaseLetter = this.content.getReleaseLetter(version);
+        final String version = branch.getVersion();
+        final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
-                .defaultBranchName(this.content.getBranchName()).assets(this.content.getDeliverables()).build();
+                .defaultBranchName(branch.getBranchName()).assets(branch.getDeliverables()).build();
         this.makeNewGitHubRelease(release);
     }
 

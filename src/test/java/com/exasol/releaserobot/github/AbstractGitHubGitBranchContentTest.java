@@ -34,7 +34,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getDefaultBranch()).thenReturn(branchName);
         when(branchMock.getName()).thenReturn(branchName);
-        final GitBranchContent content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch content = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThat(content.isDefaultBranch(), equalTo(true));
     }
 
@@ -46,7 +46,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(ghRepositoryMock.getDefaultBranch()).thenReturn("main");
         when(branchMock.getName()).thenReturn(branchName);
-        final GitBranchContent content = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch content = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThat(content.isDefaultBranch(), equalTo(false));
     }
 
@@ -61,7 +61,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThat(repository.getChangelogFile(), equalTo(textContent));
     }
 
@@ -73,7 +73,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenThrow(IOException.class);
-        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertThrows(GitRepositoryException.class, repository::getChangelogFile);
     }
 
@@ -87,7 +87,7 @@ class AbstractGitHubGitBranchContentTest {
         when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitBranchContent repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
+        final Branch repository = new DummyGitBranchContent(ghRepositoryMock, branchName);
         assertAll(
                 () -> assertThat(repository.getReleaseLetter(repository.getVersion()).getFileName(),
                         equalTo("changes_1.0.0.md")),

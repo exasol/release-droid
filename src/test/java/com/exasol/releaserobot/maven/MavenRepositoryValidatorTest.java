@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.GitRepository;
+import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
@@ -20,7 +20,7 @@ import com.exasol.releaserobot.usecases.Report;
 @ExtendWith(MockitoExtension.class)
 class MavenRepositoryValidatorTest {
     @Mock
-    private GitRepository gitRepository;
+    private Repository gitRepository;
     @Mock
     final JavaMavenGitBranchContent content = Mockito.mock(JavaMavenGitBranchContent.class);
 

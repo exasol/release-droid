@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
+import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.usecases.Report;
 
 /**
@@ -9,7 +10,9 @@ public interface PlatformValidator {
     /**
      * Validate a project.
      *
+     * @param repository
+     *
      * @return validation report
      */
-    public Report validate();
+    public Report validate(final Repository repository);
 }

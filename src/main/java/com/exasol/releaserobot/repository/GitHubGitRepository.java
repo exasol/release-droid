@@ -1,50 +1,34 @@
 package com.exasol.releaserobot.repository;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Optional;
 
-import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 
 /**
  * A GitHub-based repository.
  */
-public class GitHubGitRepository implements GitRepository {
-    private final GHRepository repository;
-    private final Map<String, GitBranchContent> gitBranchContents = new HashMap<>();
+public class GitHubGitRepository implements Repository {
+    private final Optional<String> latestTag;
+    private final Branch branch;
 
     /**
      * Create a new instance of {@link GitHubGitRepository}.
-     * 
+     *
      * @param repository instance of {@link GHRepository}
      */
-    public GitHubGitRepository(final GHRepository repository) {
-        this.repository = repository;
+    public GitHubGitRepository(final Optional<String> latestTag, final Branch branch) {
+        this.latestTag = latestTag;
+        this.branch = branch;
     }
 
     @Override
     public Optional<String> getLatestTag() {
-        try {
-            final GHRelease release = this.repository.getLatestRelease();
-            return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
-        } catch (final IOException exception) {
-            throw new GitRepositoryException(
-                    "E-REP-GH-1: GitHub connection problem happened during retrieving the latest release.", exception);
-        }
+        return this.latestTag;
     }
 
     @Override
-    public String getDefaultBranchName() {
-        return this.repository.getDefaultBranch();
+    public Branch getBranch() {
+        return this.branch;
     }
 
-    @Override
-    public synchronized GitBranchContent getRepositoryContent(final String branchName) {
-        if (!this.gitBranchContents.containsKey(branchName)) {
-            final GitBranchContent gitHubRepositoryContent = GitHubRepositoryContentFactory.getInstance()
-                    .getGitHubRepositoryContent(this.repository, branchName);
-            this.gitBranchContents.put(branchName, gitHubRepositoryContent);
-        }
-        return this.gitBranchContents.get(branchName);
-    }
 }

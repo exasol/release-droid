@@ -15,12 +15,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.repository.GitRepository;
+import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.Report;
 
 class GitRepositoryValidatorTest {
-    private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);
+    private final Repository gitRepositoryMock = Mockito.mock(Repository.class);
     private GitRepositoryValidator validator;
 
     @BeforeEach
