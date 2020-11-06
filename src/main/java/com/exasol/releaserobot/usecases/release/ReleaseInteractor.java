@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.validate.RepositoryGateway;
 import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
@@ -33,24 +34,26 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     @Override
-    public List<Report> release(final UserInput userInput) {
+    public List<Report> release(final UserInput userInput) throws GitHubException {
         final List<Report> reports = new ArrayList<>();
         final Report validationReport = this.validateUseCase.validate(userInput);
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final Report releaseReport = this.makeRelease(userInput.getPlatformNames());
+            final Report releaseReport = this.makeRelease(userInput.getRepositoryFullName(),
+                    userInput.getPlatformNames());
             logResults(Goal.RELEASE, releaseReport);
             reports.add(releaseReport);
         }
         return reports;
     }
 
-    private Report makeRelease(final Set<PlatformName> platformNames) {
+    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames) {
         final Report report = ReportImpl.releaseReport();
         for (final PlatformName platformName : platformNames) {
             try {
-                this.getReleaseMaker(platformName).makeRelease(this.repositoryGateway.getDefaultBranch());
+                this.getReleaseMaker(platformName)
+                        .makeRelease(this.repositoryGateway.getDefaultBranch(repositoryFullName));
                 report.addResult(ReleaseResult.successfulRelease(platformName));
             } catch (final Exception exception) {
                 report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));

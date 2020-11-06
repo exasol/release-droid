@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.Repository;
+import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
@@ -19,7 +19,7 @@ import com.exasol.releaserobot.usecases.Report;
 @ExtendWith(MockitoExtension.class)
 class MavenRepositoryValidatorTest {
     @Mock
-    private Repository repositoryMock;
+    private RepositoryTOGOAWAY repositoryMock;
     @Mock
     private JavaMavenGitBranch branchMock;
 

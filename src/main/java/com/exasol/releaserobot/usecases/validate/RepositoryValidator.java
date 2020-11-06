@@ -1,6 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.repository.Repository;
+import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.usecases.Report;
 
 /**
@@ -13,5 +13,5 @@ public interface RepositoryValidator {
      * @param repository repository to validate
      * @return validation report
      */
-    public Report validate(final Repository repository);
+    public Report validate(final RepositoryTOGOAWAY repository);
 }

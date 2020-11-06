@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.Report;
 
 class GitHubPlatformValidatorTest {
@@ -56,7 +57,7 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Branch branchContent = Mockito.mock(Branch.class);
+        final Repository branchContent = Mockito.mock(Repository.class);
         when(branchContent.isDefaultBranch()).thenReturn(true);
         when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
@@ -72,7 +73,7 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsOnUserSpecifiedBranch() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Branch branchContent = Mockito.mock(Branch.class);
+        final Repository branchContent = Mockito.mock(Repository.class);
         when(branchContent.isDefaultBranch()).thenReturn(false);
         when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
@@ -93,7 +94,7 @@ class GitHubPlatformValidatorTest {
 
     @Test
     void testValidateWorkflowFile() {
-        final Branch branchMock = Mockito.mock(Branch.class);
+        final Repository branchMock = Mockito.mock(Repository.class);
         when(branchMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateFileExists(branchMock, GITHUB_WORKFLOW_PATH, "file");
@@ -102,7 +103,7 @@ class GitHubPlatformValidatorTest {
 
     @Test
     void testValidateWorkflowFileFails() {
-        final Branch branchMock = Mockito.mock(Branch.class);
+        final Repository branchMock = Mockito.mock(Repository.class);
         when(branchMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitRepositoryException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateFileExists(branchMock, GITHUB_WORKFLOW_PATH, "file");

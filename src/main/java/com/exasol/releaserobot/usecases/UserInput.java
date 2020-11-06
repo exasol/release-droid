@@ -191,4 +191,8 @@ public class UserInput {
             throw new IllegalArgumentException(message);
         }
     }
+
+    public String getRepositoryFullName() {
+        return this.getRepositoryOwner() + "/" + this.repositoryName;
+    }
 }

@@ -1,13 +1,12 @@
 package com.exasol.releaserobot.github;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import com.exasol.releaserobot.repository.Branch;
 import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
 /**
@@ -30,7 +29,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void makeRelease(final Branch branch) throws GitHubException {
+    public void makeRelease(final Repository branch) throws GitHubException {
         LOGGER.fine("Releasing on GitHub.");
         final String version = branch.getVersion();
         final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
@@ -38,21 +37,22 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
                 .defaultBranchName(branch.getBranchName()).assets(branch.getDeliverables()).build();
-        this.makeNewGitHubRelease(release);
+        this.makeNewGitHubRelease(branch.getRepositoryFullName(), release);
     }
 
-    private void makeNewGitHubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
-        final String uploadUrl = this.githubGateway.createGithubRelease(gitHubRelease);
+    private void makeNewGitHubRelease(final String repositoryFullName, final GitHubRelease gitHubRelease)
+            throws GitHubException {
+        final String uploadUrl = this.githubGateway.createGithubRelease(repositoryFullName, gitHubRelease);
         for (final Map.Entry<String, String> asset : gitHubRelease.getAssets().entrySet()) {
-            uploadAssets(uploadUrl, asset.getKey(), asset.getValue(), gitHubRelease.getDefaultBranchName());
+            uploadAssets(repositoryFullName, uploadUrl, asset.getKey(), asset.getValue(),
+                    gitHubRelease.getDefaultBranchName());
         }
     }
 
     // [impl->dsn~upload-github-release-assets~1]
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private void uploadAssets(final String uploadUrl, final String assetName, final String assetPath,
-            final String defaultBranchName) throws GitHubException {
-        final URI uri = this.githubGateway.getWorkflowURI("github_release.yml");
+    private void uploadAssets(final String repositoryFullName, final String uploadUrl, final String assetName,
+            final String assetPath, final String defaultBranchName) throws GitHubException {
         final JSONObject body = new JSONObject();
         body.put("ref", defaultBranchName);
         final JSONObject inputs = new JSONObject();
@@ -61,6 +61,6 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         inputs.put("asset_path", assetPath);
         body.put("inputs", inputs);
         final String json = body.toString();
-        this.githubGateway.sendGitHubRequest(uri, json);
+        this.githubGateway.executeWorkflow(repositoryFullName, "github_release.yml", json);
     }
 }

@@ -16,8 +16,8 @@ public class GitRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
 
     @Override
-    public Report validate(final Repository repository) {
-        final Branch branch = repository.getBranch();
+    public Report validate(final RepositoryTOGOAWAY repository) {
+        final Repository branch = repository.getBranch();
         LOGGER.fine("Validating Git repository on branch '" + branch.getBranchName() + "'.");
         final Report report = ReportImpl.validationReport();
         final String version = branch.getVersion();
@@ -31,7 +31,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
         return report;
     }
 
-    protected Report validateNewVersion(final String newVersion, final Repository repository) {
+    protected Report validateNewVersion(final String newVersion, final RepositoryTOGOAWAY repository) {
         LOGGER.fine("Validating a new version.");
         final Report report = ReportImpl.validationReport();
         report.merge(validateVersionFormat(newVersion));
@@ -54,7 +54,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
         return report;
     }
 
-    private Report validateIfNewReleaseTagValid(final String newVersion, final Repository repository) {
+    private Report validateIfNewReleaseTagValid(final String newVersion, final RepositoryTOGOAWAY repository) {
         final Report report = ReportImpl.validationReport();
         final Optional<String> latestReleaseTag = repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {

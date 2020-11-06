@@ -25,22 +25,23 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     }
 
     @Override
-    public Report validate(final Repository repository) {
+    public Report validate(final RepositoryTOGOAWAY repository) {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = ReportImpl.validationReport();
-        final Branch branch = repository.getBranch();
+        final Repository branch = repository.getBranch();
         final String version = branch.getVersion();
         final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
-        report.merge(validateChangesFile(branch.isDefaultBranch(), releaseLetter));
+        report.merge(validateChangesFile(branch.getRepositoryFullName(), branch.isDefaultBranch(), releaseLetter));
         report.merge(validateFileExists(branch, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 
     // [impl->dsn~validate-release-letter~1]
-    private Report validateChangesFile(final boolean isDefaultBranch, final ReleaseLetter releaseLetter) {
+    private Report validateChangesFile(final String repositoryFullName, final boolean isDefaultBranch,
+            final ReleaseLetter releaseLetter) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
-        report.merge(validateGitHubTickets(isDefaultBranch, releaseLetter));
+        report.merge(validateGitHubTickets(repositoryFullName, isDefaultBranch, releaseLetter));
         return report;
     }
 
@@ -60,10 +61,11 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
-    protected Report validateGitHubTickets(final boolean isDefaultBranch, final ReleaseLetter changesFile) {
+    protected Report validateGitHubTickets(final String repositoryFullName, final boolean isDefaultBranch,
+            final ReleaseLetter changesFile) {
         final Report report = ReportImpl.validationReport();
         try {
-            final List<String> wrongTickets = collectWrongTickets(changesFile);
+            final List<String> wrongTickets = collectWrongTickets(repositoryFullName, changesFile);
             if (!wrongTickets.isEmpty()) {
                 report.merge(reportWrongTickets(isDefaultBranch, changesFile.getFileName(), wrongTickets));
             } else {
@@ -94,8 +96,9 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         return report;
     }
 
-    private List<String> collectWrongTickets(final ReleaseLetter changesFile) throws GitHubException {
-        final Set<Integer> closedTickets = this.githubGateway.getClosedTickets();
+    private List<String> collectWrongTickets(final String repositoryFullName, final ReleaseLetter changesFile)
+            throws GitHubException {
+        final Set<Integer> closedTickets = this.githubGateway.getClosedTickets(repositoryFullName);
         final List<Integer> mentionedTickets = changesFile.getTicketNumbers();
         final List<String> wrongTickets = new ArrayList<>();
         for (final Integer ticket : mentionedTickets) {

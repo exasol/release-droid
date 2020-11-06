@@ -2,7 +2,7 @@ package com.exasol.releaserobot.maven;
 
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.Repository;
+import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.*;
@@ -15,7 +15,7 @@ public class MavenRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(MavenRepositoryValidator.class.getName());
 
     @Override
-    public Report validate(final Repository repository) {
+    public Report validate(final RepositoryTOGOAWAY repository) {
         LOGGER.fine("Validating pom file content.");
         final JavaMavenGitBranch branch = (JavaMavenGitBranch) repository.getBranch();
         final MavenPom mavenPom = branch.getMavenPom();

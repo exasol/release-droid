@@ -1,6 +1,5 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.repository.Branch;
 import com.exasol.releaserobot.repository.GitRepositoryException;
 import com.exasol.releaserobot.usecases.*;
 
@@ -11,7 +10,7 @@ public abstract class AbstractPlatformValidator implements PlatformValidator {
     /**
      * Check that the workflow file exists and is reachable.
      */
-    public Report validateFileExists(final Branch branch, final String filePath, final String fileDescription) {
+    public Report validateFileExists(final Repository branch, final String filePath, final String fileDescription) {
         final Report report = ReportImpl.validationReport();
         try {
             branch.getSingleFileContentAsString(filePath);

@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releaserobot.repository.GitRepositoryException;
-import com.exasol.releaserobot.repository.Repository;
+import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
 import com.exasol.releaserobot.usecases.Report;
 import com.exasol.releaserobot.usecases.validate.PlatformValidator;
@@ -23,7 +23,7 @@ import com.exasol.releaserobot.usecases.validate.PlatformValidator;
 class MavenPlatformValidatorTest {
     private final PlatformValidator platformValidator = new MavenPlatformValidator();
     @Mock
-    private Repository repositoryMock;
+    private RepositoryTOGOAWAY repositoryMock;
     @Mock
     private JavaMavenGitBranch branchMock;
 

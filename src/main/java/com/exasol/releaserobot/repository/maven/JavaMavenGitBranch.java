@@ -7,6 +7,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
 import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.usecases.AbstractGitHubGitBranch;
 
 /**
  * This class represents a Maven-based Java project's content.
@@ -97,7 +98,7 @@ public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
 
     private Optional<String> getParseConfigurations(final Xpp3Dom configurations) {
         final Xpp3Dom finalName = configurations.getChild("finalName");
-        if (finalName == null || finalName.getValue() == null || finalName.getValue().isEmpty()) {
+        if ((finalName == null) || (finalName.getValue() == null) || finalName.getValue().isEmpty()) {
             return Optional.empty();
         } else {
             return parseFinalName(finalName);
@@ -135,10 +136,11 @@ public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
 
     /**
      * Get a parsed Maven pom file.
-     * 
+     *
      * @return instance of {@link MavenPom}
      */
     public MavenPom getMavenPom() {
         return this.pom;
     }
+
 }

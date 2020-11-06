@@ -1,13 +1,12 @@
 package com.exasol.releaserobot.maven;
 
-import java.net.URI;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GithubGateway;
-import com.exasol.releaserobot.repository.Branch;
+import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
 /**
@@ -27,12 +26,11 @@ public class MavenReleaseMaker implements ReleaseMaker {
     }
 
     @Override
-    public void makeRelease(final Branch branch) throws GitHubException {
+    public void makeRelease(final Repository branch) throws GitHubException {
         LOGGER.fine("Releasing on Maven.");
-        final URI uri = this.githubGateway.getWorkflowURI("maven_central_release.yml");
         final JSONObject body = new JSONObject();
         body.put("ref", branch.getBranchName());
         final String json = body.toString();
-        this.githubGateway.sendGitHubRequest(uri, json);
+        this.githubGateway.executeWorkflow(branch.getRepositoryFullName(), "maven_central_release.yml", json);
     }
 }

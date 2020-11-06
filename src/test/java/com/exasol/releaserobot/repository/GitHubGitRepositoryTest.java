@@ -9,12 +9,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.exasol.releaserobot.usecases.Repository;
+
 class GitHubGitRepositoryTest {
     @Test
     void testGitRepository() {
         final Optional<String> latestTag = Optional.of("1.0.0");
-        final Branch branchMock = Mockito.mock(Branch.class);
-        final Repository repository = new GitHubGitRepository(latestTag, branchMock);
+        final Repository branchMock = Mockito.mock(Repository.class);
+        final RepositoryTOGOAWAY repository = new GitHubGitRepository(latestTag, branchMock);
         final Optional<String> latestReleaseTag = repository.getLatestTag();
         assertAll(() -> assertThat(latestReleaseTag.isPresent(), equalTo(true)),
                 () -> assertThat(latestReleaseTag.get(), equalTo("1.0.0")),

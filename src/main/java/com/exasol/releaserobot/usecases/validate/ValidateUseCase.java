@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
+import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.Report;
 import com.exasol.releaserobot.usecases.UserInput;
 
@@ -12,6 +13,7 @@ public interface ValidateUseCase {
      *
      * @param userInput user input
      * @return new {@link Report}
+     * @throws GitHubException
      */
-    public Report validate(final UserInput userInput);
+    public Report validate(final UserInput userInput) throws GitHubException;
 }

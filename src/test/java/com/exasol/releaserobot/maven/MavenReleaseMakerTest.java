@@ -10,14 +10,14 @@ import org.mockito.Mockito;
 
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GithubGateway;
-import com.exasol.releaserobot.repository.Branch;
+import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
 class MavenReleaseMakerTest {
     @Test
     void testMakeRelease() {
         final GithubGateway githubGateway = mock(GithubGateway.class);
-        final Branch branchMock = Mockito.mock(Branch.class);
+        final Repository branchMock = Mockito.mock(Repository.class);
         when(branchMock.getBranchName()).thenReturn("main");
         final ReleaseMaker releaseMaker = new MavenReleaseMaker(githubGateway);
         assertAll(() -> assertDoesNotThrow(() -> releaseMaker.makeRelease(branchMock)),
@@ -27,7 +27,7 @@ class MavenReleaseMakerTest {
     @Test
     void testMakeReleaseFails() throws GitHubException {
         final GithubGateway githubGateway = mock(GithubGateway.class);
-        final Branch branchMock = Mockito.mock(Branch.class);
+        final Repository branchMock = Mockito.mock(Repository.class);
         when(branchMock.getBranchName()).thenReturn("main");
         final ReleaseMaker releaseMaker = new MavenReleaseMaker(githubGateway);
         doThrow(GitHubException.class).when(githubGateway).sendGitHubRequest(any(), anyString());

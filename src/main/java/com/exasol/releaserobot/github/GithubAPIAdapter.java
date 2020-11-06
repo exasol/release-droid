@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 import org.kohsuke.github.*;
 
-import com.exasol.releaserobot.repository.Branch;
 import com.exasol.releaserobot.repository.GitRepositoryException;
 import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
+import com.exasol.releaserobot.usecases.Repository;
 
 /**
  * Implements an adapter to interact with Github.
  */
 public class GithubAPIAdapter implements GithubGateway {
     private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
-    private final GHRepository repository;
+    private final Map<String, GHRepository> repositories;
     private final GitHubUser gitHubUser;
 
     /**
@@ -28,19 +28,18 @@ public class GithubAPIAdapter implements GithubGateway {
      * @param gitHubUser      instance of {@link GitHubUser}
      * @throws GitHubException if some connection problems occur
      */
-    public GithubAPIAdapter(final String repositoryOwner, final String repositoryName, final GitHubUser gitHubUser)
-            throws GitHubException {
+    public GithubAPIAdapter(final GitHubUser gitHubUser) throws GitHubException {
         this.gitHubUser = gitHubUser;
-        this.repository = createGHRepository(repositoryOwner, repositoryName, gitHubUser);
+        this.repositories = new HashMap<>();
     }
 
-    private GHRepository createGHRepository(final String repositoryOwner, final String repositoryName,
-            final GitHubUser user) throws GitHubException {
+    private GHRepository createGHRepository(final String repositoryFullName, final GitHubUser user)
+            throws GitHubException {
         try {
             final GitHub gitHub = GitHub.connect(user.getUsername(), user.getToken());
-            return gitHub.getRepository(repositoryOwner + "/" + repositoryName);
+            return gitHub.getRepository(repositoryFullName);
         } catch (final IOException exception) {
-            throw wrapGitHubException(repositoryName, exception);
+            throw wrapGitHubException(repositoryFullName, exception);
         }
     }
 
@@ -59,9 +58,73 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public URI getWorkflowURI(final String workflowName) throws GitHubException {
-        final String uriString = GITHUB_API_ENTRY_URL + this.repository.getOwnerName() + "/" + this.repository.getName()
-                + "/actions/workflows/" + workflowName + "/dispatches";
+    public String createGithubRelease(final String repositoryFullName, final GitHubRelease gitHubRelease)
+            throws GitHubException {
+        try {
+            final GHRelease ghRelease = this.getRepository(repositoryFullName)//
+                    .createRelease(gitHubRelease.getVersion()) //
+                    .draft(true) //
+                    .body(gitHubRelease.getReleaseLetter()) //
+                    .name(gitHubRelease.getHeader()) //
+                    .create();
+            return ghRelease.getUploadUrl();
+        } catch (final IOException exception) {
+            throw new GitHubException("F-RR-GH-3: Exception happened during releasing a new tag on the GitHub.",
+                    exception);
+        }
+    }
+
+    private GHRepository getRepository(final String repositoryFullName) throws GitHubException {
+        if (!this.repositories.containsKey(repositoryFullName)) {
+            this.repositories.put(repositoryFullName, this.createGHRepository(repositoryFullName, this.gitHubUser));
+        }
+        return this.repositories.get(repositoryFullName);
+    }
+
+    @Override
+    public Set<Integer> getClosedTickets(final String repositoryFullName) throws GitHubException {
+        try {
+            final List<GHIssue> closedIssues = this.getRepository(repositoryFullName).getIssues(GHIssueState.CLOSED);
+            return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
+                    .collect(Collectors.toSet());
+        } catch (final IOException exception) {
+            throw new GitHubException("F-RR-GH-4: Unable to retrieve a list of closed tickets on the GitHub.",
+                    exception);
+        }
+    }
+
+    @Override
+    public Optional<String> getLatestTag(final String repositoryFullName) throws GitHubException {
+        try {
+            final GHRelease release = this.getRepository(repositoryFullName).getLatestRelease();
+            return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
+        } catch (final IOException exception) {
+            throw new GitRepositoryException(
+                    "E-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
+        }
+    }
+
+    @Override
+    public Repository getBranch(final String repositoryFullName, final String branchName) throws GitHubException {
+        return new JavaMavenGitBranch(this.getRepository(repositoryFullName), branchName);
+    }
+
+    @Override
+    public Repository getDefaultBranch(final String repositoryFullName) throws GitHubException {
+        final GHRepository repository = this.getRepository(repositoryFullName);
+        return new JavaMavenGitBranch(repository, repository.getDefaultBranch());
+    }
+
+    @Override
+    public void executeWorkflow(final String repositoryFullName, final String workflowName, final String payload)
+            throws GitHubException {
+        final URI workflowURI = this.getWorkflowURI(repositoryFullName, workflowName);
+        this.sendGitHubRequest(workflowURI, payload);
+    }
+
+    private URI getWorkflowURI(final String repositoryFullName, final String workflowName) throws GitHubException {
+        final String uriString = GITHUB_API_ENTRY_URL + repositoryFullName + "/actions/workflows/" + workflowName
+                + "/dispatches";
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {
@@ -70,8 +133,7 @@ public class GithubAPIAdapter implements GithubGateway {
         }
     }
 
-    @Override
-    public void sendGitHubRequest(final URI uri, final String json) throws GitHubException {
+    private void sendGitHubRequest(final URI uri, final String json) throws GitHubException {
         final HttpRequest request = HttpRequest.newBuilder() //
                 .uri(uri) //
                 .header("Accept", "application/vnd.github.v3+json") //
@@ -91,58 +153,10 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void validateResponse(final HttpResponse<String> response) throws GitHubException {
-        if (response.statusCode() < HttpURLConnection.HTTP_OK
-                || response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+        if ((response.statusCode() < HttpURLConnection.HTTP_OK)
+                || (response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE)) {
             throw new GitHubException("F-RR-GH-6: An HTTP request failed. " + response.body());
         }
     }
 
-    @Override
-    public String createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
-        try {
-            final GHRelease ghRelease = this.repository //
-                    .createRelease(gitHubRelease.getVersion()) //
-                    .draft(true) //
-                    .body(gitHubRelease.getReleaseLetter()) //
-                    .name(gitHubRelease.getHeader()) //
-                    .create();
-            return ghRelease.getUploadUrl();
-        } catch (final IOException exception) {
-            throw new GitHubException("F-RR-GH-3: Exception happened during releasing a new tag on the GitHub.",
-                    exception);
-        }
-    }
-
-    @Override
-    public Set<Integer> getClosedTickets() throws GitHubException {
-        try {
-            final List<GHIssue> closedIssues = this.repository.getIssues(GHIssueState.CLOSED);
-            return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
-                    .collect(Collectors.toSet());
-        } catch (final IOException exception) {
-            throw new GitHubException("F-RR-GH-4: Unable to retrieve a list of closed tickets on the GitHub.",
-                    exception);
-        }
-    }
-
-    @Override
-    public Optional<String> getLatestTag() {
-        try {
-            final GHRelease release = this.repository.getLatestRelease();
-            return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
-        } catch (final IOException exception) {
-            throw new GitRepositoryException(
-                    "E-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
-        }
-    }
-
-    @Override
-    public Branch getBranch(final String branchName) {
-        return new JavaMavenGitBranch(this.repository, branchName);
-    }
-
-    @Override
-    public Branch getDefaultBranch() {
-        return new JavaMavenGitBranch(this.repository, this.repository.getDefaultBranch());
-    }
 }

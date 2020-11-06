@@ -57,7 +57,7 @@ public class Runner {
 
     private static GithubGateway createGithubGateway(final String repositoryOwner, final String repositoryName,
             final GitHubUser githubUser) throws GitHubException {
-        return new GithubAPIAdapter(repositoryOwner, repositoryName, githubUser);
+        return new GithubAPIAdapter(githubUser);
     }
 
     private static List<RepositoryValidator> createRepositoryValidators() {

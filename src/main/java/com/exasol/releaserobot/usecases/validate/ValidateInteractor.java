@@ -3,7 +3,8 @@ package com.exasol.releaserobot.usecases.validate;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.Repository;
+import com.exasol.releaserobot.github.GitHubException;
+import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -30,7 +31,7 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     @Override
-    public Report validate(final UserInput userInput) {
+    public Report validate(final UserInput userInput) throws GitHubException {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepository(userInput);
         final Report validationReport = runValidation(repository);
@@ -38,14 +39,14 @@ public class ValidateInteractor implements ValidateUseCase {
         return validationReport;
     }
 
-    private Report runValidation(final Repository repository) {
+    private Report runValidation(final RepositoryTOGOAWAY repository) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateRepositories(repository));
         report.merge(validatePlatforms(repository));
         return report;
     }
 
-    private Report validateRepositories(final Repository repository) {
+    private Report validateRepositories(final RepositoryTOGOAWAY repository) {
         final Report report = ReportImpl.validationReport();
         for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
             report.merge(repositoryValidator.validate(repository));
@@ -53,7 +54,7 @@ public class ValidateInteractor implements ValidateUseCase {
         return report;
     }
 
-    private Report validatePlatforms(final Repository repository) {
+    private Report validatePlatforms(final RepositoryTOGOAWAY repository) {
         final Report report = ReportImpl.validationReport();
         for (final PlatformValidator platformValidator : this.platformValidators) {
             report.merge(platformValidator.validate(repository));
