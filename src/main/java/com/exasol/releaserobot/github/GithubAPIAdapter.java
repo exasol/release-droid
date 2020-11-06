@@ -91,7 +91,8 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void validateResponse(final HttpResponse<String> response) throws GitHubException {
-        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+        if (response.statusCode() < HttpURLConnection.HTTP_OK
+                || response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
             throw new GitHubException("F-RR-GH-6: An HTTP request failed. " + response.body());
         }
     }
