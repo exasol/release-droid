@@ -9,6 +9,7 @@ Code name: Maven Central Release
 * #25: Added validation report.
 * #47: Added release report.
 * #36: Added Maven release support.
+* #54: Added check from an HTTP response from the Github when triggering a workflow.
 
 ## Bugs
 
@@ -19,7 +20,8 @@ Code name: Maven Central Release
 * #37: Renamed `throwParsingException` to `createParsingException`.
 * #52: Refactored the project's structure.
 * #46: Separated pom parsing and validation.
-* #70: Removed internal state dependencies.
+* #69: Removed the repository instance variable from the ValidateInteractor class.
+* #70: Made the ReleaseInteractor instance independent of the repository
 
 ## Dependencies updates
 

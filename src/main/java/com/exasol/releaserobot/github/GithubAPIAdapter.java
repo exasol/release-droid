@@ -81,11 +81,19 @@ public class GithubAPIAdapter implements GithubGateway {
                 .build();
         final HttpClient build = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).build();
         try {
-            build.send(request, HttpResponse.BodyHandlers.ofString());
+            final HttpResponse<String> response = build.send(request, HttpResponse.BodyHandlers.ofString());
+            validateResponse(response);
         } catch (final IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new GitHubException("F-RR-GH-2: Exception happened during sending an HTTP request to the GitHub.",
                     exception);
+        }
+    }
+
+    private void validateResponse(final HttpResponse<String> response) throws GitHubException {
+        if (response.statusCode() < HttpURLConnection.HTTP_OK
+                || response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+            throw new GitHubException("F-RR-GH-6: An HTTP request failed. " + response.body());
         }
     }
 
@@ -124,7 +132,7 @@ public class GithubAPIAdapter implements GithubGateway {
             return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
             throw new GitRepositoryException(
-                    "E-REP-GH-1: GitHub connection problem happened during retrieving the latest release.", exception);
+                    "E-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
         }
     }
 
