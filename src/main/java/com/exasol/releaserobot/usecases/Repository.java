@@ -12,26 +12,31 @@ import com.exasol.releaserobot.repository.*;
  */
 public abstract class Repository {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
-    private final GHRepository repository;
+    private final GHRepository ghRepository;
     private final GHBranch branch;
     private final Optional<String> latestTag;
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
     private final String fullName;
 
     /**
-     * Create a new instance of {@link AbstractGitHubGitBranch}.
-     *
-     * @param repository an instance of {@link GHRepository}
-     * @param branchName name of a branch to get content from
+     * Create a new instance of {@link Repository}.
+     * 
+     * @param ghRepository an instance of {@link GHRepository}
+     * @param branchName   name of a branch to get content from
+     * @param fullName     fully qualified name of the repository
+     * @param latestTag    latest release tag
      */
-    protected Repository(final GHRepository repository, final String branchName) {
-        this.repository = repository;
+    protected Repository(final GHRepository ghRepository, final String branchName, final String fullName,
+            final Optional<String> latestTag) {
+        this.ghRepository = ghRepository;
         this.branch = getBranchByName(branchName);
+        this.latestTag = latestTag;
+        this.fullName = fullName;
     }
 
     private GHBranch getBranchByName(final String branchName) {
         try {
-            return Repository.repository.getBranch(branchName);
+            return this.ghRepository.getBranch(branchName);
         } catch (final IOException exception) {
             throw new GitRepositoryException("E-REP-GH-3: Cannot find a branch '" + branchName
                     + "'. Please check if you specified a correct branch.", exception);
@@ -46,12 +51,12 @@ public abstract class Repository {
      */
     public String getSingleFileContentAsString(final String filePath) {
         try {
-            final GHContent content = this.repository.getFileContent(filePath, this.branch.getName());
+            final GHContent content = this.ghRepository.getFileContent(filePath, this.branch.getName());
             return getContent(content.read());
         } catch (final IOException exception) {
             throw new GitRepositoryException(
                     "E-REP-GH-2: Cannot find or read the file '" + filePath + "' in the repository "
-                            + this.repository.getName() + ". Please add this file according to the User Guide.",
+                            + this.ghRepository.getName() + ". Please add this file according to the User Guide.",
                     exception);
         }
     }
@@ -75,7 +80,7 @@ public abstract class Repository {
      * @return true if the branch is default
      */
     public boolean isDefaultBranch() {
-        return this.repository.getDefaultBranch().equals(this.branch.getName());
+        return this.ghRepository.getDefaultBranch().equals(this.branch.getName());
     }
 
     /**

@@ -53,7 +53,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         for (final PlatformName platformName : platformNames) {
             try {
                 this.getReleaseMaker(platformName)
-                        .makeRelease(this.repositoryGateway.getDefaultBranch(repositoryFullName));
+                        .makeRelease(this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName));
                 report.addResult(ReleaseResult.successfulRelease(platformName));
             } catch (final Exception exception) {
                 report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));

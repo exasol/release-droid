@@ -26,11 +26,11 @@ public class MavenReleaseMaker implements ReleaseMaker {
     }
 
     @Override
-    public void makeRelease(final Repository branch) throws GitHubException {
+    public void makeRelease(final Repository repository) throws GitHubException {
         LOGGER.fine("Releasing on Maven.");
         final JSONObject body = new JSONObject();
-        body.put("ref", branch.getBranchName());
+        body.put("ref", repository.getBranchName());
         final String json = body.toString();
-        this.githubGateway.executeWorkflow(branch.getRepositoryFullName(), "maven_central_release.yml", json);
+        this.githubGateway.executeWorkflow(repository.getFullName(), "maven_central_release.yml", json);
     }
 }

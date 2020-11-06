@@ -1,37 +1,47 @@
 package com.exasol.releaserobot.maven;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GithubGateway;
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
+@ExtendWith(MockitoExtension.class)
 class MavenReleaseMakerTest {
+    @Mock
+    private GithubGateway githubGatewayMock;
+    @Mock
+    private Repository repositoryMock;
+    private ReleaseMaker releaseMaker;
+
+    @BeforeEach
+    void beforeEach() {
+        when(this.repositoryMock.getBranchName()).thenReturn("main");
+        when(this.repositoryMock.getFullName()).thenReturn("name");
+        this.releaseMaker = new MavenReleaseMaker(this.githubGatewayMock);
+    }
+
     @Test
     void testMakeRelease() {
-        final GithubGateway githubGateway = mock(GithubGateway.class);
-        final Repository branchMock = Mockito.mock(Repository.class);
-        when(branchMock.getBranchName()).thenReturn("main");
-        final ReleaseMaker releaseMaker = new MavenReleaseMaker(githubGateway);
-        assertAll(() -> assertDoesNotThrow(() -> releaseMaker.makeRelease(branchMock)),
-                () -> verify(githubGateway, times(1)).sendGitHubRequest(any(), anyString()));
+        assertAll(() -> assertDoesNotThrow(() -> this.releaseMaker.makeRelease(this.repositoryMock)),
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
+                        "{\"ref\":\"main\"}"));
     }
 
     @Test
     void testMakeReleaseFails() throws GitHubException {
-        final GithubGateway githubGateway = mock(GithubGateway.class);
-        final Repository branchMock = Mockito.mock(Repository.class);
-        when(branchMock.getBranchName()).thenReturn("main");
-        final ReleaseMaker releaseMaker = new MavenReleaseMaker(githubGateway);
-        doThrow(GitHubException.class).when(githubGateway).sendGitHubRequest(any(), anyString());
-        assertAll(() -> assertThrows(GitHubException.class, () -> releaseMaker.makeRelease(branchMock)),
-                () -> verify(githubGateway, times(1)).sendGitHubRequest(any(), anyString()));
+        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name", "maven_central_release.yml",
+                "{\"ref\":\"main\"}");
+        assertAll(() -> assertThrows(GitHubException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
+                        "{\"ref\":\"main\"}"));
     }
 }

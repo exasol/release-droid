@@ -5,6 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
@@ -12,9 +14,10 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.repository.*;
-import com.exasol.releaserobot.usecases.Repository;
+import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.Repository;
 
 class GitHubPlatformValidatorTest {
     @Test
@@ -44,10 +47,11 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTickets() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
+        final Repository repositoryMock = Mockito.mock(Repository.class);
+        when(githubGateway.getClosedTickets(anyString())).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(true, changesLetter);
+        final Report report = validator.validateGitHubTickets(repositoryMock, changesLetter);
         assertThat(report.hasFailures(), equalTo(false));
     }
 
@@ -57,12 +61,12 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Repository branchContent = Mockito.mock(Repository.class);
-        when(branchContent.isDefaultBranch()).thenReturn(true);
-        when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
+        final Repository repositoryMock = Mockito.mock(Repository.class);
+        when(repositoryMock.isDefaultBranch()).thenReturn(true);
+        when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(true, changesLetter);
+        final Report report = validator.validateGitHubTickets(repositoryMock, changesLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-2")));
     }
@@ -72,22 +76,25 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsOnUserSpecifiedBranch() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Repository branchContent = Mockito.mock(Repository.class);
-        when(branchContent.isDefaultBranch()).thenReturn(false);
-        when(githubGateway.getClosedTickets()).thenReturn(Set.of(1, 2, 3, 4));
-        when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
+        final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
+        final Repository repositoryMock = Mockito.mock(Repository.class);
+        when(repositoryMock.isDefaultBranch()).thenReturn(false);
+        when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
+        when(releaseLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(false, changesLetter);
+        final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);
         assertThat(report.hasFailures(), equalTo(false));
     }
 
     @Test
     void testValidateGitHubTicketsCannotRetrieveTickets() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
-        when(githubGateway.getClosedTickets()).thenThrow(GitHubException.class);
+        final Repository repositoryMock = Mockito.mock(Repository.class);
+        final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
+        when(repositoryMock.getFullName()).thenReturn("name");
+        when(githubGateway.getClosedTickets("name")).thenThrow(GitHubException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(true, null);
+        final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-10")));
     }

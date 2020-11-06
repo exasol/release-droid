@@ -21,7 +21,8 @@ Code name: Maven Central Release
 * #52: Refactored the project's structure.
 * #46: Separated pom parsing and validation.
 * #69: Removed the repository instance variable from the ValidateInteractor class.
-* #70: Made the ReleaseInteractor instance independent of the repository
+* #70: Made the ReleaseInteractor instance independent of the repository.
+* #74: Refactored GitHub API adapter.
 
 ## Dependencies updates
 

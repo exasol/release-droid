@@ -1,7 +1,5 @@
 package com.exasol.releaserobot.github;
 
-import java.util.Optional;
-
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.UserInput;
 import com.exasol.releaserobot.usecases.validate.RepositoryGateway;
@@ -23,20 +21,15 @@ public class GithubRepositoryGateway implements RepositoryGateway {
 
     @Override
     public Repository getRepository(final UserInput userInput) throws GitHubException {
-        final Repository branch = this.getBranch(userInput);
-        final Optional<String> latestTag = this.githubGateway.getLatestTag(userInput.getRepositoryFullName());
-        return new Repository(latestTag, branch);
-    }
-
-    private Repository getBranch(final UserInput userInput) throws GitHubException {
         if (userInput.hasGitBranch()) {
-            return this.githubGateway.getBranch(userInput.getRepositoryFullName(), userInput.getGitBranch());
+            return this.githubGateway.getRepositoryWithUserSpecifiedBranch(userInput.getRepositoryFullName(),
+                    userInput.getGitBranch());
         }
-        return this.getDefaultBranch(userInput.getRepositoryFullName());
+        return this.getRepositoryWithDefaultBranch(userInput.getRepositoryFullName());
     }
 
     @Override
-    public Repository getDefaultBranch(final String repositoryFullName) throws GitHubException {
-        return this.githubGateway.getDefaultBranch(repositoryFullName);
+    public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) throws GitHubException {
+        return this.githubGateway.getRepositoryWithDefaultBranch(repositoryFullName);
     }
 }

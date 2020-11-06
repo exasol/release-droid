@@ -38,9 +38,8 @@ public class Runner {
         createReleaseRobot(userInput).run(userInput);
     }
 
-    private static ReleaseRobot createReleaseRobot(final UserInput userInput) throws GitHubException {
-        final GithubGateway githubGateway = createGithubGateway(userInput.getRepositoryOwner(),
-                userInput.getRepositoryName(), getGithubUser());
+    private static ReleaseRobot createReleaseRobot(final UserInput userInput) {
+        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(userInput, githubGateway);
         final List<PlatformValidator> platformValidators = createPlatformValidators(userInput, githubGateway);
         final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
@@ -53,11 +52,6 @@ public class Runner {
 
     private static GitHubUser getGithubUser() {
         return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
-    }
-
-    private static GithubGateway createGithubGateway(final String repositoryOwner, final String repositoryName,
-            final GitHubUser githubUser) throws GitHubException {
-        return new GithubAPIAdapter(githubUser);
     }
 
     private static List<RepositoryValidator> createRepositoryValidators() {

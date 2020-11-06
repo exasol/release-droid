@@ -29,15 +29,15 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void makeRelease(final Repository branch) throws GitHubException {
+    public void makeRelease(final Repository repository) throws GitHubException {
         LOGGER.fine("Releasing on GitHub.");
-        final String version = branch.getVersion();
-        final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
+        final String version = repository.getVersion();
+        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
-                .defaultBranchName(branch.getBranchName()).assets(branch.getDeliverables()).build();
-        this.makeNewGitHubRelease(branch.getRepositoryFullName(), release);
+                .defaultBranchName(repository.getBranchName()).assets(repository.getDeliverables()).build();
+        this.makeNewGitHubRelease(repository.getFullName(), release);
     }
 
     private void makeNewGitHubRelease(final String repositoryFullName, final GitHubRelease gitHubRelease)

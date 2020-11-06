@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -16,22 +16,21 @@ public class GitRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
 
     @Override
-    public Report validate(final RepositoryTOGOAWAY repository) {
-        final Repository branch = repository.getBranch();
-        LOGGER.fine("Validating Git repository on branch '" + branch.getBranchName() + "'.");
+    public Report validate(final Repository repository) {
+        LOGGER.fine("Validating Git repository on branch '" + repository.getBranchName() + "'.");
         final Report report = ReportImpl.validationReport();
-        final String version = branch.getVersion();
+        final String version = repository.getVersion();
         report.merge(validateNewVersion(version, repository));
         if (!report.hasFailures()) {
-            final String changelog = branch.getChangelogFile();
+            final String changelog = repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
-            final ReleaseLetter changes = branch.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, branch.isDefaultBranch()));
+            final ReleaseLetter changes = repository.getReleaseLetter(version);
+            report.merge(validateChanges(changes, version, repository.isDefaultBranch()));
         }
         return report;
     }
 
-    protected Report validateNewVersion(final String newVersion, final RepositoryTOGOAWAY repository) {
+    protected Report validateNewVersion(final String newVersion, final Repository repository) {
         LOGGER.fine("Validating a new version.");
         final Report report = ReportImpl.validationReport();
         report.merge(validateVersionFormat(newVersion));
@@ -54,7 +53,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
         return report;
     }
 
-    private Report validateIfNewReleaseTagValid(final String newVersion, final RepositoryTOGOAWAY repository) {
+    private Report validateIfNewReleaseTagValid(final String newVersion, final Repository repository) {
         final Report report = ReportImpl.validationReport();
         final Optional<String> latestReleaseTag = repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
@@ -172,5 +171,4 @@ public class GitRepositoryValidator implements RepositoryValidator {
         }
         return report;
     }
-
 }

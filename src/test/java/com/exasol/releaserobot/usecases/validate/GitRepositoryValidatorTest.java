@@ -19,13 +19,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releaserobot.repository.ReleaseLetter;
-import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
 import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.Repository;
 
 @ExtendWith(MockitoExtension.class)
 class GitRepositoryValidatorTest {
     @Mock
-    private RepositoryTOGOAWAY gitRepositoryMock;
+    private Repository gitRepositoryMock;
     private GitRepositoryValidator validator;
 
     @BeforeEach

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class JavaMavenGitBranchContentTest {
 
     private Repository createGitBranchContent(final String pomFile) throws IOException {
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
-        return new JavaMavenGitBranch(this.ghRepositoryMock, BRANCH_NAME);
+        return new JavaMavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty());
     }
 
     @Test
@@ -120,6 +121,6 @@ class JavaMavenGitBranchContentTest {
         final String pom = "nothing here";
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         assertThrows(GitRepositoryException.class,
-                () -> new JavaMavenGitBranch(this.ghRepositoryMock, BRANCH_NAME));
+                () -> new JavaMavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty()));
     }
 }

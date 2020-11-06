@@ -9,11 +9,16 @@ import com.exasol.releaserobot.usecases.*;
 public abstract class AbstractPlatformValidator implements PlatformValidator {
     /**
      * Check that the workflow file exists and is reachable.
+     * 
+     * @param repository      repository to check
+     * @param filePath        path to the file
+     * @param fileDescription workflow description for a report
+     * @return new instance of {@link Report}
      */
-    public Report validateFileExists(final Repository branch, final String filePath, final String fileDescription) {
+    public Report validateFileExists(final Repository repository, final String filePath, final String fileDescription) {
         final Report report = ReportImpl.validationReport();
         try {
-            branch.getSingleFileContentAsString(filePath);
+            repository.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));
         } catch (final GitRepositoryException exception) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-9",

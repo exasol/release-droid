@@ -6,33 +6,31 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.RepositoryTOGOAWAY;
-import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
+import com.exasol.releaserobot.repository.maven.JavaMavenRepository;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
 
 @ExtendWith(MockitoExtension.class)
 class MavenRepositoryValidatorTest {
     @Mock
-    private RepositoryTOGOAWAY repositoryMock;
-    @Mock
-    private JavaMavenGitBranch branchMock;
+    private JavaMavenRepository repositoryMock;
 
     @Test
     void testValidate() {
         final MavenPom mavenPom = MavenPom.builder().artifactId("my-test-project").version("1.2.3").build();
-        when(this.branchMock.getMavenPom()).thenReturn(mavenPom);
+        when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
         assertThat(report.hasFailures(), equalTo(false));
     }
 
     private Report getReport(final MavenPom mavenPom) {
-        when(this.repositoryMock.getBranch()).thenReturn(this.branchMock);
         final MavenRepositoryValidator pomValidator = new MavenRepositoryValidator();
         return pomValidator.validate(this.repositoryMock);
     }
@@ -40,7 +38,7 @@ class MavenRepositoryValidatorTest {
     @Test
     void testValidateFails() {
         final MavenPom mavenPom = MavenPom.builder().build();
-        when(this.branchMock.getMavenPom()).thenReturn(mavenPom);
+        when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)), //
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-11")),

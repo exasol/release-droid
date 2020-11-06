@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 
 import com.exasol.releaserobot.repository.GitRepositoryException;
-import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
+import com.exasol.releaserobot.repository.maven.JavaMavenRepository;
 import com.exasol.releaserobot.usecases.Repository;
 
 /**
@@ -23,12 +23,9 @@ public class GithubAPIAdapter implements GithubGateway {
     /**
      * Create a new instance of {@link GithubAPIAdapter}.
      *
-     * @param repositoryOwner repository owner
-     * @param repositoryName  repository name
-     * @param gitHubUser      instance of {@link GitHubUser}
-     * @throws GitHubException if some connection problems occur
+     * @param gitHubUser instance of {@link GitHubUser}
      */
-    public GithubAPIAdapter(final GitHubUser gitHubUser) throws GitHubException {
+    public GithubAPIAdapter(final GitHubUser gitHubUser) {
         this.gitHubUser = gitHubUser;
         this.repositories = new HashMap<>();
     }
@@ -105,14 +102,17 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public Repository getBranch(final String repositoryFullName, final String branchName) throws GitHubException {
-        return new JavaMavenGitBranch(this.getRepository(repositoryFullName), branchName);
+    public Repository getRepositoryWithUserSpecifiedBranch(final String repositoryFullName, final String branchName)
+            throws GitHubException {
+        return new JavaMavenRepository(this.getRepository(repositoryFullName), branchName, repositoryFullName,
+                getLatestTag(repositoryFullName));
     }
 
     @Override
-    public Repository getDefaultBranch(final String repositoryFullName) throws GitHubException {
+    public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) throws GitHubException {
         final GHRepository repository = this.getRepository(repositoryFullName);
-        return new JavaMavenGitBranch(repository, repository.getDefaultBranch());
+        return new JavaMavenRepository(repository, repository.getDefaultBranch(), repositoryFullName,
+                getLatestTag(repositoryFullName));
     }
 
     @Override
@@ -158,5 +158,4 @@ public class GithubAPIAdapter implements GithubGateway {
             throw new GitHubException("F-RR-GH-6: An HTTP request failed. " + response.body());
         }
     }
-
 }
