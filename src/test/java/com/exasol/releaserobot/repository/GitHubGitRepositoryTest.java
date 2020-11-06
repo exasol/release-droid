@@ -2,72 +2,23 @@ package com.exasol.releaserobot.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.kohsuke.github.*;
 import org.mockito.Mockito;
-
-import com.exasol.releaserobot.repository.maven.JavaMavenGitBranchContent;
 
 class GitHubGitRepositoryTest {
     @Test
-    void testGetLatestReleaseVersion() throws IOException {
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        final GHRelease releaseMock = Mockito.mock(GHRelease.class);
-        when(releaseMock.getTagName()).thenReturn("1.0.0");
-        when(ghRepositoryMock.getLatestRelease()).thenReturn(releaseMock);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
+    void testGitRepository() {
+        final Optional<String> latestTag = Optional.of("1.0.0");
+        final Branch branchMock = Mockito.mock(Branch.class);
+        final Repository repository = new GitHubGitRepository(latestTag, branchMock);
         final Optional<String> latestReleaseTag = repository.getLatestTag();
-        assertThat(latestReleaseTag.isPresent(), equalTo(true));
-        assertThat(latestReleaseTag.get(), equalTo("1.0.0"));
-    }
+        assertAll(() -> assertThat(latestReleaseTag.isPresent(), equalTo(true)),
+                () -> assertThat(latestReleaseTag.get(), equalTo("1.0.0")),
+                () -> assertThat(repository.getBranch(), equalTo(branchMock)));
 
-    @Test
-    void testGetLatestReleaseVersionEmpty() throws IOException {
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        when(ghRepositoryMock.getLatestRelease()).thenReturn(null);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        final Optional<String> latestReleaseTag = repository.getLatestTag();
-        assertThat(latestReleaseTag.isPresent(), equalTo(false));
-    }
-
-    @Test
-    void testGetLatestReleaseVersionThrowsException() throws IOException {
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        when(ghRepositoryMock.getLatestRelease()).thenThrow(IOException.class);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThrows(GitRepositoryException.class, repository::getLatestTag);
-    }
-
-    @Test
-    void testGetDefaultBranchName() throws IOException {
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        when(ghRepositoryMock.getDefaultBranch()).thenReturn("dev");
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThat(repository.getDefaultBranchName(), equalTo("dev"));
-    }
-
-    @Test
-    // [utest->dsn~gr-retrieves-branch-content~1]
-    void testGetRepositoryContent() throws IOException {
-        final String pom = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
-        final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
-        final GHContent contentMock = Mockito.mock(GHContent.class);
-        final GHBranch branchMock = Mockito.mock(GHBranch.class);
-        final String branchName = "dev";
-        when(branchMock.getName()).thenReturn(branchName);
-        when(contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
-        when(ghRepositoryMock.getBranch(branchName)).thenReturn(branchMock);
-        when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(contentMock);
-        final GitRepository repository = new GitHubGitRepository(ghRepositoryMock);
-        assertThat(repository.getRepositoryContent(branchName), instanceOf(JavaMavenGitBranchContent.class));
     }
 }

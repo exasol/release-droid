@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
+import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.usecases.Report;
 
 /**
@@ -7,17 +8,10 @@ import com.exasol.releaserobot.usecases.Report;
  */
 public interface RepositoryValidator {
     /**
-     * Validate content of a Git-based repository on the default branch.
+     * Validate content of a repository.
      *
+     * @param repository repository to validate
      * @return validation report
      */
-    public Report validateDefaultBranch();
-
-    /**
-     * Validate content of a Git-based repository.
-     *
-     * @param branchName name of a branch to validate on
-     * @return validation report
-     */
-    public Report validateBranch(final String branchName);
+    public Report validate(final Repository repository);
 }

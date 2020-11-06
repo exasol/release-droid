@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * This class represents Git repository content based on the latest commit of the user-specified branch.
  */
-public interface GitBranchContent {
+public interface Branch {
     /**
      * Get the content of a file in this repository.
      *

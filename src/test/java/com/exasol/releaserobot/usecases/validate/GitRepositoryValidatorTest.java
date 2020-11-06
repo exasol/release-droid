@@ -11,21 +11,26 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.GitRepository;
 import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.usecases.Report;
 
+@ExtendWith(MockitoExtension.class)
 class GitRepositoryValidatorTest {
-    private final GitRepository gitRepositoryMock = Mockito.mock(GitRepository.class);
+    @Mock
+    private Repository gitRepositoryMock;
     private GitRepositoryValidator validator;
 
     @BeforeEach
     void beforeEach() {
-        this.validator = new GitRepositoryValidator(this.gitRepositoryMock);
+        this.validator = new GitRepositoryValidator();
     }
 
     @Test
@@ -114,9 +119,7 @@ class GitRepositoryValidatorTest {
     @ValueSource(strings = { "{${product.version}}", "v1.4.0", "2.0.0-1", "1.2", " " })
     // [utest->dsn~validate-release-version-format~1]
     void testValidateInvalidVersionFormat(final String version) {
-        when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-
-        final Report validationReport = this.validator.validateNewVersion(version);
+        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertAll(() -> assertThat(validationReport.hasFailures(), equalTo(true)),
                 () -> assertThat(validationReport.getFailuresReport(), containsString("E-RR-VAL-3")));
     }
@@ -126,7 +129,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-format~1]
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-        final Report validationReport = this.validator.validateNewVersion(version);
+        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertThat(validationReport.hasFailures(), equalTo(false));
     }
 
@@ -135,7 +138,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
-        final Report validationReport = this.validator.validateNewVersion(version);
+        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertThat(validationReport.hasFailures(), equalTo(false));
     }
 
@@ -144,7 +147,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
-        final Report validationReport = this.validator.validateNewVersion(version);
+        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertAll(() -> assertThat(validationReport.hasFailures(), equalTo(true)),
                 () -> assertThat(validationReport.getFailuresReport(),
                         containsString("E-RR-VAL-4: " + "A new version does not fit the versioning rules. "

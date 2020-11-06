@@ -11,7 +11,7 @@ import com.exasol.releaserobot.repository.*;
 /**
  * This class represents a Maven-based Java project's content.
  */
-public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
+public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
     private static final String POM_PATH = "pom.xml";
     private static final String PATH_TO_TARGET_DIR = "./target/";
     private final MavenPom pom;
@@ -22,7 +22,7 @@ public class JavaMavenGitBranchContent extends AbstractGitHubGitBranchContent {
      * @param repository an instance of {@link GHRepository}
      * @param branch     name of a branch to get content from
      */
-    public JavaMavenGitBranchContent(final GHRepository repository, final String branch) {
+    public JavaMavenGitBranch(final GHRepository repository, final String branch) {
         super(repository, branch);
         this.pom = parsePom();
     }

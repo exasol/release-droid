@@ -3,8 +3,7 @@ package com.exasol.releaserobot.github;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.GitBranchContent;
-import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.repository.*;
 import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.validate.AbstractPlatformValidator;
 
@@ -19,30 +18,29 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
-     * @param branchContent content of a branch to validate
      * @param githubGateway instance of {@link GithubGateway}
      */
-    public GitHubPlatformValidator(final GitBranchContent branchContent, final GithubGateway githubGateway) {
-        super(branchContent);
+    public GitHubPlatformValidator(final GithubGateway githubGateway) {
         this.githubGateway = githubGateway;
     }
 
     @Override
-    public Report validate() {
+    public Report validate(final Repository repository) {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = ReportImpl.validationReport();
-        final String version = this.branchContent.getVersion();
-        final ReleaseLetter releaseLetter = this.branchContent.getReleaseLetter(version);
-        report.merge(validateChangesFile(releaseLetter));
-        report.merge(validateFileExists(GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
+        final Branch branch = repository.getBranch();
+        final String version = branch.getVersion();
+        final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
+        report.merge(validateChangesFile(branch.isDefaultBranch(), releaseLetter));
+        report.merge(validateFileExists(branch, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 
     // [impl->dsn~validate-release-letter~1]
-    private Report validateChangesFile(final ReleaseLetter releaseLetter) {
+    private Report validateChangesFile(final boolean isDefaultBranch, final ReleaseLetter releaseLetter) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
-        report.merge(validateGitHubTickets(releaseLetter));
+        report.merge(validateGitHubTickets(isDefaultBranch, releaseLetter));
         return report;
     }
 
@@ -62,12 +60,12 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
-    protected Report validateGitHubTickets(final ReleaseLetter changesFile) {
+    protected Report validateGitHubTickets(final boolean isDefaultBranch, final ReleaseLetter changesFile) {
         final Report report = ReportImpl.validationReport();
         try {
             final List<String> wrongTickets = collectWrongTickets(changesFile);
             if (!wrongTickets.isEmpty()) {
-                report.merge(reportWrongTickets(changesFile.getFileName(), wrongTickets));
+                report.merge(reportWrongTickets(isDefaultBranch, changesFile.getFileName(), wrongTickets));
             } else {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
@@ -78,10 +76,11 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         return report;
     }
 
-    private Report reportWrongTickets(final String fileName, final List<String> wrongTickets) {
+    private Report reportWrongTickets(final boolean isDefaultBranch, final String fileName,
+            final List<String> wrongTickets) {
         final Report report = ReportImpl.validationReport();
         final String wrongTicketsString = String.join(", ", wrongTickets);
-        if (this.branchContent.isDefaultBranch()) {
+        if (isDefaultBranch) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-2",
                     "Some of the mentioned GitHub issues are not closed or do not exists: " + wrongTicketsString
                             + ", Please, check the issues numbers in your '" + fileName + "' one more time."));
