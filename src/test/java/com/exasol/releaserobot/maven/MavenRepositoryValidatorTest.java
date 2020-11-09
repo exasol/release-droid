@@ -6,21 +6,19 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.maven.JavaMavenRepository;
+import com.exasol.releaserobot.repository.maven.MavenRepository;
 import com.exasol.releaserobot.repository.maven.MavenPom;
 import com.exasol.releaserobot.usecases.Report;
 
 @ExtendWith(MockitoExtension.class)
 class MavenRepositoryValidatorTest {
     @Mock
-    private JavaMavenRepository repositoryMock;
+    private MavenRepository repositoryMock;
 
     @Test
     void testValidate() {

@@ -4,9 +4,9 @@ import com.exasol.releaserobot.repository.GitRepositoryException;
 import com.exasol.releaserobot.usecases.*;
 
 /**
- * Contains a common logic for classes implementing {@link PlatformValidator}.
+ * Contains a common logic for classes implementing {@link RepositoryValidator}.
  */
-public abstract class AbstractPlatformValidator implements PlatformValidator {
+public abstract class AbstractPlatformValidator implements RepositoryValidator {
     /**
      * Check that the workflow file exists and is reachable.
      * 

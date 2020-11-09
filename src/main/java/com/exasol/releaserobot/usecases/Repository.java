@@ -8,7 +8,7 @@ import org.kohsuke.github.*;
 import com.exasol.releaserobot.repository.*;
 
 /**
- * This class represents Git repository content based on the latest commit of the user-specified branch.
+ * This class represents a repository content based on the latest commit of the user-specified branch.
  */
 public abstract class Repository {
     private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
@@ -75,11 +75,11 @@ public abstract class Repository {
     }
 
     /**
-     * Check if the branch is the default branch.
+     * Check if the content belongs to the default branch.
      *
-     * @return true if the branch is default
+     * @return true if the content belongs to the default branch
      */
-    public boolean isDefaultBranch() {
+    public boolean isOnDefaultBranch() {
         return this.ghRepository.getDefaultBranch().equals(this.branch.getName());
     }
 

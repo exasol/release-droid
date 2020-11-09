@@ -15,7 +15,7 @@ public interface RepositoryGateway {
      * @return instance of {@link Repository}
      * @throws GitHubException is some problem occurs
      */
-    public Repository getRepository(UserInput userInput) throws GitHubException;
+    public Repository getRepositoryWithBranch(UserInput userInput) throws GitHubException;
 
     /**
      * Get a default branch.

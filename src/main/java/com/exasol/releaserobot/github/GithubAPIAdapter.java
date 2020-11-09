@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 
 import com.exasol.releaserobot.repository.GitRepositoryException;
-import com.exasol.releaserobot.repository.maven.JavaMavenRepository;
+import com.exasol.releaserobot.repository.maven.MavenRepository;
 import com.exasol.releaserobot.usecases.Repository;
 
 /**
@@ -104,14 +104,14 @@ public class GithubAPIAdapter implements GithubGateway {
     @Override
     public Repository getRepositoryWithUserSpecifiedBranch(final String repositoryFullName, final String branchName)
             throws GitHubException {
-        return new JavaMavenRepository(this.getRepository(repositoryFullName), branchName, repositoryFullName,
+        return new MavenRepository(this.getRepository(repositoryFullName), branchName, repositoryFullName,
                 getLatestTag(repositoryFullName));
     }
 
     @Override
     public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) throws GitHubException {
         final GHRepository repository = this.getRepository(repositoryFullName);
-        return new JavaMavenRepository(repository, repository.getDefaultBranch(), repositoryFullName,
+        return new MavenRepository(repository, repository.getDefaultBranch(), repositoryFullName,
                 getLatestTag(repositoryFullName));
     }
 

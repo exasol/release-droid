@@ -26,7 +26,7 @@ import com.exasol.releaserobot.repository.GitRepositoryException;
 import com.exasol.releaserobot.usecases.Repository;
 
 @ExtendWith(MockitoExtension.class)
-class JavaMavenGitBranchContentTest {
+class MavenRepositoryTest {
     private static final String BRANCH_NAME = "my_branch";
     @Mock
     private GHRepository ghRepositoryMock;
@@ -48,22 +48,22 @@ class JavaMavenGitBranchContentTest {
             "<project>    <version>  1.0.0  </version> <artifactId>project</artifactId>   </project>" })
     // [utest->dsn~gr-provides-current-version~1]
     void testGetVersionWithCaching(final String pomFile) throws IOException {
-        final Repository repository = createGitBranchContent(pomFile);
+        final Repository repository = createRepository(pomFile);
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(repository.getVersion(), equalTo("1.0.0")),
                 () -> verify(this.ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
     }
 
-    private Repository createGitBranchContent(final String pomFile) throws IOException {
+    private Repository createRepository(final String pomFile) throws IOException {
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
-        return new JavaMavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty());
+        return new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty());
     }
 
     @Test
     // [utest->dsn~gr-provides-deliverables-information~1]
     void testGetDeliverables() throws IOException {
         final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
-        final Repository repository = createGitBranchContent(pomFile);
+        final Repository repository = createRepository(pomFile);
         assertThat(repository.getDeliverables(), equalTo(Map.of("project-1.0.0.jar", "./target/project-1.0.0.jar")));
     }
 
@@ -87,7 +87,7 @@ class JavaMavenGitBranchContentTest {
                 + "        </plugins>" //
                 + "    </build>" //
                 + "</project>";
-        final Repository repository = createGitBranchContent(pom);
+        final Repository repository = createRepository(pom);
         assertThat(repository.getDeliverables(), equalTo(Map.of("virtual-schema-dist-5.0.4-bundle-1.2.3.jar",
                 "./target/virtual-schema-dist-5.0.4-bundle-1.2.3.jar")));
     }
@@ -111,7 +111,7 @@ class JavaMavenGitBranchContentTest {
                 + "        </plugins>" //
                 + "    </build>" //
                 + "</project>";
-        final Repository repository = createGitBranchContent(pom);
+        final Repository repository = createRepository(pom);
         final IllegalStateException exception = assertThrows(IllegalStateException.class, repository::getDeliverables);
         assertThat(exception.getMessage(), containsString("F-POM-2"));
     }
@@ -121,6 +121,6 @@ class JavaMavenGitBranchContentTest {
         final String pom = "nothing here";
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         assertThrows(GitRepositoryException.class,
-                () -> new JavaMavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty()));
+                () -> new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty()));
     }
 }

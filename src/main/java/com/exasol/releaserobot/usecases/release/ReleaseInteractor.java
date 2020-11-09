@@ -48,12 +48,13 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return reports;
     }
 
-    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames) {
+    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames)
+            throws GitHubException {
         final Report report = ReportImpl.releaseReport();
+        final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
         for (final PlatformName platformName : platformNames) {
             try {
-                this.getReleaseMaker(platformName)
-                        .makeRelease(this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName));
+                this.getReleaseMaker(platformName).makeRelease(repository);
                 report.addResult(ReleaseResult.successfulRelease(platformName));
             } catch (final Exception exception) {
                 report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));

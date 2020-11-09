@@ -17,7 +17,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
 
     @Override
     public Report validate(final Repository repository) {
-        LOGGER.fine("Validating Git repository on branch '" + repository.getBranchName() + "'.");
+        LOGGER.fine("Validating repository on branch '" + repository.getBranchName() + "'.");
         final Report report = ReportImpl.validationReport();
         final String version = repository.getVersion();
         report.merge(validateNewVersion(version, repository));
@@ -25,7 +25,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
             final String changelog = repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
             final ReleaseLetter changes = repository.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, repository.isDefaultBranch()));
+            report.merge(validateChanges(changes, version, repository.isOnDefaultBranch()));
         }
         return report;
     }

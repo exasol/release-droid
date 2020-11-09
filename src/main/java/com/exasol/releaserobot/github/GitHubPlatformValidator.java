@@ -65,7 +65,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
             final List<String> wrongTickets = collectWrongTickets(repository.getFullName(), releaseLetter);
             if (!wrongTickets.isEmpty()) {
                 report.merge(
-                        reportWrongTickets(repository.isDefaultBranch(), releaseLetter.getFileName(), wrongTickets));
+                        reportWrongTickets(repository.isOnDefaultBranch(), releaseLetter.getFileName(), wrongTickets));
             } else {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }

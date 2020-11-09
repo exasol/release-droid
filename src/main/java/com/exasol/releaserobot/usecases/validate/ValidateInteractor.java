@@ -11,20 +11,17 @@ import com.exasol.releaserobot.usecases.*;
  */
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
-    private final List<PlatformValidator> platformValidators;
     private final List<RepositoryValidator> repositoryValidators;
     private final RepositoryGateway repositoryGateway;
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
      *
-     * @param platformValidators   list of platform validators
      * @param repositoryValidators list of repository validators
      * @param repositoryGateway    the repositoryGateway
      */
-    public ValidateInteractor(final List<PlatformValidator> platformValidators,
-            final List<RepositoryValidator> repositoryValidators, final RepositoryGateway repositoryGateway) {
-        this.platformValidators = platformValidators;
+    public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
+            final RepositoryGateway repositoryGateway) {
         this.repositoryValidators = repositoryValidators;
         this.repositoryGateway = repositoryGateway;
     }
@@ -32,7 +29,7 @@ public class ValidateInteractor implements ValidateUseCase {
     @Override
     public Report validate(final UserInput userInput) throws GitHubException {
         LOGGER.info(() -> "Validation started.");
-        final Repository repository = this.repositoryGateway.getRepository(userInput);
+        final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
         final Report validationReport = runValidation(repository);
         logResults(Goal.VALIDATE, validationReport);
         return validationReport;
@@ -41,7 +38,6 @@ public class ValidateInteractor implements ValidateUseCase {
     private Report runValidation(final Repository repository) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateRepositories(repository));
-        report.merge(validatePlatforms(repository));
         return report;
     }
 
@@ -49,14 +45,6 @@ public class ValidateInteractor implements ValidateUseCase {
         final Report report = ReportImpl.validationReport();
         for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
             report.merge(repositoryValidator.validate(repository));
-        }
-        return report;
-    }
-
-    private Report validatePlatforms(final Repository repository) {
-        final Report report = ReportImpl.validationReport();
-        for (final PlatformValidator platformValidator : this.platformValidators) {
-            report.merge(platformValidator.validate(repository));
         }
         return report;
     }
