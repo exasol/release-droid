@@ -1,7 +1,7 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.Repository;
 
 /**
  * This interface provides repository-related validations.

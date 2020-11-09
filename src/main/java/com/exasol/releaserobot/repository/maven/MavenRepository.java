@@ -6,24 +6,28 @@ import java.util.*;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.usecases.Repository;
 
 /**
  * This class represents a Maven-based Java project's content.
  */
-public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
+public class MavenRepository extends Repository {
     private static final String POM_PATH = "pom.xml";
     private static final String PATH_TO_TARGET_DIR = "./target/";
     private final MavenPom pom;
 
     /**
-     * Create a new instance of {@link GitHubGitRepository}.
-     *
+     * Create a new instance of {@link MavenRepository}.
+     * 
      * @param repository an instance of {@link GHRepository}
      * @param branch     name of a branch to get content from
+     * @param fullName   fully qualified name of the repository
+     * @param latestTag  latest release tag
      */
-    public JavaMavenGitBranch(final GHRepository repository, final String branch) {
-        super(repository, branch);
+    public MavenRepository(final GHRepository repository, final String branch, final String fullName,
+            final Optional<String> latestTag) {
+        super(repository, branch, fullName, latestTag);
         this.pom = parsePom();
     }
 
@@ -97,7 +101,7 @@ public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
 
     private Optional<String> getParseConfigurations(final Xpp3Dom configurations) {
         final Xpp3Dom finalName = configurations.getChild("finalName");
-        if (finalName == null || finalName.getValue() == null || finalName.getValue().isEmpty()) {
+        if ((finalName == null) || (finalName.getValue() == null) || finalName.getValue().isEmpty()) {
             return Optional.empty();
         } else {
             return parseFinalName(finalName);
@@ -135,7 +139,7 @@ public class JavaMavenGitBranch extends AbstractGitHubGitBranch {
 
     /**
      * Get a parsed Maven pom file.
-     * 
+     *
      * @return instance of {@link MavenPom}
      */
     public MavenPom getMavenPom() {

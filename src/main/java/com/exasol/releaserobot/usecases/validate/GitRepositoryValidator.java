@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -17,16 +17,15 @@ public class GitRepositoryValidator implements RepositoryValidator {
 
     @Override
     public Report validate(final Repository repository) {
-        final Branch branch = repository.getBranch();
-        LOGGER.fine("Validating Git repository on branch '" + branch.getBranchName() + "'.");
+        LOGGER.fine("Validating repository on branch '" + repository.getBranchName() + "'.");
         final Report report = ReportImpl.validationReport();
-        final String version = branch.getVersion();
+        final String version = repository.getVersion();
         report.merge(validateNewVersion(version, repository));
         if (!report.hasFailures()) {
-            final String changelog = branch.getChangelogFile();
+            final String changelog = repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
-            final ReleaseLetter changes = branch.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, branch.isDefaultBranch()));
+            final ReleaseLetter changes = repository.getReleaseLetter(version);
+            report.merge(validateChanges(changes, version, repository.isOnDefaultBranch()));
         }
         return report;
     }
@@ -172,5 +171,4 @@ public class GitRepositoryValidator implements RepositoryValidator {
         }
         return report;
     }
-
 }

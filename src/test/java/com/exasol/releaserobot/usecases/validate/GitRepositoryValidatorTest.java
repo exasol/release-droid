@@ -19,8 +19,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releaserobot.repository.ReleaseLetter;
-import com.exasol.releaserobot.repository.Repository;
 import com.exasol.releaserobot.usecases.Report;
+import com.exasol.releaserobot.usecases.Repository;
 
 @ExtendWith(MockitoExtension.class)
 class GitRepositoryValidatorTest {

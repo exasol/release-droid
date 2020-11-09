@@ -6,19 +6,19 @@ import java.util.Set;
  * This class stores user input.
  */
 public class UserInput {
-    private final String gitBranch;
+    private final String branch;
     private final Goal goal;
     private final Set<PlatformName> platformNames;
     private final String repositoryName;
     private final String repositoryOwner;
 
     /**
-     * Get a git branch.
+     * Get a branch name.
      *
-     * @return git branch
+     * @return branch name
      */
-    public String getGitBranch() {
-        return this.gitBranch;
+    public String getBranch() {
+        return this.branch;
     }
 
     /**
@@ -58,16 +58,16 @@ public class UserInput {
     }
 
     /**
-     * Check if input contains a git branch.
+     * Check if input contains a branch.
      *
-     * @return true if a git branch presents
+     * @return true if a branch presents
      */
-    public boolean hasGitBranch() {
-        return (this.gitBranch != null) && !this.gitBranch.isEmpty();
+    public boolean hasBranch() {
+        return (this.branch != null) && !this.branch.isEmpty();
     }
 
     private UserInput(final Builder builder) {
-        this.gitBranch = builder.gitBranch;
+        this.branch = builder.branch;
         this.goal = builder.goal;
         this.platformNames = builder.platforms;
         this.repositoryName = builder.repositoryName;
@@ -87,21 +87,21 @@ public class UserInput {
      * Builder for {@link UserInput}.
      */
     public static final class Builder {
-        private String gitBranch;
+        private String branch;
         private Goal goal;
         private Set<PlatformName> platforms;
         private String repositoryName;
         private String repositoryOwner;
 
         /**
-         * Add a git branch.
+         * Add a branch.
          *
-         * @param gitBranch name of a branch to work with.
+         * @param branch name of a branch to work with.
          * @return builder instance for fluent programming
          */
         // [impl->dsn~users-can-set-git-branch-for-validation~1]
-        public Builder gitBranch(final String gitBranch) {
-            this.gitBranch = gitBranch;
+        public Builder branch(final String branch) {
+            this.branch = branch;
             return this;
         }
 
@@ -164,7 +164,7 @@ public class UserInput {
         }
 
         private void validateGoalAndBranch() {
-            if ((this.goal == Goal.RELEASE) && (this.gitBranch != null)) {
+            if ((this.goal == Goal.RELEASE) && (this.branch != null)) {
                 throw new IllegalArgumentException(
                         "E-RR-1: Please, remove branch parameter if you want to make a release.");
             }
@@ -190,5 +190,9 @@ public class UserInput {
                     + "` and re-run the Release Robot";
             throw new IllegalArgumentException(message);
         }
+    }
+
+    public String getRepositoryFullName() {
+        return this.getRepositoryOwner() + "/" + this.repositoryName;
     }
 }

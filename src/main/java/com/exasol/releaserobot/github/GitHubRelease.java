@@ -150,16 +150,16 @@ public class GitHubRelease {
         }
 
         private void validateFields() {
-            if (this.version == null || this.version.isEmpty()) {
+            if ((this.version == null) || this.version.isEmpty()) {
                 throw createExceptionWithInvalidField("version");
             }
-            if (this.header == null || this.header.isEmpty()) {
+            if ((this.header == null) || this.header.isEmpty()) {
                 throw createExceptionWithInvalidField("header");
             }
-            if (this.assets == null || this.assets.isEmpty()) {
+            if ((this.assets == null) || this.assets.isEmpty()) {
                 throw createExceptionWithInvalidField("assets");
             }
-            if (this.defaultBranchName == null || this.defaultBranchName.isEmpty()) {
+            if ((this.defaultBranchName == null) || this.defaultBranchName.isEmpty()) {
                 throw createExceptionWithInvalidField("defaultBranchName");
             }
         }

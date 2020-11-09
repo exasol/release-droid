@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.report.ReportWriter;
 import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.release.ReleaseUseCase;
@@ -28,10 +29,12 @@ public class ReleaseRobot {
 
     /**
      * Main entry point for all Release Robot's calls.
+     *
+     * @throws GitHubException
      */
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rr-runs-release-goal~1]
-    public void run(final UserInput userInput) {
+    public void run(final UserInput userInput) throws GitHubException {
         LOGGER.fine(() -> "Release Robot has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();

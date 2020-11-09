@@ -3,7 +3,7 @@ package com.exasol.releaserobot.github;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.repository.*;
+import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.validate.AbstractPlatformValidator;
 
@@ -28,19 +28,18 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     public Report validate(final Repository repository) {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = ReportImpl.validationReport();
-        final Branch branch = repository.getBranch();
-        final String version = branch.getVersion();
-        final ReleaseLetter releaseLetter = branch.getReleaseLetter(version);
-        report.merge(validateChangesFile(branch.isDefaultBranch(), releaseLetter));
-        report.merge(validateFileExists(branch, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
+        final String version = repository.getVersion();
+        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
+        report.merge(validateChangesFile(repository, releaseLetter));
+        report.merge(validateFileExists(repository, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 
     // [impl->dsn~validate-release-letter~1]
-    private Report validateChangesFile(final boolean isDefaultBranch, final ReleaseLetter releaseLetter) {
+    private Report validateChangesFile(final Repository repository, final ReleaseLetter releaseLetter) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
-        report.merge(validateGitHubTickets(isDefaultBranch, releaseLetter));
+        report.merge(validateGitHubTickets(repository, releaseLetter));
         return report;
     }
 
@@ -60,12 +59,13 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
-    protected Report validateGitHubTickets(final boolean isDefaultBranch, final ReleaseLetter changesFile) {
+    protected Report validateGitHubTickets(final Repository repository, final ReleaseLetter releaseLetter) {
         final Report report = ReportImpl.validationReport();
         try {
-            final List<String> wrongTickets = collectWrongTickets(changesFile);
+            final List<String> wrongTickets = collectWrongTickets(repository.getFullName(), releaseLetter);
             if (!wrongTickets.isEmpty()) {
-                report.merge(reportWrongTickets(isDefaultBranch, changesFile.getFileName(), wrongTickets));
+                report.merge(
+                        reportWrongTickets(repository.isOnDefaultBranch(), releaseLetter.getFileName(), wrongTickets));
             } else {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
@@ -94,9 +94,10 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         return report;
     }
 
-    private List<String> collectWrongTickets(final ReleaseLetter changesFile) throws GitHubException {
-        final Set<Integer> closedTickets = this.githubGateway.getClosedTickets();
-        final List<Integer> mentionedTickets = changesFile.getTicketNumbers();
+    private List<String> collectWrongTickets(final String repositoryFullName, final ReleaseLetter releaseLetter)
+            throws GitHubException {
+        final Set<Integer> closedTickets = this.githubGateway.getClosedTickets(repositoryFullName);
+        final List<Integer> mentionedTickets = releaseLetter.getTicketNumbers();
         final List<String> wrongTickets = new ArrayList<>();
         for (final Integer ticket : mentionedTickets) {
             if (!closedTickets.contains(ticket)) {

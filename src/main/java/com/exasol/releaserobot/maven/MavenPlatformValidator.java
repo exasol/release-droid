@@ -1,10 +1,8 @@
 package com.exasol.releaserobot.maven;
 
-import com.exasol.releaserobot.repository.Repository;
-import com.exasol.releaserobot.repository.maven.JavaMavenGitBranch;
+import com.exasol.releaserobot.repository.maven.MavenRepository;
 import com.exasol.releaserobot.repository.maven.MavenPom;
-import com.exasol.releaserobot.usecases.Report;
-import com.exasol.releaserobot.usecases.ReportImpl;
+import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.validate.AbstractPlatformValidator;
 
 /**
@@ -16,8 +14,8 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     @Override
     public Report validate(final Repository repository) {
         final Report report = ReportImpl.validationReport();
-        report.merge(validateFileExists(repository.getBranch(), MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
-        report.merge(validateMavenPom(((JavaMavenGitBranch) repository.getBranch()).getMavenPom()));
+        report.merge(validateFileExists(repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
+        report.merge(validateMavenPom(((MavenRepository) repository).getMavenPom()));
         return report;
     }
 

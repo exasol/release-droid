@@ -19,13 +19,13 @@ class UserInputTest {
     @Test
     void testValidUserInput() {
         final UserInput userInput = builder().repositoryOwner(OWNER).repositoryName(REPOSITORY_NAME).platforms(PLATFORM)
-                .goal(GOAL).gitBranch(BRANCH).build();
+                                             .goal(GOAL).branch(BRANCH).build();
         assertAll(() -> assertThat(userInput.getRepositoryOwner(), equalTo(OWNER)), //
                 () -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
                 () -> assertThat(userInput.getGoal(), equalTo(Goal.VALIDATE)), //
                 () -> assertThat(userInput.getPlatformNames(), contains(PlatformName.GITHUB)), //
-                () -> assertThat(userInput.hasGitBranch(), equalTo(true)), //
-                () -> assertThat(userInput.getGitBranch(), equalTo(BRANCH)) //
+                () -> assertThat(userInput.hasBranch(), equalTo(true)), //
+                () -> assertThat(userInput.getBranch(), equalTo(BRANCH)) //
         );
     }
 
@@ -60,7 +60,7 @@ class UserInputTest {
     @Test
     void testUserInputWithReleaseAndBranch() {
         final Builder builder = builder().goal("RELEASE").platforms(PLATFORM).repositoryOwner(OWNER)
-                .repositoryName(REPOSITORY_NAME).gitBranch(BRANCH);
+                .repositoryName(REPOSITORY_NAME).branch(BRANCH);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-1"));
     }

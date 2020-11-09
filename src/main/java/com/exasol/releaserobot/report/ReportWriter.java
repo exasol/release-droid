@@ -73,8 +73,8 @@ public class ReportWriter {
                 "Repository: " + this.userInput.getRepositoryOwner() + "." + this.userInput.getRepositoryName());
         println(writer, "Platforms: "
                 + this.userInput.getPlatformNames().stream().map(Enum::name).collect(Collectors.joining(", ")));
-        if (this.userInput.hasGitBranch()) {
-            println(writer, "Git branch: " + this.userInput.getGitBranch());
+        if (this.userInput.hasBranch()) {
+            println(writer, "Git branch: " + this.userInput.getBranch());
         }
         println(writer);
     }
