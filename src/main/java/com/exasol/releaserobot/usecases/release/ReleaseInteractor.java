@@ -16,7 +16,7 @@ import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
 public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
-    private final Map<PlatformName, ReleaseMaker> releaseMakers;
+    private final Map<PlatformName, ? extends ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
 
     /**
@@ -26,8 +26,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
      * @param releaseMakers     map with platform names and release makers
      * @param repositoryGateway instance of {@link RepositoryGateway]}
      */
-    public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final RepositoryGateway repositoryGateway) {
+    public ReleaseInteractor(final ValidateUseCase validateUseCase,
+            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.repositoryGateway = repositoryGateway;
@@ -64,7 +64,11 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {
-        return this.releaseMakers.get(platformName);
+        if (this.releaseMakers.containsKey(platformName)) {
+            return this.releaseMakers.get(platformName);
+        }
+        throw new UnsupportedOperationException("E-RR-RUN-2: Platform '" + platformName
+                + "' is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
     }
 
     // [impl->dsn~rr-creates-validation-report~1]

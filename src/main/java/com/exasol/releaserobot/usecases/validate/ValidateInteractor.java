@@ -1,6 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.releaserobot.github.GitHubException;
@@ -12,6 +12,7 @@ import com.exasol.releaserobot.usecases.*;
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
     private final List<RepositoryValidator> repositoryValidators;
+    private final Map<PlatformName, ? extends RepositoryValidator> platformValidators;
     private final RepositoryGateway repositoryGateway;
 
     /**
@@ -21,8 +22,10 @@ public class ValidateInteractor implements ValidateUseCase {
      * @param repositoryGateway    the repositoryGateway
      */
     public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
+            final Map<PlatformName, ? extends RepositoryValidator> platformValidators,
             final RepositoryGateway repositoryGateway) {
         this.repositoryValidators = repositoryValidators;
+        this.platformValidators = platformValidators;
         this.repositoryGateway = repositoryGateway;
     }
 
@@ -30,15 +33,37 @@ public class ValidateInteractor implements ValidateUseCase {
     public Report validate(final UserInput userInput) throws GitHubException {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
-        final Report validationReport = runValidation(repository);
+        final Report validationReport = runValidation(repository, userInput.getPlatformNames());
         logResults(Goal.VALIDATE, validationReport);
         return validationReport;
     }
 
-    private Report runValidation(final Repository repository) {
+    private Report runValidation(final Repository repository, final Set<PlatformName> platformNames) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateRepositories(repository));
+        report.merge(validatePlatforms(repository, platformNames));
         return report;
+    }
+
+    private Report validatePlatforms(final Repository repository, final Set<PlatformName> platformNames) {
+        final Report report = ReportImpl.validationReport();
+        for (final PlatformName platformName : platformNames) {
+            report.merge(this.validateForPlatform(platformName, repository));
+        }
+        return report;
+    }
+
+    private Report validateForPlatform(final PlatformName platformName, final Repository repository) {
+        final RepositoryValidator repositoryValidator = this.getRepositoryValidatorForPlatform(platformName);
+        return repositoryValidator.validate(repository);
+    }
+
+    private RepositoryValidator getRepositoryValidatorForPlatform(final PlatformName platformName) {
+        if (this.platformValidators.containsKey(platformName)) {
+            return this.platformValidators.get(platformName);
+        }
+        throw new UnsupportedOperationException("E-RR-RUN-2: Platform '" + platformName
+                + "' is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
     }
 
     private Report validateRepositories(final Repository repository) {
