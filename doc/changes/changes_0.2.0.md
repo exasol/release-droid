@@ -24,6 +24,7 @@ Code name: Maven Central Release
 * #70: Made the ReleaseInteractor instance independent of the repository.
 * #74: Refactored GitHub API adapter.
 * #68: Extracted UserInput parsing.
+* #59: Removed duplicated code in the runner.
 
 ## Dependencies updates
 

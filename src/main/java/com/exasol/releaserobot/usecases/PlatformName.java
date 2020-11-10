@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,18 +19,20 @@ public enum PlatformName {
     public static Set<PlatformName> toSet(final String... platforms) {
         final Set<PlatformName> platformsList = new HashSet<>();
         for (final String platform : platforms) {
-            platformsList.add(PlatformName.valueOf(platform.toUpperCase().trim()));
+            platformsList.add(getPlatformName(platform));
         }
         return platformsList;
     }
 
-    /**
-     * Get a list of available platform names.
-     *
-     * @return list of available platform names
-     */
-    public static Set<String> availablePlatformNames() {
-        return Arrays.stream(PlatformName.values()).map(name -> name.toString().toLowerCase())
-                .collect(Collectors.toSet());
+    private static PlatformName getPlatformName(final String platform) {
+        try {
+            return PlatformName.valueOf(platform.toUpperCase().trim());
+        } catch (final IllegalArgumentException exception) {
+            final Set<String> availablePlatforms = Arrays.stream(PlatformName.values())
+                    .map(name -> name.toString().toLowerCase()).collect(Collectors.toSet());
+            throw new IllegalArgumentException(MessageFormat.format(
+                    "E-RR-PL-1: Cannot parse a platform '{}'. Please, use one of the following platforms: {}", platform,
+                    String.join(",", availablePlatforms)), exception);
+        }
     }
 }

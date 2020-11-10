@@ -30,7 +30,7 @@ public class ReleaseRobot {
     /**
      * Main entry point for all Release Robot's calls.
      *
-     * @throws GitHubException
+     * @throws GitHubException if some problem occurs
      */
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rr-runs-release-goal~1]
