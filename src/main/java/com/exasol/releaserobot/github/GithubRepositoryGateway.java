@@ -22,10 +22,11 @@ public class GithubRepositoryGateway implements RepositoryGateway {
     @Override
     public Repository getRepositoryWithBranch(final UserInput userInput) throws GitHubException {
         if (userInput.hasBranch()) {
-            return this.githubGateway.getRepositoryWithUserSpecifiedBranch(userInput.getRepositoryFullName(),
+            return this.githubGateway.getRepositoryWithUserSpecifiedBranch(userInput.getRepositoryName(),
                     userInput.getBranch());
+        } else {
+            return this.getRepositoryWithDefaultBranch(userInput.getRepositoryName());
         }
-        return this.getRepositoryWithDefaultBranch(userInput.getRepositoryFullName());
     }
 
     @Override

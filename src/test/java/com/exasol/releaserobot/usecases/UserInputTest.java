@@ -10,18 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 class UserInputTest {
-    private static final String OWNER = "owner";
-    private static final String REPOSITORY_NAME = "repository";
+    private static final String REPOSITORY_NAME = "owner/repository";
     private static final String PLATFORM = "github";
     private static final String GOAL = "validate";
     private static final String BRANCH = "branch";
 
     @Test
     void testValidUserInput() {
-        final UserInput userInput = builder().repositoryOwner(OWNER).repositoryName(REPOSITORY_NAME).platforms(PLATFORM)
-                                             .goal(GOAL).branch(BRANCH).build();
-        assertAll(() -> assertThat(userInput.getRepositoryOwner(), equalTo(OWNER)), //
-                () -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
+        final UserInput userInput = builder().repositoryName(REPOSITORY_NAME).platforms(PLATFORM).goal(GOAL)
+                .branch(BRANCH).build();
+        assertAll(() -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
                 () -> assertThat(userInput.getGoal(), equalTo(Goal.VALIDATE)), //
                 () -> assertThat(userInput.getPlatformNames(), contains(PlatformName.GITHUB)), //
                 () -> assertThat(userInput.hasBranch(), equalTo(true)), //
@@ -51,16 +49,9 @@ class UserInputTest {
     }
 
     @Test
-    void testUserInputWithoutRepositoryOwner() {
-        final Builder builder = builder().goal(GOAL).platforms(PLATFORM).repositoryName(REPOSITORY_NAME);
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RR-5"));
-    }
-
-    @Test
     void testUserInputWithReleaseAndBranch() {
-        final Builder builder = builder().goal("RELEASE").platforms(PLATFORM).repositoryOwner(OWNER)
-                .repositoryName(REPOSITORY_NAME).branch(BRANCH);
+        final Builder builder = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
+                .branch(BRANCH);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("E-RR-1"));
     }

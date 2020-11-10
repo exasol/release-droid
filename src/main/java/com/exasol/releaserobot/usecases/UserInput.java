@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -10,7 +11,6 @@ public class UserInput {
     private final Goal goal;
     private final Set<PlatformName> platformNames;
     private final String repositoryName;
-    private final String repositoryOwner;
 
     /**
      * Get a branch name.
@@ -49,15 +49,6 @@ public class UserInput {
     }
 
     /**
-     * Get a repository owner.
-     *
-     * @return repository owner
-     */
-    public String getRepositoryOwner() {
-        return this.repositoryOwner;
-    }
-
-    /**
      * Check if input contains a branch.
      *
      * @return true if a branch presents
@@ -71,7 +62,6 @@ public class UserInput {
         this.goal = builder.goal;
         this.platformNames = builder.platforms;
         this.repositoryName = builder.repositoryName;
-        this.repositoryOwner = builder.repositoryOwner;
     }
 
     /**
@@ -83,6 +73,31 @@ public class UserInput {
         return new Builder();
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final UserInput userInput = (UserInput) o;
+        return Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
+                && Objects.equals(this.platformNames, userInput.platformNames)
+                && Objects.equals(this.repositoryName, userInput.repositoryName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName);
+    }
+
+    @Override
+    public String toString() {
+        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
+                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + '}';
+    }
+
     /**
      * Builder for {@link UserInput}.
      */
@@ -91,7 +106,6 @@ public class UserInput {
         private Goal goal;
         private Set<PlatformName> platforms;
         private String repositoryName;
-        private String repositoryOwner;
 
         /**
          * Add a branch.
@@ -142,17 +156,6 @@ public class UserInput {
         }
 
         /**
-         * Add an owner of a GitHub repository.
-         *
-         * @param repositoryOwner an owner of a GitHub repository
-         * @return builder instance for fluent programming
-         */
-        public Builder repositoryOwner(final String repositoryOwner) {
-            this.repositoryOwner = repositoryOwner;
-            return this;
-        }
-
-        /**
          * Create a new {@link UserInput} instance.
          *
          * @return new {@link UserInput} instance
@@ -180,9 +183,6 @@ public class UserInput {
             if (this.repositoryName == null) {
                 throwExceptionForMissingParameter("E-RR-4", "repository name");
             }
-            if (this.repositoryOwner == null) {
-                throwExceptionForMissingParameter("E-RR-5", "repository owner");
-            }
         }
 
         private void throwExceptionForMissingParameter(final String exceptionCode, final String parameter) {
@@ -190,9 +190,5 @@ public class UserInput {
                     + "` and re-run the Release Robot";
             throw new IllegalArgumentException(message);
         }
-    }
-
-    public String getRepositoryFullName() {
-        return this.getRepositoryOwner() + "/" + this.repositoryName;
     }
 }
