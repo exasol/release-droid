@@ -25,7 +25,7 @@ public class Runner {
 
     private static ReleaseRobot createReleaseRobot() {
         final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
-        final Map<PlatformName, ReleaseablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
+        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
         final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
         final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
@@ -46,13 +46,13 @@ public class Runner {
         return repositoryValidators;
     }
 
-    private static Map<PlatformName, ReleaseablePlatform> createReleaseablePlatforms(
+    private static Map<PlatformName, ReleasablePlatform> createReleaseablePlatforms(
             final GithubGateway githubGateway) {
-        final Map<PlatformName, ReleaseablePlatform> releaseablePlatforms = new HashMap<>();
-        releaseablePlatforms.put(PlatformName.GITHUB, new ReleaseablePlatform(
+        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = new HashMap<>();
+        releaseablePlatforms.put(PlatformName.GITHUB, new ReleasablePlatform(
                 new GitHubPlatformValidator(githubGateway), new GitHubReleaseMaker(githubGateway)));
         releaseablePlatforms.put(PlatformName.MAVEN,
-                new ReleaseablePlatform(new MavenPlatformValidator(), new MavenReleaseMaker(githubGateway)));
+                new ReleasablePlatform(new MavenPlatformValidator(), new MavenReleaseMaker(githubGateway)));
         return releaseablePlatforms;
     }
 }
