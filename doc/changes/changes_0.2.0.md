@@ -10,6 +10,7 @@ Code name: Maven Central Release
 * #47: Added release report.
 * #36: Added Maven release support.
 * #54: Added check from an HTTP response from the Github when triggering a workflow.
+* #50: Added validations of plugins for Maven Central Release.
 
 ## Bugs
 

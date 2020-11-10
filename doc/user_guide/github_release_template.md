@@ -1,6 +1,5 @@
 # Templates of `github_release.yml`
 
-Here you can find templates of `github_release.yml` file that we you need for automation of the GitHub build and release.
 Copy the content into a file `/.github/workflows/github_release.yml` in your project.    
 
 ## For Java Maven Project
