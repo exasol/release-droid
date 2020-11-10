@@ -69,8 +69,7 @@ public class ReportWriter {
         println(writer, now);
         println(writer);
         println(writer, "Goal: " + this.userInput.getGoal());
-        println(writer,
-                "Repository: " + this.userInput.getRepositoryOwner() + "." + this.userInput.getRepositoryName());
+        println(writer, "Repository: " + this.userInput.getRepositoryName());
         println(writer, "Platforms: "
                 + this.userInput.getPlatformNames().stream().map(Enum::name).collect(Collectors.joining(", ")));
         if (this.userInput.hasBranch()) {

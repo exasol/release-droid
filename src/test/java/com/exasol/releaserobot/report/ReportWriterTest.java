@@ -30,8 +30,8 @@ class ReportWriterTest {
     @BeforeEach
     void setUp() {
         this.reportPath = Path.of(this.tempDir.toString(), "test-report.txt");
-        this.userInput = UserInput.builder().repositoryName("my-repository").repositoryOwner("me").goal("validate")
-                .platforms("github").build();
+        this.userInput = UserInput.builder().repositoryName("me/my-repository").goal("validate").platforms("github")
+                .build();
         this.validationReport = ReportImpl.validationReport();
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1", "Validations 1"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 2"));
@@ -52,7 +52,7 @@ class ReportWriterTest {
                 () -> assertThat(report.get(0), containsString(LocalDate.now().toString())), //
                 () -> assertThat(report.get(1), equalTo("")), //
                 () -> assertThat(report.get(2), equalTo("Goal: VALIDATE")), //
-                () -> assertThat(report.get(3), equalTo("Repository: me.my-repository")), //
+                () -> assertThat(report.get(3), equalTo("Repository: me/my-repository")), //
                 () -> assertThat(report.get(4), equalTo("Platforms: GITHUB")), //
                 () -> assertThat(report.get(5), equalTo("")), //
                 () -> assertThat(report.get(6), equalTo("VALIDATION Report: VALIDATION FAILED!")), //

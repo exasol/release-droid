@@ -23,6 +23,7 @@ Code name: Maven Central Release
 * #69: Removed the repository instance variable from the ValidateInteractor class.
 * #70: Made the ReleaseInteractor instance independent of the repository.
 * #74: Refactored GitHub API adapter.
+* #68: Extracted UserInput parsing.
 
 ## Dependencies updates
 

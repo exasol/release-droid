@@ -40,8 +40,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final Report releaseReport = this.makeRelease(userInput.getRepositoryFullName(),
-                    userInput.getPlatformNames());
+            final Report releaseReport = this.makeRelease(userInput.getRepositoryName(), userInput.getPlatformNames());
             logResults(Goal.RELEASE, releaseReport);
             reports.add(releaseReport);
         }
