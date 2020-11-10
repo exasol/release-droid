@@ -20,15 +20,13 @@ public class Runner {
      */
     public static void main(final String[] args) throws GitHubException {
         final UserInput userInput = new UserInputParser().parseUserInput(args);
-        createReleaseRobot(userInput).run(userInput);
+        createReleaseRobot().run(userInput);
     }
 
-    private static ReleaseRobot createReleaseRobot(final UserInput userInput) {
+    private static ReleaseRobot createReleaseRobot() {
         final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
-
-        final Map<PlatformName, ReleaseablePlatform> releaseablePlatforms = createReleaseablePlatforms(userInput,
-                githubGateway);
-        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators(userInput, githubGateway);
+        final Map<PlatformName, ReleaseablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
+        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
         final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
                 repositoryGateway);
@@ -41,15 +39,14 @@ public class Runner {
         return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
     }
 
-    private static List<RepositoryValidator> createRepositoryValidators(final UserInput userInput,
-            final GithubGateway githubGateway) {
+    private static List<RepositoryValidator> createRepositoryValidators() {
         final List<RepositoryValidator> repositoryValidators = new ArrayList<>();
         repositoryValidators.add(new GitRepositoryValidator());
         repositoryValidators.add(new MavenRepositoryValidator());
         return repositoryValidators;
     }
 
-    private static Map<PlatformName, ReleaseablePlatform> createReleaseablePlatforms(final UserInput userInput,
+    private static Map<PlatformName, ReleaseablePlatform> createReleaseablePlatforms(
             final GithubGateway githubGateway) {
         final Map<PlatformName, ReleaseablePlatform> releaseablePlatforms = new HashMap<>();
         releaseablePlatforms.put(PlatformName.GITHUB, new ReleaseablePlatform(

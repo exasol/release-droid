@@ -59,11 +59,7 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     private RepositoryValidator getRepositoryValidatorForPlatform(final PlatformName platformName) {
-        if (this.platformValidators.containsKey(platformName)) {
-            return this.platformValidators.get(platformName);
-        }
-        throw new UnsupportedOperationException("E-RR-RUN-2: Platform '" + platformName
-                + "' is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
+        return this.platformValidators.get(platformName);
     }
 
     private Report validateRepositories(final Repository repository) {

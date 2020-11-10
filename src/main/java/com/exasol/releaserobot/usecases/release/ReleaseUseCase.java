@@ -15,7 +15,7 @@ public interface ReleaseUseCase {
      *
      * @param userInput user input
      * @return list of reports
-     * @throws GitHubException
+     * @throws GitHubException if some problem occurs
      */
     public List<Report> release(final UserInput userInput) throws GitHubException;
 }

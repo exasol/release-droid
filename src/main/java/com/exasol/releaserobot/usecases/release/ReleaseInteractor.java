@@ -64,11 +64,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {
-        if (this.releaseMakers.containsKey(platformName)) {
-            return this.releaseMakers.get(platformName);
-        }
-        throw new UnsupportedOperationException("E-RR-RUN-2: Platform '" + platformName
-                + "' is not supported. Please choose one of: " + PlatformName.availablePlatformNames().toString());
+        return this.releaseMakers.get(platformName);
     }
 
     // [impl->dsn~rr-creates-validation-report~1]
