@@ -79,7 +79,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
-    void testValidatePGpgPluginMissingRequiredExecution() {
+    void testValidateGpgPluginMissingRequiredExecution() {
         when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
                 .executions(List.of(this.pluginExecutionMock)).build()));
         when(this.pluginExecutionMock.getId()).thenReturn("some-id");

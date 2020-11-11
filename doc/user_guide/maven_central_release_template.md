@@ -1,6 +1,6 @@
 # Template of `maven_central_release.yml`
 
-Copy the content into a file `/.github/workflows/maven_central_release.yml` in your project.    
+Create a `/.github/workflows/maven_central_release.yml` file in your project with the following content:
 
 ```
 name: Maven Central Release
