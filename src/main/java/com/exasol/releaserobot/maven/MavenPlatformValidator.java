@@ -27,30 +27,29 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     private Report validateMavenPom(final MavenPom mavenPom) {
         final Report report = ReportImpl.validationReport();
         final List<MavenPlugin> plugins = mavenPom.getPlugins();
-        final Set<String> pluginNames = getPluginNames(plugins);
-        report.merge(validatePluginsList(pluginNames));
+        report.merge(validatePluginsList(plugins));
         report.merge(validateGpgPlugin(plugins));
         return report;
     }
 
     private Report validateGpgPlugin(final List<MavenPlugin> plugins) {
-        final Report report = ReportImpl.validationReport();
         for (final MavenPlugin plugin : plugins) {
             if (plugin.getArtifactId().equals("maven-gpg-plugin")) {
-                report.addResult(validateGpgPluginExecutions(plugin));
-                break;
+                return validateGpgPluginExecutions(plugin);
             }
         }
-        return report;
+        return ReportImpl.validationReport();
     }
 
-    private Result validateGpgPluginExecutions(final MavenPlugin plugin) {
+    private Report validateGpgPluginExecutions(final MavenPlugin plugin) {
+        final Report report = ReportImpl.validationReport();
         if (plugin.hasExecutions()) {
-            return validateExecutions(plugin.getExecutions());
+            report.addResult(validateExecutions(plugin.getExecutions()));
         } else {
-            return ValidationResult.failedValidation("E-RR-VAL-14",
-                    "The 'maven-gpg-plugin' misses executions. PLease, check the user guide to add them.");
+            report.addResult(ValidationResult.failedValidation("E-RR-VAL-14",
+                    "The 'maven-gpg-plugin' misses executions. PLease, check the user guide to add them."));
         }
+        return report;
     }
 
     private Result validateExecutions(final List<PluginExecution> executions) {
@@ -74,17 +73,22 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
         }
     }
 
-    private Report validatePluginsList(final Set<String> pluginNames) {
+    private Report validatePluginsList(final List<MavenPlugin> plugins) {
         final Report report = ReportImpl.validationReport();
+        final Set<String> pluginNames = getPluginNames(plugins);
         for (final String requiredPlugin : REQUIRED_PLUGINS) {
-            if (pluginNames.contains(requiredPlugin)) {
-                report.addResult(ValidationResult.successfulValidation("Maven plugin '" + requiredPlugin + "'."));
-            } else {
-                report.addResult(ValidationResult.failedValidation("E-RR-VAL-13",
-                        "Required maven plugin is missing: '" + requiredPlugin + "'."));
-            }
+            report.addResult(validatePlugin(pluginNames, requiredPlugin));
         }
         return report;
+    }
+
+    private Result validatePlugin(final Set<String> pluginNames, final String requiredPlugin) {
+        if (pluginNames.contains(requiredPlugin)) {
+            return ValidationResult.successfulValidation("Maven plugin '" + requiredPlugin + "'.");
+        } else {
+            return ValidationResult.failedValidation("E-RR-VAL-13",
+                    "Required maven plugin is missing: '" + requiredPlugin + "'.");
+        }
     }
 
     private Set<String> getPluginNames(final List<MavenPlugin> plugins) {
