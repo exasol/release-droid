@@ -27,6 +27,12 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 * The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. 
   The version must contain only digits and dots.
+    
+* You need a GitHub account.
+
+* You need to create a GitHub OAuth token. 
+  For that, go to `Settings` &rarr; `Developer Settings` &rarr; `Personal access tokens` &rarr; `Generate new token`. 
+  Select scope `repo:status` and `public_repo`, then create a token.
 
 #### Changes Log
 
@@ -57,15 +63,6 @@ project root/
     1. `<artifactId></artifactId>` tag with a project name;
 
 ### Rules for Release on GitHub
-
-Prerequisites:
-
-1. You need a GitHub account;
-2. You need to create a GitHub OAuth token. 
-   For that, go to `Settings` &rarr; `Developer Settings` &rarr; `Personal access tokens` &rarr; `Generate new token`. 
-   Select scope `repo:status` and `public_repo`, then create a token.
-
-Rules: 
 
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
