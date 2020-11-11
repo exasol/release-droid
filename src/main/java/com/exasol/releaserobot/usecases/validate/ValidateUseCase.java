@@ -13,7 +13,7 @@ public interface ValidateUseCase {
      *
      * @param userInput user input
      * @return new {@link Report}
-     * @throws GitHubException
+     * @throws GitHubException if some problem occurs
      */
     public Report validate(final UserInput userInput) throws GitHubException;
 }

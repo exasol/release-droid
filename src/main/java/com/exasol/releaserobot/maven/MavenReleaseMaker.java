@@ -26,6 +26,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
     }
 
     @Override
+    // [impl->dsn~create-new-maven-release~1]
     public void makeRelease(final Repository repository) throws GitHubException {
         LOGGER.fine("Releasing on Maven.");
         final JSONObject body = new JSONObject();

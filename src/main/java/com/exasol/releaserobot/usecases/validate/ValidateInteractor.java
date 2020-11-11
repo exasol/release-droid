@@ -30,6 +30,7 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     @Override
+    // [impl->dsn~rr-runs-validate-goal~1]
     public Report validate(final UserInput userInput) throws GitHubException {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
@@ -70,8 +71,6 @@ public class ValidateInteractor implements ValidateUseCase {
         return report;
     }
 
-    // [impl->dsn~rr-creates-validation-report~1]
-    // [impl->dsn~rr-creates-release-report~1]
     private void logResults(final Goal goal, final Report report) {
         if (report.hasFailures()) {
             LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());

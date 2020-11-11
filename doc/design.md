@@ -19,10 +19,10 @@ Please refer to the [System Requirement Specification](system_requirements.md) f
 
 This section introduces the building blocks of the software. Together those building blocks make up the big picture of the software structure.
 
-## `GitRepository`
-`dsn~git-repository~1`
+## `Repository`
+`dsn~repository~1`
 
-The `GitRepository` is a representation of a git-based project on which RR performs validations and releases.   
+The `Repository` is a representation of a project on which RR performs validations and releases.   
 
 ## `PlatformValidator`
 `dsn~platform-validator~1`
@@ -62,28 +62,6 @@ Covers:
 
 Needs: impl
 
-### RR Runs Validate Goal
-`dsn~rr-runs-validate-goal~1`
-
-RR performs only validation if it gets a `validate` goal.
-
-Covers:
-
-* `req~validate-project~1`
-
-Needs: impl
-
-### RR Runs Release Goal
-`dsn~rr-runs-release-goal~1`
-
-RR performs validation and then release if it gets a `release` goal.
-
-Covers:
-
-* `req~release-project~1`
-
-Needs: impl
-
 ### Users Set Release Platforms
 `dsn~users-set-release-platforms~1`
 
@@ -117,12 +95,34 @@ Covers:
 
 Needs: impl
 
-## Git Repository
+### RR Runs Validate Goal
+`dsn~rr-runs-validate-goal~1`
 
-### GR Provides Current Version
-`dsn~gr-provides-current-version~1`
+RR performs only validation if it gets a `validate` goal.
 
-The `GitRepository` detects a current project's version depending on a project's programming language and project's structure.
+Covers:
+
+* `req~validate-project~1`
+
+Needs: impl
+
+### RR Runs Release Goal
+`dsn~rr-runs-release-goal~1`
+
+RR performs validation and then release if it gets a `release` goal.
+
+Covers:
+
+* `req~release-project~1`
+
+Needs: impl
+
+## Repository
+
+### Repository Provides Current Version
+`dsn~repository-provides-current-version~1`
+
+The `Repository` detects a current project's version depending on a project's programming language and project's structure.
 
 Covers:
 
@@ -130,10 +130,10 @@ Covers:
 
 Needs: impl, utest
 
-### GR Provides Deliverables Information
-`dsn~gr-provides-deliverables-information~1`
+### Repository Provides Deliverables Information
+`dsn~repository-provides-deliverables-information~1`
 
-GR provides a list of key-value pairs containing information in format `deliverable name - deliverable path` where a path is a path from project's root to the deliverable file.
+Repository provides a list of key-value pairs containing information in format `deliverable name - deliverable path` where a path is a path from project's root to the deliverable file.
 
 Covers:
 
@@ -141,10 +141,10 @@ Covers:
 
 Needs: impl, utest
 
-### GR Retrieves Branch Content
-`dsn~gr-retrieves-branch-content~1`
+### Repository Retrieves Branch Content
+`dsn~repository-retrieves-branch-content~1`
 
-The `GitRepository` retrieves content of specified branch.
+The `Repository` retrieves content of specified branch.
 
 Covers:
 
@@ -174,7 +174,7 @@ Covers:
 
 * `req~validation-report~1`
 
-Needs: impl, utest
+Needs: impl
 
 ### RR Creates Release Report
 `dsn~rr-creates-release-report~1`
@@ -312,6 +312,43 @@ Covers:
 
 Needs: impl, utest
 
+#### Validate `github_release.yml` Workflow Exists
+`dsn~validate-github-workflow-exists~1`
+
+RR validates that a workflow that helps us to release on GitHub exists.
+
+Covers:
+
+* `req~attaching-deliverables-to-a-github-release~1`
+
+Needs: impl, utest
+
+### Maven Platform Validation
+
+Validations listed here are necessary for a release on the Maven CEntral.
+
+#### Validate `maven_central_release.yml` Workflow Exists
+`dsn~validate-maven-release-workflow-exists~1`
+
+RR validates that a workflow that helps us to release on Maven Central Repository exists.
+
+Covers:
+
+* `req~releasing-on-maven~1`
+
+Needs: impl, utest
+
+#### Validate Pom File Contains Required Plugins for Maven Release
+`dsn~validate-pom-contains-required-plugins-for-maven-release~1`
+
+RR validates that all plugins required for a Maven release exist.
+
+Covers:
+
+* `req~releasing-on-maven~1`
+
+Needs: impl, utest
+
 ## Release
 
 ### Release on GitHub
@@ -325,7 +362,7 @@ Covers:
 
 * `req~releasing-on-github~1`
 
-Needs: impl, utest
+Needs: impl
 
 #### Retrieve GitHub Release Header from Release Letter
 `dsn~retrieve-github-release-header-from-release-letter~1`
@@ -336,7 +373,7 @@ Covers:
 
 * `req~github-release-title-from-release-letter~1`
 
-Needs: impl, utest
+Needs: impl
 
 #### Retrieve GitHub Release Body from Release Letter
 `dsn~retrieve-github-release-body-from-release-letter~1`
@@ -347,7 +384,7 @@ Covers:
 
 * `req~gitub-release-description-from-release-letter~1`
 
-Needs: impl, utest
+Needs: impl
 
 #### Upload GitHub Release Assets
 `dsn~upload-github-release-assets~1`
@@ -359,6 +396,19 @@ Covers:
 * `req~attaching-deliverables-to-a-github-release~1`
 
 Needs: impl
+
+### Release on Maven Central Repository
+
+#### Create new Maven Release
+`dsn~create-new-maven-release~1`
+
+RR creates a new release on the Maven Central Repository.
+
+Covers:
+
+* `req~releasing-on-maven~1`
+
+Needs: impl, utest
 
 # Cross-cutting Concerns
 

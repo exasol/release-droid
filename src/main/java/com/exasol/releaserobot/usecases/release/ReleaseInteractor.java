@@ -34,6 +34,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     @Override
+    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
+    // [impl->dsn~rr-runs-release-goal~1]
     public List<Report> release(final UserInput userInput) throws GitHubException {
         final List<Report> reports = new ArrayList<>();
         final Report validationReport = this.validateUseCase.validate(userInput);
@@ -67,8 +69,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return this.releaseMakers.get(platformName);
     }
 
-    // [impl->dsn~rr-creates-validation-report~1]
-    // [impl->dsn~rr-creates-release-report~1]
     private void logResults(final Goal goal, final Report report) {
         if (report.hasFailures()) {
             LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());

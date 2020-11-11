@@ -26,6 +26,7 @@ Code name: Maven Central Release
 * #74: Refactored GitHub API adapter.
 * #68: Extracted UserInput parsing.
 * #59: Removed duplicated code in the runner.
+* #81: Fixed requirements tracing.
 
 ## Dependencies updates
 

@@ -46,7 +46,7 @@ class MavenRepositoryTest {
     @ValueSource(strings = { "<project><version>1.0.0</version><artifactId>project</artifactId></project>", //
             "<project>\n<version>\n1.0.0\n</version>\n<artifactId>project</artifactId></project>",
             "<project>    <version>  1.0.0  </version> <artifactId>project</artifactId>   </project>" })
-    // [utest->dsn~gr-provides-current-version~1]
+    // [utest->dsn~repository-provides-current-version~1]
     void testGetVersionWithCaching(final String pomFile) throws IOException {
         final Repository repository = createRepository(pomFile);
         assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
@@ -60,7 +60,7 @@ class MavenRepositoryTest {
     }
 
     @Test
-    // [utest->dsn~gr-provides-deliverables-information~1]
+    // [utest->dsn~repository-provides-deliverables-information~1]
     void testGetDeliverables() throws IOException {
         final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
         final Repository repository = createRepository(pomFile);
@@ -68,7 +68,7 @@ class MavenRepositoryTest {
     }
 
     @Test
-    // [utest->dsn~gr-provides-deliverables-information~1]
+    // [utest->dsn~repository-provides-deliverables-information~1]
     void testGetDeliverablesWithPluginInformation() throws IOException {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //
@@ -93,7 +93,7 @@ class MavenRepositoryTest {
     }
 
     @Test
-    // [utest->dsn~gr-provides-deliverables-information~1]
+    // [utest->dsn~repository-provides-deliverables-information~1]
     void testGetDeliverablesFails() throws IOException {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //

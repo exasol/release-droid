@@ -32,8 +32,8 @@ public class ReleaseRobot {
      *
      * @throws GitHubException if some problem occurs
      */
-    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
-    // [impl->dsn~rr-runs-release-goal~1]
+    // [impl->dsn~rr-creates-validation-report~1]
+    // [impl->dsn~rr-creates-release-report~1]
     public void run(final UserInput userInput) throws GitHubException {
         LOGGER.fine(() -> "Release Robot has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getRepositoryName() + "'.");
