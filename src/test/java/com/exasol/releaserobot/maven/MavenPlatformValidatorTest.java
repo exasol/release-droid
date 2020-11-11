@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.apache.maven.model.PluginExecution;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,9 @@ class MavenPlatformValidatorTest {
     @Mock
     private MavenPom mavenPomMock;
     @Mock
-    private Xpp3Dom xpp3DomMock;
+    private PluginExecution pluginExecutionMock;
+    @Mock
+    private Object configurationsMock;
 
     @BeforeEach
     void beforeEach() {
@@ -38,11 +40,16 @@ class MavenPlatformValidatorTest {
     @Test
     void testValidateSuccessful() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
+        when(this.pluginExecutionMock.getId()).thenReturn("sign-artifacts");
+        when(this.pluginExecutionMock.getConfiguration()).thenReturn(this.configurationsMock);
+        when(this.configurationsMock.toString()).thenReturn("--pinentry-mode");
         when(this.mavenPomMock.getPlugins()).thenReturn(List.of( //
                 MavenPlugin.builder().artifactId("nexus-staging-maven-plugin").build(), //
                 MavenPlugin.builder().artifactId("maven-source-plugin").build(), //
-                MavenPlugin.builder().artifactId("maven-gpg-plugin").configuration(this.xpp3DomMock).build(), //
-                MavenPlugin.builder().artifactId("maven-javadoc-plugin").build()//
+                MavenPlugin.builder().artifactId("maven-gpg-plugin").executions(List.of(this.pluginExecutionMock))
+                        .build(), //
+                MavenPlugin.builder().artifactId("maven-javadoc-plugin").build(), //
+                MavenPlugin.builder().artifactId("maven-deploy-plugin").build()//
         ));
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertThat(report.hasFailures(), equalTo(false));
@@ -63,11 +70,33 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
-    void testValidatePGpgPluginFails() {
+    void testValidatePGpgPluginMissingExecutions() {
         when(this.mavenPomMock.getPlugins())
                 .thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin").build()));
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-14")));
+    }
+
+    @Test
+    void testValidatePGpgPluginMissingRequiredExecution() {
+        when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
+                .executions(List.of(this.pluginExecutionMock)).build()));
+        when(this.pluginExecutionMock.getId()).thenReturn("some-id");
+        final Report report = this.platformValidator.validate(this.repositoryMock);
+        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
+                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-15")));
+    }
+
+    @Test
+    void testValidatePGpgPluginMissingRequiredExecutionConfiguration() {
+        when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
+                .executions(List.of(this.pluginExecutionMock)).build()));
+        when(this.pluginExecutionMock.getId()).thenReturn("sign-artifacts");
+        when(this.pluginExecutionMock.getConfiguration()).thenReturn(this.configurationsMock);
+        when(this.configurationsMock.toString()).thenReturn("text");
+        final Report report = this.platformValidator.validate(this.repositoryMock);
+        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
+                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-16")));
     }
 }
