@@ -67,8 +67,9 @@ public class MavenPomParser {
         for (final Plugin plugin : build.getPlugins()) {
             final String artifactId = plugin.getArtifactId();
             final Xpp3Dom configurations = (Xpp3Dom) plugin.getConfiguration();
+            final List<PluginExecution> executions = plugin.getExecutions();
             final MavenPlugin mavenPlugin = MavenPlugin.builder().artifactId(artifactId).configuration(configurations)
-                    .build();
+                    .executions(executions).build();
             plugins.add(mavenPlugin);
         }
         return plugins;

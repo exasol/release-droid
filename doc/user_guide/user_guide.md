@@ -12,6 +12,7 @@ Note that 'a programming language' here means 'the main programming language whi
 The following list contains the platforms on which the Release Robot can perform a release:
 
 * [GitHub](https://github.com)
+* [Maven Central Repository](https://mvnrepository.com/repos/central)
 
 ## Pre-requirements and Release Rules
 
@@ -26,6 +27,12 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 * The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. 
   The version must contain only digits and dots.
+    
+* You need a GitHub account.
+
+* You need to create a GitHub OAuth token. 
+  For that, go to `Settings` &rarr; `Developer Settings` &rarr; `Personal access tokens` &rarr; `Generate new token`. 
+  Select scope `repo:status` and `public_repo`, then create a token.
 
 #### Changes Log
 
@@ -57,26 +64,31 @@ project root/
 
 ### Rules for Release on GitHub
 
-Prerequisites:
-
-1. You need a GitHub account;
-2. You need to create a GitHub OAuth token. 
-   For that, go to `Settings` &rarr; `Developer Settings` &rarr; `Personal access tokens` &rarr; `Generate new token`. 
-   Select scope `repo:status` and `public_repo`, then create a token.
-
-Rules: 
-
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/github_release.yml` file in the root directory to upload release assets. 
-Please check [templates](github_release_template.md).
+  Please check [templates](github_release_template.md).
 
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. 
- This line should appear between the file's header and the first section describing the changes.
+  This line should appear between the file's header and the first section describing the changes.
 
 * A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'.
   All the mentioned on the file tickets must have a closed status on the GitHub.
+ 
+### Rules for Release on Maven Central
+
+Prerequisites:
+
+1. The repository must be on the while-list of the organizational credential for Maven Central on the GitHub.
+
+Rules: 
+
+* The project must contain a `/.github/workflows/maven_central_release.yml` file in the root directory.
+  Please check a [template](maven_central_release_template.md).
+
+* The Maven file must contain all necessary plugins and settings.
+  Please check a [template](maven_central_release_pom_file_template.md).
   
 ## How to Use Release Robot
 

@@ -1,5 +1,9 @@
 package com.exasol.releaserobot.repository.maven;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.maven.model.PluginExecution;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /**
@@ -8,10 +12,12 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public class MavenPlugin {
     private final String artifactId;
     private final Xpp3Dom configuration;
+    private final List<PluginExecution> executions;
 
     private MavenPlugin(final Builder builder) {
         this.artifactId = builder.artifactId;
         this.configuration = builder.configuration;
+        this.executions = builder.executions;
     }
 
     /**
@@ -51,9 +57,28 @@ public class MavenPlugin {
     }
 
     /**
+     * Check if the plugin has executions.
+     *
+     * @return true if executions presents
+     */
+    public boolean hasExecutions() {
+        return !this.executions.isEmpty();
+    }
+
+    /**
+     * Get plugin's executions.
+     *
+     * @return executions
+     */
+    public List<PluginExecution> getExecutions() {
+        return this.executions;
+    }
+
+    /**
      * Builder for the {@link MavenPlugin}.
      */
     public static class Builder {
+        private List<PluginExecution> executions = new ArrayList<>();
         private String artifactId;
         private Xpp3Dom configuration;
 
@@ -76,6 +101,17 @@ public class MavenPlugin {
          */
         public Builder configuration(final Xpp3Dom configuration) {
             this.configuration = configuration;
+            return this;
+        }
+
+        /**
+         * Add executions.
+         *
+         * @param executions executions as a list of {@link PluginExecution}
+         * @return builder instance for fluent programming
+         */
+        public Builder executions(final List<PluginExecution> executions) {
+            this.executions = executions;
             return this;
         }
 

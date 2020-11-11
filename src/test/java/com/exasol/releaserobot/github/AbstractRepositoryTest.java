@@ -25,8 +25,9 @@ class AbstractRepositoryTest {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
+        final Optional<String> latestTag = Optional.of("1.2.8");
         assertThrows(GitRepositoryException.class,
-                () -> new DummyRepository(ghRepositoryMock, branchName, Optional.of("1.2.8"), ""));
+                () -> new DummyRepository(ghRepositoryMock, branchName, latestTag, ""));
     }
 
     @Test

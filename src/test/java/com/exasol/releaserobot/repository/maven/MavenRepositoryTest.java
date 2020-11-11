@@ -120,7 +120,8 @@ class MavenRepositoryTest {
     void testGetVersionInvalidPom() throws IOException {
         final String pom = "nothing here";
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
+        final Optional<String> latestTag = Optional.empty();
         assertThrows(GitRepositoryException.class,
-                () -> new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty()));
+                () -> new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", latestTag));
     }
 }
