@@ -259,7 +259,7 @@ Since the step validation rules depend on the platform the step is executed on, 
 ##### Releasing on Maven Central Repository
 `req~releasing-on-maven~1`
 
-RR can create a Maven CEntral Repository release.
+RR can create a Maven Central Repository release.
 
 Covers:
 
