@@ -87,6 +87,7 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-github-issues-exists~1]
     void testValidateGitHubTicketsCannotRetrieveTickets() throws GitHubException {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final Repository repositoryMock = Mockito.mock(Repository.class);
@@ -100,6 +101,7 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-github-workflow-exists~1]
     void testValidateWorkflowFile() {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
@@ -109,6 +111,7 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-github-workflow-exists~1]
     void testValidateWorkflowFileFails() {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitRepositoryException.class);

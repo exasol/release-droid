@@ -166,22 +166,22 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.itsallcode</groupId>-->
-            <!--                <artifactId>openfasttrace-maven-plugin</artifactId>-->
-            <!--                <version>1.0.0</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>trace-requirements</id>-->
-            <!--                        <goals>-->
-            <!--                            <goal>trace</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--                <configuration>-->
-            <!--                    <reportOutputFormat>html</reportOutputFormat>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.itsallcode</groupId>
+                <artifactId>openfasttrace-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>trace-requirements</id>
+                        <goals>
+                            <goal>trace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <reportOutputFormat>html</reportOutputFormat>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

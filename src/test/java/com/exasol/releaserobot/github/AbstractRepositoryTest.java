@@ -21,6 +21,7 @@ import com.exasol.releaserobot.usecases.Repository;
 
 class AbstractRepositoryTest {
     @Test
+    // [utest->dsn~repository-retrieves-branch-content~1]
     void testCreateAbstractGitHubGitRepositoryContentWithInvalidBranch() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final String branchName = "my_branch";
@@ -31,6 +32,7 @@ class AbstractRepositoryTest {
     }
 
     @Test
+    // [utest->dsn~repository-retrieves-branch-content~1]
     void testIsDefaultBranchTrue() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);
@@ -43,6 +45,7 @@ class AbstractRepositoryTest {
     }
 
     @Test
+    // [utest->dsn~repository-retrieves-branch-content~1]
     void testIsDefaultBranchFalse() throws IOException {
         final GHRepository ghRepositoryMock = Mockito.mock(GHRepository.class);
         final GHBranch branchMock = Mockito.mock(GHBranch.class);

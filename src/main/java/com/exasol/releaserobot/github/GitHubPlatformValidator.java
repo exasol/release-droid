@@ -25,6 +25,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     }
 
     @Override
+    // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate(final Repository repository) {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = ReportImpl.validationReport();

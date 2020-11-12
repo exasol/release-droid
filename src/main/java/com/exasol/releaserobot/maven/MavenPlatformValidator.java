@@ -17,6 +17,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     protected static final String MAVEN_WORKFLOW_PATH = ".github/workflows/maven_central_release.yml";
 
     @Override
+    // [impl->dsn~validate-maven-release-workflow-exists~1]
     public Report validate(final Repository repository) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateFileExists(repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
@@ -24,6 +25,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
         return report;
     }
 
+    // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateMavenPom(final MavenPom mavenPom) {
         final Report report = ReportImpl.validationReport();
         final List<MavenPlugin> plugins = mavenPom.getPlugins();

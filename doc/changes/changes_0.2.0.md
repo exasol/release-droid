@@ -1,4 +1,4 @@
-# Exasol Release Robot 0.2.0, released 2020-11-??
+# Exasol Release Robot 0.2.0, released 2020-11-12
 
 Code name: Maven Central Release
 
@@ -26,6 +26,7 @@ Code name: Maven Central Release
 * #74: Refactored GitHub API adapter.
 * #68: Extracted UserInput parsing.
 * #59: Removed duplicated code in the runner.
+* #81: Fixed requirements tracing.
 
 ## Dependencies updates
 

@@ -50,7 +50,6 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~upload-github-release-assets~1]
-    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private void uploadAssets(final String repositoryFullName, final String uploadUrl, final String assetName,
             final String assetPath, final String defaultBranchName) throws GitHubException {
         final JSONObject body = new JSONObject();

@@ -38,6 +38,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateSuccessful() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
         when(this.pluginExecutionMock.getId()).thenReturn("sign-artifacts");
@@ -56,6 +57,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateFails() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
                 .thenThrow(GitRepositoryException.class);
@@ -70,6 +72,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     void testValidatePGpgPluginMissingExecutions() {
         when(this.mavenPomMock.getPlugins())
                 .thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin").build()));
@@ -79,6 +82,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     void testValidateGpgPluginMissingRequiredExecution() {
         when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
                 .executions(List.of(this.pluginExecutionMock)).build()));
@@ -89,6 +93,7 @@ class MavenPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     void testValidatePGpgPluginMissingRequiredExecutionConfiguration() {
         when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
                 .executions(List.of(this.pluginExecutionMock)).build()));

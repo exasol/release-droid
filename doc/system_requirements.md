@@ -133,7 +133,7 @@ Covers:
 Needs: dsn
 
 ### Release Project
-`req~release-project~1req~release-project~1`
+`req~release-project~1`
 
 RR releases a user-specified project.
 
@@ -255,6 +255,17 @@ Since the step validation rules depend on the platform the step is executed on, 
 ### Platform and Tool Support
 
 #### Maven Project Support
+
+##### Releasing on Maven Central Repository
+`req~releasing-on-maven~1`
+
+RR can create a Maven Central Repository release.
+
+Covers:
+
+* [feat~maven-support~1](#maven-support)
+
+Needs: dsn
 
 ##### Detect Current Version From Maven POM
 `req~detect-current-version-from-maven-pom~1`

@@ -26,6 +26,7 @@ public abstract class Repository {
      * @param fullName     fully qualified name of the repository
      * @param latestTag    latest release tag
      */
+    // [impl->dsn~repository-retrieves-branch-content~1]
     protected Repository(final GHRepository ghRepository, final String branchName, final String fullName,
             final Optional<String> latestTag) {
         this.ghRepository = ghRepository;
@@ -126,7 +127,7 @@ public abstract class Repository {
      *
      * @return version as a string
      */
-    // [impl->dsn~gr-provides-current-version~1]
+    // [impl->dsn~repository-provides-current-version~1]
     public abstract String getVersion();
 
     /**
@@ -134,7 +135,7 @@ public abstract class Repository {
      *
      * @return map with deliverables information
      */
-    // [impl->dsn~gr-provides-deliverables-information~1]
+    // [impl->dsn~repository-provides-deliverables-information~1]
     public abstract Map<String, String> getDeliverables();
 
     /**

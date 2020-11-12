@@ -61,6 +61,7 @@ public class MavenRepository extends Repository {
     }
 
     @Override
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     public Map<String, String> getDeliverables() {
         final String assetName = getAssetName() + ".jar";
         final String assetPath = PATH_TO_TARGET_DIR + assetName;
