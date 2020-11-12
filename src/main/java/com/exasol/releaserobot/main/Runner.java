@@ -18,7 +18,7 @@ public class Runner {
      *
      * @param args arguments
      */
-    public static void main(final String[] args) throws GitHubException {
+    public static void main(final String[] args) {
         final UserInput userInput = new UserInputParser().parseUserInput(args);
         createReleaseRobot().run(userInput);
     }
@@ -46,11 +46,10 @@ public class Runner {
         return repositoryValidators;
     }
 
-    private static Map<PlatformName, ReleasablePlatform> createReleaseablePlatforms(
-            final GithubGateway githubGateway) {
+    private static Map<PlatformName, ReleasablePlatform> createReleaseablePlatforms(final GithubGateway githubGateway) {
         final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = new HashMap<>();
-        releaseablePlatforms.put(PlatformName.GITHUB, new ReleasablePlatform(
-                new GitHubPlatformValidator(githubGateway), new GitHubReleaseMaker(githubGateway)));
+        releaseablePlatforms.put(PlatformName.GITHUB, new ReleasablePlatform(new GitHubPlatformValidator(githubGateway),
+                new GitHubReleaseMaker(githubGateway)));
         releaseablePlatforms.put(PlatformName.MAVEN,
                 new ReleasablePlatform(new MavenPlatformValidator(), new MavenReleaseMaker(githubGateway)));
         return releaseablePlatforms;

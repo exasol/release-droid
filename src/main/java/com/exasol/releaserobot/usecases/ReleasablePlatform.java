@@ -1,6 +1,5 @@
 package com.exasol.releaserobot.usecases;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 import com.exasol.releaserobot.usecases.validate.RepositoryValidator;
 
@@ -23,7 +22,7 @@ public class ReleasablePlatform implements RepositoryValidator, ReleaseMaker {
     }
 
     @Override
-    public void makeRelease(final Repository repository) throws GitHubException {
+    public void makeRelease(final Repository repository) {
         this.releaseMaker.makeRelease(repository);
     }
 

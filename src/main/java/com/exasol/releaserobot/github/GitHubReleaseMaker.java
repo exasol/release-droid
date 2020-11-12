@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 import com.exasol.releaserobot.repository.ReleaseLetter;
+import com.exasol.releaserobot.usecases.ReleaseException;
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
@@ -29,7 +30,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void makeRelease(final Repository repository) throws GitHubException {
+    public void makeRelease(final Repository repository) {
         LOGGER.fine("Releasing on GitHub.");
         final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
@@ -37,7 +38,11 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
                 .defaultBranchName(repository.getBranchName()).assets(repository.getDeliverables()).build();
-        this.makeNewGitHubRelease(repository.getFullName(), release);
+        try {
+            makeNewGitHubRelease(repository.getFullName(), release);
+        } catch (final GitHubException exception) {
+            throw new ReleaseException(exception);
+        }
     }
 
     private void makeNewGitHubRelease(final String repositoryFullName, final GitHubRelease gitHubRelease)

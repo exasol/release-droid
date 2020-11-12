@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.github.GithubGateway;
+import com.exasol.releaserobot.usecases.ReleaseException;
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.release.ReleaseMaker;
 
@@ -40,9 +41,9 @@ class MavenReleaseMakerTest {
     @Test
     // [utest->dsn~create-new-maven-release~1]
     void testMakeReleaseFails() throws GitHubException {
-        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name", "maven_central_release.yml",
-                "{\"ref\":\"main\"}");
-        assertAll(() -> assertThrows(GitHubException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
+        doThrow(ReleaseException.class).when(this.githubGatewayMock).executeWorkflow("name",
+                "maven_central_release.yml", "{\"ref\":\"main\"}");
+        assertAll(() -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
                 () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
                         "{\"ref\":\"main\"}"));
     }

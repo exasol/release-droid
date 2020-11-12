@@ -1,6 +1,5 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.UserInput;
 
@@ -13,9 +12,8 @@ public interface RepositoryGateway {
      *
      * @param userInput user input
      * @return instance of {@link Repository}
-     * @throws GitHubException is some problem occurs
      */
-    public Repository getRepositoryWithBranch(UserInput userInput) throws GitHubException;
+    public Repository getRepositoryWithBranch(UserInput userInput);
 
     /**
      * Get a default branch.
@@ -23,7 +21,6 @@ public interface RepositoryGateway {
      * @param repositoryFullName fully qualified name of the repository
      *
      * @return instance of {@link Repository}
-     * @throws GitHubException is some problem occurs
      */
-    public Repository getRepositoryWithDefaultBranch(String repositoryFullName) throws GitHubException;
+    public Repository getRepositoryWithDefaultBranch(String repositoryFullName);
 }

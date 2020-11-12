@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.github;
 
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.usecases.Repository;
 import com.exasol.releaserobot.usecases.UserInput;
 import com.exasol.releaserobot.usecases.validate.RepositoryGateway;
@@ -20,17 +21,25 @@ public class GithubRepositoryGateway implements RepositoryGateway {
     }
 
     @Override
-    public Repository getRepositoryWithBranch(final UserInput userInput) throws GitHubException {
+    public Repository getRepositoryWithBranch(final UserInput userInput) {
         if (userInput.hasBranch()) {
-            return this.githubGateway.getRepositoryWithUserSpecifiedBranch(userInput.getRepositoryName(),
-                    userInput.getBranch());
+            try {
+                return this.githubGateway.getRepositoryWithUserSpecifiedBranch(userInput.getRepositoryName(),
+                        userInput.getBranch());
+            } catch (final GitHubException exception) {
+                throw new RepositoryException(exception);
+            }
         } else {
             return this.getRepositoryWithDefaultBranch(userInput.getRepositoryName());
         }
     }
 
     @Override
-    public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) throws GitHubException {
-        return this.githubGateway.getRepositoryWithDefaultBranch(repositoryFullName);
+    public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) {
+        try {
+            return this.githubGateway.getRepositoryWithDefaultBranch(repositoryFullName);
+        } catch (final GitHubException exception) {
+            throw new RepositoryException(exception);
+        }
     }
 }

@@ -22,7 +22,7 @@ import org.kohsuke.github.*;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.usecases.Repository;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,7 +121,7 @@ class MavenRepositoryTest {
         final String pom = "nothing here";
         when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
         final Optional<String> latestTag = Optional.empty();
-        assertThrows(GitRepositoryException.class,
+        assertThrows(RepositoryException.class,
                 () -> new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", latestTag));
     }
 }

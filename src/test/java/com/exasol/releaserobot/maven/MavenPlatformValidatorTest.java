@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.repository.maven.*;
 import com.exasol.releaserobot.usecases.Report;
 
@@ -60,7 +60,7 @@ class MavenPlatformValidatorTest {
     // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateFails() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
-                .thenThrow(GitRepositoryException.class);
+                .thenThrow(RepositoryException.class);
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
                 () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-9")),

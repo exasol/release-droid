@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.usecases.Repository;
 
 class AbstractRepositoryTest {
@@ -27,7 +27,7 @@ class AbstractRepositoryTest {
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
         final Optional<String> latestTag = Optional.of("1.2.8");
-        assertThrows(GitRepositoryException.class,
+        assertThrows(RepositoryException.class,
                 () -> new DummyRepository(ghRepositoryMock, branchName, latestTag, ""));
     }
 
@@ -81,7 +81,7 @@ class AbstractRepositoryTest {
         when(branchMock.getName()).thenReturn(branchName);
         when(ghRepositoryMock.getFileContent(anyString(), anyString())).thenThrow(IOException.class);
         final Repository repository = new DummyRepository(ghRepositoryMock, branchName, Optional.of("1.0.0"), "name");
-        assertThrows(GitRepositoryException.class, repository::getChangelogFile);
+        assertThrows(RepositoryException.class, repository::getChangelogFile);
     }
 
     @Test
