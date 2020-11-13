@@ -3,7 +3,6 @@ package com.exasol.releaserobot.usecases.validate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -31,7 +30,7 @@ public class ValidateInteractor implements ValidateUseCase {
 
     @Override
     // [impl->dsn~rr-runs-validate-goal~1]
-    public Report validate(final UserInput userInput) throws GitHubException {
+    public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
         final Report validationReport = runValidation(repository, userInput.getPlatformNames());

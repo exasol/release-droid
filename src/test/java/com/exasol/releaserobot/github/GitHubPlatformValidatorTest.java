@@ -14,7 +14,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.repository.ReleaseLetter;
 import com.exasol.releaserobot.usecases.Report;
 import com.exasol.releaserobot.usecases.Repository;
@@ -114,7 +114,7 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-workflow-exists~1]
     void testValidateWorkflowFileFails() {
         final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(GitRepositoryException.class);
+        when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(RepositoryException.class);
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),

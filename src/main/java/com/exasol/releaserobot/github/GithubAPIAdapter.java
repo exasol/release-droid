@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.kohsuke.github.*;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.repository.maven.MavenRepository;
 import com.exasol.releaserobot.usecases.Repository;
 
@@ -96,7 +96,7 @@ public class GithubAPIAdapter implements GithubGateway {
             final GHRelease release = this.getRepository(repositoryFullName).getLatestRelease();
             return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
-            throw new GitRepositoryException(
+            throw new RepositoryException(
                     "E-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
         }
     }

@@ -8,7 +8,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 
 /**
  * Parser for {@link MavenPom}.
@@ -30,7 +30,7 @@ public class MavenPomParser {
             final MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
             return xpp3Reader.read(reader);
         } catch (final XmlPullParserException | IOException exception) {
-            throw new GitRepositoryException("E-POM-1: Cannot parse pom.xml file. "
+            throw new RepositoryException("E-POM-1: Cannot parse pom.xml file. "
                     + "Please, check if the 'pom.xml' file exists and has a valid format.", exception);
         }
     }

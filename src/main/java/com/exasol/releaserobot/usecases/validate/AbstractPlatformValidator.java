@@ -1,6 +1,6 @@
 package com.exasol.releaserobot.usecases.validate;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.usecases.*;
 
 /**
@@ -20,7 +20,7 @@ public abstract class AbstractPlatformValidator implements RepositoryValidator {
         try {
             repository.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));
-        } catch (final GitRepositoryException exception) {
+        } catch (final RepositoryException exception) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-9",
                     "The file '" + filePath + "' does not exist in the project. Please, add this file."));
         }

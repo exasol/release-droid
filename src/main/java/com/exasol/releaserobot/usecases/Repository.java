@@ -39,7 +39,7 @@ public abstract class Repository {
         try {
             return this.ghRepository.getBranch(branchName);
         } catch (final IOException exception) {
-            throw new GitRepositoryException("E-REP-GH-3: Cannot find a branch '" + branchName
+            throw new RepositoryException("E-REP-GH-3: Cannot find a branch '" + branchName
                     + "'. Please check if you specified a correct branch.", exception);
         }
     }
@@ -55,7 +55,7 @@ public abstract class Repository {
             final GHContent content = this.ghRepository.getFileContent(filePath, this.branch.getName());
             return getContent(content.read());
         } catch (final IOException exception) {
-            throw new GitRepositoryException(
+            throw new RepositoryException(
                     "E-REP-GH-2: Cannot find or read the file '" + filePath + "' in the repository "
                             + this.ghRepository.getName() + ". Please add this file according to the User Guide.",
                     exception);

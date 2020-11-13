@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releaserobot.github.GitHubException;
 import com.exasol.releaserobot.usecases.*;
 import com.exasol.releaserobot.usecases.validate.RepositoryGateway;
 import com.exasol.releaserobot.usecases.validate.ValidateUseCase;
@@ -36,7 +35,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     @Override
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rr-runs-release-goal~1]
-    public List<Report> release(final UserInput userInput) throws GitHubException {
+    public List<Report> release(final UserInput userInput) {
         final List<Report> reports = new ArrayList<>();
         final Report validationReport = this.validateUseCase.validate(userInput);
         reports.add(validationReport);
@@ -49,15 +48,14 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return reports;
     }
 
-    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames)
-            throws GitHubException {
+    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames) {
         final Report report = ReportImpl.releaseReport();
         final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
         for (final PlatformName platformName : platformNames) {
             try {
                 this.getReleaseMaker(platformName).makeRelease(repository);
                 report.addResult(ReleaseResult.successfulRelease(platformName));
-            } catch (final Exception exception) {
+            } catch (final ReleaseException exception) {
                 report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
                 break;
             }

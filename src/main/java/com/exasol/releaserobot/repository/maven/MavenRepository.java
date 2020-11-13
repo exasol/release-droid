@@ -6,7 +6,7 @@ import java.util.*;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
-import com.exasol.releaserobot.repository.GitRepositoryException;
+import com.exasol.releaserobot.repository.RepositoryException;
 import com.exasol.releaserobot.usecases.Repository;
 
 /**
@@ -56,7 +56,7 @@ public class MavenRepository extends Repository {
         if (this.pom.hasVersion()) {
             return this.pom.getVersion();
         } else {
-            throw new GitRepositoryException("E-REP-GH-4: Cannot find the current version in the repository.");
+            throw new RepositoryException("E-REP-GH-4: Cannot find the current version in the repository.");
         }
     }
 
@@ -78,7 +78,7 @@ public class MavenRepository extends Repository {
         if (this.pom.hasArtifactId()) {
             return this.pom.getArtifactId();
         } else {
-            throw new GitRepositoryException("E-REP-GH-5: Cannot find the project's artifactId.");
+            throw new RepositoryException("E-REP-GH-5: Cannot find the project's artifactId.");
         }
     }
 
