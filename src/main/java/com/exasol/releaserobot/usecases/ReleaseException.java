@@ -3,8 +3,8 @@ package com.exasol.releaserobot.usecases;
 /**
  * Exception that happened during release process.
  */
-public class ReleaseException extends RuntimeException {
-    private static final long serialVersionUID = 2855366863874311250L;
+public class ReleaseException extends Exception {
+    private static final long serialVersionUID = 6230384073980892982L;
 
     /**
      * Create a new instance of {@link ReleaseException}.

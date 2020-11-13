@@ -1,5 +1,6 @@
 package com.exasol.releaserobot.usecases.release;
 
+import com.exasol.releaserobot.usecases.ReleaseException;
 import com.exasol.releaserobot.usecases.Repository;
 
 /**
@@ -11,5 +12,5 @@ public interface ReleaseMaker {
      *
      * @param branch instance of {@link Repository}
      */
-    public void makeRelease(final Repository branch);
+    public void makeRelease(final Repository branch) throws ReleaseException;
 }

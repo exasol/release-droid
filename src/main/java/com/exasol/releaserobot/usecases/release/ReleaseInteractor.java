@@ -55,7 +55,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
             try {
                 this.getReleaseMaker(platformName).makeRelease(repository);
                 report.addResult(ReleaseResult.successfulRelease(platformName));
-            } catch (final RuntimeException exception) {
+            } catch (final ReleaseException exception) {
                 report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
                 break;
             }

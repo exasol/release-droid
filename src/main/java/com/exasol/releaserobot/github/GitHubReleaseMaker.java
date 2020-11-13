@@ -30,7 +30,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void makeRelease(final Repository repository) {
+    public void makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
         final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);

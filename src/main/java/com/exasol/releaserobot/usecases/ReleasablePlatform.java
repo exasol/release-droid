@@ -22,7 +22,7 @@ public class ReleasablePlatform implements RepositoryValidator, ReleaseMaker {
     }
 
     @Override
-    public void makeRelease(final Repository repository) {
+    public void makeRelease(final Repository repository) throws ReleaseException {
         this.releaseMaker.makeRelease(repository);
     }
 

@@ -41,8 +41,8 @@ class MavenReleaseMakerTest {
     @Test
     // [utest->dsn~create-new-maven-release~1]
     void testMakeReleaseFails() throws GitHubException {
-        doThrow(ReleaseException.class).when(this.githubGatewayMock).executeWorkflow("name",
-                "maven_central_release.yml", "{\"ref\":\"main\"}");
+        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name", "maven_central_release.yml",
+                "{\"ref\":\"main\"}");
         assertAll(() -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
                 () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
                         "{\"ref\":\"main\"}"));
