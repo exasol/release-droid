@@ -1,4 +1,4 @@
-# Exasol Release Robot 0.2.0, released 2020-11-12
+# Exasol Release Droid 0.2.0, released 2020-11-12
 
 Code name: Maven Central Release
 

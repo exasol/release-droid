@@ -1,22 +1,22 @@
-# Exasol Release Robot
+# Exasol Release Droid
 
-[![Build Status](https://travis-ci.com/exasol/release-robot.svg?branch=master)](https://travis-ci.org/exasol/release-robot)
+[![Build Status](https://travis-ci.com/exasol/release-droid.svg?branch=master)](https://travis-ci.org/exasol/release-droid)
 
 SonarCloud results:
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
 
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=sqale_index)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=sqale_index)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
 
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=code_smells)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=coverage)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-robot&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-robot)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=code_smells)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=coverage)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Arelease-droid&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Arelease-droid)
 
-Release Robot automates release process steps on widely used platforms like GitHub and Jira for Exasol projects.
+Release Droid automates release process steps on widely used platforms like GitHub and Jira for Exasol projects.
 
 ## Information for Users
 
@@ -27,7 +27,7 @@ Release Robot automates release process steps on widely used platforms like GitH
 
 ### Run Time Dependencies
 
-Running the Release Robot requires a Java Runtime version 11 or later.
+Running the Release Droid requires a Java Runtime version 11 or later.
 
 | Dependency                                                         | Purpose                                             | License                    |
 |--------------------------------------------------------------------|-----------------------------------------------------|----------------------------|
