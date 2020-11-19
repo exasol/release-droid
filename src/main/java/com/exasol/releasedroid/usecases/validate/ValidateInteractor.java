@@ -1,9 +1,11 @@
 package com.exasol.releasedroid.usecases.validate;
 
+import com.exasol.releasedroid.usecases.*;
+
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.usecases.*;
+import static com.exasol.releasedroid.main.LoggingTool.logResults;
 
 /**
  * Implements the Validate use case.
@@ -34,7 +36,7 @@ public class ValidateInteractor implements ValidateUseCase {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
         final Report validationReport = runValidation(repository, userInput.getPlatformNames());
-        logResults(Goal.VALIDATE, validationReport);
+        logResults(LOGGER, validationReport);
         return validationReport;
     }
 
@@ -68,13 +70,5 @@ public class ValidateInteractor implements ValidateUseCase {
             report.merge(repositoryValidator.validate(repository));
         }
         return report;
-    }
-
-    private void logResults(final Goal goal, final Report report) {
-        if (report.hasFailures()) {
-            LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());
-        } else {
-            LOGGER.info(report.getShortDescription());
-        }
     }
 }

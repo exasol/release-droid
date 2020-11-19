@@ -146,8 +146,5 @@ Note that you don't need to run `validate` goal before the release, as the `rele
 
 ## Debugging
 
-If you need to debug RR, you can adjust Java's log level. The default level is `INFO`. 
-
-To do that you need to change a default logging level in JDK/JRE. Find a `logging.properties` file in the JDK/JRE directory and change the default logging level. 
-
-For `openjdk-11` you can find this file here: `jdk-11/conf/logging.properties`.
+If you need to debug RR, you can adjust Java's log level. The default level for this project is `INFO`. 
+To do that you need to change a logging level in a `logging.properties` file in the `src/main/resources/logging.properties` directory. 

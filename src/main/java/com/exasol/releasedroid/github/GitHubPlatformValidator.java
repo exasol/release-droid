@@ -1,11 +1,14 @@
 package com.exasol.releasedroid.github;
 
-import java.util.*;
-import java.util.logging.Logger;
-
 import com.exasol.releasedroid.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.exasol.releasedroid.main.LoggingTool.logRedMessage;
 
 /**
  * This class checks if the project is ready for a release on GitHub.
@@ -90,7 +93,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
                     + "' file before you release: " + wrongTicketsString + ".";
             report.addResult(ValidationResult
                     .successfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage));
-            LOGGER.warning(warningMessage);
+            logRedMessage(LOGGER, Level.WARNING, warningMessage);
         }
         return report;
     }
