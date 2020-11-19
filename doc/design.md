@@ -7,7 +7,7 @@ This document's section structure is derived from the "[arc42](https://arc42.org
 ## Terms and Abbreviations
 
 <dl>
-    <dt>RR</dt><dd>Release dRoid</dd>
+    <dt>RR</dt><dd>Release Droid</dd>
     <dt>GR</dt><dd>Git repository</dd>
 </dl>
 
