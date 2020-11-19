@@ -2,6 +2,10 @@
 
 Code name: 
 
+## Documentation
+
+#90: Improved the changes file template.
+
 ## Refactoring
 
 #76: Removed GitHubException from usecases.

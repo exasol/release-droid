@@ -4,7 +4,7 @@ Code name: <a titile name which goes to a GitHub release header>
 
 ## Summary
  
-<Add here any release-specific additional information that is not included into sections below.>
+<Add here any release-specific additional information and announcements.>
  
 ## Bug Fixes
  
@@ -28,6 +28,20 @@ Code name: <a titile name which goes to a GitHub release header>
  
 ## Dependency updates
  
+### Runtime Dependency Updates
+
 * Added `<dependency groupId>:<dependency artifactId>:<version>`
-* Updated `<dependency groupId>:<dependency artifactId>` from <old version> to <new version>
-* Removed `<dependency groupId>:<dependency artifactId>`
+* Updated `<dependency groupId>:<dependency artifactId>:<old version>` to `<new version>`
+* Removed `<dependency groupId>:<dependency artifactId>:<version>`
+
+### Test Dependency Updates
+
+* Added `<dependency groupId>:<dependency artifactId>:<version>`
+* Updated `<dependency groupId>:<dependency artifactId>:<old version>` to `<new version>`
+* Removed `<dependency groupId>:<dependency artifactId>:<version>`
+
+### Plugin Updates
+
+* Added `<dependency groupId>:<dependency artifactId>:<version>`
+* Updated `<dependency groupId>:<dependency artifactId>:<old version>` to `<new version>`
+* Removed `<dependency groupId>:<dependency artifactId>:<version>`
