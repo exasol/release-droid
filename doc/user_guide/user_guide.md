@@ -9,18 +9,18 @@ Note that 'a programming language' here means 'the main programming language whi
 
 ## Supported Release Platforms
 
-The following list contains the platforms on which the Release Robot can perform a release:
+The following list contains the platforms on which the Release Droid can perform a release:
 
 * [GitHub](https://github.com)
 * [Maven Central Repository](https://mvnrepository.com/repos/central)
 
 ## Pre-requirements and Release Rules
 
-Your project must fulfil the criteria listed in this section &mdash; depending on a programming language you use and platforms you want to release on to make a release with the Release Robot.
+Your project must fulfil the criteria listed in this section &mdash; depending on a programming language you use and platforms you want to release on to make a release with the Release Droid.
 
 ### Common Rules for All Repositories
 
-* Currently, Release Robot only supports the GitHub-based projects. 
+* Currently, Release Droid only supports the GitHub-based projects. 
   So the first essential requirement: the project must be uploaded to the GitHub.
   
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
@@ -90,7 +90,7 @@ Rules:
 * The Maven file must contain all necessary plugins and settings.
   Please check a [template](maven_central_release_pom_file_template.md).
   
-## How to Use Release Robot
+## How to Use Release Droid
 
 ### Run from Terminal
 
@@ -100,12 +100,12 @@ Rules:
 
 #### Run Steps
 
-1. Download the latest available [release](https://github.com/exasol/release-robot/releases) of Release Robot.
+1. Download the latest available [release](https://github.com/exasol/release-droid/releases) of Release Droid.
 
-1. (Optional) Place a file with credentials  in your home directory: `~/.release-robot/credentials`.
+1. (Optional) Place a file with credentials  in your home directory: `~/.release-droid/credentials`.
     We recommend restricting access to this file for security purposes:
     ```bash
-    chmod u-wx,g-rwx,o-rwx "$HOME"/.release-robot/credentials
+    chmod u-wx,g-rwx,o-rwx "$HOME"/.release-droid/credentials
     ````
     The file must contain the following two properties:
 
@@ -113,15 +113,15 @@ Rules:
     github_username=<your username>
     github_oauth_access_token=<github access token>
     ```
-    If Release Robot cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
+    If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
 
-1. Run Release Robot from a terminal:
+1. Run Release Droid from a terminal:
     
-    `java -jar release-robot-<version>.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
+    `java -jar release-droid-<version>.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
     
     For example:
 
-    `java -jar release-robot-0.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
+    `java -jar release-droid-0.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
 #### Command Line Arguments
 

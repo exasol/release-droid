@@ -7,7 +7,7 @@ This document's section structure is derived from the "[arc42](https://arc42.org
 ## Terms and Abbreviations
 
 <dl>
-    <dt>RR</dt><dd>Release Robot</dd>
+    <dt>RR</dt><dd>Release Droid</dd>
     <dt>GR</dt><dd>Git repository</dd>
 </dl>
 
@@ -38,7 +38,7 @@ The `ReleaseMaker` performs a release on a platform.
 
 This section describes the runtime behavior of the software.
 
-## Release Robot Run Prerequisites
+## Release Droid Run Prerequisites
 
 ### Users Set Project 
 `dsn~users-set-project~1`
@@ -152,7 +152,7 @@ Covers:
 
 Needs: impl, utest
 
-## Release Robot Runtime
+## Release Droid Runtime
 
 ### RR Starts Release Only If All Validation Succeed
 `dsn~rr-starts-release-only-if-all-validation-succeed~1`
@@ -190,7 +190,7 @@ Needs: impl, utest
 ### RR Writes Report to a File
 `dsn~rr-writes-report-to-file~1`
 
-RR writes a full report to a `home/.release-robot/last_report.txt` file.
+RR writes a full report to a `home/.release-droid/last_report.txt` file.
 
 Covers:
 

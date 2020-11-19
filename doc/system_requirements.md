@@ -1,10 +1,10 @@
 <head><link href="oft_spec.css" rel="stylesheet"></head>
 
-# System Requirement Specification Exasol Release Robot
+# System Requirement Specification Exasol Release Droid
 
 ## Introduction
 
-Release Robot (short "RR") is a combination of validators and automation that make a software release safer, faster and more convenient.
+Release Droid (short "RR") is a combination of validators and automation that make a software release safer, faster and more convenient.
 
 ## About This Document
 
@@ -14,7 +14,7 @@ The target audience are software developers, software integrators and quality as
 
 ### Goal
 
-Release Robot's main goals are:
+Release Droid's main goals are:
 
 * speed up software releases
 * eliminate human error
