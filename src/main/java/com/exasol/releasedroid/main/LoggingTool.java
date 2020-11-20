@@ -1,17 +1,18 @@
 package com.exasol.releasedroid.main;
 
-import com.exasol.releasedroid.usecases.Report;
+import java.util.logging.*;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.exasol.releasedroid.usecases.Report;
 
 /**
  * This class helps us to deal with logging.
  */
-public class LoggingTool {
+public class LoggingTool extends Formatter {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
+
+    private final Formatter formatter = new SimpleFormatter();
 
     private LoggingTool() {
         // prevent instantiation
@@ -23,7 +24,7 @@ public class LoggingTool {
      * @param logger instance of {@link Logger}
      * @param report report to log
      */
-    public static void logResults(Logger logger, final Report report) {
+    public static void logResults(final Logger logger, final Report report) {
         if (report.hasFailures()) {
             logRedMessage(logger, Level.SEVERE, report.getShortDescription() + " " + report.getFailuresReport());
         } else {
@@ -38,11 +39,19 @@ public class LoggingTool {
      * @param level   log level
      * @param message message to log
      */
-    public static void logRedMessage(Logger logger, Level level, String message) {
+    public static void logRedMessage(final Logger logger, final Level level, final String message) {
         logger.log(level, () -> ANSI_RED + message + ANSI_RESET);
     }
 
-    private static void logGreenMessage(Logger logger, Level level, String message) {
+    private static void logGreenMessage(final Logger logger, final Level level, final String message) {
         logger.log(level, () -> ANSI_GREEN + message + ANSI_RESET);
+    }
+
+    @Override
+    public String format(final LogRecord record) {
+        if (Level.WARNING.equals(record.getLevel())) {
+            record.setMessage(ANSI_RED + record.getMessage() + ANSI_RESET);
+        }
+        return this.formatter.format(record);
     }
 }
