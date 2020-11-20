@@ -1,13 +1,12 @@
 package com.exasol.releasedroid.repository.maven;
 
-import java.io.*;
-import java.util.*;
-
+import com.exasol.releasedroid.repository.RepositoryException;
+import com.exasol.releasedroid.usecases.Repository;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
-import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.usecases.Repository;
+import java.io.*;
+import java.util.*;
 
 /**
  * This class represents a Maven-based Java project's content.
@@ -19,7 +18,7 @@ public class MavenRepository extends Repository {
 
     /**
      * Create a new instance of {@link MavenRepository}.
-     * 
+     *
      * @param repository an instance of {@link GHRepository}
      * @param branch     name of a branch to get content from
      * @param fullName   fully qualified name of the repository
@@ -126,7 +125,7 @@ public class MavenRepository extends Repository {
     }
 
     private String findReplacement(final String tag) {
-        if (tag.equals("version")) {
+        if (tag.equals("version") || tag.equals("project.version")) {
             return getVersion();
         } else {
             final Map<String, String> properties = this.pom.getProperties();

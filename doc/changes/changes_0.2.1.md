@@ -4,6 +4,7 @@ Code name:
 
 ## Features/Enhancements
 
+* #86: Added support for ${project.version} property while detecting deliverables.
 * #91: Improved console logging output.
 
 ## Documentation
