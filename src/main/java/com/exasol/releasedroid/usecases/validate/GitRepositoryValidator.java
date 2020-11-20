@@ -5,10 +5,8 @@ import com.exasol.releasedroid.usecases.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.exasol.releasedroid.main.LoggingTool.logRedMessage;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 /**
@@ -156,7 +154,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
                     + "' file before you release.";
             report.addResult(ValidationResult.successfulValidation(
                     "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
-            logRedMessage(LOGGER, Level.WARNING, warningMessage);
+            LOGGER.warning(warningMessage);
         }
         return report;
     }

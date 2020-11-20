@@ -28,7 +28,7 @@ public class Runner {
     }
 
     private static void setUpLogging() throws IOException {
-        ClassLoader classLoader = LoggingTool.class.getClassLoader();
+        ClassLoader classLoader = ReleaseDroidFormatter.class.getClassLoader();
         InputStream loggingProperties = classLoader.getResourceAsStream("logging.properties");
         LogManager.getLogManager().readConfiguration(loggingProperties);
     }

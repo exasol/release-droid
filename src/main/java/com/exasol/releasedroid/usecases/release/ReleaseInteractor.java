@@ -8,7 +8,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.exasol.releasedroid.main.LoggingTool.logResults;
+import static com.exasol.releasedroid.main.ReportLogger.logResults;
 
 /**
  * Implements the Release use case.
@@ -43,7 +43,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
             final Report releaseReport = this.makeRelease(userInput.getRepositoryName(), userInput.getPlatformNames());
-            logResults(LOGGER, releaseReport);
+            logResults(releaseReport);
             reports.add(releaseReport);
         }
         return reports;
