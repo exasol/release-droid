@@ -2,6 +2,10 @@
 
 Code name: 
 
+## Features / Enhancements
+
+* #86: Added support for ${project.version} property while detecting deliverables.
+
 ## Documentation
 
 #90: Improved the changes file template.
