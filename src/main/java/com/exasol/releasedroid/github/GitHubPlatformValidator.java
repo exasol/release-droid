@@ -1,11 +1,11 @@
 package com.exasol.releasedroid.github;
 
-import java.util.*;
-import java.util.logging.Logger;
-
 import com.exasol.releasedroid.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class checks if the project is ready for a release on GitHub.

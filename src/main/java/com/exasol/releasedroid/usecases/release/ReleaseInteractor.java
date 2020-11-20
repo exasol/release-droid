@@ -1,13 +1,14 @@
 package com.exasol.releasedroid.usecases.release;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.*;
+import java.util.logging.Logger;
+
+import static com.exasol.releasedroid.main.ReportLogger.logResults;
 
 /**
  * Implements the Release use case.
@@ -42,7 +43,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
             final Report releaseReport = this.makeRelease(userInput.getRepositoryName(), userInput.getPlatformNames());
-            logResults(Goal.RELEASE, releaseReport);
+            logResults(releaseReport);
             reports.add(releaseReport);
         }
         return reports;
@@ -65,13 +66,5 @@ public class ReleaseInteractor implements ReleaseUseCase {
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {
         return this.releaseMakers.get(platformName);
-    }
-
-    private void logResults(final Goal goal, final Report report) {
-        if (report.hasFailures()) {
-            LOGGER.severe(() -> "'" + goal + "' request failed: " + report.getFailuresReport());
-        } else {
-            LOGGER.info(report.getShortDescription());
-        }
     }
 }

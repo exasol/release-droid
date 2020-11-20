@@ -1,13 +1,16 @@
 package com.exasol.releasedroid.main;
 
-import java.util.*;
-
 import com.exasol.releasedroid.github.*;
 import com.exasol.releasedroid.maven.*;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.validate.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.logging.LogManager;
 
 /**
  * This class contains main method.
@@ -18,9 +21,16 @@ public class Runner {
      *
      * @param args arguments
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws IOException {
         final UserInput userInput = new UserInputParser().parseUserInput(args);
+        setUpLogging();
         createReleaseDroid().run(userInput);
+    }
+
+    private static void setUpLogging() throws IOException {
+        ClassLoader classLoader = ReleaseDroidFormatter.class.getClassLoader();
+        InputStream loggingProperties = classLoader.getResourceAsStream("logging.properties");
+        LogManager.getLogManager().readConfiguration(loggingProperties);
     }
 
     private static ReleaseDroid createReleaseDroid() {

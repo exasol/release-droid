@@ -1,13 +1,13 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
+import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.*;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.repository.ReleaseLetter;
-import com.exasol.releasedroid.usecases.*;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 /**
  * Contains validations for a Git project.
