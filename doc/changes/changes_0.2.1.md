@@ -15,3 +15,7 @@ Code name:
 
 * #76: Removed GitHubException from usecases.
 * #87: Renamed the project to Release Droid.
+
+## Bug fixes
+ 
+* #89: Fixed false positive validation for Github open tickets

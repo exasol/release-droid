@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import com.exasol.releasedroid.repository.ReleaseLetter.Builder;
 
 public final class ReleaseLetterParser {
-    public static final String TICKET_NUMBER_REGEX = "#[1-9]\\d*\\b";
+    public static final String TICKET_NUMBER_REGEX = "\\* #[1-9]\\d*\\b";
     private final Builder builder;
     private final String content;
 
@@ -30,7 +30,7 @@ public final class ReleaseLetterParser {
      * Parse a new {@link ReleaseLetter} from a string.
      */
     public ReleaseLetter parse() {
-        if (this.content != null && this.content.length() > 1) {
+        if ((this.content != null) && (this.content.length() > 1)) {
             parseContent();
         }
         return this.builder.build();
@@ -104,7 +104,7 @@ public final class ReleaseLetterParser {
         final List<String> hashtags = getExpressionsByRegex(body, TICKET_NUMBER_REGEX);
         final List<Integer> numbers = new ArrayList<>();
         for (final String hashtag : hashtags) {
-            final int ticketNumber = Integer.parseInt(hashtag.substring(1));
+            final int ticketNumber = Integer.parseInt(hashtag.substring(3));
             numbers.add(ticketNumber);
         }
         return numbers;
