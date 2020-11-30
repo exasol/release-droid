@@ -14,8 +14,8 @@ class ReleaseLetterParserTest {
         final String content = "# Exasol Release Droid 0.1.0, released 2020-08-20 \n"
                 + "Code name: GitHub validation and release support \n" //
                 + "## Features \n" //
-                + "#3: Added initial implementation og GitHub Release. \n"
-                + "#10: Added support for validation on a user-specified git branch. \n";
+                + "* #3: Added initial implementation og GitHub Release. \n"
+                + "* #10: Added support for validation on a user-specified git branch. \n";
         final ReleaseLetter letter = new ReleaseLetterParser("name", content).parse();
         assertAll(() -> assertThat(letter.getFileName(), equalTo("name")),
                 () -> assertThat(letter.getVersionNumber().get(), equalTo("0.1.0")),
