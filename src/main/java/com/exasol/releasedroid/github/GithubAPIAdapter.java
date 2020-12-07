@@ -199,7 +199,7 @@ public class GithubAPIAdapter implements GithubGateway {
 
     private void waitMinutes(final int minutes) {
         try {
-            Thread.sleep(10000L * minutes);
+            Thread.sleep(60000L * minutes);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
         }
