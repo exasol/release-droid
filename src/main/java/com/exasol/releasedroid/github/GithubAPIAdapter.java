@@ -191,9 +191,9 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     // The fastest release takes 1-2 minutes, the slowest 1 hour and more.
-    // We send 1 request per minute first 10 minutes and then 1 request per 5 minutes not to exceed the GitHub requests
+    // We send 1 request per minute first 10 minutes and then 1 request per 5 minutes not to exceed the GitHub request
     // limits.
-    private int getMinutes(final int minutesPassed) {
+    private int getNextResultCheckDelayInMinutes(final int minutesPassed) {
         return minutesPassed < 10 ? 1 : 5;
     }
 
