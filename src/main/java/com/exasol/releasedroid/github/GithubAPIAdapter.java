@@ -6,6 +6,7 @@ import java.net.http.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 import org.kohsuke.github.*;
 
 import com.exasol.releasedroid.repository.RepositoryException;
@@ -97,7 +98,7 @@ public class GithubAPIAdapter implements GithubGateway {
             return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
             throw new RepositoryException(
-                    "E-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
+                    "F-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
         }
     }
 
@@ -118,33 +119,37 @@ public class GithubAPIAdapter implements GithubGateway {
     @Override
     public void executeWorkflow(final String repositoryFullName, final String workflowName, final String payload)
             throws GitHubException {
-        final URI workflowURI = this.getWorkflowURI(repositoryFullName, workflowName);
-        this.sendGitHubRequest(workflowURI, payload);
+        final URI workflowURI = createUriFromString(
+                GITHUB_API_ENTRY_URL + repositoryFullName + "/actions/workflows/" + workflowName + "/dispatches");
+        final HttpResponse<String> response = sendGitHubPostRequest(workflowURI, payload);
+        validateResponse(response);
+        final String workflowConclusion = getWorkflowConclusion(repositoryFullName, workflowName);
+        validateWorkflowConclusion(workflowConclusion);
     }
 
-    private URI getWorkflowURI(final String repositoryFullName, final String workflowName) throws GitHubException {
-        final String uriString = GITHUB_API_ENTRY_URL + repositoryFullName + "/actions/workflows/" + workflowName
-                + "/dispatches";
+    private URI createUriFromString(final String uriString) throws GitHubException {
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {
-            throw new GitHubException("F-RR-GH-1: Cannot access a '" + workflowName + "' workflow. Invalid URI format.",
-                    exception);
+            throw new GitHubException("F-RR-GH-1: Invalid URI: " + uriString, exception);
         }
     }
 
-    private void sendGitHubRequest(final URI uri, final String json) throws GitHubException {
+    private HttpResponse<String> sendGitHubPostRequest(final URI uri, final String body) throws GitHubException {
         final HttpRequest request = HttpRequest.newBuilder() //
                 .uri(uri) //
                 .header("Accept", "application/vnd.github.v3+json") //
                 .header("Authorization", "token " + this.gitHubUser.getToken()) //
                 .header("Content-Type", "application/json") //
-                .POST(HttpRequest.BodyPublishers.ofString(json)) //
+                .POST(HttpRequest.BodyPublishers.ofString(body)) //
                 .build();
+        return sendGitHubRequest(request);
+    }
+
+    private HttpResponse<String> sendGitHubRequest(final HttpRequest request) throws GitHubException {
         final HttpClient build = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).build();
         try {
-            final HttpResponse<String> response = build.send(request, HttpResponse.BodyHandlers.ofString());
-            validateResponse(response);
+            return build.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (final IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new GitHubException("F-RR-GH-2: Exception happened during sending an HTTP request to the GitHub.",
@@ -155,7 +160,50 @@ public class GithubAPIAdapter implements GithubGateway {
     private void validateResponse(final HttpResponse<String> response) throws GitHubException {
         if ((response.statusCode() < HttpURLConnection.HTTP_OK)
                 || (response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE)) {
-            throw new GitHubException("F-RR-GH-6: An HTTP request failed. " + response.body());
+            throw new GitHubException("F-RR-GH-6: An executing workflow HTTP request failed. " + response.body());
+        }
+    }
+
+    private String getWorkflowConclusion(final String repositoryFullName, final String workflowName)
+            throws GitHubException {
+        while (true) {
+            waitOneMinute();
+            final URI uri = createUriFromString(
+                    GITHUB_API_ENTRY_URL + repositoryFullName + "/actions/workflows/" + workflowName + "/runs");
+            final HttpResponse<String> response = sendGitHubGetRequest(uri);
+            final JSONObject lastRun = new JSONObject(response.body()).getJSONArray("workflow_runs").getJSONObject(0);
+            final boolean actionCompleted = !lastRun.isNull("conclusion");
+            if (actionCompleted) {
+                return lastRun.getString("conclusion");
+            }
+        }
+    }
+
+    // The fastest release takes 1-2 minutes, the slowest 1 hour and more. We send 1 request per minute.
+    private void waitOneMinute() {
+        try {
+            Thread.sleep(60000);
+        } catch (final InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private HttpResponse<String> sendGitHubGetRequest(final URI uri) throws GitHubException {
+        final HttpRequest request = HttpRequest.newBuilder() //
+                .uri(uri) //
+                .header("Accept", "application/vnd.github.v3+json") //
+                .header("Authorization", "token " + this.gitHubUser.getToken()) //
+                .header("Content-Type", "application/json") //
+                .GET() //
+                .build();
+        return sendGitHubRequest(request);
+    }
+
+    private void validateWorkflowConclusion(final String workflowConclusion) throws GitHubException {
+        if (!workflowConclusion.equals("success")) {
+            throw new GitHubException(
+                    "E-RR-GH-1: Workflow run failed. Please check the action logs on the GitHub to analyze the problem. Run result: "
+                            + workflowConclusion);
         }
     }
 }
