@@ -132,9 +132,9 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void logMessage(final String workflowName) {
-        LOGGER.info(
-                "A GitHub workflow '" + workflowName + "' has started. The Release Droid is monitoring its progress. "
-                        + "This can take from a few minutes to a couple of hours depending on the build.");
+        LOGGER.info(() -> "A GitHub workflow '" + workflowName
+                + "' has started. The Release Droid is monitoring its progress. "
+                + "This can take from a few minutes to a couple of hours depending on the build.");
     }
 
     private URI createUriFromString(final String uriString) throws GitHubException {
@@ -177,7 +177,7 @@ public class GithubAPIAdapter implements GithubGateway {
     private String getWorkflowConclusion(final String workflowUriPrefix) throws GitHubException {
         int minutesPassed = 0;
         while (true) {
-            final int minutes = getMinutes(minutesPassed);
+            final int minutes = getNextResultCheckDelayInMinutes(minutesPassed);
             minutesPassed += minutes;
             waitMinutes(minutes);
             final URI uri = createUriFromString(workflowUriPrefix + "/runs");
