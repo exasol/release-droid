@@ -11,16 +11,17 @@ public enum PlatformName {
     GITHUB, MAVEN;
 
     /**
-     * Create a set of {@link PlatformName}s from Strings.
+     * Create a list of {@link PlatformName}s from Strings.
      *
      * @param platforms one or more platform names as Strings
-     * @return set of members of {@link PlatformName} enum class
+     * @return list of members of {@link PlatformName} enum class
      */
-    public static Set<PlatformName> toSet(final String... platforms) {
-        final Set<PlatformName> platformsList = new HashSet<>();
+    public static List<PlatformName> toList(final String... platforms) {
+        final List<PlatformName> platformsList = new ArrayList<>();
         for (final String platform : platforms) {
             platformsList.add(getPlatformName(platform));
         }
+        platformsList.sort(Comparator.comparingInt(List.of(MAVEN, GITHUB)::indexOf));
         return platformsList;
     }
 

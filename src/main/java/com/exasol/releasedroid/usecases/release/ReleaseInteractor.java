@@ -1,8 +1,6 @@
 package com.exasol.releasedroid.usecases.release;
 
 import static com.exasol.releasedroid.main.ReportLogger.logResults;
-import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
-import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,7 +19,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ? extends ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
-    private final List<PlatformName> releasePriority = List.of(MAVEN, GITHUB);
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
@@ -53,20 +50,17 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return reports;
     }
 
-    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames) {
+    private Report makeRelease(final String repositoryFullName, final List<PlatformName> platformNames) {
         final Report report = ReportImpl.releaseReport();
         final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
-        for (final PlatformName platformName : this.releasePriority) {
-            if (platformNames.contains(platformName)) {
-                LOGGER.info(() -> "Releasing on " + platformName + " platform.");
-                try {
-                    this.getReleaseMaker(platformName).makeRelease(repository);
-                    report.addResult(ReleaseResult.successfulRelease(platformName));
-                } catch (final ReleaseException exception) {
-                    report.addResult(
-                            ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
-                    break;
-                }
+        for (final PlatformName platformName : platformNames) {
+            LOGGER.info(() -> "Releasing on " + platformName + " platform.");
+            try {
+                this.getReleaseMaker(platformName).makeRelease(repository);
+                report.addResult(ReleaseResult.successfulRelease(platformName));
+            } catch (final ReleaseException exception) {
+                report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
+                break;
             }
         }
         return report;
