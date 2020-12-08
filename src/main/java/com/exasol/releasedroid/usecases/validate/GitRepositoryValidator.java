@@ -1,13 +1,13 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import com.exasol.releasedroid.repository.ReleaseLetter;
-import com.exasol.releasedroid.usecases.*;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
+import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.*;
 
 /**
  * Contains validations for a Git project.
@@ -73,7 +73,8 @@ public class GitRepositoryValidator implements RepositoryValidator {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-4",
-                    "A new version does not fit the versioning rules. Possible versions for the release are: "
+                    "A new version '" + newTag
+                            + "' does not fit the versioning rules. Possible versions for the release are: "
                             + possibleVersions.toString()));
         }
         return report;
