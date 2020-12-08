@@ -134,9 +134,9 @@ Rules:
 
 Notice:
 
-* There are two ways to specify multiple platforms: 
-    1. `-p github,maven` 
-    2. `-p github -p maven`
+* There are two ways to specify multiple platforms:
+1. `-p github -p maven`
+1. `-p github,maven` (This is a deprecated way, which is going to be removed in future)
 
 #### Release Goals
 
