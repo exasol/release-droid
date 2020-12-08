@@ -40,14 +40,14 @@ public class ValidateInteractor implements ValidateUseCase {
         return validationReport;
     }
 
-    private Report runValidation(final Repository repository, final Set<PlatformName> platformNames) {
+    private Report runValidation(final Repository repository, final List<PlatformName> platformNames) {
         final Report report = ReportImpl.validationReport();
         report.merge(validateRepositories(repository));
         report.merge(validatePlatforms(repository, platformNames));
         return report;
     }
 
-    private Report validatePlatforms(final Repository repository, final Set<PlatformName> platformNames) {
+    private Report validatePlatforms(final Repository repository, final List<PlatformName> platformNames) {
         final Report report = ReportImpl.validationReport();
         for (final PlatformName platformName : platformNames) {
             report.merge(this.validateForPlatform(platformName, repository));

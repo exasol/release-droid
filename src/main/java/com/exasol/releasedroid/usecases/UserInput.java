@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.usecases;
 
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class stores user input.
@@ -9,7 +8,7 @@ import java.util.Set;
 public class UserInput {
     private final String branch;
     private final Goal goal;
-    private final Set<PlatformName> platformNames;
+    private final List<PlatformName> platformNames;
     private final String repositoryName;
 
     /**
@@ -35,7 +34,7 @@ public class UserInput {
      *
      * @return platforms' names
      */
-    public Set<PlatformName> getPlatformNames() {
+    public List<PlatformName> getPlatformNames() {
         return this.platformNames;
     }
 
@@ -104,7 +103,7 @@ public class UserInput {
     public static final class Builder {
         private String branch;
         private Goal goal;
-        private Set<PlatformName> platforms;
+        private List<PlatformName> platforms;
         private String repositoryName;
 
         /**
@@ -134,12 +133,12 @@ public class UserInput {
         /**
          * Add release platforms.
          *
-         * @param platforms one or more platforms for validation or release. Supported values: github
+         * @param platforms one or more platforms for validation or release.
          * @return builder instance for fluent programming
          */
         // [impl->dsn~users-set-release-platforms~1]
         public Builder platforms(final String... platforms) {
-            this.platforms = PlatformName.toSet(platforms);
+            this.platforms = PlatformName.toList(platforms);
             return this;
         }
 

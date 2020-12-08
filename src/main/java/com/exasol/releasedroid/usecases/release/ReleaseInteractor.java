@@ -1,14 +1,15 @@
 package com.exasol.releasedroid.usecases.release;
 
-import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import static com.exasol.releasedroid.main.ReportLogger.logResults;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.exasol.releasedroid.main.ReportLogger.logResults;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
+import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
  * Implements the Release use case.
@@ -49,10 +50,11 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return reports;
     }
 
-    private Report makeRelease(final String repositoryFullName, final Set<PlatformName> platformNames) {
+    private Report makeRelease(final String repositoryFullName, final List<PlatformName> platformNames) {
         final Report report = ReportImpl.releaseReport();
         final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
         for (final PlatformName platformName : platformNames) {
+            LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             try {
                 this.getReleaseMaker(platformName).makeRelease(repository);
                 report.addResult(ReleaseResult.successfulRelease(platformName));
