@@ -26,7 +26,7 @@ public class UserInputParser {
         return UserInput.builder() //
                 .repositoryName(REPOSITORY_OWNER + "/" + cmd.getOptionValue(NAME_SHORT_OPTION)) //
                 .goal(cmd.getOptionValue(GOAL_SHORT_OPTION)) //
-                .platforms(cmd.getOptionValue(PLATFORM_SHORT_OPTION).split(",")) //
+                .platforms(cmd.getOptionValues(PLATFORM_SHORT_OPTION)) //
                 .branch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
                 .build();
     }
@@ -39,6 +39,8 @@ public class UserInputParser {
         final Option platforms = new Option(PLATFORM_SHORT_OPTION, "platforms", true,
                 "comma-separated list of release platforms");
         platforms.setRequired(true);
+        platforms.setArgs(Option.UNLIMITED_VALUES);
+        platforms.setValueSeparator(',');
         final Option branch = new Option(BRANCH_SHORT_OPTION, "branch", true, "git branch (only for validation)");
         return new Options().addOption(name).addOption(goal).addOption(platforms).addOption(branch);
     }
