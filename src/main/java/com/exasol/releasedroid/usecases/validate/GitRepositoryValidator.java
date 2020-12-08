@@ -73,7 +73,7 @@ public class GitRepositoryValidator implements RepositoryValidator {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-4",
-                    "A new version '" + newTag
+                    "The new version '" + newTag
                             + "' does not fit the versioning rules. Possible versions for the release are: "
                             + possibleVersions.toString()));
         }

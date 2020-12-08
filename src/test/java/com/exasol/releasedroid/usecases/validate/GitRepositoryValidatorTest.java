@@ -150,7 +150,7 @@ class GitRepositoryValidatorTest {
         final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertAll(() -> assertThat(validationReport.hasFailures(), equalTo(true)),
                 () -> assertThat(validationReport.getFailuresReport(),
-                        containsString("E-RR-VAL-4: A new version '" + version + "' does not fit the versioning rules. "
+                        containsString("E-RR-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
                                 + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }
 }
