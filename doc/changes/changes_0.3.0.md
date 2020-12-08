@@ -13,6 +13,7 @@ If a release workflow do not succeed, we stop the release process.
 * #48: Made Release Droid wait for GitHub workflows to end. 
 * #86: Added support for ${project.version} property while detecting deliverables.
 * #91: Improved console logging output.
+* #100: Added release priority: 1. MAVEN, 2.GITHUB.
 
 ## Documentation
 
@@ -22,6 +23,7 @@ If a release workflow do not succeed, we stop the release process.
 
 * #76: Removed GitHubException from usecases.
 * #87: Renamed the project to Release Droid.
+* #97: Improved logging when the version validation fails.
 
 ## Bug fixes
  
