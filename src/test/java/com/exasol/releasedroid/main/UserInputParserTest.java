@@ -1,12 +1,13 @@
 package com.exasol.releasedroid.main;
 
-import com.exasol.releasedroid.usecases.UserInput;
-import org.junit.jupiter.api.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import com.exasol.releasedroid.usecases.UserInput;
 
 class UserInputParserTest {
     private final UserInputParser userInputParser = new UserInputParser();
@@ -18,6 +19,15 @@ class UserInputParserTest {
                                             .build();
         final String[] args = new String[]{"-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "github,maven", "-branch", "some_branch"};
+        assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
+    }
+
+    @Test
+    void testParseUserInputWithRepeatedArgument() {
+        final UserInput expected = UserInput.builder().repositoryName("exasol/testing-release-droid")
+                .branch("some_branch").goal("validate").platforms("github", "maven").build();
+        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
+                "github", "-platforms", "maven", "-branch", "some_branch" };
         assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
     }
 

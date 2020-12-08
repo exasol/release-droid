@@ -134,7 +134,9 @@ Rules:
 
 Notice:
 
-* Please, specify the platforms list **without spaces**. This is a valid input:  `github,maven`. This is invalid input: `github, maven`
+* There are two ways to specify multiple platforms: 
+    1. `-p github,maven` 
+    2. `-p github -p maven`
 
 #### Release Goals
 
