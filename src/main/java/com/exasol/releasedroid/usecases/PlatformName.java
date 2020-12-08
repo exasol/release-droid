@@ -21,8 +21,15 @@ public enum PlatformName {
         for (final String platform : platforms) {
             platformsList.add(getPlatformName(platform));
         }
-        platformsList.sort(Comparator.comparingInt(List.of(MAVEN, GITHUB)::indexOf));
+        sortPlatforms(platformsList);
         return platformsList;
+    }
+
+    /**
+     * Sort the platforms in pre-defined priority order. 1. MAVEN 2. GITHUB
+     */
+    private static void sortPlatforms(final List<PlatformName> platformsList) {
+        platformsList.sort(Comparator.comparingInt(List.of(MAVEN, GITHUB)::indexOf));
     }
 
     private static PlatformName getPlatformName(final String platform) {
