@@ -1,6 +1,4 @@
-package com.exasol.releasedroid.report;
-
-import com.exasol.releasedroid.usecases.report.Report;
+package com.exasol.releasedroid.usecases.report;
 
 /**
  * Formatter for reports.

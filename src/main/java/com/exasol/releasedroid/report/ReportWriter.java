@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ReportFormatter;
 
 /**
  * This class writes reports from {@link Report} to a file.

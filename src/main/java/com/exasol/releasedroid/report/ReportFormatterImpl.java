@@ -2,8 +2,7 @@ package com.exasol.releasedroid.report;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
-import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.Result;
+import com.exasol.releasedroid.usecases.report.*;
 
 /**
  * Implementation of {@link ReportFormatter}.
