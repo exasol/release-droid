@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
 
-public class ReportFormatterTest {
+class ReportFormatterTest {
     private ReportFormatterImpl reportFormatter;
 
     @BeforeEach
