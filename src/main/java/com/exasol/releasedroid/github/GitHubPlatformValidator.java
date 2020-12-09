@@ -1,11 +1,13 @@
 package com.exasol.releasedroid.github;
 
-import com.exasol.releasedroid.repository.ReleaseLetter;
-import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
-
 import java.util.*;
 import java.util.logging.Logger;
+
+import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
 
 /**
  * This class checks if the project is ready for a release on GitHub.
@@ -28,7 +30,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate(final Repository repository) {
         LOGGER.fine("Validating GitHub-specific requirements.");
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         report.merge(validateChangesFile(repository, releaseLetter));
@@ -38,14 +40,14 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-release-letter~1]
     private Report validateChangesFile(final Repository repository, final ReleaseLetter releaseLetter) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
         report.merge(validateGitHubTickets(repository, releaseLetter));
         return report;
     }
 
     protected Report validateContainsHeader(final ReleaseLetter changes) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-1",
@@ -61,7 +63,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
     protected Report validateGitHubTickets(final Repository repository, final ReleaseLetter releaseLetter) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         try {
             final List<String> wrongTickets = collectWrongTickets(repository.getFullName(), releaseLetter);
             if (!wrongTickets.isEmpty()) {
@@ -79,7 +81,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     private Report reportWrongTickets(final boolean isDefaultBranch, final String fileName,
             final List<String> wrongTickets) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (isDefaultBranch) {
             report.addResult(ValidationResult.failedValidation("E-RR-VAL-2",

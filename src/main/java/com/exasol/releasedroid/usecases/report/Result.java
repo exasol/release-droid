@@ -1,12 +1,12 @@
-package com.exasol.releasedroid.usecases;
+package com.exasol.releasedroid.usecases.report;
 
 /**
  * An abstract base for Release Droid actions results.
  */
-public abstract class AbstractResult implements Result {
+public abstract class Result {
     private final boolean successful;
 
-    protected AbstractResult(final boolean successful) {
+    protected Result(final boolean successful) {
         this.successful = successful;
     }
 
@@ -15,7 +15,6 @@ public abstract class AbstractResult implements Result {
      *
      * @return true if a validation is successful
      */
-    @Override
     public boolean isSuccessful() {
         return this.successful;
     }

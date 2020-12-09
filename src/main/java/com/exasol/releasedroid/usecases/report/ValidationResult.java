@@ -1,9 +1,9 @@
-package com.exasol.releasedroid.usecases;
+package com.exasol.releasedroid.usecases.report;
 
 /**
  * Represents a result of a single validation.
  */
-public class ValidationResult extends AbstractResult {
+public class ValidationResult extends Result {
     private final String errorCode;
     private final String message;
 
@@ -15,7 +15,7 @@ public class ValidationResult extends AbstractResult {
 
     /**
      * Create a new failed validation.
-     * 
+     *
      * @param errorCode error code
      * @param message   error message
      * @return new instance of {@link ValidationResult}

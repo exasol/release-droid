@@ -17,36 +17,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.report.*;
 
 class ReportWriterTest {
     @TempDir
     Path tempDir;
-    private UserInput userInput;
     private Path reportPath;
     private Report validationReport;
     private Report releaseReport;
+    private ReportWriter reportWriter;
 
     @BeforeEach
     void setUp() {
         this.reportPath = Path.of(this.tempDir.toString(), "test-report.txt");
-        this.userInput = UserInput.builder().repositoryName("me/my-repository").goal("validate").platforms("github")
-                .build();
-        this.validationReport = ReportImpl.validationReport();
+        final UserInput userInput = UserInput.builder().repositoryName("me/my-repository").goal("validate")
+                .platforms("github").build();
+        this.validationReport = Report.validationReport();
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1", "Validations 1"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 2"));
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-2", "Validations 3"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 4"));
-        this.releaseReport = ReportImpl.releaseReport();
+        this.releaseReport = Report.releaseReport();
         this.releaseReport.addResult(ReleaseResult.successfulRelease(GITHUB));
         this.releaseReport.addResult(ReleaseResult.failedRelease(MAVEN, "Wrong credentials"));
+        this.reportWriter = new ReportWriter(userInput, this.reportPath, new ReportFormatterImpl());
     }
 
     @Test
     // [utest->dsn~rr-writes-report-to-file~1]
     void testWriteValidationReportToFile() throws IOException {
-        final ReportWriter reportWriter = new ReportWriter(this.userInput, this.reportPath);
-        reportWriter.writeValidationReportToFile(List.of(this.validationReport, this.releaseReport));
+        this.reportWriter.writeReportsToFile(List.of(this.validationReport, this.releaseReport));
         final List<String> report = Files.readAllLines(this.reportPath);
         assertAll(() -> assertThat(report.size(), equalTo(18)), //
                 () -> assertThat(report.get(0), containsString(LocalDate.now().toString())), //

@@ -1,9 +1,11 @@
-package com.exasol.releasedroid.usecases;
+package com.exasol.releasedroid.usecases.report;
+
+import com.exasol.releasedroid.usecases.PlatformName;
 
 /**
  * Represents a result of a single release.
  */
-public class ReleaseResult extends AbstractResult {
+public class ReleaseResult extends Result {
     private final PlatformName platformName;
     private final String failCause;
 
@@ -15,7 +17,7 @@ public class ReleaseResult extends AbstractResult {
 
     /**
      * Create a new successful release.
-     * 
+     *
      * @param platformName platform name
      * @return new instance of {@link ReleaseResult}
      */

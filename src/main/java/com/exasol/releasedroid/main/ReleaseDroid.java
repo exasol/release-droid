@@ -1,15 +1,18 @@
 package com.exasol.releasedroid.main;
 
-import com.exasol.releasedroid.report.ReportWriter;
-import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import com.exasol.releasedroid.report.ReportFormatterImpl;
+import com.exasol.releasedroid.report.ReportWriter;
+import com.exasol.releasedroid.usecases.Goal;
+import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
  * This class is the main entry point for calls to a Release Droid.
@@ -41,6 +44,6 @@ public class ReleaseDroid {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
         // TODO: this should part of the usecases
-        new ReportWriter(userInput, REPORT_PATH).writeValidationReportToFile(reports);
+        new ReportWriter(userInput, REPORT_PATH, new ReportFormatterImpl()).writeReportsToFile(reports);
     }
 }

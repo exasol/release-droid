@@ -1,10 +1,8 @@
 package com.exasol.releasedroid.maven;
 
 import static com.exasol.releasedroid.maven.MavenPlatformValidator.MAVEN_WORKFLOW_PATH;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -18,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.repository.maven.*;
-import com.exasol.releasedroid.usecases.Report;
+import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith({ MockitoExtension.class })
 class MavenPlatformValidatorTest {
@@ -53,7 +51,7 @@ class MavenPlatformValidatorTest {
                 MavenPlugin.builder().artifactId("maven-deploy-plugin").build()//
         ));
         final Report report = this.platformValidator.validate(this.repositoryMock);
-        assertThat(report.hasFailures(), equalTo(false));
+        assertFalse(report.hasFailures());
     }
 
     @Test
@@ -62,13 +60,13 @@ class MavenPlatformValidatorTest {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
                 .thenThrow(RepositoryException.class);
         final Report report = this.platformValidator.validate(this.repositoryMock);
-        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-9")),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-13")),
-                () -> assertThat(report.getFailuresReport(), containsString("nexus-staging-maven-plugin")),
-                () -> assertThat(report.getFailuresReport(), containsString("maven-source-plugin")),
-                () -> assertThat(report.getFailuresReport(), containsString("maven-gpg-plugin")),
-                () -> assertThat(report.getFailuresReport(), containsString("maven-javadoc-plugin")));
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-9"), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-13"),
+                () -> assertContainsResultMessage(report, "nexus-staging-maven-plugin"),
+                () -> assertContainsResultMessage(report, "maven-source-plugin"),
+                () -> assertContainsResultMessage(report, "maven-gpg-plugin"),
+                () -> assertContainsResultMessage(report, "maven-javadoc-plugin"));
     }
 
     @Test
@@ -77,8 +75,8 @@ class MavenPlatformValidatorTest {
         when(this.mavenPomMock.getPlugins())
                 .thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin").build()));
         final Report report = this.platformValidator.validate(this.repositoryMock);
-        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-14")));
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-14"));
     }
 
     @Test
@@ -88,8 +86,8 @@ class MavenPlatformValidatorTest {
                 .executions(List.of(this.pluginExecutionMock)).build()));
         when(this.pluginExecutionMock.getId()).thenReturn("some-id");
         final Report report = this.platformValidator.validate(this.repositoryMock);
-        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-15")));
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-15"));
     }
 
     @Test
@@ -101,7 +99,7 @@ class MavenPlatformValidatorTest {
         when(this.pluginExecutionMock.getConfiguration()).thenReturn(this.configurationsMock);
         when(this.configurationsMock.toString()).thenReturn("text");
         final Report report = this.platformValidator.validate(this.repositoryMock);
-        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-16")));
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-16"));
     }
 }
