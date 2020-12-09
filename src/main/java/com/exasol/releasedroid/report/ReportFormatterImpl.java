@@ -6,26 +6,17 @@ import com.exasol.releasedroid.usecases.report.*;
 
 /**
  * Implementation of {@link ReportFormatter}.
- *
  */
 public class ReportFormatterImpl implements ReportFormatter {
 
     @Override
     public String formatReport(final Report report) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.formatHeader(report));
-        stringBuilder.append(LINE_SEPARATOR);
-        stringBuilder.append(this.formatBody(report));
-        return stringBuilder.toString();
+        return this.formatHeader(report) + LINE_SEPARATOR + this.formatBody(report);
     }
 
     @Override
     public String formatReportWithFailuresOnly(final Report report) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.formatHeader(report));
-        stringBuilder.append(LINE_SEPARATOR);
-        stringBuilder.append(this.formatFailures(report));
-        return stringBuilder.toString();
+        return this.formatHeader(report) + LINE_SEPARATOR + this.formatFailures(report);
     }
 
     private String formatBody(final Report report) {

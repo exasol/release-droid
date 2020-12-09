@@ -7,7 +7,7 @@ import java.util.List;
  * Represents a report.
  */
 public class Report {
-    protected final List<Result> results = new LinkedList<>();
+    private final List<Result> results = new LinkedList<>();
     private final ReportName reportName;
 
     private Report(final ReportName reportName) {

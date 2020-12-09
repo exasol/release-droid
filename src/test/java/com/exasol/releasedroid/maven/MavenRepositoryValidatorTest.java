@@ -1,9 +1,7 @@
 package com.exasol.releasedroid.maven;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,7 @@ class MavenRepositoryValidatorTest {
         final MavenPom mavenPom = MavenPom.builder().artifactId("my-test-project").version("1.2.3").build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
-        assertThat(report.hasFailures(), equalTo(false));
+        assertFalse(report.hasFailures());
     }
 
     private Report getReport(final MavenPom mavenPom) {
@@ -38,8 +36,8 @@ class MavenRepositoryValidatorTest {
         final MavenPom mavenPom = MavenPom.builder().build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
-        assertAll(() -> assertThat(report.hasFailures(), equalTo(true)), //
-                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-11"))),
-                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-12"))));
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-11"), //
+                () -> assertContainsResultMessage(report, "E-RR-VAL-12"));
     }
 }
