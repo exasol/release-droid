@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.report.ReportFormatterImpl;
-import com.exasol.releasedroid.report.ReportWriter;
+import com.exasol.releasedroid.formatting.ReportFormatter;
+import com.exasol.releasedroid.formatting.ResponseFormatter;
 import com.exasol.releasedroid.usecases.Goal;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
@@ -43,7 +43,12 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
-        // TODO: this should part of the usecases
-        new ReportWriter(userInput, REPORT_PATH, new ReportFormatterImpl()).writeReportsToFile(reports);
+        // TODO: this should be part of the use cases
+        writeResponseToDisk(userInput, reports);
+    }
+
+    private void writeResponseToDisk(final UserInput userInput, final List<Report> reports) {
+        new ResponseWriter(new ResponseFormatter(new ReportFormatter())).writeResponseToDisk(REPORT_PATH, userInput,
+                reports);
     }
 }

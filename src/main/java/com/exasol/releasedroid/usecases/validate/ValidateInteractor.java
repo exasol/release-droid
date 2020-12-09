@@ -1,12 +1,11 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import static com.exasol.releasedroid.main.ReportLogger.logResults;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
 
 /**
@@ -17,19 +16,22 @@ public class ValidateInteractor implements ValidateUseCase {
     private final List<RepositoryValidator> repositoryValidators;
     private final Map<PlatformName, ? extends RepositoryValidator> platformValidators;
     private final RepositoryGateway repositoryGateway;
+    private final ReportLogger reportLogger;
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
      *
      * @param repositoryValidators list of repository validators
      * @param repositoryGateway    the repositoryGateway
+     * @param reportLogger         instance of {@link ReportLogger]}
      */
     public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
             final Map<PlatformName, ? extends RepositoryValidator> platformValidators,
-            final RepositoryGateway repositoryGateway) {
+            final RepositoryGateway repositoryGateway, final ReportLogger reportLogger) {
         this.repositoryValidators = repositoryValidators;
         this.platformValidators = platformValidators;
         this.repositoryGateway = repositoryGateway;
+        this.reportLogger = reportLogger;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ValidateInteractor implements ValidateUseCase {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
         final Report validationReport = runValidation(repository, userInput.getPlatformNames());
-        logResults(validationReport);
+        this.reportLogger.logResults(validationReport);
         return validationReport;
     }
 

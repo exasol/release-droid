@@ -10,15 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
 
 class ReportFormatterTest {
-    private ReportFormatterImpl reportFormatter;
+    private ReportFormatter reportFormatter;
 
     @BeforeEach
     void beforeEach() {
-        this.reportFormatter = new ReportFormatterImpl();
+        this.reportFormatter = new ReportFormatter();
     }
 
     @Test
