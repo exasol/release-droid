@@ -15,7 +15,7 @@ public interface ReportFormatter {
     public String formatReport(final Report report);
 
     /**
-     * Get a formatted report as a string.
+     * Get a formatted report with only its failed results as a string.
      *
      * @return report as a formatted string
      */

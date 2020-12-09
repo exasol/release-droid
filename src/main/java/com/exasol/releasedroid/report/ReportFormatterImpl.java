@@ -11,11 +11,6 @@ import com.exasol.releasedroid.usecases.report.Result;
  */
 public class ReportFormatterImpl implements ReportFormatter {
 
-    /**
-     * Get a formatted report as a string.
-     *
-     * @return report as a formatted string
-     */
     @Override
     public String formatReport(final Report report) {
         final StringBuilder stringBuilder = new StringBuilder();
@@ -25,11 +20,6 @@ public class ReportFormatterImpl implements ReportFormatter {
         return stringBuilder.toString();
     }
 
-    /**
-     * Get a formatted report as a string.
-     *
-     * @return report as a formatted string
-     */
     @Override
     public String formatReportWithFailuresOnly(final Report report) {
         final StringBuilder stringBuilder = new StringBuilder();
@@ -39,11 +29,6 @@ public class ReportFormatterImpl implements ReportFormatter {
         return stringBuilder.toString();
     }
 
-    /**
-     * Get a formatted report as a string.
-     *
-     * @return report as a formatted string
-     */
     private String formatBody(final Report report) {
         final StringBuilder stringBuilder = new StringBuilder();
         for (final Result result : report.getResults()) {
@@ -53,11 +38,6 @@ public class ReportFormatterImpl implements ReportFormatter {
         return stringBuilder.toString();
     }
 
-    /**
-     * Get a short report description.
-     *
-     * @return short description as a string
-     */
     @Override
     public String formatHeader(final Report report) {
         final String header = report.getReportName() + " Report: ";
@@ -68,11 +48,6 @@ public class ReportFormatterImpl implements ReportFormatter {
         }
     }
 
-    /**
-     * Get a failed validations report.
-     *
-     * @return report as a string
-     */
     private String formatFailures(final Report report) {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(LINE_SEPARATOR);
