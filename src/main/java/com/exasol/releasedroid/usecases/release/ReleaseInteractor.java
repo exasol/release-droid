@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.report.ReleaseResult;
+import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
@@ -51,7 +53,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Report makeRelease(final String repositoryFullName, final List<PlatformName> platformNames) {
-        final Report report = ReportImpl.releaseReport();
+        final Report report = Report.releaseReport();
         final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
         for (final PlatformName platformName : platformNames) {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");

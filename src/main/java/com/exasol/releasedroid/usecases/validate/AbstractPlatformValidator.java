@@ -1,7 +1,9 @@
 package com.exasol.releasedroid.usecases.validate;
 
 import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationResult;
 
 /**
  * Contains a common logic for classes implementing {@link RepositoryValidator}.
@@ -9,14 +11,14 @@ import com.exasol.releasedroid.usecases.*;
 public abstract class AbstractPlatformValidator implements RepositoryValidator {
     /**
      * Check that the workflow file exists and is reachable.
-     * 
+     *
      * @param repository      repository to check
      * @param filePath        path to the file
      * @param fileDescription workflow description for a report
      * @return new instance of {@link Report}
      */
     public Report validateFileExists(final Repository repository, final String filePath, final String fileDescription) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         try {
             repository.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));

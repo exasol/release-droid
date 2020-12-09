@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.usecases;
 
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
+import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -12,7 +13,7 @@ public class ReleasablePlatform implements RepositoryValidator, ReleaseMaker {
 
     /**
      * Create a new instance of {@link ReleasablePlatform}
-     * 
+     *
      * @param repositoryValidator instance of {@link RepositoryValidator}
      * @param releaseMaker        instance of {@link ReleaseMaker}
      */

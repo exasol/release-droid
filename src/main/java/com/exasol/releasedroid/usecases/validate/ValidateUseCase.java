@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import com.exasol.releasedroid.usecases.Report;
 import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.report.Report;
 
 /**
  * Interface for the Validate use case.

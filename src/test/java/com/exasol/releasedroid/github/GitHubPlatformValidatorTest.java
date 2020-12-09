@@ -2,9 +2,9 @@ package com.exasol.releasedroid.github;
 
 import static com.exasol.releasedroid.github.GitHubPlatformValidator.GITHUB_WORKFLOW_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -14,10 +14,10 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.repository.ReleaseLetter;
-import com.exasol.releasedroid.usecases.Report;
+import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.report.Report;
 
 class GitHubPlatformValidatorTest {
     @Test
@@ -38,7 +38,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-1")));
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-1"))));
     }
 
     @Test
@@ -68,7 +68,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
         final Report report = validator.validateGitHubTickets(repositoryMock, changesLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-2")));
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-2"))));
     }
 
     @Test
@@ -97,7 +97,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
         final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-10")));
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-10"))));
     }
 
     @Test
@@ -118,6 +118,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-9")));
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-9"))));
     }
 }

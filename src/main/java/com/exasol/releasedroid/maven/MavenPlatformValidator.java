@@ -5,7 +5,8 @@ import java.util.*;
 import org.apache.maven.model.PluginExecution;
 
 import com.exasol.releasedroid.repository.maven.*;
-import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
 
 /**
@@ -19,7 +20,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     @Override
     // [impl->dsn~validate-maven-release-workflow-exists~1]
     public Report validate(final Repository repository) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         report.merge(validateFileExists(repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
         report.merge(validateMavenPom(((MavenRepository) repository).getMavenPom()));
         return report;
@@ -27,7 +28,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateMavenPom(final MavenPom mavenPom) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         final List<MavenPlugin> plugins = mavenPom.getPlugins();
         report.merge(validatePluginsList(plugins));
         report.merge(validateGpgPlugin(plugins));
@@ -40,11 +41,11 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
                 return validateGpgPluginExecutions(plugin);
             }
         }
-        return ReportImpl.validationReport();
+        return Report.validationReport();
     }
 
     private Report validateGpgPluginExecutions(final MavenPlugin plugin) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         if (plugin.hasExecutions()) {
             report.addResult(validateExecutions(plugin.getExecutions()));
         } else {
@@ -66,7 +67,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
 
     private Result validateConfigurations(final PluginExecution execution) {
         final Object configuration = execution.getConfiguration();
-        if (configuration == null || !configuration.toString().contains("--pinentry-mode")) {
+        if ((configuration == null) || !configuration.toString().contains("--pinentry-mode")) {
             return ValidationResult.failedValidation("E-RR-VAL-16",
                     "The 'maven-gpg-plugin' misses configuration of the 'sign-artifacts' execution. "
                             + "PLease, check the user guide to add it.");
@@ -76,7 +77,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     }
 
     private Report validatePluginsList(final List<MavenPlugin> plugins) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         final Set<String> pluginNames = getPluginNames(plugins);
         for (final String requiredPlugin : REQUIRED_PLUGINS) {
             report.addResult(validatePlugin(pluginNames, requiredPlugin));

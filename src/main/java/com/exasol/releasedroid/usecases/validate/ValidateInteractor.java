@@ -1,11 +1,13 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import com.exasol.releasedroid.usecases.*;
+import static com.exasol.releasedroid.main.ReportLogger.logResults;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import static com.exasol.releasedroid.main.ReportLogger.logResults;
+import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.report.Report;
 
 /**
  * Implements the Validate use case.
@@ -41,14 +43,14 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     private Report runValidation(final Repository repository, final List<PlatformName> platformNames) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         report.merge(validateRepositories(repository));
         report.merge(validatePlatforms(repository, platformNames));
         return report;
     }
 
     private Report validatePlatforms(final Repository repository, final List<PlatformName> platformNames) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         for (final PlatformName platformName : platformNames) {
             report.merge(this.validateForPlatform(platformName, repository));
         }
@@ -65,7 +67,7 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     private Report validateRepositories(final Repository repository) {
-        final Report report = ReportImpl.validationReport();
+        final Report report = Report.validationReport();
         for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
             report.merge(repositoryValidator.validate(repository));
         }

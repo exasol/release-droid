@@ -1,9 +1,9 @@
 package com.exasol.releasedroid.maven;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -11,9 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.repository.maven.MavenRepository;
 import com.exasol.releasedroid.repository.maven.MavenPom;
-import com.exasol.releasedroid.usecases.Report;
+import com.exasol.releasedroid.repository.maven.MavenRepository;
+import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith(MockitoExtension.class)
 class MavenRepositoryValidatorTest {
@@ -39,7 +39,7 @@ class MavenRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
         assertAll(() -> assertThat(report.hasFailures(), equalTo(true)), //
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-11")),
-                () -> assertThat(report.getFailuresReport(), containsString("E-RR-VAL-12")));
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-11"))),
+                () -> assertTrue(report.getResults().stream().anyMatch(r -> r.toString().contains("E-RR-VAL-12"))));
     }
 }

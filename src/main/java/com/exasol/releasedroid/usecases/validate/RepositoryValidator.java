@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import com.exasol.releasedroid.usecases.Report;
 import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.report.Report;
 
 /**
  * This interface provides repository-related validations.

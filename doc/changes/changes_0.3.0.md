@@ -27,6 +27,7 @@ The old way is deprecated amd will be removed in future.
 * #76: Removed GitHubException from usecases.
 * #87: Renamed the project to Release Droid.
 * #97: Improved logging when the version validation fails.
+* #62: Decouple report formatting logic.
 
 ## Bug fixes
  
