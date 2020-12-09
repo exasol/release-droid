@@ -6,7 +6,7 @@ import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.Result;
 
 /**
- * Implementation of {@link ReportFormatter}.
+ * Formatter for {@link Report}.
  */
 public class ReportFormatter {
 

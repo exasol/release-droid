@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.report;
+package com.exasol.releasedroid.formatting;
 
 import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
 import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;

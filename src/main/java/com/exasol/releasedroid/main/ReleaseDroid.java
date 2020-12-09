@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.formatting.ReportFormatter;
-import com.exasol.releasedroid.formatting.ResponseFormatter;
+import com.exasol.releasedroid.formatting.SummaryFormatter;
+import com.exasol.releasedroid.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.Goal;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
@@ -23,10 +24,14 @@ public class ReleaseDroid {
     private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
+    private final ReportLogger reportLogger;
+    private final ResponseWriter responseWriter;
 
     public ReleaseDroid(final ReleaseUseCase releaseUseCase, final ValidateUseCase validateUseCase) {
         this.releaseUseCase = releaseUseCase;
         this.validateUseCase = validateUseCase;
+        this.responseWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
+        this.reportLogger = new ReportLogger(new ReportFormatter());
     }
 
     /**
@@ -43,12 +48,17 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
-        // TODO: this should be part of the use cases
+        this.logResults(reports);
         writeResponseToDisk(userInput, reports);
     }
 
+    private void logResults(final List<Report> reports) {
+        for (final Report report : reports) {
+            this.reportLogger.logResults(report);
+        }
+    }
+
     private void writeResponseToDisk(final UserInput userInput, final List<Report> reports) {
-        new ResponseWriter(new ResponseFormatter(new ReportFormatter())).writeResponseToDisk(REPORT_PATH, userInput,
-                reports);
+        this.responseWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
     }
 }

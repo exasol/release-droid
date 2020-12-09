@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.report;
+package com.exasol.releasedroid;
 
 import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
 import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
@@ -17,14 +17,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.releasedroid.formatting.*;
+import com.exasol.releasedroid.formatting.ReportFormatter;
+import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.main.ResponseWriter;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.*;
 
 class ReportWriterTest {
     @TempDir
-    private Path tempDir;
+    Path tempDir;
     private Path reportPath;
     private UserInput userInput;
     private Report validationReport;
@@ -44,7 +45,7 @@ class ReportWriterTest {
         this.releaseReport = Report.releaseReport();
         this.releaseReport.addResult(ReleaseResult.successfulRelease(GITHUB));
         this.releaseReport.addResult(ReleaseResult.failedRelease(MAVEN, "Wrong credentials"));
-        this.reportWriter = new ResponseWriter(new ResponseFormatter(new ReportFormatter()));
+        this.reportWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
     }
 
     @Test
@@ -53,7 +54,7 @@ class ReportWriterTest {
         this.reportWriter.writeResponseToDisk(this.reportPath, this.userInput,
                 List.of(this.validationReport, this.releaseReport));
         final List<String> report = Files.readAllLines(this.reportPath);
-        assertAll(() -> assertThat(report.size(), equalTo(18)), //
+        assertAll(() -> assertThat(report.size(), equalTo(16)), //
                 () -> assertThat(report.get(0), containsString(LocalDate.now().toString())), //
                 () -> assertThat(report.get(1), equalTo("")), //
                 () -> assertThat(report.get(2), equalTo("Goal: VALIDATE")), //
@@ -66,11 +67,10 @@ class ReportWriterTest {
                 () -> assertThat(report.get(9), equalTo("Fail.    SOME-CODE-2: Validations 3")), //
                 () -> assertThat(report.get(10), equalTo("Success. Validations 4")), //
                 () -> assertThat(report.get(11), equalTo("")), //
-                () -> assertThat(report.get(12), equalTo("")), //
-                () -> assertThat(report.get(13), equalTo("RELEASE Report: RELEASE FAILED!")), //
-                () -> assertThat(report.get(14), equalTo("Success. GITHUB")), //
-                () -> assertThat(report.get(15), equalTo("Fail.    MAVEN: Wrong credentials")), //
-                () -> assertThat(report.get(16), equalTo("")) //
+                () -> assertThat(report.get(12), equalTo("RELEASE Report: RELEASE FAILED!")), //
+                () -> assertThat(report.get(13), equalTo("Success. GITHUB")), //
+                () -> assertThat(report.get(14), equalTo("Fail.    MAVEN: Wrong credentials")), //
+                () -> assertThat(report.get(15), equalTo("")) //
         );
     }
 }

@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
@@ -20,7 +19,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ? extends ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
-    private final ReportLogger reportLogger;
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
@@ -28,15 +26,12 @@ public class ReleaseInteractor implements ReleaseUseCase {
      * @param validateUseCase   validate use case for validating the platforms
      * @param releaseMakers     map with platform names and release makers
      * @param repositoryGateway instance of {@link RepositoryGateway]}
-     * @param reportLogger      instance of {@link ReportLogger]}
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase,
-            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway,
-            final ReportLogger reportLogger) {
+            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.repositoryGateway = repositoryGateway;
-        this.reportLogger = reportLogger;
     }
 
     @Override
@@ -49,7 +44,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
             final Report releaseReport = this.makeRelease(userInput.getRepositoryName(), userInput.getPlatformNames());
-            this.reportLogger.logResults(releaseReport);
             reports.add(releaseReport);
         }
         return reports;

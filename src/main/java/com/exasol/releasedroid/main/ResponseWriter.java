@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.formatting.ResponseFormatter;
+import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.Report;
 
@@ -14,14 +14,14 @@ import com.exasol.releasedroid.usecases.report.Report;
  */
 public class ResponseWriter {
     private static final Logger LOGGER = Logger.getLogger(ResponseWriter.class.getName());
-    private final ResponseFormatter responseFormatter;
+    private final SummaryFormatter responseFormatter;
 
     /**
      * Create a new instance of {@link ResponseWriter}.
      *
      * @param responseFormatter formatter for the user response
      */
-    public ResponseWriter(final ResponseFormatter responseFormatter) {
+    public ResponseWriter(final SummaryFormatter responseFormatter) {
         this.responseFormatter = responseFormatter;
     }
 

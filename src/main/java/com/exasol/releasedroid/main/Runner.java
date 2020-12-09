@@ -5,13 +5,10 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.LogManager;
 
-import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.github.*;
 import com.exasol.releasedroid.logging.LogFormatter;
-import com.exasol.releasedroid.logging.ReportLoggerImpl;
 import com.exasol.releasedroid.maven.*;
 import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.validate.*;
@@ -42,11 +39,10 @@ public class Runner {
         final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
         final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
         final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
-        final ReportLogger reportLogger = new ReportLoggerImpl(new ReportFormatter());
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
-                repositoryGateway, reportLogger);
+                repositoryGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseablePlatforms,
-                repositoryGateway, reportLogger);
+                repositoryGateway);
         return new ReleaseDroid(releaseUseCase, validateUseCase);
     }
 

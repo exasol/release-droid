@@ -10,19 +10,15 @@ import java.util.stream.Collectors;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.Report;
 
-public class ResponseFormatter {
+public class SummaryFormatter {
     private final ReportFormatter reportFormatter;
 
-    public ResponseFormatter(final ReportFormatter reportFormatter) {
-        super();
+    public SummaryFormatter(final ReportFormatter reportFormatter) {
         this.reportFormatter = reportFormatter;
     }
 
     public String formatResponse(final UserInput userInput, final List<Report> reports) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(formatInputUser(userInput));
-        stringBuilder.append(formatReports(reports));
-        return stringBuilder.toString();
+        return formatInputUser(userInput) + formatReports(reports);
     }
 
     private String formatInputUser(final UserInput userInput) {
