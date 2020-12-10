@@ -54,7 +54,6 @@ class GitRepositoryValidatorTest {
 
     @Test
     // [utest->dsn~validate-changes-file-contains-release-version~1]
-    // [utest->dsn~validate-changes-file-contains-release-date~1]
     // [utest->dsn~validate-changes-file-contains-release-letter-body~1]
     void testValidateChangesValid() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
@@ -66,7 +65,6 @@ class GitRepositoryValidatorTest {
     }
 
     @Test
-    // [utest->dsn~validate-changes-file-contains-release-date~1]
     void testValidateChangesInvalidDateWarning() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));

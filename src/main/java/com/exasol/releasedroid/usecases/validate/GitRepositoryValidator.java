@@ -132,7 +132,6 @@ public class GitRepositoryValidator implements RepositoryValidator {
         return report;
     }
 
-    // [impl->dsn~validate-changes-file-contains-release-date~1]
     private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
         final Report report = Report.validationReport();
         final LocalDate dateToday = LocalDate.now();
