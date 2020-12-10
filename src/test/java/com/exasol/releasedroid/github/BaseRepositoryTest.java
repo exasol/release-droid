@@ -17,9 +17,10 @@ import org.kohsuke.github.*;
 import org.mockito.Mockito;
 
 import com.exasol.releasedroid.repository.RepositoryException;
+import com.exasol.releasedroid.usecases.BaseRepository;
 import com.exasol.releasedroid.usecases.Repository;
 
-class AbstractRepositoryTest {
+class BaseRepositoryTest {
     @Test
     // [utest->dsn~repository-retrieves-branch-content~1]
     void testCreateAbstractGitHubGitRepositoryContentWithInvalidBranch() throws IOException {
@@ -27,8 +28,7 @@ class AbstractRepositoryTest {
         final String branchName = "my_branch";
         when(ghRepositoryMock.getBranch(branchName)).thenThrow(IOException.class);
         final Optional<String> latestTag = Optional.of("1.2.8");
-        assertThrows(RepositoryException.class,
-                () -> new DummyRepository(ghRepositoryMock, branchName, latestTag, ""));
+        assertThrows(RepositoryException.class, () -> new DummyRepository(ghRepositoryMock, branchName, latestTag, ""));
     }
 
     @Test
@@ -103,7 +103,7 @@ class AbstractRepositoryTest {
                 () -> verify(ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
     }
 
-    private static final class DummyRepository extends Repository {
+    private static final class DummyRepository extends BaseRepository {
         protected DummyRepository(final GHRepository repository, final String branch, final Optional<String> latestTag,
                 final String fullName) {
             super(repository, branch, fullName, latestTag);

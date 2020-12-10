@@ -253,17 +253,6 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate Changes File Contains Correct Release Date
-`dsn~validate-changes-file-contains-release-date~1`
-
-RR validates that `changes_<version>.md` file contains today's date.
-
-Covers:
-
-* `req~validate-mandatory-directory-tree-elements~1`
-
-Needs: impl, utest
-
 #### Validate Changes File Contains Release Letter Body
 `dsn~validate-changes-file-contains-release-letter-body~1`
 

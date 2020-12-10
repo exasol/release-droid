@@ -137,28 +137,19 @@ public class GitRepositoryValidator implements RepositoryValidator {
         final Report report = Report.validationReport();
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
-        if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
-            report.merge(reportWrongDate(changes.getFileName(), isDefaultBranch, dateToday));
-        } else {
-            report.addResult(
-                    ValidationResult.successfulValidation("Release date in '" + changes.getFileName() + "' file."));
+        if (isDefaultBranch && (releaseDate.isEmpty()) || !(releaseDate.get().equals(dateToday))) {
+            report.merge(reportWrongDate(changes.getFileName()));
         }
         return report;
     }
 
-    private Report reportWrongDate(final String fileName, final boolean isDefaultBranch, final LocalDate dateToday) {
+    private Report reportWrongDate(final String fileName) {
         final Report report = Report.validationReport();
-        if (isDefaultBranch) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-7",
-                    "The file '" + fileName + "' doesn't contain release's date: " + dateToday.toString()
-                            + ". PLease, add or update the release date."));
-        } else {
-            final String warningMessage = "W-RR-VAL-2. Don't forget to change the date in the '" + fileName
-                    + "' file before you release.";
-            report.addResult(ValidationResult.successfulValidation(
-                    "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
-            LOGGER.warning(warningMessage);
-        }
+        final String warningMessage = "W-RR-VAL-2. The release date in '" + fileName
+                + "' is outdated. The Release Droid will try to change it automatically.";
+        report.addResult(ValidationResult.successfulValidation(
+                "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
+        LOGGER.warning(warningMessage);
         return report;
     }
 

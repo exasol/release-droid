@@ -42,7 +42,7 @@ public class Runner {
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
                 repositoryGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseablePlatforms,
-                repositoryGateway);
+                repositoryGateway, new GitHubRepositoryModifier());
         return new ReleaseDroid(releaseUseCase, validateUseCase);
     }
 

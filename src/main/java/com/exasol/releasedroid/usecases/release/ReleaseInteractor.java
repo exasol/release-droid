@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.exasol.releasedroid.repository.RepositoryModifier;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
@@ -20,21 +21,24 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ? extends ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
+    private final RepositoryModifier repositoryModifier;
     private final ReportLogger reportLogger = new ReportLogger();
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
-     *
-     * @param validateUseCase   validate use case for validating the platforms
-     * @param releaseMakers     map with platform names and release makers
-     * @param repositoryGateway instance of {@link RepositoryGateway]}
-     * @param reportLogger      instance of {@link ReportLogger]}
+     * 
+     * @param validateUseCase    validate use case for validating the platforms
+     * @param releaseMakers      map with platform names and release makers
+     * @param repositoryGateway  instance of {@link RepositoryGateway}
+     * @param repositoryModifier instance of {@link RepositoryModifier}
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase,
-            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway) {
+            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway,
+            final RepositoryModifier repositoryModifier) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.repositoryGateway = repositoryGateway;
+        this.repositoryModifier = repositoryModifier;
     }
 
     @Override
@@ -60,6 +64,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private Report makeRelease(final String repositoryFullName, final List<PlatformName> platformNames) {
         final Report report = Report.releaseReport();
         final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
+        prepareRepositoryForRelease(repository);
         for (final PlatformName platformName : platformNames) {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             try {
@@ -71,6 +76,10 @@ public class ReleaseInteractor implements ReleaseUseCase {
             }
         }
         return report;
+    }
+
+    private void prepareRepositoryForRelease(final Repository repository) {
+        this.repositoryModifier.writeReleaseDate(repository);
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {

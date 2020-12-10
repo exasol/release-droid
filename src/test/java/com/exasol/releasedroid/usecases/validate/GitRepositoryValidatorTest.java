@@ -67,19 +67,6 @@ class GitRepositoryValidatorTest {
 
     @Test
     // [utest->dsn~validate-changes-file-contains-release-date~1]
-    void testValidateChangesInvalidDate() {
-        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
-        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
-        when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
-        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
-        when(changesMock.getFileName()).thenReturn("file");
-        final Report report = this.validator.validateChanges(changesMock, "2.1.0", true);
-        assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-7"));
-    }
-
-    @Test
-    // [utest->dsn~validate-changes-file-contains-release-date~1]
     void testValidateChangesInvalidDateWarning() {
         final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
         when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
