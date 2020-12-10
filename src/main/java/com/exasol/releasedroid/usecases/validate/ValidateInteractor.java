@@ -1,12 +1,11 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import static com.exasol.releasedroid.main.ReportLogger.logResults;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
 
 /**
@@ -17,12 +16,14 @@ public class ValidateInteractor implements ValidateUseCase {
     private final List<RepositoryValidator> repositoryValidators;
     private final Map<PlatformName, ? extends RepositoryValidator> platformValidators;
     private final RepositoryGateway repositoryGateway;
+    private final ReportLogger reportLogger = new ReportLogger();
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
      *
      * @param repositoryValidators list of repository validators
      * @param repositoryGateway    the repositoryGateway
+     * @param reportLogger         instance of {@link ReportLogger]}
      */
     public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
             final Map<PlatformName, ? extends RepositoryValidator> platformValidators,
@@ -40,6 +41,10 @@ public class ValidateInteractor implements ValidateUseCase {
         final Report validationReport = runValidation(repository, userInput.getPlatformNames());
         logResults(validationReport);
         return validationReport;
+    }
+
+    private void logResults(final Report releaseReport) {
+        this.reportLogger.logResults(releaseReport);
     }
 
     private Report runValidation(final Repository repository, final List<PlatformName> platformNames) {

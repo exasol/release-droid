@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.report.ReportFormatterImpl;
-import com.exasol.releasedroid.report.ReportWriter;
+import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.Goal;
 import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
@@ -23,10 +23,12 @@ public class ReleaseDroid {
     private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
+    private final ResponseWriter responseWriter;
 
     public ReleaseDroid(final ReleaseUseCase releaseUseCase, final ValidateUseCase validateUseCase) {
         this.releaseUseCase = releaseUseCase;
         this.validateUseCase = validateUseCase;
+        this.responseWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
     }
 
     /**
@@ -43,7 +45,10 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
-        // TODO: this should part of the usecases
-        new ReportWriter(userInput, REPORT_PATH, new ReportFormatterImpl()).writeReportsToFile(reports);
+        writeResponseToDisk(userInput, reports);
+    }
+
+    private void writeResponseToDisk(final UserInput userInput, final List<Report> reports) {
+        this.responseWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
     }
 }

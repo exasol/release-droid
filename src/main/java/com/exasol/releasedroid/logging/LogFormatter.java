@@ -1,11 +1,11 @@
-package com.exasol.releasedroid.main;
+package com.exasol.releasedroid.logging;
 
 import java.util.logging.*;
 
 /**
  * This formatter colors messages of level SEVERE and WARNING to red.
  */
-public class ReleaseDroidFormatter extends Formatter {
+public class LogFormatter extends Formatter {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_RESET = "\u001B[0m";
     private final Formatter formatter = new SimpleFormatter();

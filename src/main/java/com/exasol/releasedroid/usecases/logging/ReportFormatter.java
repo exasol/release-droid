@@ -1,22 +1,45 @@
-package com.exasol.releasedroid.report;
+package com.exasol.releasedroid.usecases.logging;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
-import com.exasol.releasedroid.usecases.report.*;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.Result;
 
 /**
- * Implementation of {@link ReportFormatter}.
+ * Formatter for {@link Report}.
  */
-public class ReportFormatterImpl implements ReportFormatter {
+public class ReportFormatter {
 
-    @Override
+    /**
+     * Get a formatted report as a string.
+     *
+     * @return report as a formatted string
+     */
     public String formatReport(final Report report) {
         return this.formatHeader(report) + LINE_SEPARATOR + this.formatBody(report);
     }
 
-    @Override
+    /**
+     * Get a formatted report with only its failed results as a string.
+     *
+     * @return report as a formatted string
+     */
     public String formatReportWithFailuresOnly(final Report report) {
         return this.formatHeader(report) + LINE_SEPARATOR + this.formatFailures(report);
+    }
+
+    /**
+     * Get a short report description.
+     *
+     * @return short description as a string
+     */
+    public String formatHeader(final Report report) {
+        final String header = report.getReportName() + " Report: ";
+        if (report.hasFailures()) {
+            return header + report.getReportName() + " FAILED!";
+        } else {
+            return header + report.getReportName().toString().toLowerCase() + " is successful!";
+        }
     }
 
     private String formatBody(final Report report) {
@@ -26,16 +49,6 @@ public class ReportFormatterImpl implements ReportFormatter {
             stringBuilder.append(LINE_SEPARATOR);
         }
         return stringBuilder.toString();
-    }
-
-    @Override
-    public String formatHeader(final Report report) {
-        final String header = report.getReportName() + " Report: ";
-        if (report.hasFailures()) {
-            return header + report.getReportName() + " FAILED!";
-        } else {
-            return header + report.getReportName().toString().toLowerCase() + " is successful!";
-        }
     }
 
     private String formatFailures(final Report report) {
@@ -49,4 +62,5 @@ public class ReportFormatterImpl implements ReportFormatter {
         }
         return stringBuilder.toString();
     }
+
 }
