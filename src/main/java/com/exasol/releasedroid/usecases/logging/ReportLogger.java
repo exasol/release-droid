@@ -1,8 +1,7 @@
-package com.exasol.releasedroid.logging;
+package com.exasol.releasedroid.usecases.logging;
 
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.Report;
 
 /**
@@ -12,11 +11,7 @@ public class ReportLogger {
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
     private static final Logger LOGGER = Logger.getLogger(ReportLogger.class.getName());
-    private final ReportFormatter reportFormatter;
-
-    public ReportLogger(final ReportFormatter reportFormatter) {
-        this.reportFormatter = reportFormatter;
-    }
+    private final ReportFormatter reportFormatter = new ReportFormatter();
 
     /**
      * Log report results.

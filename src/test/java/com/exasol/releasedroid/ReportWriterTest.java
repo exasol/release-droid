@@ -17,10 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.main.ResponseWriter;
 import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.*;
 
 class ReportWriterTest {

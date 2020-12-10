@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.formatting;
+package com.exasol.releasedroid.usecases.logging;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
