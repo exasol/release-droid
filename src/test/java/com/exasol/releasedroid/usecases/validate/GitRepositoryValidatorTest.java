@@ -71,7 +71,18 @@ class GitRepositoryValidatorTest {
         when(changesMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.of(2020, 8, 1)));
         when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
         when(changesMock.getFileName()).thenReturn("file");
-        final Report validationReport = this.validator.validateChanges(changesMock, "2.1.0", false);
+        final Report validationReport = this.validator.validateChanges(changesMock, "2.1.0", true);
+        assertThat(validationReport.hasFailures(), equalTo(false));
+    }
+
+    @Test
+    void testValidateChangesNoDateWarning() {
+        final ReleaseLetter changesMock = Mockito.mock(ReleaseLetter.class);
+        when(changesMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(changesMock.getReleaseDate()).thenReturn(Optional.empty());
+        when(changesMock.getBody()).thenReturn(Optional.of("## Features"));
+        when(changesMock.getFileName()).thenReturn("file");
+        final Report validationReport = this.validator.validateChanges(changesMock, "2.1.0", true);
         assertThat(validationReport.hasFailures(), equalTo(false));
     }
 
