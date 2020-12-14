@@ -136,10 +136,15 @@ public class GitRepositoryValidator implements RepositoryValidator {
         final Report report = Report.validationReport();
         final LocalDate dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
-        if (isDefaultBranch && (releaseDate.isEmpty() || !releaseDate.get().equals(dateToday))) {
+        if (missingReleaseDate(isDefaultBranch, dateToday, releaseDate)) {
             report.merge(reportWrongDate(changes.getFileName()));
         }
         return report;
+    }
+
+    private boolean missingReleaseDate(final boolean isDefaultBranch, final LocalDate dateToday,
+            final Optional<LocalDate> releaseDate) {
+        return isDefaultBranch && (releaseDate.isEmpty() || !releaseDate.get().equals(dateToday));
     }
 
     private Report reportWrongDate(final String fileName) {
