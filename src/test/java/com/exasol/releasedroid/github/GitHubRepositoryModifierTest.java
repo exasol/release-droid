@@ -21,6 +21,7 @@ import com.exasol.releasedroid.repository.*;
 import com.exasol.releasedroid.usecases.BaseRepository;
 
 @ExtendWith(MockitoExtension.class)
+// [utest->dsn~automatically-modifying-release-date~1]
 class GitHubRepositoryModifierTest {
     private static final String VERSION = "1.1.1";
     private static final String CHANGES_FILE_NAME = "changes_1.1.1.md";

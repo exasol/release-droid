@@ -340,6 +340,19 @@ Needs: impl, utest
 
 ## Release
 
+### Release Preparations
+
+##### Automatically Modifying Release Date
+`dsn~automatically-modifying-release-date~1`
+
+RR commits a release date before starting the release process if it's possible to detect a place where release date is written. We assume that the ReleaseLetter contains `, released (xxxx-xx-xx)` entry in the header.
+
+Covers:
+
+* `req~automatically-modifying-release-date~1`
+
+Needs: impl, utest
+
 ### Release on GitHub
 
 #### Create new GitHub Release

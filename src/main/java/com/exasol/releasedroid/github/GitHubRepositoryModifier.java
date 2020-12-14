@@ -13,6 +13,7 @@ import com.exasol.releasedroid.usecases.Repository;
  */
 public class GitHubRepositoryModifier implements RepositoryModifier {
     @Override
+    // [impl->dsn~automatically-modifying-release-date~1]
     public void writeReleaseDate(final Repository repository) {
         final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
