@@ -35,3 +35,7 @@ Code name: Renamed project, monitoring of GitHub release workflows
 ## Bug fixes
 
 * #89: Fixed false positive validation for Github open tickets
+
+## Dependency updates
+
+* Added `com.fasterxml.jackson.core:jackson-databind:jar:2.12.0` to avoid CVE-2020-25649.
