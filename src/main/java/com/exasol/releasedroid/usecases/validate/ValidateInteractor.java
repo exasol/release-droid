@@ -23,7 +23,6 @@ public class ValidateInteractor implements ValidateUseCase {
      *
      * @param repositoryValidators list of repository validators
      * @param repositoryGateway    the repositoryGateway
-     * @param reportLogger         instance of {@link ReportLogger]}
      */
     public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
             final Map<PlatformName, ? extends RepositoryValidator> platformValidators,

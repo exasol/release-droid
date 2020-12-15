@@ -314,6 +314,17 @@ Covers:
 
 Needs: dsn
 
+##### Automatically Modifying Release Date
+`req~automatically-modifying-release-date~1`
+
+RR can automatically commit a release date before starting the release process.
+
+Covers:
+
+* [feat~github-support~1](#github-support)
+
+Needs: dsn
+
 ##### GitHub Release Description From Release Letter
 `req~gitub-release-description-from-release-letter~1`
 

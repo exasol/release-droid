@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.repository;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.DATE_REGEX;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -80,7 +79,7 @@ public final class ReleaseLetterParser {
     }
 
     private String getFirstLine(final String headerPart) {
-        final int firstLineEnd = headerPart.indexOf('\n');
+        final int firstLineEnd = headerPart.indexOf(LINE_SEPARATOR);
         return firstLineEnd == -1 ? headerPart : headerPart.substring(0, firstLineEnd);
     }
 

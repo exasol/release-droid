@@ -72,7 +72,7 @@ public class ReleaseLetter {
     /**
      * Get a release letter body.
      * 
-     * @return body as a atring
+     * @return body as a string
      */
     public Optional<String> getBody() {
         return Optional.ofNullable(this.body);

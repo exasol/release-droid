@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.repository.maven;
 
 import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.BaseRepository;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * This class represents a Maven-based Java project's content.
  */
-public class MavenRepository extends Repository {
+public class MavenRepository extends BaseRepository {
     private static final String POM_PATH = "pom.xml";
     private static final String PATH_TO_TARGET_DIR = "./target/";
     private final MavenPom pom;

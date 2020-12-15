@@ -253,17 +253,6 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate Changes File Contains Correct Release Date
-`dsn~validate-changes-file-contains-release-date~1`
-
-RR validates that `changes_<version>.md` file contains today's date.
-
-Covers:
-
-* `req~validate-mandatory-directory-tree-elements~1`
-
-Needs: impl, utest
-
 #### Validate Changes File Contains Release Letter Body
 `dsn~validate-changes-file-contains-release-letter-body~1`
 
@@ -350,6 +339,19 @@ Covers:
 Needs: impl, utest
 
 ## Release
+
+### Release Preparations
+
+##### Automatically Modifying Release Date
+`dsn~automatically-modifying-release-date~1`
+
+RR commits a release date before starting the release process if it's possible to detect a place where release date is written. We assume that the ReleaseLetter contains `, released (xxxx-xx-xx)` entry in the header.
+
+Covers:
+
+* `req~automatically-modifying-release-date~1`
+
+Needs: impl, utest
 
 ### Release on GitHub
 
