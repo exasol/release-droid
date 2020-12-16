@@ -59,7 +59,7 @@ public abstract class BaseRepository implements Repository {
                                                   .message("Cannot find or read the file {{filePath}} in the repository {{repositoryName}}.")
                                                   .parameter("filePath", filePath) //
                                                   .parameter("repositoryName", this.ghRepository.getName()) //
-                                                  .mitigation("Please add this file according to the User Guide.").toString(), exception);
+                                                  .mitigation("Please add this file according to the user guide.").toString(), exception);
         }
     }
 
@@ -76,7 +76,7 @@ public abstract class BaseRepository implements Repository {
                                                   .message("Cannot update the file {{filePath}} in the repository {{repositoryName}}.")
                                                   .parameter("filePath", filePath) //
                                                   .parameter("repositoryName", this.ghRepository.getName()) //
-                                                  .mitigation("Please add this file according to the User Guide.").toString(), exception);
+                                                  .mitigation("Please add this file according to the user guide.").toString(), exception);
         }
     }
 

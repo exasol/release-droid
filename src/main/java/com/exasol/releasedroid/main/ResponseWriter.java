@@ -40,7 +40,7 @@ public class ResponseWriter {
             writer.write(this.responseFormatter.formatResponse(userInput, reports));
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-RW-2").message(" Unable to write a report.").toString(), exception);
+                    ExaError.messageBuilder("E-RR-RW-2").message("Unable to write a report.").toString(), exception);
         }
         LOGGER.info(() -> "A full report is available: " + reportPath.toString());
     }
