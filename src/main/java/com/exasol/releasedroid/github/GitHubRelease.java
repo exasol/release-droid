@@ -2,6 +2,8 @@ package com.exasol.releasedroid.github;
 
 import java.util.Map;
 
+import com.exasol.errorreporting.ExaError;
+
 /**
  * Represents a GitHub release.
  */
@@ -165,8 +167,9 @@ public class GitHubRelease {
         }
 
         private IllegalArgumentException createExceptionWithInvalidField(final String fieldName) {
-            return new IllegalArgumentException("E-GH-REL-1: Cannot create a GitHubRelease class, because '" + fieldName
-                    + "' field is null or empty.");
+            return new IllegalArgumentException(ExaError.messageBuilder("E-GH-REL-1")
+                    .message("Cannot create a GitHubRelease class, because {{fieldName}} field is null or empty.")
+                    .parameter("fieldName", fieldName).toString());
         }
     }
 }

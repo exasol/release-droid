@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -38,7 +39,8 @@ public class ResponseWriter {
         try (final FileWriter writer = new FileWriter(reportFile.getAbsoluteFile())) {
             writer.write(this.responseFormatter.formatResponse(userInput, reports));
         } catch (final IOException exception) {
-            throw new IllegalStateException("E-RR-RW-2: Unable to write a report.", exception);
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("E-RR-RW-2").message(" Unable to write a report.").toString(), exception);
         }
         LOGGER.info(() -> "A full report is available: " + reportPath.toString());
     }
@@ -49,7 +51,9 @@ public class ResponseWriter {
             final boolean createdNewFile = reportFile.createNewFile();
             logFilePreparation(createdNewFile);
         } catch (final IOException exception) {
-            throw new IllegalStateException("E-RR-RW-1: Unable to prepare a file for a report.", exception);
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("E-RR-RW-1").message("Unable to prepare a file for a report.").toString(),
+                    exception);
         }
         return reportFile;
     }

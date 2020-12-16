@@ -1,6 +1,9 @@
 package com.exasol.releasedroid.usecases;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class stores user input.
@@ -167,8 +170,8 @@ public class UserInput {
 
         private void validateGoalAndBranch() {
             if ((this.goal == Goal.RELEASE) && (this.branch != null)) {
-                throw new IllegalArgumentException(
-                        "E-RR-1: Please, remove branch parameter if you want to make a release.");
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-1")
+                        .message("Please, remove branch parameter if you want to make a release.").toString());
             }
         }
 
@@ -185,9 +188,9 @@ public class UserInput {
         }
 
         private void throwExceptionForMissingParameter(final String exceptionCode, final String parameter) {
-            final String message = exceptionCode + ": Please, specify a mandatory parameter `" + parameter
-                    + "` and re-run the Release Droid";
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(ExaError.messageBuilder(exceptionCode)
+                    .message("Please, specify a mandatory parameter {{parameter}} and re-run the Release Droid")
+                    .parameter("parameter", parameter).toString());
         }
     }
 }

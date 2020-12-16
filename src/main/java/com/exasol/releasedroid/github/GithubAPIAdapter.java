@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.kohsuke.github.*;
 
+import com.exasol.errorreporting.ErrorMessageBuilder;
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.repository.maven.MavenRepository;
 import com.exasol.releasedroid.usecases.Repository;
@@ -45,16 +47,17 @@ public class GithubAPIAdapter implements GithubGateway {
 
     private GitHubException wrapGitHubException(final String repositoryName, final IOException exception) {
         final String originalMessage = exception.getMessage();
-        final String newMessage;
+        final ErrorMessageBuilder errorMessageBuilder = ExaError.messageBuilder("E-RR-GH-1");
         if (originalMessage.contains("Not Found")) {
-            newMessage = "Repository '" + repositoryName
-                    + "' not found. The repository doesn't exist or the user doesn't have permissions to see it.";
+            errorMessageBuilder.message(
+                    "Repository {{input}} not found. The repository doesn't exist or the user doesn't have permissions to see it.")
+                    .parameter("repositoryName", repositoryName);
         } else if (originalMessage.contains("Bad credentials")) {
-            newMessage = "A GitHub account with specified username and password doesn't exist.";
+            errorMessageBuilder.message("A GitHub account with specified username and password doesn't exist.");
         } else {
-            newMessage = originalMessage;
+            errorMessageBuilder.message(originalMessage);
         }
-        return new GitHubException("E-GH-1: " + newMessage, exception);
+        return new GitHubException(errorMessageBuilder.toString(), exception);
     }
 
     @Override
@@ -69,7 +72,9 @@ public class GithubAPIAdapter implements GithubGateway {
                     .create();
             return ghRelease.getUploadUrl();
         } catch (final IOException exception) {
-            throw new GitHubException("F-RR-GH-3: Exception happened during releasing a new tag on the GitHub.",
+            throw new GitHubException(
+                    ExaError.messageBuilder("F-RR-GH-3")
+                            .message("Exception happened during releasing a new tag on the GitHub.").toString(),
                     exception);
         }
     }
@@ -88,7 +93,9 @@ public class GithubAPIAdapter implements GithubGateway {
             return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
                     .collect(Collectors.toSet());
         } catch (final IOException exception) {
-            throw new GitHubException("F-RR-GH-4: Unable to retrieve a list of closed tickets on the GitHub.",
+            throw new GitHubException(
+                    ExaError.messageBuilder("F-RR-GH-4")
+                            .message("Unable to retrieve a list of closed tickets on the GitHub.").toString(),
                     exception);
         }
     }
@@ -99,8 +106,9 @@ public class GithubAPIAdapter implements GithubGateway {
             final GHRelease release = this.getRepository(repositoryFullName).getLatestRelease();
             return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
         } catch (final IOException exception) {
-            throw new RepositoryException(
-                    "F-RR-GH-5: GitHub connection problem happened during retrieving the latest release.", exception);
+            throw new RepositoryException(ExaError.messageBuilder("F-RR-GH-5")
+                    .message("GitHub connection problem happened during retrieving the latest release.").toString(),
+                    exception);
         }
     }
 
@@ -141,7 +149,8 @@ public class GithubAPIAdapter implements GithubGateway {
         try {
             return new URI(uriString);
         } catch (final URISyntaxException exception) {
-            throw new GitHubException("F-RR-GH-1: Invalid URI: " + uriString, exception);
+            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-1").message("Invalid URI: {{uriString}}")
+                    .unquotedParameter("uriString", uriString).toString(), exception);
         }
     }
 
@@ -162,7 +171,9 @@ public class GithubAPIAdapter implements GithubGateway {
             return build.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (final IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new GitHubException("F-RR-GH-2: Exception happened during sending an HTTP request to the GitHub.",
+            throw new GitHubException(
+                    ExaError.messageBuilder("F-RR-GH-2")
+                            .message("Exception happened during sending an HTTP request to the GitHub.").toString(),
                     exception);
         }
     }
@@ -170,7 +181,9 @@ public class GithubAPIAdapter implements GithubGateway {
     private void validateResponse(final HttpResponse<String> response) throws GitHubException {
         if ((response.statusCode() < HttpURLConnection.HTTP_OK)
                 || (response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE)) {
-            throw new GitHubException("F-RR-GH-6: An executing workflow HTTP request failed. " + response.body());
+            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-6")
+                    .message("An executing workflow HTTP request failed. Cause: {{cause}}")
+                    .unquotedParameter("cause", response.body()).toString());
         }
     }
 
@@ -218,9 +231,10 @@ public class GithubAPIAdapter implements GithubGateway {
 
     private void validateWorkflowConclusion(final String workflowConclusion) throws GitHubException {
         if (!workflowConclusion.equals("success")) {
-            throw new GitHubException(
-                    "E-RR-GH-1: Workflow run failed. Please check the action logs on the GitHub to analyze the problem. Run result: "
-                            + workflowConclusion);
+            throw new GitHubException(ExaError.messageBuilder("E-RR-GH-2")
+                    .message("Workflow run failed. Run result: {{workflowConclusion}}")
+                    .parameter("workflowConclusion", workflowConclusion)
+                    .mitigation("Please check the action logs on the GitHub to analyze the problem.").toString());
         }
     }
 }

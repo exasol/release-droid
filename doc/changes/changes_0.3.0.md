@@ -30,6 +30,7 @@ Code name: Renamed project, monitoring of GitHub release workflows
 * #87: Renamed the project to Release Droid.
 * #97: Improved logging when the version validation fails.
 * #62: Decouple report formatting logic.
+* #101: Added error builder.
 * #105: Organize logging and formatting packages.
 
 ## Bug fixes
@@ -39,3 +40,4 @@ Code name: Renamed project, monitoring of GitHub release workflows
 ## Dependency updates
 
 * Added `com.fasterxml.jackson.core:jackson-databind:jar:2.12.0` to avoid CVE-2020-25649.
+* Added `com.exasol:error-reporting-java:0.2.1`

@@ -1,8 +1,9 @@
 package com.exasol.releasedroid.usecases;
 
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class contains supported release platforms.
@@ -38,9 +39,11 @@ public enum PlatformName {
         } catch (final IllegalArgumentException exception) {
             final Set<String> availablePlatforms = Arrays.stream(PlatformName.values())
                     .map(name -> name.toString().toLowerCase()).collect(Collectors.toSet());
-            throw new IllegalArgumentException(MessageFormat.format(
-                    "E-RR-PL-1: Cannot parse a platform '{}'. Please, use one of the following platforms: {}", platform,
-                    String.join(",", availablePlatforms)), exception);
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-PL-1") //
+                    .message("Cannot parse a platform {{platform}}.").parameter("platform", platform)
+                    .mitigation("Please, use one of the following platforms: {{availablePlatforms}}.")
+                    .unquotedParameter("availablePlatforms", String.join(",", availablePlatforms)).toString(),
+                    exception);
         }
     }
 }

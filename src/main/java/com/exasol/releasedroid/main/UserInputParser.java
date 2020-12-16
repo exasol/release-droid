@@ -2,6 +2,7 @@ package com.exasol.releasedroid.main;
 
 import org.apache.commons.cli.*;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.UserInput;
 
 /**
@@ -52,7 +53,8 @@ public class UserInputParser {
         } catch (final ParseException exception) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Release Droid", options);
-            throw new IllegalArgumentException("E-RR-RUN-1: " + exception.getMessage());
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-RUN-1").message("{{cause}}")
+                    .unquotedParameter("cause", exception.getMessage()).toString());
         }
     }
 }

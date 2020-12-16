@@ -5,6 +5,7 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARA
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.*;
 import com.exasol.releasedroid.usecases.Repository;
 
@@ -45,8 +46,9 @@ public class GitHubRepositoryModifier implements RepositoryModifier {
                 final String substring = getSubstringToReplace(changes);
                 return changes.replace(substring, "released " + LocalDate.now().toString() + LINE_SEPARATOR);
             } else {
-                throw new RepositoryException("E-REP-GH-1: Unable to detect a release date stab in the changes file. "
-                        + "Please, update the release date manually");
+                throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-1")
+                        .message("Unable to detect a release date stab in the changes file.")
+                        .mitigation("Please, update the release date manually").toString());
             }
         }
     }

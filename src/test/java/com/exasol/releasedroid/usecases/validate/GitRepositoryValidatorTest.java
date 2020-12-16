@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.usecases.validate;
 
-import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,8 +48,8 @@ class GitRepositoryValidatorTest {
         final String changelog = "";
         final Report report = this.validator.validateChangelog(changelog, "1.0.0");
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-5: The file "
-                        + "'changelog.md' doesn't contain the following link, please add '[1.0.0](changes_1.0.0.md)' to the file"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-5: The file "
+                        + "'changelog.md' doesn't contain the following link. Please add '[1.0.0](changes_1.0.0.md)' to the file")));
     }
 
     @Test
@@ -96,7 +96,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getFileName()).thenReturn("file");
         final Report report = this.validator.validateChanges(changesMock, "3.1.0", true);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-6"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-6")));
     }
 
     @Test
@@ -109,7 +109,7 @@ class GitRepositoryValidatorTest {
         when(changesMock.getFileName()).thenReturn("file");
         final Report report = this.validator.validateChanges(changesMock, "2.1.0", true);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-8"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-8")));
     }
 
     @ParameterizedTest
@@ -118,7 +118,7 @@ class GitRepositoryValidatorTest {
     void testValidateInvalidVersionFormat(final String version) {
         final Report report = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-3"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-3")));
     }
 
     @ParameterizedTest
@@ -146,8 +146,9 @@ class GitRepositoryValidatorTest {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final Report report = this.validator.validateNewVersion(version, this.gitRepositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()),
-                () -> assertContainsResultMessage(report,
-                        "E-RR-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
-                                + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]"));
+                () -> assertThat(report.toString(),
+                        containsString(
+                                "E-RR-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
+                                        + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }
 }

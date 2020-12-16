@@ -1,7 +1,8 @@
 package com.exasol.releasedroid.maven;
 
 import static com.exasol.releasedroid.maven.MavenPlatformValidator.MAVEN_WORKFLOW_PATH;
-import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -61,12 +62,12 @@ class MavenPlatformValidatorTest {
                 .thenThrow(RepositoryException.class);
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-9"), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-13"),
-                () -> assertContainsResultMessage(report, "nexus-staging-maven-plugin"),
-                () -> assertContainsResultMessage(report, "maven-source-plugin"),
-                () -> assertContainsResultMessage(report, "maven-gpg-plugin"),
-                () -> assertContainsResultMessage(report, "maven-javadoc-plugin"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-9")), //
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-13")),
+                () -> assertThat(report.toString(), containsString("nexus-staging-maven-plugin")),
+                () -> assertThat(report.toString(), containsString("maven-source-plugin")),
+                () -> assertThat(report.toString(), containsString("maven-gpg-plugin")),
+                () -> assertThat(report.toString(), containsString("maven-javadoc-plugin")));
     }
 
     @Test
@@ -76,7 +77,7 @@ class MavenPlatformValidatorTest {
                 .thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin").build()));
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-14"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-14")));
     }
 
     @Test
@@ -87,7 +88,7 @@ class MavenPlatformValidatorTest {
         when(this.pluginExecutionMock.getId()).thenReturn("some-id");
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-15"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-15")));
     }
 
     @Test
@@ -100,6 +101,6 @@ class MavenPlatformValidatorTest {
         when(this.configurationsMock.toString()).thenReturn("text");
         final Report report = this.platformValidator.validate(this.repositoryMock);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-16"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-7")));
     }
 }

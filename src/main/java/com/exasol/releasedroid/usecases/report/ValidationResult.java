@@ -4,24 +4,21 @@ package com.exasol.releasedroid.usecases.report;
  * Represents a result of a single validation.
  */
 public class ValidationResult extends Result {
-    private final String errorCode;
     private final String message;
 
-    private ValidationResult(final String errorCode, final String message, final boolean successful) {
+    private ValidationResult(final String message, final boolean successful) {
         super(successful);
-        this.errorCode = errorCode;
         this.message = message;
     }
 
     /**
      * Create a new failed validation.
      *
-     * @param errorCode error code
-     * @param message   error message
+     * @param message error message
      * @return new instance of {@link ValidationResult}
      */
-    public static ValidationResult failedValidation(final String errorCode, final String message) {
-        return new ValidationResult(errorCode, message, false);
+    public static ValidationResult failedValidation(final String message) {
+        return new ValidationResult(message, false);
     }
 
     /**
@@ -31,7 +28,7 @@ public class ValidationResult extends Result {
      * @return new instance of {@link ValidationResult}
      */
     public static ValidationResult successfulValidation(final String validatedContent) {
-        return new ValidationResult(null, validatedContent, true);
+        return new ValidationResult(validatedContent, true);
     }
 
     @Override
@@ -39,7 +36,7 @@ public class ValidationResult extends Result {
         if (isSuccessful()) {
             return "Success. " + this.message;
         } else {
-            return "Fail.    " + this.errorCode + ": " + this.message;
+            return "Fail.    " + this.message;
         }
     }
 }

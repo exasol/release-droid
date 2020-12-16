@@ -2,7 +2,8 @@ package com.exasol.releasedroid.usecases.report;
 
 import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
 import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
-import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,7 +23,7 @@ class ReportTest {
     void testGetFailures() {
         this.report.addResult(ReleaseResult.successfulRelease(GITHUB));
         this.report.addResult(ReleaseResult.failedRelease(MAVEN, "Just because"));
-        assertContainsResultMessage(this.report, "Fail.    MAVEN: Just because");
+        assertThat(this.report.toString(), containsString("Fail.    MAVEN: Just because"));
     }
 
     @Test
