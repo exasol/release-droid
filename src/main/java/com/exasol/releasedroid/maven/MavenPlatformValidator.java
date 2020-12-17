@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.maven.model.PluginExecution;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.maven.*;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.*;
@@ -49,8 +50,9 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
         if (plugin.hasExecutions()) {
             report.addResult(validateExecutions(plugin.getExecutions()));
         } else {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-14",
-                    "The 'maven-gpg-plugin' misses executions. PLease, check the user guide to add them."));
+            report.addResult(ValidationResult.failedValidation(
+                    ExaError.messageBuilder("E-RR-VAL-14").message("The 'maven-gpg-plugin' misses executions.")
+                            .mitigation("Please, check the user guide to add them.").toString()));
         }
         return report;
     }
@@ -61,16 +63,17 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
                 return validateConfigurations(execution);
             }
         }
-        return ValidationResult.failedValidation("E-RR-VAL-15",
-                "The 'maven-gpg-plugin' misses 'sign-artifacts' execution. PLease, check a user guide to add it.");
+        return ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-15")
+                .message("The 'maven-gpg-plugin' misses 'sign-artifacts' execution.")
+                .mitigation("Please, check the user guide to add it.").toString());
     }
 
     private Result validateConfigurations(final PluginExecution execution) {
         final Object configuration = execution.getConfiguration();
         if ((configuration == null) || !configuration.toString().contains("--pinentry-mode")) {
-            return ValidationResult.failedValidation("E-RR-VAL-16",
-                    "The 'maven-gpg-plugin' misses configuration of the 'sign-artifacts' execution. "
-                            + "PLease, check the user guide to add it.");
+            return ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-7")
+                    .message("The 'maven-gpg-plugin' misses configuration of the 'sign-artifacts' execution.")
+                    .mitigation("Please, check the user guide to add it.").toString());
         } else {
             return ValidationResult.successfulValidation("'maven-gpg-plugin' has required configurations.");
         }
@@ -89,8 +92,9 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
         if (pluginNames.contains(requiredPlugin)) {
             return ValidationResult.successfulValidation("Maven plugin '" + requiredPlugin + "'.");
         } else {
-            return ValidationResult.failedValidation("E-RR-VAL-13",
-                    "Required maven plugin is missing: '" + requiredPlugin + "'.");
+            return ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-13")
+                    .message("Required maven plugin is missing: {{requiredPlugin}}.")
+                    .parameter("requiredPlugin", requiredPlugin).toString());
         }
     }
 

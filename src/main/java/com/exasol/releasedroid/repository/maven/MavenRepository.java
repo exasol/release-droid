@@ -1,12 +1,14 @@
 package com.exasol.releasedroid.repository.maven;
 
-import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.usecases.BaseRepository;
+import java.io.*;
+import java.util.*;
+
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.kohsuke.github.GHRepository;
 
-import java.io.*;
-import java.util.*;
+import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.repository.RepositoryException;
+import com.exasol.releasedroid.usecases.BaseRepository;
 
 /**
  * This class represents a Maven-based Java project's content.
@@ -45,7 +47,9 @@ public class MavenRepository extends BaseRepository {
             }
             return tempPomFile;
         } catch (final IOException exception) {
-            throw new IllegalStateException("F-POM-1: Some problem happened during creating a temporary pom file",
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("F-POM-1")
+                            .message("Some problem happened during creating a temporary pom file.").toString(),
                     exception);
         }
     }
@@ -55,7 +59,8 @@ public class MavenRepository extends BaseRepository {
         if (this.pom.hasVersion()) {
             return this.pom.getVersion();
         } else {
-            throw new RepositoryException("E-REP-GH-4: Cannot find the current version in the repository.");
+            throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-4")
+                    .message("Cannot find the current version in the repository.").toString());
         }
     }
 
@@ -77,7 +82,8 @@ public class MavenRepository extends BaseRepository {
         if (this.pom.hasArtifactId()) {
             return this.pom.getArtifactId();
         } else {
-            throw new RepositoryException("E-REP-GH-5: Cannot find the project's artifactId.");
+            throw new RepositoryException(
+                    ExaError.messageBuilder("E-REP-GH-5").message("Cannot find the project's artifactId.").toString());
         }
     }
 
@@ -132,7 +138,8 @@ public class MavenRepository extends BaseRepository {
             if (properties.containsKey(tag)) {
                 return properties.get(tag);
             } else {
-                throw new IllegalStateException("F-POM-2: Cannot detect deliverable's name.");
+                throw new IllegalStateException(
+                        ExaError.messageBuilder("F-POM-2").message("Cannot detect deliverable's name.").toString());
             }
         }
     }

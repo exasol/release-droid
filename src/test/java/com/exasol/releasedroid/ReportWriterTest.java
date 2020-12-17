@@ -38,9 +38,9 @@ class ReportWriterTest {
         this.userInput = UserInput.builder().repositoryName("me/my-repository").goal("validate").platforms("github")
                 .build();
         this.validationReport = Report.validationReport();
-        this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1", "Validations 1"));
+        this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1: Validations 1"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 2"));
-        this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-2", "Validations 3"));
+        this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-2: Validations 3"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 4"));
         this.releaseReport = Report.releaseReport();
         this.releaseReport.addResult(ReleaseResult.successfulRelease(GITHUB));

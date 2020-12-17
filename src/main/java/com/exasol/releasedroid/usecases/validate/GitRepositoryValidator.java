@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -47,10 +48,10 @@ public class GitRepositoryValidator implements RepositoryValidator {
         if (version.matches(VERSION_REGEX)) {
             report.addResult(ValidationResult.successfulValidation("Version format."));
         } else {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-3",
-                    "A version or tag found in this repository has invalid format: " + version
-                            + ". The valid format is: <major>.<minor>.<fix>. "
-                            + "Please, refer to the user guide to check requirements."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-3")
+                    .message("A version or tag found in this repository has invalid format: {{version}}. "
+                            + "The valid format is: <major>.<minor>.<fix>.")
+                    .unquotedParameter("version", version).toString()));
         }
         return report;
     }
@@ -74,10 +75,11 @@ public class GitRepositoryValidator implements RepositoryValidator {
         if (possibleVersions.contains(newTag)) {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-4",
-                    "The new version '" + newTag
-                            + "' does not fit the versioning rules. Possible versions for the release are: "
-                            + possibleVersions.toString()));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-4")
+                    .message("The new version {{newTag}} does not fit the versioning rules. "
+                            + "Possible versions for the release are: {{possibleVersions}}")
+                    .parameter("newTag", newTag) //
+                    .unquotedParameter("possibleVersions", possibleVersions.toString()).toString()));
         }
         return report;
     }
@@ -100,9 +102,10 @@ public class GitRepositoryValidator implements RepositoryValidator {
         final Report report = Report.validationReport();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-5",
-                    "The file 'changelog.md' doesn't contain the following link, please add '" + changelogContent
-                            + "' to the file."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-5")
+                    .message("The file 'changelog.md' doesn't contain the following link.")
+                    .mitigation("Please add {{changelogContent}} to the file.")
+                    .parameter("changelogContent", changelogContent).toString()));
         } else {
             report.addResult(ValidationResult.successfulValidation("'changelog.md' file."));
             LOGGER.fine("Validation of 'changelog.md' file was successful.");
@@ -124,8 +127,10 @@ public class GitRepositoryValidator implements RepositoryValidator {
         final Report report = Report.validationReport();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-6", "The file '" + changes.getFileName()
-                    + "' does not mention the current version. Please, follow the changes file's format rules."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-6")
+                    .message("The file {{fileName}} does not mention the current version.")
+                    .parameter("fileName", changes.getFileName())
+                    .mitigation("Please, follow the changes file's format rules.").toString()));
         } else {
             report.addResult(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
         }
@@ -149,8 +154,9 @@ public class GitRepositoryValidator implements RepositoryValidator {
 
     private Report reportWrongDate(final String fileName) {
         final Report report = Report.validationReport();
-        final String warningMessage = "W-RR-VAL-2. The release date in '" + fileName
-                + "' is outdated. The Release Droid will try to change it automatically.";
+        final String warningMessage = ExaError.messageBuilder("W-RR-VAL-2").message(
+                "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically.")
+                .parameter("fileName", fileName).toString();
         report.addResult(ValidationResult.successfulValidation(
                 "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
         LOGGER.warning(warningMessage);
@@ -161,8 +167,10 @@ public class GitRepositoryValidator implements RepositoryValidator {
     private Report validateHasBody(final ReleaseLetter changes) {
         final Report report = Report.validationReport();
         if (changes.getBody().isEmpty()) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-8", "Cannot find the '" + changes.getFileName()
-                    + "' body. Please, make sure you added the changes you made to the file."));
+            report.addResult(ValidationResult.failedValidation(
+                    ExaError.messageBuilder("E-RR-VAL-8").message("Cannot find the {{fileName}} body.") //
+                            .parameter("fileName", changes.getFileName())
+                            .mitigation("Please, make sure you added the changes you made to the file.").toString()));
         } else {
             report.addResult(
                     ValidationResult.successfulValidation("Release body in '" + changes.getFileName() + "' file."));

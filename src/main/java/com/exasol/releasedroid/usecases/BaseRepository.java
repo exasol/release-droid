@@ -7,6 +7,7 @@ import java.util.*;
 
 import org.kohsuke.github.*;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.*;
 
 /**
@@ -41,8 +42,10 @@ public abstract class BaseRepository implements Repository {
         try {
             return this.ghRepository.getBranch(branchName);
         } catch (final IOException exception) {
-            throw new RepositoryException("E-REP-GH-3: Cannot find a branch '" + branchName
-                    + "'. Please check if you specified a correct branch.", exception);
+            throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-3") //
+                    .message("Cannot find a branch {{branchName}}.") //
+                    .parameter("branchName", branchName) //
+                    .mitigation("Please check if you specified a correct branch.").toString(), exception);
         }
     }
 
@@ -52,10 +55,11 @@ public abstract class BaseRepository implements Repository {
             final GHContent content = getFileContent(filePath);
             return getContent(content.read());
         } catch (final IOException exception) {
-            throw new RepositoryException(
-                    "E-REP-GH-2: Cannot find or read the file '" + filePath + "' in the repository "
-                            + this.ghRepository.getName() + ". Please add this file according to the User Guide.",
-                    exception);
+            throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-2")
+                                                  .message("Cannot find or read the file {{filePath}} in the repository {{repositoryName}}.")
+                                                  .parameter("filePath", filePath) //
+                                                  .parameter("repositoryName", this.ghRepository.getName()) //
+                                                  .mitigation("Please add this file according to the user guide.").toString(), exception);
         }
     }
 
@@ -68,8 +72,11 @@ public abstract class BaseRepository implements Repository {
         try {
             this.getFileContent(filePath).update(newContent, commitMessage, this.branch.getName());
         } catch (final IOException exception) {
-            throw new RepositoryException("E-REP-GH-6: Cannot update the file '" + filePath + "' in the repository "
-                    + this.ghRepository.getName() + ".", exception);
+            throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-6")
+                                                  .message("Cannot update the file {{filePath}} in the repository {{repositoryName}}.")
+                                                  .parameter("filePath", filePath) //
+                                                  .parameter("repositoryName", this.ghRepository.getName()) //
+                                                  .mitigation("Please add this file according to the user guide.").toString(), exception);
         }
     }
 

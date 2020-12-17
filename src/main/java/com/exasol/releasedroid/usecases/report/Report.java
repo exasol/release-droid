@@ -82,6 +82,15 @@ public class Report {
         return this.reportName;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final Result result : this.results) {
+            stringBuilder.append(result.toString());
+        }
+        return stringBuilder.toString();
+    }
+
     /**
      * Available report names.
      */

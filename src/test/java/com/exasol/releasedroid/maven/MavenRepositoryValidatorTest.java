@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.maven;
 
-import static com.exasol.releasedroid.verify.ReportVerifier.assertContainsResultMessage;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,7 @@ class MavenRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport(mavenPom);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-11"), //
-                () -> assertContainsResultMessage(report, "E-RR-VAL-12"));
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-11")), //
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-12")));
     }
 }

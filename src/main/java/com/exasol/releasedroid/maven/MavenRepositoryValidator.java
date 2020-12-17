@@ -2,6 +2,7 @@ package com.exasol.releasedroid.maven;
 
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.maven.MavenPom;
 import com.exasol.releasedroid.repository.maven.MavenRepository;
 import com.exasol.releasedroid.usecases.Repository;
@@ -30,8 +31,8 @@ public class MavenRepositoryValidator implements RepositoryValidator {
         if (mavenPom.hasVersion()) {
             report.addResult(ValidationResult.successfulValidation("'version' in the pom file exists."));
         } else {
-            report.addResult(
-                    ValidationResult.failedValidation("E-RR-VAL-11", "Cannot detect a 'version' in the pom file."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-11")
+                    .message("Cannot detect a 'version' in the pom file.").toString()));
         }
         return report;
     }
@@ -41,8 +42,8 @@ public class MavenRepositoryValidator implements RepositoryValidator {
         if (mavenPom.hasArtifactId()) {
             report.addResult(ValidationResult.successfulValidation("'artifactId' in the pom file exists."));
         } else {
-            report.addResult(
-                    ValidationResult.failedValidation("E-RR-VAL-12", "Cannot detect an 'artifactId' in the pom file."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-12")
+                    .message("Cannot detect an 'artifactId' in the pom file.").toString()));
         }
         return report;
     }

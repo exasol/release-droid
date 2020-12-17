@@ -3,6 +3,7 @@ package com.exasol.releasedroid.github;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -50,10 +51,10 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         final Report report = Report.validationReport();
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty()) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-1",
-                    "The file '" + changes.getFileName()
-                            + "' does not contain 'Code name' section which is used as a GitHub release header."
-                            + " Please, add this section to the file."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-1").message(
+                    "The file {{fileName}} does not contain 'Code name' section which is used as a GitHub release header."
+                            + " Please, add this section to the file.")
+                    .parameter("fileName", changes.getFileName()).toString()));
         } else {
             report.addResult(ValidationResult.successfulValidation("Release letter header."));
         }
@@ -73,8 +74,9 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
         } catch (final GitHubException exception) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-10",
-                    "Unable to retrieve a a list of closed tickets on GitHub:" + exception.getMessage()));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-10")
+                    .message("Unable to retrieve a list of closed tickets on GitHub: {{cause}}")
+                    .unquotedParameter("cause", exception.getMessage()).toString()));
         }
         return report;
     }
@@ -84,12 +86,16 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         final Report report = Report.validationReport();
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (isDefaultBranch) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-2",
-                    "Some of the mentioned GitHub issues are not closed or do not exists: " + wrongTicketsString
-                            + ", Please, check the issues numbers in your '" + fileName + "' one more time."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-2").message(
+                    "Some of the mentioned GitHub issues are not closed or do not exists: {{wrongTicketsString}}.")
+                    .unquotedParameter("wrongTicketsString", wrongTicketsString)
+                    .mitigation("Please, check the issues numbers in your {{fileName}}.")
+                    .parameter("fileName", fileName).toString()));
         } else {
-            final String warningMessage = "W-RR-VAL-1. Don't forget to close the tickets mentioned in the '" + fileName
-                    + "' file before you release: " + wrongTicketsString + ".";
+            final String warningMessage = ExaError.messageBuilder("W-RR-VAL-1").message(
+                    "Don't forget to close the tickets mentioned in the {{fileName}} file before you release: {{wrongTicketsString}}.")
+                    .parameter("fileName", fileName) //
+                    .unquotedParameter("wrongTicketsString", wrongTicketsString).toString();
             report.addResult(ValidationResult
                     .successfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage));
             LOGGER.warning(warningMessage);

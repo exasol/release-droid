@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.usecases.validate;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -23,8 +24,10 @@ public abstract class AbstractPlatformValidator implements RepositoryValidator {
             repository.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));
         } catch (final RepositoryException exception) {
-            report.addResult(ValidationResult.failedValidation("E-RR-VAL-9",
-                    "The file '" + filePath + "' does not exist in the project. Please, add this file."));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-9")
+                    .message("The file {{filePath}} does not exist in the project.") //
+                    .parameter("filePath", filePath) //
+                    .mitigation("Please, add this file.").toString()));
         }
         return report;
     }
