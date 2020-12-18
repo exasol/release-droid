@@ -39,7 +39,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final GitHubRelease release = GitHubRelease.builder().version(version).header(header).releaseLetter(body)
                 .defaultBranchName(repository.getBranchName()).assets(repository.getDeliverables()).build();
         try {
-            makeNewGitHubRelease(repository.getFullName(), release);
+            makeNewGitHubRelease(repository.getName(), release);
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

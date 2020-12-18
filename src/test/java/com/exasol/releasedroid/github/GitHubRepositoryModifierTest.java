@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.repository.*;
-import com.exasol.releasedroid.usecases.BaseRepository;
 
 @ExtendWith(MockitoExtension.class)
 // [utest->dsn~automatically-modifying-release-date~1]

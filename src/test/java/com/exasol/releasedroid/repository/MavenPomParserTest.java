@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.repository.maven;
+package com.exasol.releasedroid.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;

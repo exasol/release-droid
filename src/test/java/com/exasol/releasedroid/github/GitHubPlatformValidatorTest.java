@@ -91,7 +91,7 @@ class GitHubPlatformValidatorTest {
         final GithubGateway githubGateway = Mockito.mock(GithubGateway.class);
         final Repository repositoryMock = Mockito.mock(Repository.class);
         final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
-        when(repositoryMock.getFullName()).thenReturn("name");
+        when(repositoryMock.getName()).thenReturn("name");
         when(githubGateway.getClosedTickets("name")).thenThrow(new GitHubException(""));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
         final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);

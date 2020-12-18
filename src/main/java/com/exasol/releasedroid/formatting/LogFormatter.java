@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.logging;
+package com.exasol.releasedroid.formatting;
 
 import java.util.logging.*;
 

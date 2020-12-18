@@ -5,12 +5,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releasedroid.repository.RepositoryModifier;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.validate.RepositoryGateway;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -50,7 +48,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final Report releaseReport = this.makeRelease(userInput.getRepositoryName(), userInput.getPlatformNames());
+            final Report releaseReport = this.makeRelease(userInput);
             logResults(releaseReport);
             reports.add(releaseReport);
         }
@@ -61,11 +59,11 @@ public class ReleaseInteractor implements ReleaseUseCase {
         this.reportLogger.logResults(releaseReport);
     }
 
-    private Report makeRelease(final String repositoryFullName, final List<PlatformName> platformNames) {
+    private Report makeRelease(final UserInput userInput) {
         final Report report = Report.releaseReport();
-        final Repository repository = this.repositoryGateway.getRepositoryWithDefaultBranch(repositoryFullName);
+        final Repository repository = this.repositoryGateway.getRepository(userInput);
         prepareRepositoryForRelease(repository);
-        for (final PlatformName platformName : platformNames) {
+        for (final PlatformName platformName : userInput.getPlatformNames()) {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             try {
                 this.getReleaseMaker(platformName).makeRelease(repository);

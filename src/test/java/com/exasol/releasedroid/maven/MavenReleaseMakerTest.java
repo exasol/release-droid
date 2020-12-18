@@ -26,7 +26,7 @@ class MavenReleaseMakerTest {
     @BeforeEach
     void beforeEach() {
         when(this.repositoryMock.getBranchName()).thenReturn("main");
-        when(this.repositoryMock.getFullName()).thenReturn("name");
+        when(this.repositoryMock.getName()).thenReturn("name");
         this.releaseMaker = new MavenReleaseMaker(this.githubGatewayMock);
     }
 

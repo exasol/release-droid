@@ -13,6 +13,7 @@ public class UserInput {
     private final Goal goal;
     private final List<PlatformName> platformNames;
     private final String repositoryName;
+    private final String localPath;
 
     /**
      * Get a branch name.
@@ -59,11 +60,30 @@ public class UserInput {
         return (this.branch != null) && !this.branch.isEmpty();
     }
 
+    /**
+     * Get path to the local repository.
+     * 
+     * @return path to the local repository.
+     */
+    public String getLocalPath() {
+        return this.localPath;
+    }
+
+    /**
+     * Check if a path to a local repository exists.
+     * 
+     * @return true if a path to a local repository exists
+     */
+    public boolean hasLocalPath() {
+        return this.localPath != null && !this.localPath.isEmpty();
+    }
+
     private UserInput(final Builder builder) {
         this.branch = builder.branch;
         this.goal = builder.goal;
         this.platformNames = builder.platforms;
         this.repositoryName = builder.repositoryName;
+        this.localPath = builder.localPath;
     }
 
     /**
@@ -76,6 +96,13 @@ public class UserInput {
     }
 
     @Override
+    public String toString() {
+        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
+                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + ", localPath='"
+                + this.localPath + '\'' + '}';
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -85,19 +112,14 @@ public class UserInput {
         }
         final UserInput userInput = (UserInput) o;
         return Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
-                && Objects.equals(this.platformNames, userInput.platformNames)
-                && Objects.equals(this.repositoryName, userInput.repositoryName);
+                && this.platformNames.equals(userInput.platformNames)
+                && this.repositoryName.equals(userInput.repositoryName)
+                && Objects.equals(this.localPath, userInput.localPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName);
-    }
-
-    @Override
-    public String toString() {
-        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
-                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + '}';
+        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath);
     }
 
     /**
@@ -108,6 +130,7 @@ public class UserInput {
         private Goal goal;
         private List<PlatformName> platforms;
         private String repositoryName;
+        private String localPath;
 
         /**
          * Add a branch.
@@ -158,6 +181,17 @@ public class UserInput {
         }
 
         /**
+         * Add a path to the root of a local repository.
+         *
+         * @param localPath path to the root of a local repository
+         * @return builder instance for fluent programming
+         */
+        public Builder localPath(final String localPath) {
+            this.localPath = localPath;
+            return this;
+        }
+
+        /**
          * Create a new {@link UserInput} instance.
          *
          * @return new {@link UserInput} instance
@@ -165,7 +199,16 @@ public class UserInput {
         public UserInput build() {
             validateMandatoryParameters();
             validateGoalAndBranch();
+            validateLocalPath();
             return new UserInput(this);
+        }
+
+        private void validateLocalPath() {
+            if ((this.localPath != null) && ((this.goal == Goal.RELEASE) || (this.branch != null))) {
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-6")
+                        .message("The 'local' argument can't be used together with 'branch' or RELEASE 'goal'.")
+                        .toString());
+            }
         }
 
         private void validateGoalAndBranch() {

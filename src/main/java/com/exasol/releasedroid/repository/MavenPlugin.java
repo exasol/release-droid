@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.repository.maven;
+package com.exasol.releasedroid.repository;
 
 import java.util.ArrayList;
 import java.util.List;

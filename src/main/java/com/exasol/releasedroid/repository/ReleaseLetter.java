@@ -87,6 +87,34 @@ public class ReleaseLetter {
         return this.ticketNumbers;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ReleaseLetter that = (ReleaseLetter) o;
+        return Objects.equals(this.fileName, that.fileName) && Objects.equals(this.header, that.header)
+                && Objects.equals(this.body, that.body) && Objects.equals(this.versionNumber, that.versionNumber)
+                && Objects.equals(this.releaseDate, that.releaseDate)
+                && Objects.equals(this.ticketNumbers, that.ticketNumbers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.fileName, this.header, this.body, this.versionNumber, this.releaseDate,
+                this.ticketNumbers);
+    }
+
+    @Override
+    public String toString() {
+        return "ReleaseLetter{" + "fileName='" + this.fileName + '\'' + ", header='" + this.header + '\'' + ", body='"
+                + this.body + '\'' + ", versionNumber='" + this.versionNumber + '\'' + ", releaseDate="
+                + this.releaseDate + ", ticketNumbers=" + this.ticketNumbers + '}';
+    }
+
     /**
      * Builder for {@link ReleaseLetter}.
      */

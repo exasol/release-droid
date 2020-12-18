@@ -119,6 +119,28 @@ Needs: impl
 
 ## Repository
 
+### Local Repository
+`dsn~local-repository~1`
+
+The `LocalRepository` provides access to a local repository
+
+Covers:
+
+* `req~access-project-files~1`
+
+Needs: impl
+
+### GitHub Repository
+`dsn~github-repository~1`
+
+The `GitHubRepository` provides access to a GitHub-based repository.
+
+Covers:
+
+* `req~access-project-files~1`
+
+Needs: impl
+
 ### Repository Provides Current Version
 `dsn~repository-provides-current-version~1`
 
@@ -150,7 +172,7 @@ Covers:
 
 * `req~access-project-files~1`
 
-Needs: impl, utest
+Needs: impl
 
 ## Release Droid Runtime
 

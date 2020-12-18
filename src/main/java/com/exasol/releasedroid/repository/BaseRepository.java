@@ -1,0 +1,171 @@
+package com.exasol.releasedroid.repository;
+
+import java.io.*;
+import java.util.*;
+
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+
+import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.usecases.Repository;
+
+/**
+ * Base implementation of repository.
+ */
+public abstract class BaseRepository implements Repository {
+    private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
+    private static final String POM_PATH = "pom.xml";
+    private static final String PATH_TO_TARGET_DIR = "./target/";
+    private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
+    private final String fullName;
+    private MavenPom pom;
+
+    /**
+     * Create a new instance of {@link BaseRepository}.
+     * 
+     * @param name fully qualified name of the repository
+     */
+    protected BaseRepository(final String name) {
+        this.fullName = name;
+    }
+
+    @Override
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
+    public Map<String, String> getDeliverables() {
+        final String assetName = getAssetName() + ".jar";
+        final String assetPath = PATH_TO_TARGET_DIR + assetName;
+        return Map.of(assetName, assetPath);
+    }
+
+    private String getAssetName() {
+        final Optional<String> deliverableName = parseDeliverableName(getMavenPom().getPlugins());
+        final String artifactId = getArtifactId();
+        return deliverableName.orElse(artifactId + "-" + getVersion());
+    }
+
+    private String getArtifactId() {
+        if (getMavenPom().hasArtifactId()) {
+            return getMavenPom().getArtifactId();
+        } else {
+            throw new RepositoryException(
+                    ExaError.messageBuilder("E-RR-REP-2").message("Cannot find the project's artifactId.").toString());
+        }
+    }
+
+    private Optional<String> parseDeliverableName(final List<MavenPlugin> plugins) {
+        for (final MavenPlugin plugin : plugins) {
+            if (plugin.getArtifactId().equals("maven-assembly-plugin")) {
+                return parseMavenAssemblyPlugin(plugin);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<String> parseMavenAssemblyPlugin(final MavenPlugin plugin) {
+        final Xpp3Dom configurations = plugin.getConfiguration();
+        if (configurations == null) {
+            return Optional.empty();
+        } else {
+            return getParseConfigurations(configurations);
+        }
+    }
+
+    private Optional<String> getParseConfigurations(final Xpp3Dom configurations) {
+        final Xpp3Dom finalName = configurations.getChild("finalName");
+        if ((finalName == null) || (finalName.getValue() == null) || finalName.getValue().isEmpty()) {
+            return Optional.empty();
+        } else {
+            return parseFinalName(finalName);
+        }
+    }
+
+    private Optional<String> parseFinalName(final Xpp3Dom finalNameNode) {
+        String finalName = finalNameNode.getValue().strip();
+        while (finalName.contains("${")) {
+            finalName = replaceVariable(finalName);
+        }
+        return Optional.of(finalName);
+    }
+
+    private String replaceVariable(final String finalName) {
+        final int startIndex = finalName.indexOf("${") + 2;
+        final int endIndex = finalName.indexOf('}');
+        final String tag = finalName.substring(startIndex, endIndex);
+        final String replacement = findReplacement(tag);
+        return finalName.replace("${" + tag + "}", replacement);
+    }
+
+    private String findReplacement(final String tag) {
+        if (tag.equals("version") || tag.equals("project.version")) {
+            return getVersion();
+        } else {
+            final Map<String, String> properties = getMavenPom().getProperties();
+            if (properties.containsKey(tag)) {
+                return properties.get(tag);
+            } else {
+                throw new IllegalStateException(
+                        ExaError.messageBuilder("E-RR-REP-3").message("Cannot detect deliverable's name.").toString());
+            }
+        }
+    }
+
+    @Override
+    public MavenPom getMavenPom() {
+        if (this.pom == null) {
+            this.pom = parsePom();
+        }
+        return this.pom;
+    }
+
+    private MavenPom parsePom() {
+        final String pomContent = getSingleFileContentAsString(POM_PATH);
+        final File temporaryPomFile = createTemporaryPomFile(pomContent);
+        return new MavenPomParser(temporaryPomFile).parse();
+    }
+
+    private File createTemporaryPomFile(final String pom) {
+        try {
+            final File tempPomFile = File.createTempFile("pomProjection", null);
+            tempPomFile.deleteOnExit();
+            try (final BufferedWriter out = new BufferedWriter(new FileWriter(tempPomFile))) {
+                out.write(pom);
+            }
+            return tempPomFile;
+        } catch (final IOException exception) {
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("E-RR-REP-4")
+                            .message("Some problem happened during creating a temporary pom file.").toString(),
+                    exception);
+        }
+    }
+
+    @Override
+    public String getChangelogFile() {
+        return getSingleFileContentAsString(CHANGELOG_FILE_PATH);
+    }
+
+    @Override
+    public ReleaseLetter getReleaseLetter(final String version) {
+        if (!this.releaseLetters.containsKey(version)) {
+            final String fileName = "changes_" + version + ".md";
+            final String filePath = "doc/changes/" + fileName;
+            final String fileContent = getSingleFileContentAsString(filePath);
+            this.releaseLetters.put(version, new ReleaseLetterParser(fileName, fileContent).parse());
+        }
+        return this.releaseLetters.get(version);
+    }
+
+    @Override
+    public String getName() {
+        return this.fullName;
+    }
+
+    @Override
+    public String getVersion() {
+        if (getMavenPom().hasVersion()) {
+            return getMavenPom().getVersion();
+        } else {
+            throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-5")
+                    .message("Cannot find the current version in the repository.").toString());
+        }
+    }
+}

@@ -23,12 +23,12 @@ public class ReleaseDroid {
     private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
-    private final ResponseWriter responseWriter;
+    private final SummaryWriter summaryWriter;
 
     public ReleaseDroid(final ReleaseUseCase releaseUseCase, final ValidateUseCase validateUseCase) {
         this.releaseUseCase = releaseUseCase;
         this.validateUseCase = validateUseCase;
-        this.responseWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
+        this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
     }
 
     /**
@@ -49,6 +49,6 @@ public class ReleaseDroid {
     }
 
     private void writeResponseToDisk(final UserInput userInput, final List<Report> reports) {
-        this.responseWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
+        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
     }
 }
