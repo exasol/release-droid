@@ -5,7 +5,7 @@ package com.exasol.releasedroid.usecases;
  */
 public interface RepositoryGateway {
     /**
-     * Get a repository.
+     * Get the repository specified in the given UserInput from the repository source. 
      *
      * @param userInput user input
      * @return instance of {@link Repository}

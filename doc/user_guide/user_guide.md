@@ -129,7 +129,7 @@ Rules:
 |-------------|--------------|-----------|----------------------------------------------------|-------------------------------------|
 | --branch    | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name             |
 | --goal      | -g           | Yes       | Goal to execute                                    | `validate`, `release`               |
-| --local     | -l           | No        | Path to the repository root directory              | A valid path from current directory |
+| --local     | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
 | --name      | -n           | Yes       | GitHub project name                                | A valid GitHub project name         |
 | --platforms | -p           | Yes       | Comma-separated list of release platforms          | `github`   `maven`                  |
 

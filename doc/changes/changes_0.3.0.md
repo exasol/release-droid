@@ -11,7 +11,7 @@ Code name: Renamed project, monitoring of GitHub release workflows
 
 - You don't need to change the release date manually. From this version the Release Droid makes an automatic commit if the release date is outdated.
 
-- Release Droid now support a local validation. Use a `--local` argument to specify a path to a repository to validate. 
+- Release Droid now supports a local validation. Use a `--local` argument to specify a path to a repository in your local machine to validate. 
 
 ## Features
 
