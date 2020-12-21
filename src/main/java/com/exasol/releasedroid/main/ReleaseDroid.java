@@ -25,10 +25,18 @@ public class ReleaseDroid {
     private final ValidateUseCase validateUseCase;
     private final SummaryWriter summaryWriter;
 
-    public ReleaseDroid(final ReleaseUseCase releaseUseCase, final ValidateUseCase validateUseCase) {
+    private ReleaseDroid(final ValidateUseCase validateUseCase, final ReleaseUseCase releaseUseCase) {
         this.releaseUseCase = releaseUseCase;
         this.validateUseCase = validateUseCase;
         this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
+    }
+
+    public static ReleaseDroid of(ValidateUseCase validateUseCase) {
+        return new ReleaseDroid(validateUseCase, null);
+    }
+
+    public static ReleaseDroid of(ValidateUseCase validateUseCase, ReleaseUseCase releaseUseCase) {
+        return new ReleaseDroid(validateUseCase, releaseUseCase);
     }
 
     /**
@@ -42,7 +50,7 @@ public class ReleaseDroid {
         final List<Report> reports = new ArrayList<>();
         if (userInput.getGoal() == Goal.VALIDATE) {
             reports.add(this.validateUseCase.validate(userInput));
-        } else if (userInput.getGoal() == Goal.RELEASE) {
+        } else if (userInput.getGoal() == Goal.RELEASE && releaseUseCase != null) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
         writeResponseToDisk(userInput, reports);

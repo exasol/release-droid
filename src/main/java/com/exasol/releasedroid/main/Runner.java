@@ -49,8 +49,7 @@ public class Runner {
         final RepositoryGateway repositoryGateway = new LocalRepositoryGateway();
         final ValidateUseCase validateUseCase = new ValidateInteractor(createRepositoryValidators(),
                 releaseablePlatforms, repositoryGateway);
-        final ReleaseUseCase releaseUseCase = new LocalReleaseInteractor();
-        return new ReleaseDroid(releaseUseCase, validateUseCase);
+        return ReleaseDroid.of(validateUseCase);
     }
 
     private static ReleaseDroid createReleaseDroidForGitHub() {
@@ -62,7 +61,7 @@ public class Runner {
                 repositoryGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseablePlatforms,
                 repositoryGateway, new GitHubRepositoryModifier());
-        return new ReleaseDroid(releaseUseCase, validateUseCase);
+        return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 
     private static GitHubUser getGithubUser() {
