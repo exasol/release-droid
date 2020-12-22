@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.3.0, released 2020-12-??
+# Exasol Release Droid 0.3.0, released 2020-12-22
 
 Code name: Renamed project, monitoring of GitHub release workflows
 
