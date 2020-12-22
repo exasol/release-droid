@@ -13,16 +13,16 @@ import com.exasol.releasedroid.usecases.report.Report;
 /**
  * This class writes reports from {@link Report} to a file.
  */
-public class ResponseWriter {
-    private static final Logger LOGGER = Logger.getLogger(ResponseWriter.class.getName());
+public class SummaryWriter {
+    private static final Logger LOGGER = Logger.getLogger(SummaryWriter.class.getName());
     private final SummaryFormatter responseFormatter;
 
     /**
-     * Create a new instance of {@link ResponseWriter}.
+     * Create a new instance of {@link SummaryWriter}.
      *
      * @param responseFormatter formatter for the user response
      */
-    public ResponseWriter(final SummaryFormatter responseFormatter) {
+    public SummaryWriter(final SummaryFormatter responseFormatter) {
         this.responseFormatter = responseFormatter;
     }
 

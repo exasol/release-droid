@@ -1,4 +1,4 @@
-package com.exasol.releasedroid;
+package com.exasol.releasedroid.main;
 
 import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
 import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.main.ResponseWriter;
 import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.*;
@@ -30,7 +29,7 @@ class ReportWriterTest {
     private UserInput userInput;
     private Report validationReport;
     private Report releaseReport;
-    private ResponseWriter reportWriter;
+    private SummaryWriter reportWriter;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +44,7 @@ class ReportWriterTest {
         this.releaseReport = Report.releaseReport();
         this.releaseReport.addResult(ReleaseResult.successfulRelease(GITHUB));
         this.releaseReport.addResult(ReleaseResult.failedRelease(MAVEN, "Wrong credentials"));
-        this.reportWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
+        this.reportWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
     }
 
     @Test

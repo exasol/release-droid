@@ -11,6 +11,8 @@ Code name: Renamed project, monitoring of GitHub release workflows
 
 - You don't need to change the release date manually. From this version the Release Droid makes an automatic commit if the release date is outdated.
 
+- Release Droid now supports a local validation. Use a `--local` argument to specify a path to a repository in your local machine to validate. 
+
 ## Features
 
 * #48: Made Release Droid wait for GitHub workflows to end.
@@ -19,6 +21,7 @@ Code name: Renamed project, monitoring of GitHub release workflows
 * #92: Allowed to specify a 'platforms' arguments multiple times.
 * #100: Added release priority: 1. MAVEN, 2.GITHUB.
 * #107: Modified the release date if it's outdated.
+* #109: Added local repository validation.
 
 ## Documentation
 
@@ -40,4 +43,8 @@ Code name: Renamed project, monitoring of GitHub release workflows
 ## Dependency updates
 
 * Added `com.fasterxml.jackson.core:jackson-databind:jar:2.12.0` to avoid CVE-2020-25649.
-* Added `com.exasol:error-reporting-java:0.2.1`
+* Added `com.exasol:error-reporting-java:0.2.2`
+* Updated `com.exasol:error-reporting-java:0.2.1` to `0.2.2`
+* Updated `org.json:json:20200518` to `20201115`
+* Updated `org.mockito:mockito-core:3.6.0` to `3.6.28`
+* Updated `org.mockito:mockito-junit-jupiter:3.6.0` to `3.6.28`

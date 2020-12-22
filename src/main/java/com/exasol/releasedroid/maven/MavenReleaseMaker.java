@@ -34,7 +34,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
         body.put("ref", repository.getBranchName());
         final String json = body.toString();
         try {
-            this.githubGateway.executeWorkflow(repository.getFullName(), "maven_central_release.yml", json);
+            this.githubGateway.executeWorkflow(repository.getName(), "maven_central_release.yml", json);
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

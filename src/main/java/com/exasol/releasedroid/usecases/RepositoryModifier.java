@@ -1,6 +1,4 @@
-package com.exasol.releasedroid.repository;
-
-import com.exasol.releasedroid.usecases.Repository;
+package com.exasol.releasedroid.usecases;
 
 /**
  * Write changes to a repository.

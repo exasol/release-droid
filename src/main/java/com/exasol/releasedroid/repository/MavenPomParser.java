@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.repository.maven;
+package com.exasol.releasedroid.repository;
 
 import java.io.*;
 import java.util.*;
@@ -9,7 +9,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.repository.RepositoryException;
 
 /**
  * Parser for {@link MavenPom}.

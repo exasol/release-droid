@@ -15,15 +15,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.repository.maven.*;
+import com.exasol.releasedroid.repository.*;
+import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith({ MockitoExtension.class })
 class MavenPlatformValidatorTest {
     private final MavenPlatformValidator platformValidator = new MavenPlatformValidator();
     @Mock
-    private MavenRepository repositoryMock;
+    private Repository repositoryMock;
     @Mock
     private MavenPom mavenPomMock;
     @Mock

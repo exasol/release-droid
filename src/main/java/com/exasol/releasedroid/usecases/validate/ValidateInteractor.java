@@ -36,7 +36,7 @@ public class ValidateInteractor implements ValidateUseCase {
     // [impl->dsn~rr-runs-validate-goal~1]
     public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
-        final Repository repository = this.repositoryGateway.getRepositoryWithBranch(userInput);
+        final Repository repository = this.repositoryGateway.getRepository(userInput);
         final Report validationReport = runValidation(repository, userInput.getPlatformNames());
         logResults(validationReport);
         return validationReport;

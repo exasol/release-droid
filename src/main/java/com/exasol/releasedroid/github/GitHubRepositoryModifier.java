@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.repository.*;
+import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.RepositoryModifier;
 
 /**
  * Writes changes to a GitHub repository.

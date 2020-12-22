@@ -23,12 +23,20 @@ public class ReleaseDroid {
     private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
-    private final ResponseWriter responseWriter;
+    private final SummaryWriter summaryWriter;
 
-    public ReleaseDroid(final ReleaseUseCase releaseUseCase, final ValidateUseCase validateUseCase) {
+    private ReleaseDroid(final ValidateUseCase validateUseCase, final ReleaseUseCase releaseUseCase) {
         this.releaseUseCase = releaseUseCase;
         this.validateUseCase = validateUseCase;
-        this.responseWriter = new ResponseWriter(new SummaryFormatter(new ReportFormatter()));
+        this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
+    }
+
+    public static ReleaseDroid of(ValidateUseCase validateUseCase) {
+        return new ReleaseDroid(validateUseCase, null);
+    }
+
+    public static ReleaseDroid of(ValidateUseCase validateUseCase, ReleaseUseCase releaseUseCase) {
+        return new ReleaseDroid(validateUseCase, releaseUseCase);
     }
 
     /**
@@ -42,13 +50,13 @@ public class ReleaseDroid {
         final List<Report> reports = new ArrayList<>();
         if (userInput.getGoal() == Goal.VALIDATE) {
             reports.add(this.validateUseCase.validate(userInput));
-        } else if (userInput.getGoal() == Goal.RELEASE) {
+        } else if (userInput.getGoal() == Goal.RELEASE && releaseUseCase != null) {
             reports.addAll(this.releaseUseCase.release(userInput));
         }
         writeResponseToDisk(userInput, reports);
     }
 
     private void writeResponseToDisk(final UserInput userInput, final List<Report> reports) {
-        this.responseWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
+        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
     }
 }

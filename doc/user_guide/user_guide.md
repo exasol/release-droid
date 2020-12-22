@@ -125,12 +125,13 @@ Rules:
 
 #### Command Line Arguments
 
-| Long Option | Short Option | Mandatory | Description                                        | Possible values               |
-|-------------|--------------|-----------|----------------------------------------------------|-------------------------------|
-| --branch    | -b           | No        | Git branch to work with (only for `validate` goal) | Any valid git branch name     |
-| --goal      | -g           | Yes       | Goal to execute                                    | `validate`, `release`         |
-| --name      | -n           | Yes       | GitHub project name                                | Any valid GitHub project name |
-| --platforms | -p           | Yes       | Comma-separated list of release platforms          | `github`   `maven`            |
+| Long Option | Short Option | Mandatory | Description                                        | Possible values                        |
+|-------------|--------------|-----------|----------------------------------------------------|----------------------------------------|
+| -branch     | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name                |
+| -goal       | -g           | Yes       | Goal to execute                                    | `validate`, `release`                  |
+| -local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
+| -name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
+| -platforms  | -p           | Yes       | Comma-separated list of release platforms          | `github`   `maven`                     |
 
 Notice:
 

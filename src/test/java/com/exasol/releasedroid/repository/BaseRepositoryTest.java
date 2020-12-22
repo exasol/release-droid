@@ -1,45 +1,45 @@
-package com.exasol.releasedroid.repository.maven;
+package com.exasol.releasedroid.repository;
 
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kohsuke.github.*;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.usecases.Repository;
 
-@ExtendWith(MockitoExtension.class)
-class MavenRepositoryTest {
-    private static final String BRANCH_NAME = "my_branch";
-    @Mock
-    private GHRepository ghRepositoryMock;
-    @Mock
-    private GHContent contentMock;
-    @Mock
-    private GHBranch branchMock;
+class BaseRepositoryTest {
+    private static final String NAME = "test-repository";
 
-    @BeforeEach
-    void beforeEach() throws IOException {
-        when(this.ghRepositoryMock.getBranch(BRANCH_NAME)).thenReturn(this.branchMock);
-        when(this.branchMock.getName()).thenReturn(BRANCH_NAME);
-        when(this.ghRepositoryMock.getFileContent(anyString(), anyString())).thenReturn(this.contentMock);
+    @Test
+    void testGetName() {
+        final Repository repository = createRepository("");
+        assertThat(repository.getName(), equalTo(NAME));
+    }
+
+    @Test
+    void testGetChangelogFile() {
+        final String changelog = "Changelog";
+        final Repository repository = createRepository(changelog);
+        assertThat(repository.getChangelogFile(), equalTo(changelog));
+    }
+
+    @Test
+    void testGetReleaseLetter() {
+        final ReleaseLetter releaseLetter = ReleaseLetter.builder("changes_0.1.0.md")
+                .releaseDate(LocalDate.of(2020, 9, 21)).header("GitHub validation and release support")
+                .versionNumber("0.1.0").body("## Features").build();
+        final Repository repository = createRepository("# Exasol Release Droid 0.1.0, released 2020-09-21"
+                + LINE_SEPARATOR + "Code name: GitHub validation and release support" + LINE_SEPARATOR + "## Features");
+        assertThat(repository.getReleaseLetter("0.1.0"), equalTo(releaseLetter));
     }
 
     @ParameterizedTest
@@ -47,21 +47,18 @@ class MavenRepositoryTest {
             "<project>\n<version>\n1.0.0\n</version>\n<artifactId>project</artifactId></project>",
             "<project>    <version>  1.0.0  </version> <artifactId>project</artifactId>   </project>" })
     // [utest->dsn~repository-provides-current-version~1]
-    void testGetVersionWithCaching(final String pomFile) throws IOException {
+    void testGetVersion(final String pomFile) {
         final Repository repository = createRepository(pomFile);
-        assertAll(() -> assertThat(repository.getVersion(), equalTo("1.0.0")),
-                () -> assertThat(repository.getVersion(), equalTo("1.0.0")),
-                () -> verify(this.ghRepositoryMock, times(1)).getFileContent(anyString(), anyString()));
+        assertThat(repository.getVersion(), equalTo("1.0.0"));
     }
 
-    private Repository createRepository(final String pomFile) throws IOException {
-        when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pomFile.getBytes()));
-        return new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", Optional.empty());
+    private Repository createRepository(final String fileContent) {
+        return new DummyRepository(NAME, fileContent);
     }
 
     @Test
     // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverables() throws IOException {
+    void testGetDeliverables() {
         final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
         final Repository repository = createRepository(pomFile);
         assertThat(repository.getDeliverables(), equalTo(Map.of("project-1.0.0.jar", "./target/project-1.0.0.jar")));
@@ -69,7 +66,7 @@ class MavenRepositoryTest {
 
     @Test
     // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesWithPluginInformationDeprecatedVersionTag() throws IOException {
+    void testGetDeliverablesWithPluginInformationDeprecatedVersionTag() {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //
                 + "    <version>1.2.3</version>" //
@@ -93,8 +90,8 @@ class MavenRepositoryTest {
     }
 
     @Test
-        // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesWithPluginInformation() throws IOException {
+    // [utest->dsn~repository-provides-deliverables-information~1]
+    void testGetDeliverablesWithPluginInformation() {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //
                 + "    <version>1.2.3</version>" //
@@ -119,7 +116,7 @@ class MavenRepositoryTest {
 
     @Test
     // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesFails() throws IOException {
+    void testGetDeliverablesFails() {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //
                 + "    <version>1.2.3</version>" //
@@ -138,15 +135,39 @@ class MavenRepositoryTest {
                 + "</project>";
         final Repository repository = createRepository(pom);
         final IllegalStateException exception = assertThrows(IllegalStateException.class, repository::getDeliverables);
-        assertThat(exception.getMessage(), containsString("F-POM-2"));
+        assertThat(exception.getMessage(), containsString("E-RR-REP-3"));
     }
 
-    @Test
-    void testGetVersionInvalidPom() throws IOException {
-        final String pom = "nothing here";
-        when(this.contentMock.read()).thenReturn(new ByteArrayInputStream(pom.getBytes()));
-        final Optional<String> latestTag = Optional.empty();
-        assertThrows(RepositoryException.class,
-                () -> new MavenRepository(this.ghRepositoryMock, BRANCH_NAME, "", latestTag));
+    private static final class DummyRepository extends BaseRepository {
+        private final String fileContent;
+
+        protected DummyRepository(final String repositoryName, final String fileContent) {
+            super(repositoryName);
+            this.fileContent = fileContent;
+        }
+
+        @Override
+        public String getSingleFileContentAsString(final String filePath) {
+            return this.fileContent;
+        }
+
+        @Override
+        public void updateFileContent(final String filePath, final String newContent, final String commitMessage) {
+        }
+
+        @Override
+        public boolean isOnDefaultBranch() {
+            return false;
+        }
+
+        @Override
+        public String getBranchName() {
+            return null;
+        }
+
+        @Override
+        public Optional<String> getLatestTag() {
+            return Optional.empty();
+        }
     }
 }

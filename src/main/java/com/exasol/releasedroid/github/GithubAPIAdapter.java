@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.github;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
@@ -13,8 +14,6 @@ import org.kohsuke.github.*;
 import com.exasol.errorreporting.ErrorMessageBuilder;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.RepositoryException;
-import com.exasol.releasedroid.repository.maven.MavenRepository;
-import com.exasol.releasedroid.usecases.Repository;
 
 /**
  * Implements an adapter to interact with Github.
@@ -35,13 +34,12 @@ public class GithubAPIAdapter implements GithubGateway {
         this.repositories = new HashMap<>();
     }
 
-    private GHRepository createGHRepository(final String repositoryFullName, final GitHubUser user)
-            throws GitHubException {
+    private GHRepository createGHRepository(final String repositoryName, final GitHubUser user) throws GitHubException {
         try {
             final GitHub gitHub = GitHub.connect(user.getUsername(), user.getToken());
-            return gitHub.getRepository(repositoryFullName);
+            return gitHub.getRepository(repositoryName);
         } catch (final IOException exception) {
-            throw wrapGitHubException(repositoryFullName, exception);
+            throw wrapGitHubException(repositoryName, exception);
         }
     }
 
@@ -61,10 +59,10 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public String createGithubRelease(final String repositoryFullName, final GitHubRelease gitHubRelease)
+    public String createGithubRelease(final String repositoryName, final GitHubRelease gitHubRelease)
             throws GitHubException {
         try {
-            final GHRelease ghRelease = this.getRepository(repositoryFullName)//
+            final GHRelease ghRelease = this.getRepository(repositoryName)//
                     .createRelease(gitHubRelease.getVersion()) //
                     .draft(true) //
                     .body(gitHubRelease.getReleaseLetter()) //
@@ -79,17 +77,17 @@ public class GithubAPIAdapter implements GithubGateway {
         }
     }
 
-    private GHRepository getRepository(final String repositoryFullName) throws GitHubException {
-        if (!this.repositories.containsKey(repositoryFullName)) {
-            this.repositories.put(repositoryFullName, this.createGHRepository(repositoryFullName, this.gitHubUser));
+    private GHRepository getRepository(final String repositoryName) throws GitHubException {
+        if (!this.repositories.containsKey(repositoryName)) {
+            this.repositories.put(repositoryName, this.createGHRepository(repositoryName, this.gitHubUser));
         }
-        return this.repositories.get(repositoryFullName);
+        return this.repositories.get(repositoryName);
     }
 
     @Override
-    public Set<Integer> getClosedTickets(final String repositoryFullName) throws GitHubException {
+    public Set<Integer> getClosedTickets(final String repositoryName) throws GitHubException {
         try {
-            final List<GHIssue> closedIssues = this.getRepository(repositoryFullName).getIssues(GHIssueState.CLOSED);
+            final List<GHIssue> closedIssues = this.getRepository(repositoryName).getIssues(GHIssueState.CLOSED);
             return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
                     .collect(Collectors.toSet());
         } catch (final IOException exception) {
@@ -101,10 +99,10 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public Optional<String> getLatestTag(final String repositoryFullName) throws GitHubException {
+    public String getLatestTag(final String repositoryName) throws GitHubException {
         try {
-            final GHRelease release = this.getRepository(repositoryFullName).getLatestRelease();
-            return (release == null) ? Optional.empty() : Optional.of(release.getTagName());
+            final GHRelease release = this.getRepository(repositoryName).getLatestRelease();
+            return (release == null) ? null : release.getTagName();
         } catch (final IOException exception) {
             throw new RepositoryException(ExaError.messageBuilder("F-RR-GH-5")
                     .message("GitHub connection problem happened during retrieving the latest release.").toString(),
@@ -113,24 +111,9 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public Repository getRepositoryWithUserSpecifiedBranch(final String repositoryFullName, final String branchName)
+    public void executeWorkflow(final String repositoryName, final String workflowName, final String payload)
             throws GitHubException {
-        return new MavenRepository(this.getRepository(repositoryFullName), branchName, repositoryFullName,
-                getLatestTag(repositoryFullName));
-    }
-
-    @Override
-    public Repository getRepositoryWithDefaultBranch(final String repositoryFullName) throws GitHubException {
-        final GHRepository repository = this.getRepository(repositoryFullName);
-        return new MavenRepository(repository, repository.getDefaultBranch(), repositoryFullName,
-                getLatestTag(repositoryFullName));
-    }
-
-    @Override
-    public void executeWorkflow(final String repositoryFullName, final String workflowName, final String payload)
-            throws GitHubException {
-        final String workflowUriPrefix = GITHUB_API_ENTRY_URL + repositoryFullName + "/actions/workflows/"
-                + workflowName;
+        final String workflowUriPrefix = GITHUB_API_ENTRY_URL + repositoryName + "/actions/workflows/" + workflowName;
         final URI uri = createUriFromString(workflowUriPrefix + "/dispatches");
         final HttpResponse<String> response = sendGitHubPostRequest(uri, payload);
         validateResponse(response);
@@ -235,6 +218,42 @@ public class GithubAPIAdapter implements GithubGateway {
                     .message("Workflow run failed. Run result: {{workflowConclusion}}")
                     .parameter("workflowConclusion", workflowConclusion)
                     .mitigation("Please check the action logs on the GitHub to analyze the problem.").toString());
+        }
+    }
+
+    @Override
+    public String getDefaultBranch(final String repositoryName) throws GitHubException {
+        return getRepository(repositoryName).getDefaultBranch();
+    }
+
+    @Override
+    public InputStream getFileContent(final String repositoryName, final String branchName, final String filePath)
+            throws GitHubException {
+        try {
+            final GHRepository repository = getRepository(repositoryName);
+            final GHContent content = repository.getFileContent(filePath, branchName);
+            return content.read();
+        } catch (final IOException exception) {
+            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-7")
+                    .message("Cannot find or read the file {{filePath}} in the repository {{repositoryName}}.")
+                    .parameter("filePath", filePath) //
+                    .parameter("repositoryName", repositoryName) //
+                    .mitigation("Please add this file according to the user guide.").toString(), exception);
+        }
+    }
+
+    @Override
+    public void updateFileContent(final String repositoryName, final String branchName, final String filePath,
+            final String newContent, final String commitMessage) throws GitHubException {
+        try {
+            final GHRepository repository = getRepository(repositoryName);
+            final GHContent content = repository.getFileContent(filePath, branchName);
+            content.update(newContent, commitMessage, branchName);
+        } catch (final IOException exception) {
+            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-8")
+                    .message("Cannot update the file {{filePath}} in the repository {{repositoryName}}.")
+                    .parameter("filePath", filePath) //
+                    .parameter("repositoryName", repositoryName).toString(), exception);
         }
     }
 }

@@ -14,6 +14,7 @@ public class UserInputParser {
     private static final String NAME_SHORT_OPTION = "n";
     private static final String GOAL_SHORT_OPTION = "g";
     private static final String BRANCH_SHORT_OPTION = "b";
+    private static final String LOCAL_SHORT_OPTION = "l";
 
     /**
      * Parse user input.
@@ -29,7 +30,7 @@ public class UserInputParser {
                 .goal(cmd.getOptionValue(GOAL_SHORT_OPTION)) //
                 .platforms(cmd.getOptionValues(PLATFORM_SHORT_OPTION)) //
                 .branch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
-                .build();
+                .localPath(cmd.getOptionValue(LOCAL_SHORT_OPTION)).build();
     }
 
     private static Options createOptions() {
@@ -43,7 +44,8 @@ public class UserInputParser {
         platforms.setArgs(Option.UNLIMITED_VALUES);
         platforms.setValueSeparator(',');
         final Option branch = new Option(BRANCH_SHORT_OPTION, "branch", true, "git branch (only for validation)");
-        return new Options().addOption(name).addOption(goal).addOption(platforms).addOption(branch);
+        final Option local = new Option(LOCAL_SHORT_OPTION, "local", true, "local path to the repository");
+        return new Options().addOption(name).addOption(goal).addOption(platforms).addOption(branch).addOption(local);
     }
 
     private static CommandLine getCommandLine(final String[] args, final Options options) {

@@ -1,9 +1,7 @@
 package com.exasol.releasedroid.github;
 
-import java.util.Optional;
+import java.io.InputStream;
 import java.util.Set;
-
-import com.exasol.releasedroid.usecases.Repository;
 
 /**
  * Gateway for interacting with Github.
@@ -12,58 +10,69 @@ public interface GithubGateway {
     /**
      * Executes a GitHub workflow by a workflow name.
      *
-     * @param repositoryFullName fully qualified name of the repository
-     * @param workflowName       name of a workflow
-     * @param payload            the payload in json format
+     * @param repositoryName fully qualified name of the repository
+     * @param workflowName   name of a workflow
+     * @param payload        the payload in json format
      * @throws GitHubException when some problems occur
      */
-    public void executeWorkflow(String repositoryFullName, String workflowName, String payload) throws GitHubException;
+    public void executeWorkflow(String repositoryName, String workflowName, String payload) throws GitHubException;
 
     /**
      * Make a GitHub release.
      * 
-     * @param repositoryFullName fully qualified name of the repository
-     * @param gitHubRelease      instance of {@link GitHubRelease} with release information
+     * @param repositoryName fully qualified name of the repository
+     * @param gitHubRelease  instance of {@link GitHubRelease} with release information
      * @return URl for attaching assets to the release as a string
      * @throws GitHubException when some problems occur
      */
-    public String createGithubRelease(String repositoryFullName, GitHubRelease gitHubRelease) throws GitHubException;
+    public String createGithubRelease(String repositoryName, GitHubRelease gitHubRelease) throws GitHubException;
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
      *
-     * @param repositoryFullName fully qualified name of the repository
+     * @param repositoryName fully qualified name of the repository
      * @return set of closed tickets' numbers*
      * @throws GitHubException when some problems occur
      */
-    public Set<Integer> getClosedTickets(String repositoryFullName) throws GitHubException;
+    public Set<Integer> getClosedTickets(String repositoryName) throws GitHubException;
 
     /**
      * Get latest tag.
      *
-     * @param repositoryFullName fully qualified name of the repository
+     * @param repositoryName fully qualified name of the repository
      * @return latest tag
      * @throws GitHubException when some problems occur
      */
-    public Optional<String> getLatestTag(String repositoryFullName) throws GitHubException;
+    public String getLatestTag(String repositoryName) throws GitHubException;
 
     /**
-     * Get a repository branch.
-     *
-     * @param repositoryFullName fully qualified name of the repository
-     * @param branchName         branch name
-     * @return instance of {@link Repository}
+     * Get a default branch of the repository.
+     * 
+     * @param repositoryName fully qualified name of the repository
+     * @return default branch name
      * @throws GitHubException when some problems occur
      */
-    public Repository getRepositoryWithUserSpecifiedBranch(String repositoryFullName, String branchName)
-            throws GitHubException;
+    public String getDefaultBranch(String repositoryName) throws GitHubException;
 
     /**
-     * Get a default repository branch.
+     * Get a content of a file by path.
      *
-     * @param repositoryFullName fully qualified name of the repository*
-     * @return instance of {@link Repository}
-     * @throws GitHubException when some problems occur
+     * @param repositoryName fully qualified name of the repository
+     * @param branchName     branch to retrieve the content from
+     * @param filePath       path to a file
+     * @return file content
      */
-    public Repository getRepositoryWithDefaultBranch(String repositoryFullName) throws GitHubException;
+    public InputStream getFileContent(String repositoryName, String branchName, String filePath) throws GitHubException;
+
+    /**
+     * Update a single file content.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @param branchName     branch to update the file on
+     * @param filePath       path to a file
+     * @param newContent     new file content
+     * @param commitMessage  message to add to a commit
+     */
+    public void updateFileContent(String repositoryName, String branchName, String filePath, String newContent,
+            String commitMessage) throws GitHubException;
 }

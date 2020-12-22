@@ -5,7 +5,8 @@ import java.util.*;
 import org.apache.maven.model.PluginExecution;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.repository.maven.*;
+import com.exasol.releasedroid.repository.MavenPlugin;
+import com.exasol.releasedroid.repository.MavenPom;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
@@ -23,7 +24,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     public Report validate(final Repository repository) {
         final Report report = Report.validationReport();
         report.merge(validateFileExists(repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
-        report.merge(validateMavenPom(((MavenRepository) repository).getMavenPom()));
+        report.merge(validateMavenPom(repository.getMavenPom()));
         return report;
     }
 

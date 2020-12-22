@@ -5,12 +5,13 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.LogManager;
 
+import com.exasol.releasedroid.formatting.LogFormatter;
 import com.exasol.releasedroid.github.*;
-import com.exasol.releasedroid.logging.LogFormatter;
 import com.exasol.releasedroid.maven.*;
+import com.exasol.releasedroid.repository.GithubRepositoryGateway;
+import com.exasol.releasedroid.repository.LocalRepositoryGateway;
 import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
-import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
+import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.validate.*;
 
 /**
@@ -25,7 +26,15 @@ public class Runner {
     public static void main(final String[] args) throws IOException {
         final UserInput userInput = new UserInputParser().parseUserInput(args);
         setUpLogging();
-        createReleaseDroid().run(userInput);
+        createReleaseDroid(userInput).run(userInput);
+    }
+
+    private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
+        if (userInput.hasLocalPath()) {
+            return createReleaseDroidLocal();
+        } else {
+            return createReleaseDroidForGitHub();
+        }
     }
 
     private static void setUpLogging() throws IOException {
@@ -34,7 +43,16 @@ public class Runner {
         LogManager.getLogManager().readConfiguration(loggingProperties);
     }
 
-    private static ReleaseDroid createReleaseDroid() {
+    private static ReleaseDroid createReleaseDroidLocal() {
+        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
+        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
+        final RepositoryGateway repositoryGateway = new LocalRepositoryGateway();
+        final ValidateUseCase validateUseCase = new ValidateInteractor(createRepositoryValidators(),
+                releaseablePlatforms, repositoryGateway);
+        return ReleaseDroid.of(validateUseCase);
+    }
+
+    private static ReleaseDroid createReleaseDroidForGitHub() {
         final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
         final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
         final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
@@ -43,7 +61,7 @@ public class Runner {
                 repositoryGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseablePlatforms,
                 repositoryGateway, new GitHubRepositoryModifier());
-        return new ReleaseDroid(releaseUseCase, validateUseCase);
+        return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 
     private static GitHubUser getGithubUser() {

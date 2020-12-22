@@ -3,6 +3,7 @@ package com.exasol.releasedroid.usecases;
 import java.util.Map;
 import java.util.Optional;
 
+import com.exasol.releasedroid.repository.MavenPom;
 import com.exasol.releasedroid.repository.ReleaseLetter;
 
 /**
@@ -83,5 +84,12 @@ public interface Repository {
      * 
      * @return full name as a String
      */
-    public String getFullName();
+    public String getName();
+
+    /**
+     * Get a parsed Maven pom file.
+     *
+     * @return instance of {@link MavenPom}
+     */
+    public MavenPom getMavenPom();
 }
