@@ -1,0 +1,22 @@
+# Exasol Release Droid 0.3.1, released 2021-??-??
+
+Code name: 
+
+## Summary
+
+## Bug fixes
+
+* #114: Fixed validation of a code name for the GitHub release.
+
+## Features
+
+## Documentation
+
+## Refactoring
+
+## Dependency updates
+
+* Updated `com.fasterxml.jackson.core:jackson-databind:2.12.0` to `2.12.1`
+* Updated `org.kohsuke:github-api:1.117` to `1.119`
+* Updated `org.mockito:mockito-core:3.6.28` to `3.7.0`
+* Updated `org.mockito:mockito-junit-jupiter:3.6.28` to `3.7.0`

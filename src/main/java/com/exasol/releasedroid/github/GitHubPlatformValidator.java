@@ -50,7 +50,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     protected Report validateContainsHeader(final ReleaseLetter changes) {
         final Report report = Report.validationReport();
         final Optional<String> header = changes.getHeader();
-        if (header.isEmpty()) {
+        if (header.isEmpty() || header.get().isEmpty()) {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-1").message(
                     "The file {{fileName}} does not contain 'Code name' section which is used as a GitHub release header."
                             + " Please, add this section to the file.")
