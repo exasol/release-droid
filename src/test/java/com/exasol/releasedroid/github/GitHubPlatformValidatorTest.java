@@ -31,9 +31,20 @@ class GitHubPlatformValidatorTest {
 
     @Test
     // [utest->dsn~validate-release-letter~1]
-    void testValidateContainHeaderFails() {
+    void testValidateContainCodeNameEmptyOptional() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final Report report = validator.validateContainsHeader(changesLetter);
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-1")));
+    }
+
+    @Test
+    // [utest->dsn~validate-release-letter~1]
+    void testValidateContainCodeNameEmptyString() {
+        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
+        when(changesLetter.getHeader()).thenReturn(Optional.of(""));
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
