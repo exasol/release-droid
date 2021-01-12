@@ -2,26 +2,30 @@ package com.exasol.releasedroid.repository;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.Repository;
 
+@ExtendWith(MockitoExtension.class)
 class BaseRepositoryTest {
     private static final String NAME = "test-repository";
+    @Mock
+    private RepositoryGate repositoryGateMock;
 
     @Test
     void testGetName() {
         final Repository repository = createRepository("");
+        when(this.repositoryGateMock.getName()).thenReturn(NAME);
         assertThat(repository.getName(), equalTo(NAME));
     }
 
@@ -42,107 +46,38 @@ class BaseRepositoryTest {
         assertThat(repository.getReleaseLetter("0.1.0"), equalTo(releaseLetter));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "<project><version>1.0.0</version><artifactId>project</artifactId></project>", //
-            "<project>\n<version>\n1.0.0\n</version>\n<artifactId>project</artifactId></project>",
-            "<project>    <version>  1.0.0  </version> <artifactId>project</artifactId>   </project>" })
-    // [utest->dsn~repository-provides-current-version~1]
-    void testGetVersion(final String pomFile) {
-        final Repository repository = createRepository(pomFile);
-        assertThat(repository.getVersion(), equalTo("1.0.0"));
+    @Test
+    void testGetLatestTag() {
+        final Repository repository = createRepository("");
+        final Optional<String> tag = Optional.of("1.1.1");
+        when(this.repositoryGateMock.getLatestTag()).thenReturn(tag);
+        assertThat(repository.getLatestTag(), equalTo(tag));
+    }
+
+    @Test
+    void testGetBranchName() {
+        final Repository repository = createRepository("");
+        final String branch = "branch";
+        when(this.repositoryGateMock.getBranchName()).thenReturn(branch);
+        assertThat(repository.getBranchName(), equalTo(branch));
+    }
+
+    @Test
+    void testIsOnDefaultBranch() {
+        final Repository repository = createRepository("");
+        when(this.repositoryGateMock.isOnDefaultBranch()).thenReturn(false);
+        assertThat(repository.isOnDefaultBranch(), equalTo(false));
     }
 
     private Repository createRepository(final String fileContent) {
-        return new DummyRepository(NAME, fileContent);
-    }
-
-    @Test
-    // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverables() {
-        final String pomFile = "<project><version>1.0.0</version><artifactId>project</artifactId></project>";
-        final Repository repository = createRepository(pomFile);
-        assertThat(repository.getDeliverables(), equalTo(Map.of("project-1.0.0.jar", "./target/project-1.0.0.jar")));
-    }
-
-    @Test
-    // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesWithPluginInformationDeprecatedVersionTag() {
-        final String pom = "<project>" //
-                + "    <artifactId>my-test-project</artifactId>" //
-                + "    <version>1.2.3</version>" //
-                + "    <properties>" //
-                + "        <vscjdbc.version>5.0.4</vscjdbc.version>" //
-                + "    </properties>" //
-                + "    <build>" //
-                + "        <plugins>" //
-                + "            <plugin>" //
-                + "                <artifactId>maven-assembly-plugin</artifactId>" //
-                + "                 <configuration>" //
-                + "                    <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</finalName>"
-                + "                </configuration>" //
-                + "            </plugin>" //
-                + "        </plugins>" //
-                + "    </build>" //
-                + "</project>";
-        final Repository repository = createRepository(pom);
-        assertThat(repository.getDeliverables(), equalTo(Map.of("virtual-schema-dist-5.0.4-bundle-1.2.3.jar",
-                "./target/virtual-schema-dist-5.0.4-bundle-1.2.3.jar")));
-    }
-
-    @Test
-    // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesWithPluginInformation() {
-        final String pom = "<project>" //
-                + "    <artifactId>my-test-project</artifactId>" //
-                + "    <version>1.2.3</version>" //
-                + "    <properties>" //
-                + "        <vscjdbc.version>5.0.4</vscjdbc.version>" //
-                + "    </properties>" //
-                + "    <build>" //
-                + "        <plugins>" //
-                + "            <plugin>" //
-                + "                <artifactId>maven-assembly-plugin</artifactId>" //
-                + "                 <configuration>" //
-                + "                    <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${project.version}</finalName>" //
-                + "                </configuration>" //
-                + "            </plugin>" //
-                + "        </plugins>" //
-                + "    </build>" //
-                + "</project>";
-        final Repository repository = createRepository(pom);
-        assertThat(repository.getDeliverables(), equalTo(Map.of("virtual-schema-dist-5.0.4-bundle-1.2.3.jar",
-                "./target/virtual-schema-dist-5.0.4-bundle-1.2.3.jar")));
-    }
-
-    @Test
-    // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesFails() {
-        final String pom = "<project>" //
-                + "    <artifactId>my-test-project</artifactId>" //
-                + "    <version>1.2.3</version>" //
-                + "    <properties>" //
-                + "    </properties>" //
-                + "    <build>" //
-                + "        <plugins>" //
-                + "            <plugin>" //
-                + "                <artifactId>maven-assembly-plugin</artifactId>" //
-                + "                 <configuration>" //
-                + "                    <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</finalName>"
-                + "                </configuration>" //
-                + "            </plugin>" //
-                + "        </plugins>" //
-                + "    </build>" //
-                + "</project>";
-        final Repository repository = createRepository(pom);
-        final IllegalStateException exception = assertThrows(IllegalStateException.class, repository::getDeliverables);
-        assertThat(exception.getMessage(), containsString("E-RR-REP-3"));
+        return new DummyRepository(this.repositoryGateMock, fileContent);
     }
 
     private static final class DummyRepository extends BaseRepository {
         private final String fileContent;
 
-        protected DummyRepository(final String repositoryName, final String fileContent) {
-            super(repositoryName);
+        protected DummyRepository(final RepositoryGate repositoryGate, final String fileContent) {
+            super(repositoryGate);
             this.fileContent = fileContent;
         }
 
@@ -152,22 +87,18 @@ class BaseRepositoryTest {
         }
 
         @Override
-        public void updateFileContent(final String filePath, final String newContent, final String commitMessage) {
-        }
-
-        @Override
-        public boolean isOnDefaultBranch() {
-            return false;
-        }
-
-        @Override
-        public String getBranchName() {
+        public String getVersion() {
             return null;
         }
 
         @Override
-        public Optional<String> getLatestTag() {
-            return Optional.empty();
+        public Map<String, String> getDeliverables() {
+            return null;
+        }
+
+        @Override
+        public Language getRepositoryLanguage() {
+            return Language.LANGUAGE_INDEPENDENT;
         }
     }
 }

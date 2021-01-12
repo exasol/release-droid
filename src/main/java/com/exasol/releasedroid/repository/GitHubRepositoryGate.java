@@ -13,10 +13,10 @@ import com.exasol.releasedroid.github.GithubGateway;
  * This class represents a GitHub-based repository.
  */
 // [impl->dsn~github-repository~1]
-public class GitHubRepository extends BaseRepository {
+public class GitHubRepositoryGate implements RepositoryGate {
     private final GithubGateway githubGateway;
     private final String branchName;
-    private final String latestTag;
+    private final String fullName;
 
     /**
      * Create a new instance of {@link BaseRepository}.
@@ -24,14 +24,11 @@ public class GitHubRepository extends BaseRepository {
      * @param githubGateway an instance of {@link GithubGateway}
      * @param branchName    name of a branch to get content from
      * @param fullName      fully qualified name of the repository
-     * @param latestTag     latest release tag
      */
-    public GitHubRepository(final GithubGateway githubGateway, final String branchName, final String fullName,
-            final String latestTag) {
-        super(fullName);
+    public GitHubRepositoryGate(final GithubGateway githubGateway, final String branchName, final String fullName) {
         this.githubGateway = githubGateway;
         this.branchName = branchName;
-        this.latestTag = latestTag;
+        this.fullName = fullName;
     }
 
     @Override
@@ -86,6 +83,15 @@ public class GitHubRepository extends BaseRepository {
 
     @Override
     public Optional<String> getLatestTag() {
-        return Optional.ofNullable(this.latestTag);
+        try {
+            return Optional.ofNullable(this.githubGateway.getLatestTag(getName()));
+        } catch (final GitHubException exception) {
+            throw new RepositoryException("");
+        }
+    }
+
+    @Override
+    public String getName() {
+        return this.fullName;
     }
 }

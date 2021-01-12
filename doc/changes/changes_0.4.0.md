@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.3.1, released 2021-??-??
+# Exasol Release Droid 0.4.0, released 2021-??-??
 
 Code name: 
 
@@ -9,6 +9,8 @@ Code name:
 * #114: Fixed validation of a code name for the GitHub release.
 
 ## Features
+
+* #110: Added support for scala projects release on GitHub.
 
 ## Documentation
 

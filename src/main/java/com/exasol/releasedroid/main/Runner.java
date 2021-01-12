@@ -1,17 +1,22 @@
 package com.exasol.releasedroid.main;
 
+import static com.exasol.releasedroid.usecases.Repository.Language.JAVA;
+import static com.exasol.releasedroid.usecases.Repository.Language.LANGUAGE_INDEPENDENT;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.LogManager;
 
 import com.exasol.releasedroid.formatting.LogFormatter;
 import com.exasol.releasedroid.github.*;
 import com.exasol.releasedroid.maven.*;
-import com.exasol.releasedroid.repository.GithubRepositoryGateway;
-import com.exasol.releasedroid.repository.LocalRepositoryGateway;
+import com.exasol.releasedroid.repository.RepositoryFactory;
 import com.exasol.releasedroid.usecases.*;
-import com.exasol.releasedroid.usecases.release.*;
+import com.exasol.releasedroid.usecases.Repository.Language;
+import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
+import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.validate.*;
 
 /**
@@ -30,10 +35,16 @@ public class Runner {
     }
 
     private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
+        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
+        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
+        final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
+        final Map<RepositoryValidator, Language> repositoryValidators = createRepositoryValidators();
+        final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
+                repositoryGateway);
         if (userInput.hasLocalPath()) {
-            return createReleaseDroidLocal();
+            return createReleaseDroidLocal(validateUseCase);
         } else {
-            return createReleaseDroidForGitHub();
+            return createReleaseDroidForGitHub(validateUseCase, repositoryGateway, releaseablePlatforms);
         }
     }
 
@@ -43,22 +54,13 @@ public class Runner {
         LogManager.getLogManager().readConfiguration(loggingProperties);
     }
 
-    private static ReleaseDroid createReleaseDroidLocal() {
-        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
-        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
-        final RepositoryGateway repositoryGateway = new LocalRepositoryGateway();
-        final ValidateUseCase validateUseCase = new ValidateInteractor(createRepositoryValidators(),
-                releaseablePlatforms, repositoryGateway);
+    private static ReleaseDroid createReleaseDroidLocal(final ValidateUseCase validateUseCase) {
         return ReleaseDroid.of(validateUseCase);
     }
 
-    private static ReleaseDroid createReleaseDroidForGitHub() {
-        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
-        final Map<PlatformName, ReleasablePlatform> releaseablePlatforms = createReleaseablePlatforms(githubGateway);
-        final List<RepositoryValidator> repositoryValidators = createRepositoryValidators();
-        final RepositoryGateway repositoryGateway = new GithubRepositoryGateway(githubGateway);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryValidators, releaseablePlatforms,
-                repositoryGateway);
+    private static ReleaseDroid createReleaseDroidForGitHub(final ValidateUseCase validateUseCase,
+            final RepositoryGateway repositoryGateway,
+            final Map<PlatformName, ReleasablePlatform> releaseablePlatforms) {
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseablePlatforms,
                 repositoryGateway, new GitHubRepositoryModifier());
         return ReleaseDroid.of(validateUseCase, releaseUseCase);
@@ -68,10 +70,10 @@ public class Runner {
         return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
     }
 
-    private static List<RepositoryValidator> createRepositoryValidators() {
-        final List<RepositoryValidator> repositoryValidators = new ArrayList<>();
-        repositoryValidators.add(new GitRepositoryValidator());
-        repositoryValidators.add(new MavenRepositoryValidator());
+    private static Map<RepositoryValidator, Language> createRepositoryValidators() {
+        final Map<RepositoryValidator, Language> repositoryValidators = new HashMap<>();
+        repositoryValidators.put(new GitRepositoryValidator(), LANGUAGE_INDEPENDENT);
+        repositoryValidators.put(new MavenRepositoryValidator(), JAVA);
         return repositoryValidators;
     }
 
