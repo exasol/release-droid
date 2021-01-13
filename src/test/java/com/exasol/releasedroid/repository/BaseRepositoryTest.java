@@ -6,9 +6,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -99,6 +100,16 @@ class BaseRepositoryTest {
         @Override
         public Language getRepositoryLanguage() {
             return Language.LANGUAGE_INDEPENDENT;
+        }
+
+        @Override
+        public List<RepositoryValidator> getStructureValidators() {
+            return null;
+        }
+
+        @Override
+        public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
+            return null;
         }
     }
 }

@@ -14,7 +14,7 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public class JavaRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(JavaRepositoryValidator.class.getName());
-    final JavaRepository repository;
+    private final JavaRepository repository;
 
     public JavaRepositoryValidator(final JavaRepository repository) {
         this.repository = repository;

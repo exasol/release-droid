@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -60,8 +61,9 @@ public class ValidateInteractor implements ValidateUseCase {
         if (validators.containsKey(platformName)) {
             return validators.get(platformName).validate();
         }
-        // throw something
-        return null;
+        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-5") //
+                .message("{{platform}} platform is not supported for this project.") //
+                .parameter("platform", platformName).toString());
     }
 
     private Report validateRepositories(final Repository repository) {

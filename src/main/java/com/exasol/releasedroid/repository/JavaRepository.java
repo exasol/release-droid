@@ -3,14 +3,15 @@ package com.exasol.releasedroid.repository;
 import java.io.*;
 import java.util.*;
 
+import com.exasol.releasedroid.github.GithubGateway;
+import com.exasol.releasedroid.maven.JavaRepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.github.GitHubPlatformValidator;
-import com.exasol.releasedroid.maven.JavaRepositoryValidator;
 import com.exasol.releasedroid.maven.MavenPlatformValidator;
 import com.exasol.releasedroid.usecases.PlatformName;
-import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -19,10 +20,17 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 public class JavaRepository extends BaseRepository {
     private static final String POM_PATH = "pom.xml";
     private static final String PATH_TO_TARGET_DIR = "./target/";
+    private final Map<PlatformName, RepositoryValidator> releaseablePlatforms;
+    private final List<RepositoryValidator> platformValidators;
     private MavenPom pom;
 
-    public JavaRepository(final RepositoryGate repositoryGate) {
+    public JavaRepository(final RepositoryGate repositoryGate, final GithubGateway githubGateway) {
         super(repositoryGate);
+        this.releaseablePlatforms = Map.of( //
+                PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway),
+                PlatformName.MAVEN, new MavenPlatformValidator(this));
+        this.platformValidators = List.of(new GitRepositoryValidator(this), new JavaRepositoryValidator(this));
+        
     }
 
     @Override
@@ -156,14 +164,11 @@ public class JavaRepository extends BaseRepository {
 
     @Override
     public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
-        final Map<PlatformName, RepositoryValidator> releaseablePlatforms = new HashMap<>();
-        releaseablePlatforms.put(PlatformName.GITHUB, new GitHubPlatformValidator(this, null));
-        releaseablePlatforms.put(PlatformName.MAVEN, new MavenPlatformValidator(this));
-        return releaseablePlatforms;
+        return this.releaseablePlatforms;
     }
 
     @Override
     public List<RepositoryValidator> getStructureValidators() {
-        return List.of(new GitRepositoryValidator(this), new JavaRepositoryValidator(this));
+        return this.platformValidators;
     }
 }

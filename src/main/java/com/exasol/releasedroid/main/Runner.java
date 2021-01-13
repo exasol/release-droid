@@ -32,13 +32,12 @@ public class Runner {
 
     private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
         final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
-        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryGateway);
         if (userInput.hasLocalPath()) {
-            return createReleaseDroidLocal(validateUseCase);
+            return ReleaseDroid.of(validateUseCase);
         } else {
-            return createReleaseDroidForGitHub(validateUseCase, repositoryGateway, releaseMakers);
+            return createReleaseDroidForGitHub(validateUseCase, repositoryGateway, githubGateway);
         }
     }
 
@@ -48,12 +47,9 @@ public class Runner {
         LogManager.getLogManager().readConfiguration(loggingProperties);
     }
 
-    private static ReleaseDroid createReleaseDroidLocal(final ValidateUseCase validateUseCase) {
-        return ReleaseDroid.of(validateUseCase);
-    }
-
     private static ReleaseDroid createReleaseDroidForGitHub(final ValidateUseCase validateUseCase,
-            final RepositoryGateway repositoryGateway, final Map<PlatformName, ReleaseMaker> releaseMakers) {
+            final RepositoryGateway repositoryGateway, final GithubGateway githubGateway) {
+        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, repositoryGateway,
                 new GitHubRepositoryModifier());
         return ReleaseDroid.of(validateUseCase, releaseUseCase);

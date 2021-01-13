@@ -24,7 +24,7 @@ class GitHubPlatformValidatorTest {
     void testValidateContainsHeader() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertFalse(report.hasFailures());
     }
@@ -34,7 +34,7 @@ class GitHubPlatformValidatorTest {
     void testValidateContainCodeNameEmptyOptional() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.empty());
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-1")));
@@ -45,7 +45,7 @@ class GitHubPlatformValidatorTest {
     void testValidateContainCodeNameEmptyString() {
         final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
         when(changesLetter.getHeader()).thenReturn(Optional.of(""));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-1")));
@@ -60,8 +60,8 @@ class GitHubPlatformValidatorTest {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         when(githubGateway.getClosedTickets(anyString())).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(repositoryMock, changesLetter);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
+        final Report report = validator.validateGitHubTickets(changesLetter);
         assertFalse(report.hasFailures());
     }
 
@@ -75,8 +75,8 @@ class GitHubPlatformValidatorTest {
         when(repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(repositoryMock, changesLetter);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
+        final Report report = validator.validateGitHubTickets(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-2")));
     }
@@ -91,8 +91,8 @@ class GitHubPlatformValidatorTest {
         when(repositoryMock.isOnDefaultBranch()).thenReturn(false);
         when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(releaseLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
+        final Report report = validator.validateGitHubTickets(releaseLetter);
         assertFalse(report.hasFailures());
     }
 
@@ -104,8 +104,8 @@ class GitHubPlatformValidatorTest {
         final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
         when(repositoryMock.getName()).thenReturn("name");
         when(githubGateway.getClosedTickets("name")).thenThrow(new GitHubException(""));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(githubGateway);
-        final Report report = validator.validateGitHubTickets(repositoryMock, releaseLetter);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
+        final Report report = validator.validateGitHubTickets(releaseLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-10")));
     }
@@ -115,7 +115,7 @@ class GitHubPlatformValidatorTest {
     void testValidateWorkflowFile() {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertFalse(report.hasFailures());
     }
@@ -125,7 +125,7 @@ class GitHubPlatformValidatorTest {
     void testValidateWorkflowFileFails() {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(RepositoryException.class);
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null);
+        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-9")));

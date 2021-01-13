@@ -1,7 +1,5 @@
 package com.exasol.releasedroid.repository;
 
-import java.util.logging.Logger;
-
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.github.GitHubException;
 import com.exasol.releasedroid.github.GithubGateway;
@@ -12,7 +10,6 @@ import com.exasol.releasedroid.usecases.*;
  * 
  */
 public class RepositoryFactory implements RepositoryGateway {
-    private static final Logger LOGGER = Logger.getLogger(RepositoryFactory.class.getName());
     private final GithubGateway githubGateway;
 
     public RepositoryFactory(final GithubGateway githubGateway) {
@@ -25,11 +22,9 @@ public class RepositoryFactory implements RepositoryGateway {
         final String language = getLanguage(userInput).toUpperCase();
         switch (language) {
         case "JAVA":
-            LOGGER.info("Java repository detected.");
-            return new JavaRepository(repositoryGate);
+            return new JavaRepository(repositoryGate, this.githubGateway);
         case "SCALA":
-            LOGGER.info("Scala repository detected.");
-            return new ScalaRepository(repositoryGate);
+            return new ScalaRepository(repositoryGate, this.githubGateway);
         default:
             throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-REP-10") //
                     .message("Unsupported programming language: {{language}}.") //

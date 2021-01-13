@@ -35,7 +35,7 @@ class JavaRepositoryTest {
     }
 
     private JavaRepository createRepository() {
-        return new JavaRepository(this.repositoryGateMock);
+        return new JavaRepository(this.repositoryGateMock, null);
     }
 
     @Test

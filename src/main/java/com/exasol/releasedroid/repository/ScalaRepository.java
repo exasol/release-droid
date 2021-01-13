@@ -1,12 +1,12 @@
 package com.exasol.releasedroid.repository;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
-
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.github.GithubGateway;
 import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -14,28 +14,26 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public class ScalaRepository extends BaseRepository {
     private static final String PATH_TO_TARGET_DIR = "./target/scala-2.12/";
+    private static final String PROJECT_NAME_PATTERN = "moduleName";
+    private static final String VERSION_PATTERN = "settings(version";
+    protected static final String BUILD_SBT = "build.sbt";
+    private final Map<PlatformName, RepositoryValidator> releaseablePlatforms;
+    private final List<RepositoryValidator> platformValidators;
 
-    public ScalaRepository(final RepositoryGate repositoryGate) {
+    public ScalaRepository(final RepositoryGate repositoryGate, final GithubGateway githubGateway) {
         super(repositoryGate);
+        this.releaseablePlatforms = Map.of(PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway));
+        this.platformValidators = List.of(new GitRepositoryValidator(this));
     }
 
     @Override
     public String getVersion() {
-        final String changelog = getChangelogFile();
-        final String[] lines = changelog.split(LINE_SEPARATOR);
-        if (lines.length > 1) {
-            for (final String line : lines) {
-                final int startIndex = line.indexOf("[");
-                final int endIndex = line.indexOf("]");
-                if ((startIndex >= 0) && (endIndex > startIndex)) {
-                    return line.substring(startIndex + 1, endIndex);
-                }
-            }
-        }
-        throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-9")
-                .message("Cannot detect Scala's project version in 'changelog.md' file.")
-                .mitigation("Please make sure that you added filled a 'changelog.md' file according to a user guide.")
-                .toString());
+        final String buildFile = getSingleFileContentAsString(BUILD_SBT);
+        final Optional<String> version = getValueFromBuildFile(buildFile, VERSION_PATTERN);
+        return version.orElseThrow(() -> new RepositoryException(ExaError.messageBuilder("E-RR-REP-9")
+                .message("Cannot detect Scala's project version in {{filename}} file.") //
+                .parameter("filename", BUILD_SBT).toString()));
+
     }
 
     @Override
@@ -45,31 +43,32 @@ public class ScalaRepository extends BaseRepository {
 
     @Override
     public Map<String, String> getDeliverables() {
-        final String buildFile = getSingleFileContentAsString("build.sbt");
-        final String projectName = getProjectName(buildFile);
+        final String buildFile = getSingleFileContentAsString(BUILD_SBT);
+        final String projectName = getValueFromBuildFile(buildFile, PROJECT_NAME_PATTERN)
+                .orElseGet(() -> getName().split("/")[1]);
         final String assetName = projectName + "-" + getVersion() + ".jar";
         final String assetPath = PATH_TO_TARGET_DIR + assetName;
         return Map.of(assetName, assetPath);
     }
 
-    private String getProjectName(final String buildFile) {
-        if (buildFile.contains("moduleName")) {
-            final int moduleName = buildFile.indexOf("moduleName");
+    private Optional<String> getValueFromBuildFile(final String buildFile, final String pattern) {
+        if (buildFile.contains(pattern)) {
+            final int moduleName = buildFile.indexOf(pattern);
             final int start = buildFile.indexOf("\"", moduleName);
             final int end = buildFile.indexOf("\"", start + 1);
-            return buildFile.substring(start + 1, end);
+            return Optional.of(buildFile.substring(start + 1, end));
         } else {
-            return getName().split("/")[1];
+            return Optional.empty();
         }
     }
 
     @Override
-    public List<RepositoryValidator> getStructureValidators() {
-        return null;
+    public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
+        return this.releaseablePlatforms;
     }
 
     @Override
-    public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
-        return null;
+    public List<RepositoryValidator> getStructureValidators() {
+        return this.platformValidators;
     }
 }

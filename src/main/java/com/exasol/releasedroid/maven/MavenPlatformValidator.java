@@ -16,8 +16,7 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
     private static final List<String> REQUIRED_PLUGINS = List.of("nexus-staging-maven-plugin", "maven-source-plugin",
             "maven-gpg-plugin", "maven-javadoc-plugin", "maven-deploy-plugin");
     protected static final String MAVEN_WORKFLOW_PATH = ".github/workflows/maven_central_release.yml";
-
-    final JavaRepository repository;
+    private final JavaRepository repository;
 
     public MavenPlatformValidator(final JavaRepository repository) {
         this.repository = repository;

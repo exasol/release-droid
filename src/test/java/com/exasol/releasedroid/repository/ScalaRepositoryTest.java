@@ -1,22 +1,20 @@
 package com.exasol.releasedroid.repository;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
+import static com.exasol.releasedroid.repository.ScalaRepository.BUILD_SBT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.Repository;
-
-import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class ScalaRepositoryTest {
@@ -26,18 +24,18 @@ class ScalaRepositoryTest {
     @Test
     void testGetVersion() {
         final Repository repository = getRepository();
-        final String changelog = "# Changelog" + LINE_SEPARATOR //
-                + "* [0.2.0](changes_0.2.0.md)" + LINE_SEPARATOR //
-                + "* [0.1.0](changes_0.1.0.md)";
-        when(this.repositoryGateMock.getSingleFileContentAsString("doc/changes/changelog.md")).thenReturn(changelog);
+        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
+                + ".settings(version := \"0.2.0\").settings(orgSettings)";
+        when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
         assertThat(repository.getVersion(), equalTo("0.2.0"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "", "# Changelog" })
-    void testGetVersionThrowsException(final String changelog) {
+    @Test
+    void testGetVersionThrowsException() {
         final Repository repository = getRepository();
-        when(this.repositoryGateMock.getSingleFileContentAsString("doc/changes/changelog.md")).thenReturn(changelog);
+        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
+                + ".settings(orgSettings)";
+        when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
         final RepositoryException exception = assertThrows(RepositoryException.class, repository::getVersion);
         assertThat(exception.getMessage(), containsString("E-RR-REP-9"));
     }
@@ -45,16 +43,14 @@ class ScalaRepositoryTest {
     @Test
     void testGetDeliverables() {
         final Repository repository = getRepository();
-        final String changelog = "# Changelog" + LINE_SEPARATOR //
-                + "* [0.2.0](changes_0.2.0.md)";
-        when(this.repositoryGateMock.getSingleFileContentAsString("doc/changes/changelog.md")).thenReturn(changelog);
         final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
-                + ".settings(orgSettings)";
-        when(this.repositoryGateMock.getSingleFileContentAsString("build.sbt")).thenReturn(buildFile);
-        assertThat(repository.getDeliverables(), equalTo(Map.of("testing-release-robot-0.2.0.jar", "./target/scala-2.12/testing-release-robot-0.2.0.jar")));
+                + ".settings(version := \"0.2.0\").settings(orgSettings)";
+        when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
+        assertThat(repository.getDeliverables(), equalTo(
+                Map.of("testing-release-robot-0.2.0.jar", "./target/scala-2.12/testing-release-robot-0.2.0.jar")));
     }
 
     private Repository getRepository() {
-        return new ScalaRepository(this.repositoryGateMock);
+        return new ScalaRepository(this.repositoryGateMock, null);
     }
 }

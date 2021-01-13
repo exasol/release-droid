@@ -22,6 +22,7 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
+     * @param repository    repository to validate
      * @param githubGateway instance of {@link GithubGateway}
      */
     public GitHubPlatformValidator(final Repository repository, final GithubGateway githubGateway) {
@@ -36,16 +37,16 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
         final Report report = Report.validationReport();
         final String version = this.repository.getVersion();
         final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
-        report.merge(validateChangesFile(this.repository, releaseLetter));
+        report.merge(validateChangesFile(releaseLetter));
         report.merge(validateFileExists(this.repository, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 
     // [impl->dsn~validate-release-letter~1]
-    private Report validateChangesFile(final Repository repository, final ReleaseLetter releaseLetter) {
+    private Report validateChangesFile(final ReleaseLetter releaseLetter) {
         final Report report = Report.validationReport();
         report.merge(validateContainsHeader(releaseLetter));
-        report.merge(validateGitHubTickets(repository, releaseLetter));
+        report.merge(validateGitHubTickets(releaseLetter));
         return report;
     }
 
@@ -65,13 +66,13 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
 
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
-    protected Report validateGitHubTickets(final Repository repository, final ReleaseLetter releaseLetter) {
+    protected Report validateGitHubTickets(final ReleaseLetter releaseLetter) {
         final Report report = Report.validationReport();
         try {
-            final List<String> wrongTickets = collectWrongTickets(repository.getName(), releaseLetter);
+            final List<String> wrongTickets = collectWrongTickets(this.repository.getName(), releaseLetter);
             if (!wrongTickets.isEmpty()) {
-                report.merge(
-                        reportWrongTickets(repository.isOnDefaultBranch(), releaseLetter.getFileName(), wrongTickets));
+                report.merge(reportWrongTickets(this.repository.isOnDefaultBranch(), releaseLetter.getFileName(),
+                        wrongTickets));
             } else {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
