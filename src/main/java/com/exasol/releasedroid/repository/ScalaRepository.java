@@ -42,9 +42,21 @@ public class ScalaRepository extends BaseRepository {
 
     @Override
     public Map<String, String> getDeliverables() {
-        final String[] split = getName().split("/");
-        final String assetName = split[1] + "-" + getVersion() + ".jar";
+        final String buildFile = getSingleFileContentAsString("build.sbt");
+        final String projectName = getProjectName(buildFile);
+        final String assetName = projectName + "-" + getVersion() + ".jar";
         final String assetPath = PATH_TO_TARGET_DIR + assetName;
         return Map.of(assetName, assetPath);
+    }
+
+    private String getProjectName(final String buildFile) {
+        if (buildFile.contains("moduleName")) {
+            final int moduleName = buildFile.indexOf("moduleName");
+            final int start = buildFile.indexOf("\"", moduleName);
+            final int end = buildFile.indexOf("\"", start + 1);
+            return buildFile.substring(start + 1, end);
+        } else {
+            return getName().split("/")[1];
+        }
     }
 }

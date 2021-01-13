@@ -86,7 +86,7 @@ public class GitHubRepositoryGate implements RepositoryGate {
         try {
             return Optional.ofNullable(this.githubGateway.getLatestTag(getName()));
         } catch (final GitHubException exception) {
-            throw new RepositoryException("");
+            throw new RepositoryException(exception);
         }
     }
 

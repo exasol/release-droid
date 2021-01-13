@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.Repository;
 
+import java.util.Map;
+
 @ExtendWith(MockitoExtension.class)
 class ScalaRepositoryTest {
     @Mock
@@ -38,6 +40,18 @@ class ScalaRepositoryTest {
         when(this.repositoryGateMock.getSingleFileContentAsString("doc/changes/changelog.md")).thenReturn(changelog);
         final RepositoryException exception = assertThrows(RepositoryException.class, repository::getVersion);
         assertThat(exception.getMessage(), containsString("E-RR-REP-9"));
+    }
+
+    @Test
+    void testGetDeliverables() {
+        final Repository repository = getRepository();
+        final String changelog = "# Changelog" + LINE_SEPARATOR //
+                + "* [0.2.0](changes_0.2.0.md)";
+        when(this.repositoryGateMock.getSingleFileContentAsString("doc/changes/changelog.md")).thenReturn(changelog);
+        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
+                + ".settings(orgSettings)";
+        when(this.repositoryGateMock.getSingleFileContentAsString("build.sbt")).thenReturn(buildFile);
+        assertThat(repository.getDeliverables(), equalTo(Map.of("testing-release-robot-0.2.0.jar", "./target/scala-2.12/testing-release-robot-0.2.0.jar")));
     }
 
     private Repository getRepository() {
