@@ -17,25 +17,27 @@ public class GitHubPlatformValidator extends AbstractPlatformValidator {
     protected static final String GITHUB_WORKFLOW_PATH = ".github/workflows/github_release.yml";
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GithubGateway githubGateway;
+    private final Repository repository;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
      *
      * @param githubGateway instance of {@link GithubGateway}
      */
-    public GitHubPlatformValidator(final GithubGateway githubGateway) {
+    public GitHubPlatformValidator(final Repository repository, final GithubGateway githubGateway) {
+        this.repository = repository;
         this.githubGateway = githubGateway;
     }
 
     @Override
     // [impl->dsn~validate-github-workflow-exists~1]
-    public Report validate(final Repository repository) {
+    public Report validate() {
         LOGGER.fine("Validating GitHub-specific requirements.");
         final Report report = Report.validationReport();
-        final String version = repository.getVersion();
-        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
-        report.merge(validateChangesFile(repository, releaseLetter));
-        report.merge(validateFileExists(repository, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
+        final String version = this.repository.getVersion();
+        final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
+        report.merge(validateChangesFile(this.repository, releaseLetter));
+        report.merge(validateFileExists(this.repository, GITHUB_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 

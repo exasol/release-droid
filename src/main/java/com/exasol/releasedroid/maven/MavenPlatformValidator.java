@@ -6,7 +6,6 @@ import org.apache.maven.model.PluginExecution;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.*;
-import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
 
@@ -18,12 +17,18 @@ public class MavenPlatformValidator extends AbstractPlatformValidator {
             "maven-gpg-plugin", "maven-javadoc-plugin", "maven-deploy-plugin");
     protected static final String MAVEN_WORKFLOW_PATH = ".github/workflows/maven_central_release.yml";
 
+    final JavaRepository repository;
+
+    public MavenPlatformValidator(final JavaRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     // [impl->dsn~validate-maven-release-workflow-exists~1]
-    public Report validate(final Repository repository) {
+    public Report validate() {
         final Report report = Report.validationReport();
-        report.merge(validateFileExists(repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
-        report.merge(validateMavenPom(((JavaRepository) repository).getMavenPom()));
+        report.merge(validateFileExists(this.repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
+        report.merge(validateMavenPom(this.repository.getMavenPom()));
         return report;
     }
 

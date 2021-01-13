@@ -2,9 +2,12 @@ package com.exasol.releasedroid.repository;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
+import java.util.List;
 import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * Sbt-based scala repository.
@@ -24,7 +27,7 @@ public class ScalaRepository extends BaseRepository {
             for (final String line : lines) {
                 final int startIndex = line.indexOf("[");
                 final int endIndex = line.indexOf("]");
-                if (startIndex >= 0 && endIndex > startIndex) {
+                if ((startIndex >= 0) && (endIndex > startIndex)) {
                     return line.substring(startIndex + 1, endIndex);
                 }
             }
@@ -58,5 +61,15 @@ public class ScalaRepository extends BaseRepository {
         } else {
             return getName().split("/")[1];
         }
+    }
+
+    @Override
+    public List<RepositoryValidator> getStructureValidators() {
+        return null;
+    }
+
+    @Override
+    public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
+        return null;
     }
 }

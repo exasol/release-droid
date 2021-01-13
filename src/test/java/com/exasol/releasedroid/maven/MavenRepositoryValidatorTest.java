@@ -28,7 +28,7 @@ class MavenRepositoryValidatorTest {
     }
 
     private Report getReport(final MavenPom mavenPom) {
-        final MavenRepositoryValidator pomValidator = new MavenRepositoryValidator();
+        final JavaRepositoryValidator pomValidator = new JavaRepositoryValidator();
         return pomValidator.validate(this.repositoryMock);
     }
 

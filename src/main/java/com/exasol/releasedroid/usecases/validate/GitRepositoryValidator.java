@@ -17,18 +17,23 @@ import com.exasol.releasedroid.usecases.report.ValidationResult;
  */
 public class GitRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
+    private final Repository repository;
+
+    public GitRepositoryValidator(final Repository repository) {
+        this.repository = repository;
+    }
 
     @Override
-    public Report validate(final Repository repository) {
-        LOGGER.fine("Validating repository on branch '" + repository.getBranchName() + "'.");
+    public Report validate() {
+        LOGGER.fine("Validating repository on branch '" + this.repository.getBranchName() + "'.");
         final Report report = Report.validationReport();
-        final String version = repository.getVersion();
-        report.merge(validateNewVersion(version, repository));
+        final String version = this.repository.getVersion();
+        report.merge(validateNewVersion(version, this.repository));
         if (!report.hasFailures()) {
-            final String changelog = repository.getChangelogFile();
+            final String changelog = this.repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
-            final ReleaseLetter changes = repository.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, repository.isOnDefaultBranch()));
+            final ReleaseLetter changes = this.repository.getReleaseLetter(version);
+            report.merge(validateChanges(changes, version, this.repository.isOnDefaultBranch()));
         }
         return report;
     }

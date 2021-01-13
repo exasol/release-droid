@@ -6,6 +6,12 @@ import java.util.*;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.maven.JavaRepositoryValidator;
+import com.exasol.releasedroid.maven.MavenPlatformValidator;
+import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * Maven-based Java repository.
@@ -146,5 +152,18 @@ public class JavaRepository extends BaseRepository {
             throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-5")
                     .message("Cannot find the current version in the repository.").toString());
         }
+    }
+
+    @Override
+    public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
+        final Map<PlatformName, RepositoryValidator> releaseablePlatforms = new HashMap<>();
+        releaseablePlatforms.put(PlatformName.GITHUB, new GitHubPlatformValidator(this, null));
+        releaseablePlatforms.put(PlatformName.MAVEN, new MavenPlatformValidator(this));
+        return releaseablePlatforms;
+    }
+
+    @Override
+    public List<RepositoryValidator> getStructureValidators() {
+        return List.of(new GitRepositoryValidator(this), new JavaRepositoryValidator(this));
     }
 }

@@ -1,8 +1,11 @@
 package com.exasol.releasedroid.usecases;
 
+import java.util.List;
 import java.util.Map;
 
-import com.exasol.releasedroid.repository.*;
+import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.repository.RepositoryGate;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * This class represents a repository content based on the latest commit of the user-specified branch.
@@ -46,7 +49,11 @@ public interface Repository extends RepositoryGate {
      */
     public Language getRepositoryLanguage();
 
+    public List<RepositoryValidator> getStructureValidators();
+
     enum Language {
         JAVA, SCALA, LANGUAGE_INDEPENDENT
     }
+
+    Map<PlatformName, RepositoryValidator> getValidatorForPlatforms();
 }
