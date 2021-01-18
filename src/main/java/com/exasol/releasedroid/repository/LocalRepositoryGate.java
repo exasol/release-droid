@@ -17,18 +17,19 @@ import com.exasol.errorreporting.ExaError;
  * This class represents a local repository.
  */
 // [impl->dsn~local-repository~1]
-public class LocalRepository extends BaseRepository {
+public class LocalRepositoryGate implements RepositoryGate {
     private final String localPath;
+    private final String fullName;
 
     /**
-     * Create a new instance of {@link LocalRepository}.
+     * Create a new instance of {@link LocalRepositoryGate}.
      * 
-     * @param localPath      path to a root of a local repository
-     * @param repositoryName name of a repository
+     * @param localPath path to a root of a local repository
+     * @param fullName  name of a repository
      */
-    public LocalRepository(final String localPath, final String repositoryName) {
-        super(repositoryName);
+    public LocalRepositoryGate(final String localPath, final String fullName) {
         this.localPath = localPath;
+        this.fullName = fullName;
     }
 
     @Override
@@ -83,5 +84,10 @@ public class LocalRepository extends BaseRepository {
             throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-7")
                     .message("Cannot retrieve a name of a local git branch.").toString());
         }
+    }
+
+    @Override
+    public String getName() {
+        return this.fullName;
     }
 }

@@ -61,6 +61,7 @@ public interface GithubGateway {
      * @param branchName     branch to retrieve the content from
      * @param filePath       path to a file
      * @return file content
+     * @throws GitHubException when some problems occur
      */
     public InputStream getFileContent(String repositoryName, String branchName, String filePath) throws GitHubException;
 
@@ -72,7 +73,17 @@ public interface GithubGateway {
      * @param filePath       path to a file
      * @param newContent     new file content
      * @param commitMessage  message to add to a commit
+     * @throws GitHubException when some problems occur
      */
     public void updateFileContent(String repositoryName, String branchName, String filePath, String newContent,
             String commitMessage) throws GitHubException;
+
+    /**
+     * Get a repository's primary programming language.
+     * 
+     * @param repositoryName fully qualified name of the repository
+     * @return repository primary language as a string
+     * @throws GitHubException when some problems occur
+     */
+    public String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
 }

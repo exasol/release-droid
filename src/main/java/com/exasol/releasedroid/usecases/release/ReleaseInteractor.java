@@ -17,22 +17,21 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
-    private final Map<PlatformName, ? extends ReleaseMaker> releaseMakers;
+    private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
     private final RepositoryModifier repositoryModifier;
     private final ReportLogger reportLogger = new ReportLogger();
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
-     * 
+     *
      * @param validateUseCase    validate use case for validating the platforms
      * @param releaseMakers      map with platform names and release makers
      * @param repositoryGateway  instance of {@link RepositoryGateway}
      * @param repositoryModifier instance of {@link RepositoryModifier}
      */
-    public ReleaseInteractor(final ValidateUseCase validateUseCase,
-            final Map<PlatformName, ? extends ReleaseMaker> releaseMakers, final RepositoryGateway repositoryGateway,
-            final RepositoryModifier repositoryModifier) {
+    public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+            final RepositoryGateway repositoryGateway, final RepositoryModifier repositoryModifier) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.repositoryGateway = repositoryGateway;

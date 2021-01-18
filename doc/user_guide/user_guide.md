@@ -6,6 +6,7 @@ Here you can find a list of supported programming languages.
 Note that 'a programming language' here means 'the main programming language which determines the project's structure'. 
 
 * Java
+* Scala
 
 ## Supported Release Platforms
 
@@ -62,6 +63,11 @@ project root/
     1. a `<version></version>` tag with a valid version as a constant;
     1. `<artifactId></artifactId>` tag with a project name;
 
+
+### Rules for Scala Repositories
+
+* The project must be built with [sbt](https://www.scala-sbt.org/).
+
 ### Rules for Release on GitHub
 
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules.
@@ -76,9 +82,9 @@ It is not allowed to skip a version, to release the same version twice or to rel
 * A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'.
   All the mentioned on the file tickets must have a closed status on the GitHub.
  
-### Rules for Release on Maven Central
+### Rules for Release on Maven Central (Java repositories)
 
-Prerequisites:
+Pre-requisites:
 
 1. The repository must be on the while-list of the organizational credential for Maven Central on the GitHub.
 

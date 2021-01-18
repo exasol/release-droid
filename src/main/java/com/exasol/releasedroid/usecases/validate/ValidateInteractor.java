@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -13,22 +14,15 @@ import com.exasol.releasedroid.usecases.report.Report;
  */
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
-    private final List<RepositoryValidator> repositoryValidators;
-    private final Map<PlatformName, ? extends RepositoryValidator> platformValidators;
     private final RepositoryGateway repositoryGateway;
     private final ReportLogger reportLogger = new ReportLogger();
 
     /**
      * Create a new instance of {@link ValidateInteractor}.
      *
-     * @param repositoryValidators list of repository validators
-     * @param repositoryGateway    the repositoryGateway
+     * @param repositoryGateway the repositoryGateway
      */
-    public ValidateInteractor(final List<RepositoryValidator> repositoryValidators,
-            final Map<PlatformName, ? extends RepositoryValidator> platformValidators,
-            final RepositoryGateway repositoryGateway) {
-        this.repositoryValidators = repositoryValidators;
-        this.platformValidators = platformValidators;
+    public ValidateInteractor(final RepositoryGateway repositoryGateway) {
         this.repositoryGateway = repositoryGateway;
     }
 
@@ -55,25 +49,28 @@ public class ValidateInteractor implements ValidateUseCase {
 
     private Report validatePlatforms(final Repository repository, final List<PlatformName> platformNames) {
         final Report report = Report.validationReport();
+        final Map<PlatformName, RepositoryValidator> validators = repository.getValidatorForPlatforms();
         for (final PlatformName platformName : platformNames) {
-            report.merge(this.validateForPlatform(platformName, repository));
+            report.merge(this.validateForPlatform(platformName, validators));
         }
         return report;
     }
 
-    private Report validateForPlatform(final PlatformName platformName, final Repository repository) {
-        final RepositoryValidator repositoryValidator = this.getRepositoryValidatorForPlatform(platformName);
-        return repositoryValidator.validate(repository);
-    }
-
-    private RepositoryValidator getRepositoryValidatorForPlatform(final PlatformName platformName) {
-        return this.platformValidators.get(platformName);
+    private Report validateForPlatform(final PlatformName platformName,
+            final Map<PlatformName, RepositoryValidator> validators) {
+        if (validators.containsKey(platformName)) {
+            return validators.get(platformName).validate();
+        }
+        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-5") //
+                .message("{{platform}} platform is not supported for this project.") //
+                .parameter("platform", platformName).toString());
     }
 
     private Report validateRepositories(final Repository repository) {
         final Report report = Report.validationReport();
-        for (final RepositoryValidator repositoryValidator : this.repositoryValidators) {
-            report.merge(repositoryValidator.validate(repository));
+        final List<RepositoryValidator> repositoryValidators = repository.getStructureValidators(); // structureRepoValidator,
+        for (final RepositoryValidator repositoryValidator : repositoryValidators) {
+            report.merge(repositoryValidator.validate());
         }
         return report;
     }

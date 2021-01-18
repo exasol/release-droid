@@ -31,7 +31,7 @@ class GitRepositoryValidatorTest {
 
     @BeforeEach
     void beforeEach() {
-        this.validator = new GitRepositoryValidator();
+        this.validator = new GitRepositoryValidator(this.gitRepositoryMock);
     }
 
     @Test
@@ -116,7 +116,7 @@ class GitRepositoryValidatorTest {
     @ValueSource(strings = { "{${product.version}}", "v1.4.0", "2.0.0-1", "1.2", " " })
     // [utest->dsn~validate-release-version-format~1]
     void testValidateInvalidVersionFormat(final String version) {
-        final Report report = this.validator.validateNewVersion(version, this.gitRepositoryMock);
+        final Report report = this.validator.validateNewVersion(version);
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-3")));
     }
@@ -126,7 +126,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-format~1]
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.empty());
-        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
+        final Report validationReport = this.validator.validateNewVersion(version);
         assertThat(validationReport.hasFailures(), equalTo(false));
     }
 
@@ -135,7 +135,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
-        final Report validationReport = this.validator.validateNewVersion(version, this.gitRepositoryMock);
+        final Report validationReport = this.validator.validateNewVersion(version);
         assertThat(validationReport.hasFailures(), equalTo(false));
     }
 
@@ -144,7 +144,7 @@ class GitRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.gitRepositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
-        final Report report = this.validator.validateNewVersion(version, this.gitRepositoryMock);
+        final Report report = this.validator.validateNewVersion(version);
         assertAll(() -> assertTrue(report.hasFailures()),
                 () -> assertThat(report.toString(),
                         containsString(

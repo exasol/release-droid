@@ -17,28 +17,33 @@ import com.exasol.releasedroid.usecases.report.ValidationResult;
  */
 public class GitRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
+    private final Repository repository;
+
+    public GitRepositoryValidator(final Repository repository) {
+        this.repository = repository;
+    }
 
     @Override
-    public Report validate(final Repository repository) {
-        LOGGER.fine("Validating repository on branch '" + repository.getBranchName() + "'.");
+    public Report validate() {
+        LOGGER.fine("Validating repository on branch '" + this.repository.getBranchName() + "'.");
         final Report report = Report.validationReport();
-        final String version = repository.getVersion();
-        report.merge(validateNewVersion(version, repository));
+        final String version = this.repository.getVersion();
+        report.merge(validateNewVersion(version));
         if (!report.hasFailures()) {
-            final String changelog = repository.getChangelogFile();
+            final String changelog = this.repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
-            final ReleaseLetter changes = repository.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, repository.isOnDefaultBranch()));
+            final ReleaseLetter changes = this.repository.getReleaseLetter(version);
+            report.merge(validateChanges(changes, version, this.repository.isOnDefaultBranch()));
         }
         return report;
     }
 
-    protected Report validateNewVersion(final String newVersion, final Repository repository) {
+    protected Report validateNewVersion(final String newVersion) {
         LOGGER.fine("Validating a new version.");
         final Report report = Report.validationReport();
         report.merge(validateVersionFormat(newVersion));
         if (!report.hasFailures()) {
-            report.merge(validateIfNewReleaseTagValid(newVersion, repository));
+            report.merge(validateIfNewReleaseTagValid(newVersion));
         }
         return report;
     }
@@ -56,9 +61,9 @@ public class GitRepositoryValidator implements RepositoryValidator {
         return report;
     }
 
-    private Report validateIfNewReleaseTagValid(final String newVersion, final Repository repository) {
+    private Report validateIfNewReleaseTagValid(final String newVersion) {
         final Report report = Report.validationReport();
-        final Optional<String> latestReleaseTag = repository.getLatestTag();
+        final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
             report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
         } else {

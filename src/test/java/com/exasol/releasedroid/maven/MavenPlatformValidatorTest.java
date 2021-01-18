@@ -16,14 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.repository.*;
-import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith({ MockitoExtension.class })
 class MavenPlatformValidatorTest {
-    private final MavenPlatformValidator platformValidator = new MavenPlatformValidator();
+    private MavenPlatformValidator platformValidator;
     @Mock
-    private Repository repositoryMock;
+    private JavaRepository repositoryMock;
     @Mock
     private MavenPom mavenPomMock;
     @Mock
@@ -34,6 +33,7 @@ class MavenPlatformValidatorTest {
     @BeforeEach
     void beforeEach() {
         when(this.repositoryMock.getMavenPom()).thenReturn(this.mavenPomMock);
+        this.platformValidator = new MavenPlatformValidator(this.repositoryMock);
     }
 
     @Test
@@ -51,7 +51,7 @@ class MavenPlatformValidatorTest {
                 MavenPlugin.builder().artifactId("maven-javadoc-plugin").build(), //
                 MavenPlugin.builder().artifactId("maven-deploy-plugin").build()//
         ));
-        final Report report = this.platformValidator.validate(this.repositoryMock);
+        final Report report = this.platformValidator.validate();
         assertFalse(report.hasFailures());
     }
 
@@ -60,7 +60,7 @@ class MavenPlatformValidatorTest {
     void testValidateFails() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
                 .thenThrow(RepositoryException.class);
-        final Report report = this.platformValidator.validate(this.repositoryMock);
+        final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-9")), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-13")),
@@ -75,7 +75,7 @@ class MavenPlatformValidatorTest {
     void testValidatePGpgPluginMissingExecutions() {
         when(this.mavenPomMock.getPlugins())
                 .thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin").build()));
-        final Report report = this.platformValidator.validate(this.repositoryMock);
+        final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-14")));
     }
@@ -86,7 +86,7 @@ class MavenPlatformValidatorTest {
         when(this.mavenPomMock.getPlugins()).thenReturn(List.of(MavenPlugin.builder().artifactId("maven-gpg-plugin")
                 .executions(List.of(this.pluginExecutionMock)).build()));
         when(this.pluginExecutionMock.getId()).thenReturn("some-id");
-        final Report report = this.platformValidator.validate(this.repositoryMock);
+        final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-15")));
     }
@@ -99,7 +99,7 @@ class MavenPlatformValidatorTest {
         when(this.pluginExecutionMock.getId()).thenReturn("sign-artifacts");
         when(this.pluginExecutionMock.getConfiguration()).thenReturn(this.configurationsMock);
         when(this.configurationsMock.toString()).thenReturn("text");
-        final Report report = this.platformValidator.validate(this.repositoryMock);
+        final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-7")));
     }

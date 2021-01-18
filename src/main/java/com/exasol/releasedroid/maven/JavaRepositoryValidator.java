@@ -3,8 +3,8 @@ package com.exasol.releasedroid.maven;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.repository.JavaRepository;
 import com.exasol.releasedroid.repository.MavenPom;
-import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
@@ -12,13 +12,18 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 /**
  * This class validates a maven repository.
  */
-public class MavenRepositoryValidator implements RepositoryValidator {
-    private static final Logger LOGGER = Logger.getLogger(MavenRepositoryValidator.class.getName());
+public class JavaRepositoryValidator implements RepositoryValidator {
+    private static final Logger LOGGER = Logger.getLogger(JavaRepositoryValidator.class.getName());
+    private final JavaRepository repository;
+
+    public JavaRepositoryValidator(final JavaRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
-    public Report validate(final Repository repository) {
+    public Report validate() {
         LOGGER.fine("Validating pom file content.");
-        final MavenPom mavenPom = repository.getMavenPom();
+        final MavenPom mavenPom = this.repository.getMavenPom();
         final Report report = Report.validationReport();
         report.merge(validateVersion(mavenPom));
         report.merge(validateArtifactId(mavenPom));

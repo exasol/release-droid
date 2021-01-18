@@ -256,4 +256,10 @@ public class GithubAPIAdapter implements GithubGateway {
                     .parameter("repositoryName", repositoryName).toString(), exception);
         }
     }
+
+    @Override
+    public String getRepositoryPrimaryLanguage(final String repositoryName) throws GitHubException {
+        final GHRepository repository = getRepository(repositoryName);
+        return repository.getLanguage();
+    }
 }
