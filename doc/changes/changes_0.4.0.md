@@ -10,7 +10,7 @@ Code name:
 
 ## Features
 
-* #110: Added support for scala projects release on GitHub.
+* #110: Added support for Scala projects release on GitHub.
 
 ## Documentation
 
