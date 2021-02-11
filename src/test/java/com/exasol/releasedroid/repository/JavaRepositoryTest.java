@@ -1,8 +1,8 @@
 package com.exasol.releasedroid.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -55,43 +55,44 @@ class JavaRepositoryTest {
                 + " <version>1.2.3</version>" //
                 + " <properties>" //
                 + " <vscjdbc.version>5.0.4</vscjdbc.version>" //
+                + " <final.name>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</final.name>"
                 + " </properties>" //
                 + " <build>" //
                 + " <plugins>" //
                 + " <plugin>" //
-                + " <artifactId>maven-assembly-plugin</artifactId>" //
-                + " <configuration>" //
-                + " <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</finalName>"
-                + " </configuration>" //
+                + " <artifactId>maven-javadoc-plugin</artifactId>" //
+                + " </plugin>" //
+                + " <plugin>" //
+                + " <artifactId>maven-source-plugin</artifactId>" //
                 + " </plugin>" //
                 + " </plugins>" //
                 + " </build>" //
                 + "</project>";
         when(this.repositoryGateMock.getSingleFileContentAsString(anyString())).thenReturn(pom);
         final JavaRepository repository = createRepository();
-        assertThat(repository.getDeliverables(), equalTo(Map.of("virtual-schema-dist-5.0.4-bundle-1.2.3.jar",
-                "./target/virtual-schema-dist-5.0.4-bundle-1.2.3.jar")));
+        final Map<String, String> deliverables = repository.getDeliverables();
+        assertAll(
+                () -> assertThat(deliverables,
+                        hasEntry("virtual-schema-dist-5.0.4-bundle-1.2.3.jar",
+                                "./target/virtual-schema-dist-5.0.4-bundle-1.2.3.jar")),
+                () -> assertThat(deliverables,
+                        hasEntry("virtual-schema-dist-5.0.4-bundle-1.2.3-sources.jar",
+                                "./target/virtual-schema-dist-5.0.4-bundle-1.2.3-sources.jar")),
+                () -> assertThat(deliverables, hasEntry("virtual-schema-dist-5.0.4-bundle-1.2.3-javadoc.jar",
+                        "./target/virtual-schema-dist-5.0.4-bundle-1.2.3-javadoc.jar")));
+
     }
 
     @Test
     // [utest->dsn~repository-provides-deliverables-information~1]
-    void testGetDeliverablesWithPluginInformation() {
+    void testGetDeliverablesWithFinalName() {
         final String pom = "<project>" //
                 + " <artifactId>my-test-project</artifactId>" //
                 + " <version>1.2.3</version>" //
                 + " <properties>" //
                 + " <vscjdbc.version>5.0.4</vscjdbc.version>" //
+                + " <final.name>virtual-schema-dist-${vscjdbc.version}-bundle-${project.version}</final.name>" //
                 + " </properties>" //
-                + " <build>" //
-                + " <plugins>" //
-                + " <plugin>" //
-                + " <artifactId>maven-assembly-plugin</artifactId>" //
-                + " <configuration>" //
-                + " <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${project.version}</finalName>" //
-                + " </configuration>" //
-                + " </plugin>" //
-                + " </plugins>" //
-                + " </build>" //
                 + "</project>";
         when(this.repositoryGateMock.getSingleFileContentAsString(anyString())).thenReturn(pom);
         final JavaRepository repository = createRepository();
@@ -106,17 +107,8 @@ class JavaRepositoryTest {
                 + " <artifactId>my-test-project</artifactId>" //
                 + " <version>1.2.3</version>" //
                 + " <properties>" //
+                + " <final.name>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</final.name>" //
                 + " </properties>" //
-                + " <build>" //
-                + " <plugins>" //
-                + " <plugin>" //
-                + " <artifactId>maven-assembly-plugin</artifactId>" //
-                + " <configuration>" //
-                + " <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</finalName>"
-                + " </configuration>" //
-                + " </plugin>" //
-                + " </plugins>" //
-                + " </build>" //
                 + "</project>";
         when(this.repositoryGateMock.getSingleFileContentAsString(anyString())).thenReturn(pom);
         final JavaRepository repository = createRepository();

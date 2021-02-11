@@ -8,6 +8,7 @@ import com.exasol.errorreporting.ExaError;
  * Represents a GitHub release.
  */
 public class GitHubRelease {
+    private final String repositoryName;
     private final String version;
     private final String header;
     private final String releaseLetter;
@@ -15,6 +16,7 @@ public class GitHubRelease {
     private final Map<String, String> assets;
 
     private GitHubRelease(final Builder builder) {
+        this.repositoryName = builder.repositoryName;
         this.version = builder.version;
         this.header = builder.header;
         this.releaseLetter = builder.releaseLetter;
@@ -77,14 +79,35 @@ public class GitHubRelease {
     }
 
     /**
+     * Get repository name.
+     *
+     * @return repository name
+     */
+    public String getRepositoryName() {
+        return this.repositoryName;
+    }
+
+    /**
      * A builder for {@link GitHubRelease}.
      */
     public static class Builder {
+        private String repositoryName;
         private String version;
         private String header;
         private String releaseLetter = "";
         private String defaultBranchName;
         private Map<String, String> assets;
+
+        /**
+         * Set a repository name.
+         *
+         * @param repositoryName repository name
+         * @return builder instance for fluent programming
+         */
+        public Builder repositoryName(final String repositoryName) {
+            this.repositoryName = repositoryName;
+            return this;
+        }
 
         /**
          * Set a version.
@@ -152,6 +175,9 @@ public class GitHubRelease {
         }
 
         private void validateFields() {
+            if ((this.repositoryName == null) || this.repositoryName.isEmpty()) {
+                throw createExceptionWithInvalidField("repositoryName");
+            }
             if ((this.version == null) || this.version.isEmpty()) {
                 throw createExceptionWithInvalidField("version");
             }

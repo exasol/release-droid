@@ -50,8 +50,9 @@ public class Runner {
     private static ReleaseDroid createReleaseDroidForGitHub(final ValidateUseCase validateUseCase,
             final RepositoryGateway repositoryGateway, final GithubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
+        final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, repositoryGateway,
-                new GitHubRepositoryModifier());
+                releaseManager);
         return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 

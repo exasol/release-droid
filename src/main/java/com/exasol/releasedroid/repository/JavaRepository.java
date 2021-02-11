@@ -3,15 +3,13 @@ package com.exasol.releasedroid.repository;
 import java.io.*;
 import java.util.*;
 
-import com.exasol.releasedroid.github.GithubGateway;
-import com.exasol.releasedroid.maven.JavaRepositoryValidator;
-import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.github.GithubGateway;
+import com.exasol.releasedroid.maven.JavaRepositoryValidator;
 import com.exasol.releasedroid.maven.MavenPlatformValidator;
 import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -27,22 +25,55 @@ public class JavaRepository extends BaseRepository {
     public JavaRepository(final RepositoryGate repositoryGate, final GithubGateway githubGateway) {
         super(repositoryGate);
         this.releaseablePlatforms = Map.of( //
-                PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway),
-                PlatformName.MAVEN, new MavenPlatformValidator(this));
+                PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), PlatformName.MAVEN,
+                new MavenPlatformValidator(this));
         this.platformValidators = List.of(new GitRepositoryValidator(this), new JavaRepositoryValidator(this));
-        
     }
 
     @Override
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     public Map<String, String> getDeliverables() {
-        final String assetName = getAssetName() + ".jar";
-        final String assetPath = PATH_TO_TARGET_DIR + assetName;
-        return Map.of(assetName, assetPath);
+        final Map<String, String> deliverables = new HashMap<>();
+        final List<String> jarsNames = collectJarsNames();
+        for (final String jarsName : jarsNames) {
+            deliverables.put(jarsName, PATH_TO_TARGET_DIR + jarsName);
+        }
+        return deliverables;
     }
 
-    private String getAssetName() {
-        final Optional<String> deliverableName = parseDeliverableName(getMavenPom().getPlugins());
+    private List<String> collectJarsNames() {
+        final List<String> jarsNames = new ArrayList<>(3);
+        final String projectJarPattern = getProjectJarName();
+        jarsNames.add(projectJarPattern + ".jar");
+        if (hasSourceJar()) {
+            jarsNames.add(projectJarPattern + "-sources.jar");
+        }
+        if (hasJavadocJar()) {
+            jarsNames.add(projectJarPattern + "-javadoc.jar");
+        }
+        return jarsNames;
+    }
+
+    private boolean hasJavadocJar() {
+        return hasPlugin("maven-javadoc-plugin");
+    }
+
+    private boolean hasSourceJar() {
+        return hasPlugin("maven-source-plugin");
+    }
+
+    private boolean hasPlugin(final String pluginName) {
+        final List<MavenPlugin> plugins = getMavenPom().getPlugins();
+        for (final MavenPlugin plugin : plugins) {
+            if (plugin.getArtifactId().equals(pluginName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getProjectJarName() {
+        final Optional<String> deliverableName = parseDeliverableName();
         final String artifactId = getArtifactId();
         return deliverableName.orElse(artifactId + "-" + getVersion());
     }
@@ -56,39 +87,21 @@ public class JavaRepository extends BaseRepository {
         }
     }
 
-    private Optional<String> parseDeliverableName(final List<MavenPlugin> plugins) {
-        for (final MavenPlugin plugin : plugins) {
-            if (plugin.getArtifactId().equals("maven-assembly-plugin")) {
-                return parseMavenAssemblyPlugin(plugin);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<String> parseMavenAssemblyPlugin(final MavenPlugin plugin) {
-        final Xpp3Dom configurations = plugin.getConfiguration();
-        if (configurations == null) {
-            return Optional.empty();
+    private Optional<String> parseDeliverableName() {
+        final Map<String, String> properties = getMavenPom().getProperties();
+        if (properties.containsKey("final.name")) {
+            final String finalName = parseFinalName(properties.get("final.name"));
+            return Optional.of(finalName);
         } else {
-            return getParseConfigurations(configurations);
-        }
-    }
-
-    private Optional<String> getParseConfigurations(final Xpp3Dom configurations) {
-        final Xpp3Dom finalName = configurations.getChild("finalName");
-        if ((finalName == null) || (finalName.getValue() == null) || finalName.getValue().isEmpty()) {
             return Optional.empty();
-        } else {
-            return parseFinalName(finalName);
         }
     }
 
-    private Optional<String> parseFinalName(final Xpp3Dom finalNameNode) {
-        String finalName = finalNameNode.getValue().strip();
+    private String parseFinalName(String finalName) {
         while (finalName.contains("${")) {
             finalName = replaceVariable(finalName);
         }
-        return Optional.of(finalName);
+        return finalName;
     }
 
     private String replaceVariable(final String finalName) {
@@ -103,13 +116,19 @@ public class JavaRepository extends BaseRepository {
         if (tag.equals("version") || tag.equals("project.version")) {
             return getVersion();
         } else {
-            final Map<String, String> properties = getMavenPom().getProperties();
-            if (properties.containsKey(tag)) {
-                return properties.get(tag);
-            } else {
-                throw new IllegalStateException(
-                        ExaError.messageBuilder("E-RR-REP-3").message("Cannot detect deliverable's name.").toString());
-            }
+            return getRequiredPropertyValue(tag);
+        }
+    }
+
+    private String getRequiredPropertyValue(final String key) {
+        final Map<String, String> properties = getMavenPom().getProperties();
+        if (properties.containsKey(key)) {
+            return properties.get(key);
+        } else {
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("E-RR-REP-3").message("Cannot detect property {{propertyKey}}.") //
+                            .parameter("propertyKey", key) //
+                            .mitigation("Please check your pom.xml file.").toString());
         }
     }
 

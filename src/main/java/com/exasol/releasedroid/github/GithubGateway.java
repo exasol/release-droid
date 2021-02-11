@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.github;
 
 import java.io.InputStream;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Gateway for interacting with Github.
@@ -20,12 +20,10 @@ public interface GithubGateway {
     /**
      * Make a GitHub release.
      * 
-     * @param repositoryName fully qualified name of the repository
-     * @param gitHubRelease  instance of {@link GitHubRelease} with release information
-     * @return URl for attaching assets to the release as a string
+     * @param gitHubRelease instance of {@link GitHubRelease} with release information
      * @throws GitHubException when some problems occur
      */
-    public String createGithubRelease(String repositoryName, GitHubRelease gitHubRelease) throws GitHubException;
+    public void createGithubRelease(GitHubRelease gitHubRelease) throws GitHubException;
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
@@ -86,4 +84,14 @@ public interface GithubGateway {
      * @throws GitHubException when some problems occur
      */
     public String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
+
+    public List<GitHubArtifact> getRepositoryArtifacts(String name) throws GitHubException;
+
+    public void createChecksumArtifact(String repositoryName) throws GitHubException;
+
+    public Map<String, String> downloadChecksumFromArtifactory(String artifactId) throws GitHubException;
+
+    public Map<String, String> createQuickCheckSum(String repositoryName) throws GitHubException;
+
+    public void deleteAllArtifactsOnRepository(String repositoryName) throws GitHubException;
 }
