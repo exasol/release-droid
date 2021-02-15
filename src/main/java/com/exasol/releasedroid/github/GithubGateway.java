@@ -85,13 +85,48 @@ public interface GithubGateway {
      */
     public String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
 
-    public List<GitHubArtifact> getRepositoryArtifacts(String name) throws GitHubException;
+    /**
+     * Get a list of artifact's ids that are not expired.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @return list of artifact's ids
+     * @throws GitHubException when some problems occur
+     */
+    public List<String> getRepositoryArtifacts(String repositoryName) throws GitHubException;
 
+    /**
+     * Prepare a checksum on the repository.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @throws GitHubException when some problems occur
+     */
     public void createChecksumArtifact(String repositoryName) throws GitHubException;
 
-    public Map<String, String> downloadChecksumFromArtifactory(String artifactId) throws GitHubException;
+    /**
+     * Get a map with pre-saved jar names and their checksums.
+     * 
+     * @param repositoryName fully qualified name of the repository
+     * @param artifactId     id of the artifact to download the checksum from
+     * @return map with jar names and their checksums
+     * @throws GitHubException when some problems occur
+     */
+    public Map<String, String> downloadChecksumFromArtifactory(String repositoryName, String artifactId)
+            throws GitHubException;
 
+    /**
+     * Get a map with fresh jar names and their checksums.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @return map with jar names and their checksums
+     * @throws GitHubException when some problems occur
+     */
     public Map<String, String> createQuickCheckSum(String repositoryName) throws GitHubException;
 
-    public void deleteAllArtifactsOnRepository(String repositoryName) throws GitHubException;
+    /**
+     * Delete all artifacts from the repository.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @throws GitHubException when some problems occur
+     */
+    public void deleteAllArtifacts(String repositoryName) throws GitHubException;
 }

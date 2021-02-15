@@ -62,6 +62,7 @@ project root/
 * The main `pom.xml` file must contain:
     1. a `<version></version>` tag with a valid version as a constant;
     1. `<artifactId></artifactId>` tag with a project name;
+    1. `reproducible-build-maven-plugin` plugin. See an example of the plugin configurations in a [template file](maven_central_release_pom_file_template.md).
 
 
 ### Rules for Scala Repositories

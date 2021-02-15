@@ -6,19 +6,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 class GitHubReleaseTest {
     @Test
     void testValidGitHubRelease() {
         final GitHubRelease release = GitHubRelease.builder().repositoryName("repo").version("1.0.0").header("header")
-                .releaseLetter("release letter").defaultBranchName("main").assets(Map.of("name", "path")).build();
+                .releaseLetter("release letter").defaultBranchName("main").build();
         assertAll(() -> assertThat(release.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(release.getHeader(), equalTo("header")),
-                () -> assertThat(release.getReleaseLetter(), equalTo("release letter")),
-                () -> assertThat(release.getAssets(), equalTo(Map.of("name", "path"))));
+                () -> assertThat(release.getReleaseLetter(), equalTo("release letter")));
     }
 
     @Test
@@ -44,17 +41,9 @@ class GitHubReleaseTest {
     }
 
     @Test
-    void testGitHubReleaseEmptyAssets() {
-        final GitHubRelease.Builder builder = GitHubRelease.builder().repositoryName("repo").version("1.0.0")
-                .header("header");
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("'assets' field is null or empty"));
-    }
-
-    @Test
     void testGitHubReleaseEmptyDefaultBranchName() {
         final GitHubRelease.Builder builder = GitHubRelease.builder().repositoryName("repo").version("1.0.0")
-                .header("header").assets(Map.of("key", "value"));
+                .header("header");
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'defaultBranchName' field is null or empty"));
     }

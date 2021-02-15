@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.github.*;
+import com.exasol.releasedroid.github.GitHubException;
+import com.exasol.releasedroid.github.GithubGateway;
 
 public class ReleaseManagerImpl implements ReleaseManager {
     private static final Logger LOGGER = Logger.getLogger(ReleaseManagerImpl.class.getName());
@@ -18,17 +19,17 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     @Override
     public void prepareForRelease(final Repository repository) throws GitHubException {
-        final List<GitHubArtifact> artifacts = getArtifacts(repository.getName());
-        if (artifacts.size() > 1) {
+        final List<String> artifactIds = getArtifactIds(repository.getName());
+        if (artifactIds.size() > 1) {
             LOGGER.info("There are more than one artifact on the '" + repository.getName() + "' repository.");
             updateRepository(repository);
-        } else if (artifacts.isEmpty()) {
+        } else if (artifactIds.isEmpty()) {
             LOGGER.info("There are no artifacts on the '" + repository.getName() + "' repository.");
             this.repositoryModifier.writeReleaseDate(repository);
             prepareArtifact(repository);
         } else {
             LOGGER.info("Found an artifact on '" + repository.getName() + "' repository.");
-            if (!validateCheckSum(artifacts, repository.getName())) {
+            if (!validateCheckSum(artifactIds, repository.getName())) {
                 LOGGER.info("Checksum validation for '" + repository.getName() + "' repository failed.");
                 updateRepository(repository);
             }
@@ -40,10 +41,10 @@ public class ReleaseManagerImpl implements ReleaseManager {
         prepareForRelease(repository);
     }
 
-    private boolean validateCheckSum(final List<GitHubArtifact> artifacts, final String repositoryName)
+    private boolean validateCheckSum(final List<String> artifactIds, final String repositoryName)
             throws GitHubException {
-        final Map<String, String> checksum = this.githubGateway
-                .downloadChecksumFromArtifactory(artifacts.get(0).getId());
+        final Map<String, String> checksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
+                artifactIds.get(0));
         final Map<String, String> quickChecksum = this.githubGateway.createQuickCheckSum(repositoryName);
         if (checksum.size() != quickChecksum.size()) {
             return false;
@@ -62,10 +63,10 @@ public class ReleaseManagerImpl implements ReleaseManager {
     @Override
     public void cleanUpAfterRelease(final Repository repository) throws GitHubException {
         LOGGER.info("Removing all artifacts from '" + repository.getName() + "' repository.");
-        this.githubGateway.deleteAllArtifactsOnRepository(repository.getName());
+        this.githubGateway.deleteAllArtifacts(repository.getName());
     }
 
-    private List<GitHubArtifact> getArtifacts(final String repositoryName) throws GitHubException {
+    private List<String> getArtifactIds(final String repositoryName) throws GitHubException {
         return this.githubGateway.getRepositoryArtifacts(repositoryName);
     }
 

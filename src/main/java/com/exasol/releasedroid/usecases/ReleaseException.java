@@ -14,13 +14,4 @@ public class ReleaseException extends Exception {
     public ReleaseException(final Throwable cause) {
         super(cause);
     }
-
-    /**
-     * Create a new instance of {@link ReleaseException}.
-     *
-     * @param message exception message
-     */
-    public ReleaseException(final String message) {
-        super(message);
-    }
 }

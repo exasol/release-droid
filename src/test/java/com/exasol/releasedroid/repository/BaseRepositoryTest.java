@@ -93,11 +93,6 @@ class BaseRepositoryTest {
         }
 
         @Override
-        public Map<String, String> getDeliverables() {
-            return null;
-        }
-
-        @Override
         public Language getRepositoryLanguage() {
             return Language.LANGUAGE_INDEPENDENT;
         }

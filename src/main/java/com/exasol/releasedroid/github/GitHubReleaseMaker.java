@@ -32,8 +32,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
         final GitHubRelease release = GitHubRelease.builder().repositoryName(repository.getName()).version(version)
-                .header(header).releaseLetter(body).defaultBranchName(repository.getBranchName())
-                .assets(repository.getDeliverables()).build();
+                .header(header).releaseLetter(body).defaultBranchName(repository.getBranchName()).build();
         try {
             this.githubGateway.createGithubRelease(release);
         } catch (final GitHubException exception) {
