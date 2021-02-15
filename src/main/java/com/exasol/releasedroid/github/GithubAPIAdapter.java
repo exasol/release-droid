@@ -148,14 +148,18 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void sendGitHubPostRequest(final URI uri, final String body) throws GitHubException {
-        final HttpRequest request = HttpRequest.newBuilder() //
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
                 .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
                 .POST(HttpRequest.BodyPublishers.ofString(body)) //
                 .build();
         sendGitHubRequest(request);
+    }
+
+    private HttpRequest.Builder getGitHubHttpRequestBuilder() {
+        return HttpRequest.newBuilder() //
+                .header("Accept", "application/vnd.github.v3+json") //
+                .header("Authorization", "token " + this.gitHubUser.getToken()) //
+                .header("Content-Type", "application/json");
     }
 
     private HttpResponse<String> sendGitHubRequest(final HttpRequest request) throws GitHubException {
@@ -213,22 +217,16 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private HttpResponse<String> sendGitHubGetRequest(final URI uri) throws GitHubException {
-        final HttpRequest request = HttpRequest.newBuilder() //
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
                 .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
                 .GET() //
                 .build();
         return sendGitHubRequest(request);
     }
 
     private void sendGitHubDeleteRequest(final URI uri) throws GitHubException {
-        final HttpRequest request = HttpRequest.newBuilder() //
+        final HttpRequest request =  getGitHubHttpRequestBuilder() //
                 .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
                 .DELETE() //
                 .build();
         sendGitHubRequest(request);

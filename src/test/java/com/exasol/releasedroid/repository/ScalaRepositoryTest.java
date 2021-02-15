@@ -38,6 +38,11 @@ class ScalaRepositoryTest {
         assertThat(exception.getMessage(), containsString("E-RR-REP-9"));
     }
 
+    @Test
+    void testGetRepositoryLanguage() {
+        assertThat(getRepository().getRepositoryLanguage(), equalTo(Repository.Language.SCALA));
+    }
+
     private Repository getRepository() {
         return new ScalaRepository(this.repositoryGateMock, null);
     }
