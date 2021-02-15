@@ -26,7 +26,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         } else if (artifactIds.isEmpty()) {
             LOGGER.info("There are no artifacts on the '" + repository.getName() + "' repository.");
             this.repositoryModifier.writeReleaseDate(repository);
-            prepareArtifact(repository);
+            prepareChecksumArtifact(repository);
         } else {
             LOGGER.info("Found an artifact on '" + repository.getName() + "' repository.");
             if (!validateCheckSum(artifactIds, repository.getName())) {
@@ -41,6 +41,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         prepareForRelease(repository);
     }
 
+    // [impl->dsn~compare-checksum~1]
     private boolean validateCheckSum(final List<String> artifactIds, final String repositoryName)
             throws GitHubException {
         final Map<String, String> checksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
@@ -61,6 +62,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
     }
 
     @Override
+    // [impl->dsn~remove-checksum~1]
     public void cleanUpAfterRelease(final Repository repository) throws GitHubException {
         LOGGER.info("Removing all artifacts from '" + repository.getName() + "' repository.");
         this.githubGateway.deleteAllArtifacts(repository.getName());
@@ -70,7 +72,8 @@ public class ReleaseManagerImpl implements ReleaseManager {
         return this.githubGateway.getRepositoryArtifacts(repositoryName);
     }
 
-    private void prepareArtifact(final Repository repository) throws GitHubException {
+    // [impl->dsn~prepare-checksum~1]
+    private void prepareChecksumArtifact(final Repository repository) throws GitHubException {
         LOGGER.info("Preparing a new artifact with a checksum.");
         this.githubGateway.createChecksumArtifact(repository.getName());
     }

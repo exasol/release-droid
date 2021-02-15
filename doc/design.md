@@ -353,7 +353,36 @@ Needs: impl, utest
 
 ### Release Preparations
 
-##### Automatically Modifying Release Date
+#### Prepare Checksum
+`dsn~prepare-checksum~1`
+
+RR prepares a checksum for each deliverable and store it in the GitHub artifactory.
+RR uses `prepare_origin_checksum.yml` workflow for it.
+
+Rationale:
+
+RR verifies that the build is green and stores a checksum file to avoid running tests again in case the release was not finished.
+
+Covers:
+
+* `req~run-tests-only-once~1`
+
+Needs: impl
+
+#### Compare Checksum
+`dsn~compare-checksum~1`
+
+RR compares a stored checksum if one exists with a fresh checksum.
+RR uses `print_quick_checksum.yml` workflow to create a fresh checksum.
+RR uses `prepare_origin_checksum.yml` artifactory to obtain a stored checksum.
+
+Covers:
+
+* `req~run-tests-only-once~1`
+
+Needs: impl
+
+#### Automatically Modifying Release Date
 `dsn~automatically-modifying-release-date~1`
 
 RR commits a release date before starting the release process if it's possible to detect a place where release date is written. We assume that the ReleaseLetter contains `, released (xxxx-xx-xx)` entry in the header.
@@ -422,6 +451,19 @@ Covers:
 * `req~releasing-on-maven~1`
 
 Needs: impl, utest
+
+### Release Clean Up
+
+#### Remove Checksum
+`dsn~remove-checksum~1`
+
+RR removes a stored checksum after the release or when it's outdated.
+
+Covers:
+
+* `req~run-tests-only-once~1`
+
+Needs: impl
 
 # Cross-cutting Concerns
 
