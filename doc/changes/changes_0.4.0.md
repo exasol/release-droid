@@ -7,6 +7,7 @@ Code name:
 ## Bug fixes
 
 * #114: Fixed validation of a code name for the GitHub release.
+* #124: Fixed a wrong error message
 
 ## Features
 
