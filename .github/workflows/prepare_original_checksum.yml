@@ -1,4 +1,4 @@
-name: Prepare Origin Checksum
+name: Prepare Original Checksum
 
 on:
   workflow_dispatch:
@@ -23,9 +23,9 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean verify --file pom.xml
       - name: Prepare checksum
-        run: find target -maxdepth 1 -name *.jar -exec sha256sum "{}" + > checksum_origin
+        run: find target -maxdepth 1 -name *.jar -exec sha256sum "{}" + > original_checksum
       - uses: actions/upload-artifact@v2
         with:
-          name: checksum_origin
+          name: original_checksum
           retention-days: 5
-          path: checksum_origin
+          path: original_checksum

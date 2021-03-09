@@ -92,7 +92,7 @@ public interface GithubGateway {
      * @return list of artifact's ids
      * @throws GitHubException when some problems occur
      */
-    public List<String> getRepositoryArtifacts(String repositoryName) throws GitHubException;
+    public List<String> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
 
     /**
      * Prepare a checksum on the repository.

@@ -23,7 +23,7 @@ import com.exasol.releasedroid.repository.RepositoryException;
 public class GithubAPIAdapter implements GithubGateway {
     private static final Logger LOGGER = Logger.getLogger(GithubAPIAdapter.class.getName());
     private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
-    private static final String PREPARE_ORIGIN_CHECKSUM_WORKFLOW = "prepare_origin_checksum.yml";
+    private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "prepare_original_checksum.yml";
     private static final String GITHUB_RELEASE_WORKFLOW = "github_release.yml";
     private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories;
@@ -225,7 +225,7 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void sendGitHubDeleteRequest(final URI uri) throws GitHubException {
-        final HttpRequest request =  getGitHubHttpRequestBuilder() //
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
                 .uri(uri) //
                 .DELETE() //
                 .build();
@@ -284,11 +284,14 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public List<String> getRepositoryArtifacts(final String repositoryName) throws GitHubException {
+    public List<String> getRepositoryArtifactsIds(final String repositoryName) throws GitHubException {
         final URI uri = URI.create(GITHUB_API_ENTRY_URL + repositoryName + "/actions/artifacts");
         final HttpResponse<String> response = sendGitHubGetRequest(uri);
-        final JSONObject jsonObject = new JSONObject(response.body());
-        final JSONArray artifacts = jsonObject.getJSONArray("artifacts");
+        final JSONArray artifacts = new JSONObject(response.body()).getJSONArray("artifacts");
+        return collectAliveArtifactsIds(artifacts);
+    }
+
+    private List<String> collectAliveArtifactsIds(final JSONArray artifacts) {
         final List<String> gitHubArtifacts = new ArrayList<>();
         for (int i = 0; i < artifacts.length(); i++) {
             final JSONObject artifact = artifacts.getJSONObject(i);
@@ -305,7 +308,7 @@ public class GithubAPIAdapter implements GithubGateway {
         final JSONObject body = new JSONObject();
         body.put("ref", repository.getDefaultBranch());
         final String json = body.toString();
-        executeWorkflow(repositoryName, PREPARE_ORIGIN_CHECKSUM_WORKFLOW, json);
+        executeWorkflow(repositoryName, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW, json);
     }
 
     @Override
@@ -339,28 +342,40 @@ public class GithubAPIAdapter implements GithubGateway {
     @Override
     public Map<String, String> createQuickCheckSum(final String repositoryName) throws GitHubException {
         final GHRepository repository = getRepository(repositoryName);
-        final JSONObject body = new JSONObject();
-        body.put("ref", repository.getDefaultBranch());
-        final String json = body.toString();
-        executeWorkflow(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW, json);
-        final HttpResponse<String> workflowRuns = sendGitHubGetRequest(URI.create(GITHUB_API_ENTRY_URL + repositoryName
-                + "/actions/workflows/" + PRINT_QUICK_CHECKSUM_WORKFLOW + "/runs"));
-        final String logsUrl = new JSONObject(workflowRuns.body()).getJSONArray("workflow_runs").getJSONObject(0)
-                .getString("logs_url");
-        final URI logsDownloadURI = URI
-                .create(sendGitHubGetRequest(URI.create(logsUrl)).headers().firstValue("location").orElseThrow());
+        executeQuickCheckSumWorkflow(repositoryName, repository.getDefaultBranch());
+        final URI logsDownloadURI = getLogsDownloadURI(repositoryName);
         final String logs = downloadZippedFileAsString(logsDownloadURI);
+        return formatChecksumLogs(logs);
+
+    }
+
+    private Map<String, String> formatChecksumLogs(final String logs) {
         final String[] splittedLogs = logs
                 .substring(logs.lastIndexOf("checksum_start=="), logs.lastIndexOf("==checksum_end")).replace("\n", " ")
                 .split(" ");
         return ChecksumFormatter
                 .createChecksumMap(String.join(" ", Arrays.asList(splittedLogs).subList(2, splittedLogs.length - 1)));
+    }
 
+    private void executeQuickCheckSumWorkflow(final String repositoryName, final String defaultBranch)
+            throws GitHubException {
+        final JSONObject body = new JSONObject();
+        body.put("ref", defaultBranch);
+        final String json = body.toString();
+        executeWorkflow(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW, json);
+    }
+
+    private URI getLogsDownloadURI(final String repositoryName) throws GitHubException {
+        final HttpResponse<String> workflowRuns = sendGitHubGetRequest(URI.create(GITHUB_API_ENTRY_URL + repositoryName
+                + "/actions/workflows/" + PRINT_QUICK_CHECKSUM_WORKFLOW + "/runs"));
+        final String logsUrl = new JSONObject(workflowRuns.body()).getJSONArray("workflow_runs").getJSONObject(0)
+                .getString("logs_url");
+        return URI.create(sendGitHubGetRequest(URI.create(logsUrl)).headers().firstValue("location").orElseThrow());
     }
 
     @Override
     public void deleteAllArtifacts(final String repositoryName) throws GitHubException {
-        final List<String> artifacts = getRepositoryArtifacts(repositoryName);
+        final List<String> artifacts = getRepositoryArtifactsIds(repositoryName);
         final String uriPrefix = GITHUB_API_ENTRY_URL + repositoryName + "/actions/artifacts/";
         for (final String artifactId : artifacts) {
             sendGitHubDeleteRequest(URI.create(uriPrefix + artifactId));

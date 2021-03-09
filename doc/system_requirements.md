@@ -168,7 +168,7 @@ Needs: dsn
 ### Run Tests Only Once
 `req~run-tests-only-once~1`
 
-RR runs all project's tests only once. It means RR avoid re0running the tests if the release was not finished and no changes were made on the project.
+RR runs all project's tests only once. This means RR will not run the tests again in case the release was not finished and no changes were made on the project, and a new release command is triggered.
 
 Covers:
 

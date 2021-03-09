@@ -357,7 +357,7 @@ Needs: impl, utest
 `dsn~prepare-checksum~1`
 
 RR prepares a checksum for each deliverable and store it in the GitHub artifactory.
-RR uses `prepare_origin_checksum.yml` workflow for it.
+RR uses `prepare_original_checksum.yml` workflow for it.
 
 Rationale:
 
@@ -374,7 +374,7 @@ Needs: impl
 
 RR compares a stored checksum if one exists with a fresh checksum.
 RR uses `print_quick_checksum.yml` workflow to create a fresh checksum.
-RR uses `prepare_origin_checksum.yml` artifactory to obtain a stored checksum.
+RR uses `prepare_original_checksum.yml` artifactory to obtain a stored checksum.
 
 Covers:
 

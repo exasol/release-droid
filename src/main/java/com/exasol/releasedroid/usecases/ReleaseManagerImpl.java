@@ -20,20 +20,33 @@ public class ReleaseManagerImpl implements ReleaseManager {
     @Override
     public void prepareForRelease(final Repository repository) throws GitHubException {
         final List<String> artifactIds = getArtifactIds(repository.getName());
-        if (artifactIds.size() > 1) {
-            LOGGER.info("There are more than one artifact on the '" + repository.getName() + "' repository.");
-            updateRepository(repository);
-        } else if (artifactIds.isEmpty()) {
-            LOGGER.info("There are no artifacts on the '" + repository.getName() + "' repository.");
-            this.repositoryModifier.writeReleaseDate(repository);
-            prepareChecksumArtifact(repository);
+        if (artifactIds.isEmpty()) {
+            createOriginalChecksum(repository);
+        } else if (artifactIds.size() == 1) {
+            validateOriginalChecksumAgainstQuickChecksum(repository, artifactIds.get(0));
         } else {
-            LOGGER.info("Found an artifact on '" + repository.getName() + "' repository.");
-            if (!validateCheckSum(artifactIds, repository.getName())) {
-                LOGGER.info("Checksum validation for '" + repository.getName() + "' repository failed.");
-                updateRepository(repository);
-            }
+            updateOutdatedArtifactory(repository);
         }
+    }
+
+    private void createOriginalChecksum(final Repository repository) throws GitHubException {
+        LOGGER.info("There are no artifacts on the '" + repository.getName() + "' repository.");
+        this.repositoryModifier.writeReleaseDate(repository);
+        prepareChecksumArtifact(repository);
+    }
+
+    private void validateOriginalChecksumAgainstQuickChecksum(final Repository repository, final String artifactId)
+            throws GitHubException {
+        LOGGER.info("Found an artifact on '" + repository.getName() + "' repository.");
+        if (!validateChecksum(artifactId, repository.getName())) {
+            LOGGER.info("Checksum validation for '" + repository.getName() + "' repository failed.");
+            updateRepository(repository);
+        }
+    }
+
+    private void updateOutdatedArtifactory(final Repository repository) throws GitHubException {
+        LOGGER.info("There are more than one artifact on the '" + repository.getName() + "' repository.");
+        updateRepository(repository);
     }
 
     private void updateRepository(final Repository repository) throws GitHubException {
@@ -42,23 +55,36 @@ public class ReleaseManagerImpl implements ReleaseManager {
     }
 
     // [impl->dsn~compare-checksum~1]
-    private boolean validateCheckSum(final List<String> artifactIds, final String repositoryName)
-            throws GitHubException {
-        final Map<String, String> checksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
-                artifactIds.get(0));
+    private boolean validateChecksum(final String artifactId, final String repositoryName) throws GitHubException {
+        final Map<String, String> originalChecksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
+                artifactId);
         final Map<String, String> quickChecksum = this.githubGateway.createQuickCheckSum(repositoryName);
-        if (checksum.size() != quickChecksum.size()) {
+        if (originalChecksum.size() != quickChecksum.size()) {
             return false;
         }
-        for (final Map.Entry<String, String> entry : checksum.entrySet()) {
-            if (!quickChecksum.containsKey(entry.getKey())) {
+        return validateChecksumForEachJar(originalChecksum, quickChecksum);
+    }
+
+    private boolean validateChecksumForEachJar(final Map<String, String> originalChecksum,
+            final Map<String, String> quickChecksum) {
+        for (final Map.Entry<String, String> checksumForJar : originalChecksum.entrySet()) {
+            final String jarName = checksumForJar.getKey();
+            if (!quickChecksum.containsKey(jarName)) {
                 return false;
             }
-            if (!entry.getKey().contains("javadoc") && !quickChecksum.get(entry.getKey()).equals(entry.getValue())) {
+            if (!isJavadoc(jarName) && !checksumsEqual(checksumForJar.getValue(), quickChecksum.get(jarName))) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean isJavadoc(final String jarName) {
+        return jarName.contains("javadoc");
+    }
+
+    private boolean checksumsEqual(final String originalChecksum, final String quickChecksum) {
+        return originalChecksum.equals(quickChecksum);
     }
 
     @Override
@@ -69,7 +95,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
     }
 
     private List<String> getArtifactIds(final String repositoryName) throws GitHubException {
-        return this.githubGateway.getRepositoryArtifacts(repositoryName);
+        return this.githubGateway.getRepositoryArtifactsIds(repositoryName);
     }
 
     // [impl->dsn~prepare-checksum~1]
