@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.exasol.releasedroid.github.GitHubException;
 import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
@@ -19,23 +20,23 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final RepositoryGateway repositoryGateway;
-    private final RepositoryModifier repositoryModifier;
     private final ReportLogger reportLogger = new ReportLogger();
+    private final ReleaseManager releaseManager;
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
-     *
-     * @param validateUseCase    validate use case for validating the platforms
-     * @param releaseMakers      map with platform names and release makers
-     * @param repositoryGateway  instance of {@link RepositoryGateway}
-     * @param repositoryModifier instance of {@link RepositoryModifier}
+     * 
+     * @param validateUseCase   validate use case for validating the platforms
+     * @param releaseMakers     map with platform names and release makers
+     * @param repositoryGateway instance of {@link RepositoryGateway}
+     * @param releaseManager    instance of {@link ReleaseManager}
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final RepositoryGateway repositoryGateway, final RepositoryModifier repositoryModifier) {
+            final RepositoryGateway repositoryGateway, final ReleaseManager releaseManager) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.repositoryGateway = repositoryGateway;
-        this.repositoryModifier = repositoryModifier;
+        this.releaseManager = releaseManager;
     }
 
     @Override
@@ -62,6 +63,13 @@ public class ReleaseInteractor implements ReleaseUseCase {
         final Report report = Report.releaseReport();
         final Repository repository = this.repositoryGateway.getRepository(userInput);
         prepareRepositoryForRelease(repository);
+        report.merge(releaseOnPlatforms(userInput, repository));
+        cleanRepositoryAfterRelease(repository, report);
+        return report;
+    }
+
+    private Report releaseOnPlatforms(final UserInput userInput, final Repository repository) {
+        final Report report = Report.releaseReport();
         for (final PlatformName platformName : userInput.getPlatformNames()) {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             try {
@@ -76,7 +84,21 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private void prepareRepositoryForRelease(final Repository repository) {
-        this.repositoryModifier.writeReleaseDate(repository);
+        try {
+            this.releaseManager.prepareForRelease(repository);
+        } catch (final GitHubException exception) {
+            throw new IllegalStateException(exception);
+        }
+    }
+
+    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) {
+        if (!report.hasFailures()) {
+            try {
+                this.releaseManager.cleanUpAfterRelease(repository);
+            } catch (final GitHubException exception) {
+                throw new IllegalStateException(exception);
+            }
+        }
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {

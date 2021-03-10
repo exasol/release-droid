@@ -165,6 +165,17 @@ This allows users to run RR on a specified git branch and fix problems it detect
 
 Needs: dsn
 
+### Run Tests Only Once
+`req~run-tests-only-once~1`
+
+RR runs all project's tests only once. This means RR will not run the tests again in case the release was not finished and no changes were made on the project, and a new release command is triggered.
+
+Covers:
+
+* [feat~release-automation~1](#release-automation)
+
+Needs: dsn
+
 ### Release Conditions Validation
 
 There are two kinds of validation in a release process, the one before you start releasing and the ones that assert that a step in the release was successful.

@@ -7,8 +7,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -41,13 +39,8 @@ class ScalaRepositoryTest {
     }
 
     @Test
-    void testGetDeliverables() {
-        final Repository repository = getRepository();
-        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
-                + ".settings(version := \"0.2.0\").settings(orgSettings)";
-        when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
-        assertThat(repository.getDeliverables(), equalTo(
-                Map.of("testing-release-robot-0.2.0.jar", "./target/scala-2.12/testing-release-robot-0.2.0.jar")));
+    void testGetRepositoryLanguage() {
+        assertThat(getRepository().getRepositoryLanguage(), equalTo(Repository.Language.SCALA));
     }
 
     private Repository getRepository() {

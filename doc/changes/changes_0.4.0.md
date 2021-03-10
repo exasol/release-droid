@@ -19,6 +19,6 @@ Code name:
 ## Dependency updates
 
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.12.0` to `2.12.1`
-* Updated `org.kohsuke:github-api:1.117` to `1.119`
+* Updated `org.kohsuke:github-api:1.117` to `1.122`
 * Updated `org.mockito:mockito-core:3.6.28` to `3.7.0`
 * Updated `org.mockito:mockito-junit-jupiter:3.6.28` to `3.7.0`

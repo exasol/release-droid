@@ -160,7 +160,9 @@ public class GitRepositoryValidator implements RepositoryValidator {
     private Report reportWrongDate(final String fileName) {
         final Report report = Report.validationReport();
         final String warningMessage = ExaError.messageBuilder("W-RR-VAL-2").message(
-                "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically.")
+                "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically. "
+                        + "If direct commits to the main branch are disabled for this repository, please, "
+                        + "update the date manually.")
                 .parameter("fileName", fileName).toString();
         report.addResult(ValidationResult.successfulValidation(
                 "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));

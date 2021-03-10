@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.119</version>
+            <version>1.122</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -203,6 +203,20 @@
                 <configuration>
                     <reportOutputFormat>html</reportOutputFormat>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.github.zlika</groupId>
+                <artifactId>reproducible-build-maven-plugin</artifactId>
+                <version>0.13</version>
+                <executions>
+                    <execution>
+                        <id>strip-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>strip-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

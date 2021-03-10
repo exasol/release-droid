@@ -13,8 +13,6 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  * Sbt-based scala repository.
  */
 public class ScalaRepository extends BaseRepository {
-    private static final String PATH_TO_TARGET_DIR = "./target/scala-2.12/";
-    private static final String PROJECT_NAME_PATTERN = "moduleName";
     private static final String VERSION_PATTERN = "settings(version";
     protected static final String BUILD_SBT = "build.sbt";
     private final Map<PlatformName, RepositoryValidator> releaseablePlatforms;
@@ -36,21 +34,6 @@ public class ScalaRepository extends BaseRepository {
 
     }
 
-    @Override
-    public Language getRepositoryLanguage() {
-        return Language.SCALA;
-    }
-
-    @Override
-    public Map<String, String> getDeliverables() {
-        final String buildFile = getSingleFileContentAsString(BUILD_SBT);
-        final String projectName = getValueFromBuildFile(buildFile, PROJECT_NAME_PATTERN)
-                .orElseGet(() -> getName().split("/")[1]);
-        final String assetName = projectName + "-" + getVersion() + ".jar";
-        final String assetPath = PATH_TO_TARGET_DIR + assetName;
-        return Map.of(assetName, assetPath);
-    }
-
     private Optional<String> getValueFromBuildFile(final String buildFile, final String pattern) {
         if (buildFile.contains(pattern)) {
             final int moduleName = buildFile.indexOf(pattern);
@@ -60,6 +43,11 @@ public class ScalaRepository extends BaseRepository {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Language getRepositoryLanguage() {
+        return Language.SCALA;
     }
 
     @Override

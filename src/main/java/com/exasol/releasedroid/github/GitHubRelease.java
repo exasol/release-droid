@@ -1,25 +1,23 @@
 package com.exasol.releasedroid.github;
 
-import java.util.Map;
-
 import com.exasol.errorreporting.ExaError;
 
 /**
  * Represents a GitHub release.
  */
 public class GitHubRelease {
+    private final String repositoryName;
     private final String version;
     private final String header;
     private final String releaseLetter;
     private final String defaultBranchName;
-    private final Map<String, String> assets;
 
     private GitHubRelease(final Builder builder) {
+        this.repositoryName = builder.repositoryName;
         this.version = builder.version;
         this.header = builder.header;
         this.releaseLetter = builder.releaseLetter;
         this.defaultBranchName = builder.defaultBranchName;
-        this.assets = builder.assets;
     }
 
     /**
@@ -59,15 +57,6 @@ public class GitHubRelease {
     }
 
     /**
-     * Get assets.
-     *
-     * @return assets map
-     */
-    public Map<String, String> getAssets() {
-        return this.assets;
-    }
-
-    /**
      * Get default branch name.
      *
      * @return default branch name
@@ -77,14 +66,34 @@ public class GitHubRelease {
     }
 
     /**
+     * Get repository name.
+     *
+     * @return repository name
+     */
+    public String getRepositoryName() {
+        return this.repositoryName;
+    }
+
+    /**
      * A builder for {@link GitHubRelease}.
      */
     public static class Builder {
+        private String repositoryName;
         private String version;
         private String header;
         private String releaseLetter = "";
         private String defaultBranchName;
-        private Map<String, String> assets;
+
+        /**
+         * Set a repository name.
+         *
+         * @param repositoryName repository name
+         * @return builder instance for fluent programming
+         */
+        public Builder repositoryName(final String repositoryName) {
+            this.repositoryName = repositoryName;
+            return this;
+        }
 
         /**
          * Set a version.
@@ -120,17 +129,6 @@ public class GitHubRelease {
         }
 
         /**
-         * Set assets.
-         *
-         * @param assets map of assets
-         * @return builder instance for fluent programming
-         */
-        public Builder assets(final Map<String, String> assets) {
-            this.assets = assets;
-            return this;
-        }
-
-        /**
          * Set a default branch name.
          *
          * @param defaultBranchName default branch name
@@ -152,14 +150,14 @@ public class GitHubRelease {
         }
 
         private void validateFields() {
+            if ((this.repositoryName == null) || this.repositoryName.isEmpty()) {
+                throw createExceptionWithInvalidField("repositoryName");
+            }
             if ((this.version == null) || this.version.isEmpty()) {
                 throw createExceptionWithInvalidField("version");
             }
             if ((this.header == null) || this.header.isEmpty()) {
                 throw createExceptionWithInvalidField("header");
-            }
-            if ((this.assets == null) || this.assets.isEmpty()) {
-                throw createExceptionWithInvalidField("assets");
             }
             if ((this.defaultBranchName == null) || this.defaultBranchName.isEmpty()) {
                 throw createExceptionWithInvalidField("defaultBranchName");

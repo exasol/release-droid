@@ -1,18 +1,20 @@
 package com.exasol.releasedroid.github;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.zip.ZipInputStream;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.kohsuke.github.*;
 
 import com.exasol.errorreporting.ErrorMessageBuilder;
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.formatting.ChecksumFormatter;
 import com.exasol.releasedroid.repository.RepositoryException;
 
 /**
@@ -21,6 +23,9 @@ import com.exasol.releasedroid.repository.RepositoryException;
 public class GithubAPIAdapter implements GithubGateway {
     private static final Logger LOGGER = Logger.getLogger(GithubAPIAdapter.class.getName());
     private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
+    private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "prepare_original_checksum.yml";
+    private static final String GITHUB_RELEASE_WORKFLOW = "github_release.yml";
+    private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories;
     private final GitHubUser gitHubUser;
 
@@ -59,16 +64,18 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     @Override
-    public String createGithubRelease(final String repositoryName, final GitHubRelease gitHubRelease)
-            throws GitHubException {
+    // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
+    // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
+    public void createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
         try {
-            final GHRelease ghRelease = this.getRepository(repositoryName)//
+            final GHRelease ghRelease = this.getRepository(gitHubRelease.getRepositoryName())//
                     .createRelease(gitHubRelease.getVersion()) //
                     .draft(true) //
                     .body(gitHubRelease.getReleaseLetter()) //
                     .name(gitHubRelease.getHeader()) //
                     .create();
-            return ghRelease.getUploadUrl();
+            final String uploadUrl = ghRelease.getUploadUrl();
+            uploadAssets(gitHubRelease.getRepositoryName(), uploadUrl, gitHubRelease.getDefaultBranchName());
         } catch (final IOException exception) {
             throw new GitHubException(
                     ExaError.messageBuilder("F-RR-GH-3")
@@ -82,6 +89,19 @@ public class GithubAPIAdapter implements GithubGateway {
             this.repositories.put(repositoryName, this.createGHRepository(repositoryName, this.gitHubUser));
         }
         return this.repositories.get(repositoryName);
+    }
+
+    // [impl->dsn~upload-github-release-assets~1]
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
+    private void uploadAssets(final String repositoryFullName, final String uploadUrl, final String defaultBranchName)
+            throws GitHubException {
+        final JSONObject body = new JSONObject();
+        body.put("ref", defaultBranchName);
+        final JSONObject inputs = new JSONObject();
+        inputs.put("upload_url", uploadUrl);
+        body.put("inputs", inputs);
+        final String json = body.toString();
+        executeWorkflow(repositoryFullName, GITHUB_RELEASE_WORKFLOW, json);
     }
 
     @Override
@@ -114,9 +134,8 @@ public class GithubAPIAdapter implements GithubGateway {
     public void executeWorkflow(final String repositoryName, final String workflowName, final String payload)
             throws GitHubException {
         final String workflowUriPrefix = GITHUB_API_ENTRY_URL + repositoryName + "/actions/workflows/" + workflowName;
-        final URI uri = createUriFromString(workflowUriPrefix + "/dispatches");
-        final HttpResponse<String> response = sendGitHubPostRequest(uri, payload);
-        validateResponse(response);
+        final URI uri = URI.create(workflowUriPrefix + "/dispatches");
+        sendGitHubPostRequest(uri, payload);
         logMessage(workflowName);
         final String workflowConclusion = getWorkflowConclusion(workflowUriPrefix);
         validateWorkflowConclusion(workflowConclusion);
@@ -128,30 +147,27 @@ public class GithubAPIAdapter implements GithubGateway {
                 + "This can take from a few minutes to a couple of hours depending on the build.");
     }
 
-    private URI createUriFromString(final String uriString) throws GitHubException {
-        try {
-            return new URI(uriString);
-        } catch (final URISyntaxException exception) {
-            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-1").message("Invalid URI: {{uriString}}")
-                    .unquotedParameter("uriString", uriString).toString(), exception);
-        }
-    }
-
-    private HttpResponse<String> sendGitHubPostRequest(final URI uri, final String body) throws GitHubException {
-        final HttpRequest request = HttpRequest.newBuilder() //
+    private void sendGitHubPostRequest(final URI uri, final String body) throws GitHubException {
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
                 .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
                 .POST(HttpRequest.BodyPublishers.ofString(body)) //
                 .build();
-        return sendGitHubRequest(request);
+        sendGitHubRequest(request);
+    }
+
+    private HttpRequest.Builder getGitHubHttpRequestBuilder() {
+        return HttpRequest.newBuilder() //
+                .header("Accept", "application/vnd.github.v3+json") //
+                .header("Authorization", "token " + this.gitHubUser.getToken()) //
+                .header("Content-Type", "application/json");
     }
 
     private HttpResponse<String> sendGitHubRequest(final HttpRequest request) throws GitHubException {
         final HttpClient build = HttpClient.newBuilder().proxy(ProxySelector.getDefault()).build();
         try {
-            return build.send(request, HttpResponse.BodyHandlers.ofString());
+            final HttpResponse<String> response = build.send(request, HttpResponse.BodyHandlers.ofString());
+            validateResponse(response);
+            return response;
         } catch (final IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new GitHubException(
@@ -162,11 +178,10 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private void validateResponse(final HttpResponse<String> response) throws GitHubException {
-        if ((response.statusCode() < HttpURLConnection.HTTP_OK)
-                || (response.statusCode() >= HttpURLConnection.HTTP_MULT_CHOICE)) {
+        if ((response.statusCode() < HttpURLConnection.HTTP_OK) || (response.statusCode() > 302)) {
             throw new GitHubException(ExaError.messageBuilder("F-RR-GH-6")
-                    .message("An executing workflow HTTP request failed. Cause: {{cause}}")
-                    .unquotedParameter("cause", response.body()).toString());
+                    .message("An HTTP request to GitHub returned a bad response. Cause: {{cause}}")
+                    .unquotedParameter("cause", response.statusCode() + " " + response.body()).toString());
         }
     }
 
@@ -176,7 +191,7 @@ public class GithubAPIAdapter implements GithubGateway {
             final int minutes = getNextResultCheckDelayInMinutes(minutesPassed);
             minutesPassed += minutes;
             waitMinutes(minutes);
-            final URI uri = createUriFromString(workflowUriPrefix + "/runs");
+            final URI uri = URI.create(workflowUriPrefix + "/runs");
             final HttpResponse<String> response = sendGitHubGetRequest(uri);
             final JSONObject lastRun = new JSONObject(response.body()).getJSONArray("workflow_runs").getJSONObject(0);
             final boolean actionCompleted = !lastRun.isNull("conclusion");
@@ -202,14 +217,19 @@ public class GithubAPIAdapter implements GithubGateway {
     }
 
     private HttpResponse<String> sendGitHubGetRequest(final URI uri) throws GitHubException {
-        final HttpRequest request = HttpRequest.newBuilder() //
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
                 .uri(uri) //
-                .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
-                .header("Content-Type", "application/json") //
                 .GET() //
                 .build();
         return sendGitHubRequest(request);
+    }
+
+    private void sendGitHubDeleteRequest(final URI uri) throws GitHubException {
+        final HttpRequest request = getGitHubHttpRequestBuilder() //
+                .uri(uri) //
+                .DELETE() //
+                .build();
+        sendGitHubRequest(request);
     }
 
     private void validateWorkflowConclusion(final String workflowConclusion) throws GitHubException {
@@ -261,5 +281,104 @@ public class GithubAPIAdapter implements GithubGateway {
     public String getRepositoryPrimaryLanguage(final String repositoryName) throws GitHubException {
         final GHRepository repository = getRepository(repositoryName);
         return repository.getLanguage();
+    }
+
+    @Override
+    public List<String> getRepositoryArtifactsIds(final String repositoryName) throws GitHubException {
+        final URI uri = URI.create(GITHUB_API_ENTRY_URL + repositoryName + "/actions/artifacts");
+        final HttpResponse<String> response = sendGitHubGetRequest(uri);
+        final JSONArray artifacts = new JSONObject(response.body()).getJSONArray("artifacts");
+        return collectAliveArtifactsIds(artifacts);
+    }
+
+    private List<String> collectAliveArtifactsIds(final JSONArray artifacts) {
+        final List<String> gitHubArtifacts = new ArrayList<>();
+        for (int i = 0; i < artifacts.length(); i++) {
+            final JSONObject artifact = artifacts.getJSONObject(i);
+            if (!artifact.getBoolean("expired")) {
+                gitHubArtifacts.add(String.valueOf(artifact.getLong("id")));
+            }
+        }
+        return gitHubArtifacts;
+    }
+
+    @Override
+    public void createChecksumArtifact(final String repositoryName) throws GitHubException {
+        final GHRepository repository = getRepository(repositoryName);
+        final JSONObject body = new JSONObject();
+        body.put("ref", repository.getDefaultBranch());
+        final String json = body.toString();
+        executeWorkflow(repositoryName, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW, json);
+    }
+
+    @Override
+    public Map<String, String> downloadChecksumFromArtifactory(final String repositoryName, final String artifactId)
+            throws GitHubException {
+        final URI uri = URI.create(GITHUB_API_ENTRY_URL + repositoryName + "/actions/artifacts/" + artifactId + "/zip");
+        final HttpResponse<String> stringHttpResponse = sendGitHubGetRequest(uri);
+        final String downloadLink = stringHttpResponse.headers().firstValue("location").orElseThrow();
+        final URI checksumDownloadURI = URI.create(downloadLink);
+        return ChecksumFormatter.createChecksumMap(downloadZippedFileAsString(checksumDownloadURI));
+    }
+
+    private String downloadZippedFileAsString(final URI downloadURI) throws GitHubException {
+        try (final BufferedInputStream bufferedInputStream = new BufferedInputStream(downloadURI.toURL().openStream());
+                final ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream);
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            final byte[] buffer = new byte[1024];
+            int read = 0;
+            while (zipInputStream.getNextEntry() != null) {
+                while ((read = zipInputStream.read(buffer, 0, buffer.length)) > 0) {
+                    byteArrayOutputStream.write(buffer, 0, read);
+                }
+            }
+            return byteArrayOutputStream.toString();
+        } catch (final IOException exception) {
+            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-1") //
+                    .message("Cannot download a file from artifactory.").toString(), exception);
+        }
+    }
+
+    @Override
+    public Map<String, String> createQuickCheckSum(final String repositoryName) throws GitHubException {
+        final GHRepository repository = getRepository(repositoryName);
+        executeQuickCheckSumWorkflow(repositoryName, repository.getDefaultBranch());
+        final URI logsDownloadURI = getLogsDownloadURI(repositoryName);
+        final String logs = downloadZippedFileAsString(logsDownloadURI);
+        return formatChecksumLogs(logs);
+
+    }
+
+    private Map<String, String> formatChecksumLogs(final String logs) {
+        final String[] splittedLogs = logs
+                .substring(logs.lastIndexOf("checksum_start=="), logs.lastIndexOf("==checksum_end")).replace("\n", " ")
+                .split(" ");
+        return ChecksumFormatter
+                .createChecksumMap(String.join(" ", Arrays.asList(splittedLogs).subList(2, splittedLogs.length - 1)));
+    }
+
+    private void executeQuickCheckSumWorkflow(final String repositoryName, final String defaultBranch)
+            throws GitHubException {
+        final JSONObject body = new JSONObject();
+        body.put("ref", defaultBranch);
+        final String json = body.toString();
+        executeWorkflow(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW, json);
+    }
+
+    private URI getLogsDownloadURI(final String repositoryName) throws GitHubException {
+        final HttpResponse<String> workflowRuns = sendGitHubGetRequest(URI.create(GITHUB_API_ENTRY_URL + repositoryName
+                + "/actions/workflows/" + PRINT_QUICK_CHECKSUM_WORKFLOW + "/runs"));
+        final String logsUrl = new JSONObject(workflowRuns.body()).getJSONArray("workflow_runs").getJSONObject(0)
+                .getString("logs_url");
+        return URI.create(sendGitHubGetRequest(URI.create(logsUrl)).headers().firstValue("location").orElseThrow());
+    }
+
+    @Override
+    public void deleteAllArtifacts(final String repositoryName) throws GitHubException {
+        final List<String> artifacts = getRepositoryArtifactsIds(repositoryName);
+        final String uriPrefix = GITHUB_API_ENTRY_URL + repositoryName + "/actions/artifacts/";
+        for (final String artifactId : artifacts) {
+            sendGitHubDeleteRequest(URI.create(uriPrefix + artifactId));
+        }
     }
 }

@@ -35,14 +35,6 @@ public interface Repository extends RepositoryGate {
     public String getVersion();
 
     /**
-     * Get key-value pairs for deliverable names and corresponding deliverable pathes.
-     *
-     * @return map with deliverables information
-     */
-    // [impl->dsn~repository-provides-deliverables-information~1]
-    public Map<String, String> getDeliverables();
-
-    /**
      * Get a primary programming language;
      *
      * @return programming language

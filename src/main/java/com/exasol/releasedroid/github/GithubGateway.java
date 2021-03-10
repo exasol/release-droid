@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.github;
 
 import java.io.InputStream;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Gateway for interacting with Github.
@@ -20,12 +20,10 @@ public interface GithubGateway {
     /**
      * Make a GitHub release.
      * 
-     * @param repositoryName fully qualified name of the repository
-     * @param gitHubRelease  instance of {@link GitHubRelease} with release information
-     * @return URl for attaching assets to the release as a string
+     * @param gitHubRelease instance of {@link GitHubRelease} with release information
      * @throws GitHubException when some problems occur
      */
-    public String createGithubRelease(String repositoryName, GitHubRelease gitHubRelease) throws GitHubException;
+    public void createGithubRelease(GitHubRelease gitHubRelease) throws GitHubException;
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
@@ -86,4 +84,49 @@ public interface GithubGateway {
      * @throws GitHubException when some problems occur
      */
     public String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
+
+    /**
+     * Get a list of artifact's ids that are not expired.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @return list of artifact's ids
+     * @throws GitHubException when some problems occur
+     */
+    public List<String> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
+
+    /**
+     * Prepare a checksum on the repository.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @throws GitHubException when some problems occur
+     */
+    public void createChecksumArtifact(String repositoryName) throws GitHubException;
+
+    /**
+     * Get a map with pre-saved jar names and their checksums.
+     * 
+     * @param repositoryName fully qualified name of the repository
+     * @param artifactId     id of the artifact to download the checksum from
+     * @return map with jar names and their checksums
+     * @throws GitHubException when some problems occur
+     */
+    public Map<String, String> downloadChecksumFromArtifactory(String repositoryName, String artifactId)
+            throws GitHubException;
+
+    /**
+     * Get a map with fresh jar names and their checksums.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @return map with jar names and their checksums
+     * @throws GitHubException when some problems occur
+     */
+    public Map<String, String> createQuickCheckSum(String repositoryName) throws GitHubException;
+
+    /**
+     * Delete all artifacts from the repository.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @throws GitHubException when some problems occur
+     */
+    public void deleteAllArtifacts(String repositoryName) throws GitHubException;
 }

@@ -4,7 +4,7 @@ package com.exasol.releasedroid.usecases;
  * Exception that happened during release process.
  */
 public class ReleaseException extends Exception {
-    private static final long serialVersionUID = 6230384073980892982L;
+    private static final long serialVersionUID = 3528600229414385900L;
 
     /**
      * Create a new instance of {@link ReleaseException}.
