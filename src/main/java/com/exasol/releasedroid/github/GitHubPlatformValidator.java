@@ -8,12 +8,12 @@ import com.exasol.releasedroid.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
-import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
+import com.exasol.releasedroid.usecases.validate.AbstractRepositoryValidator;
 
 /**
  * This class checks if the project is ready for a release on GitHub.
  */
-public class GitHubPlatformValidator extends AbstractPlatformValidator {
+public class GitHubPlatformValidator extends AbstractRepositoryValidator {
     protected static final String GITHUB_WORKFLOW_PATH = ".github/workflows/github_release.yml";
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GithubGateway githubGateway;

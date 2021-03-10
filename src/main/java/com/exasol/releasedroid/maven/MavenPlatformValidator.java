@@ -7,12 +7,12 @@ import org.apache.maven.model.PluginExecution;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.repository.*;
 import com.exasol.releasedroid.usecases.report.*;
-import com.exasol.releasedroid.usecases.validate.AbstractPlatformValidator;
+import com.exasol.releasedroid.usecases.validate.AbstractRepositoryValidator;
 
 /**
  * This class checks if the project is ready for a release on Maven Central.
  */
-public class MavenPlatformValidator extends AbstractPlatformValidator {
+public class MavenPlatformValidator extends AbstractRepositoryValidator {
     private static final List<String> REQUIRED_PLUGINS = List.of("nexus-staging-maven-plugin", "maven-source-plugin",
             "maven-gpg-plugin", "maven-javadoc-plugin", "maven-deploy-plugin");
     protected static final String MAVEN_WORKFLOW_PATH = ".github/workflows/maven_central_release.yml";

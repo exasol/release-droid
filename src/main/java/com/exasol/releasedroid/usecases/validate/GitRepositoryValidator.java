@@ -15,8 +15,10 @@ import com.exasol.releasedroid.usecases.report.ValidationResult;
 /**
  * Contains validations for a Git project.
  */
-public class GitRepositoryValidator implements RepositoryValidator {
+public class GitRepositoryValidator extends AbstractRepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
+    protected static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH = ".github/workflows/prepare_original_checksum.yml";
+    protected static final String PRINT_QUICK_CHECKSUM_WORKFLOW_PATH = ".github/workflows/print_quick_checksum.yml";
     private final Repository repository;
 
     public GitRepositoryValidator(final Repository repository) {
@@ -35,6 +37,16 @@ public class GitRepositoryValidator implements RepositoryValidator {
             final ReleaseLetter changes = this.repository.getReleaseLetter(version);
             report.merge(validateChanges(changes, version, this.repository.isOnDefaultBranch()));
         }
+        report.merge(validateWorkflows());
+        return report;
+    }
+
+    protected Report validateWorkflows() {
+        final Report report = Report.validationReport();
+        report.merge(validateFileExists(this.repository, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH,
+                "Workflow for running test and creating checksum."));
+        report.merge(validateFileExists(this.repository, PRINT_QUICK_CHECKSUM_WORKFLOW_PATH,
+                "Workflow for printing a checksum."));
         return report;
     }
 

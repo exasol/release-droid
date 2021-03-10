@@ -4,7 +4,7 @@ Copy the content into a file `/.github/workflows/github_release.yml` in your pro
 
 ## For Java Maven Project
 
-See [an example from this project](../../.github/workflows/github_release.yml).
+See [an example from this project](../../../.github/workflows/github_release.yml).
 
 ## For Scala Sbt Project
 

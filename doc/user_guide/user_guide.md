@@ -23,7 +23,13 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 * Currently, Release Droid only supports the GitHub-based projects. 
   So the first essential requirement: the project must be uploaded to the GitHub.
-  
+
+* The project must contain a `/.github/workflows/prepare_original_checksum.yml` file to run project tests and prepare a checksum.
+  Please check [templates](templates/prepare_original_checksum_template.md).
+
+* The project must contain a `/.github/workflows/print_quick_checksum.yml` file to run project tests and prepare a checksum.
+  Please check [templates](templates/print_quick_checksum_template.md).
+
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
 
 * The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. 
@@ -47,7 +53,7 @@ project root/
             '-- changes_<version>.md
 ```
 
-* The user must create a new [`changes_<version>.md` file](changes_file_template.md) for each new release. The `changes_<version>.md` must contain:
+* The user must create a new [`changes_<version>.md` file](templates/changes_file_template.md) for each new release. The `changes_<version>.md` must contain:
 
     1. Header in the following format: `# <Project name> <version>, released yyyy-mm-dd`
     
@@ -62,7 +68,7 @@ project root/
 * The main `pom.xml` file must contain:
     1. a `<version></version>` tag with a valid version as a constant;
     1. `<artifactId></artifactId>` tag with a project name;
-    1. `reproducible-build-maven-plugin` plugin. See an example of the plugin configurations in a [template file](maven_central_release_pom_file_template.md).
+    1. `reproducible-build-maven-plugin` plugin. See an example of the plugin configurations in a [template file](templates/maven_central_release_pom_file_template.md).
 
 
 ### Rules for Scala Repositories
@@ -75,7 +81,7 @@ project root/
 It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
 * The project must contain a `/.github/workflows/github_release.yml` file in the root directory to upload release assets. 
-  Please check [templates](github_release_template.md).
+  Please check [templates](templates/github_release_template.md).
 
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. 
   This line should appear between the file's header and the first section describing the changes.
@@ -92,10 +98,10 @@ Pre-requisites:
 Rules: 
 
 * The project must contain a `/.github/workflows/maven_central_release.yml` file in the root directory.
-  Please check a [template](maven_central_release_template.md).
+  Please check a [template](templates/maven_central_release_template.md).
 
 * The Maven file must contain all necessary plugins and settings.
-  Please check a [template](maven_central_release_pom_file_template.md).
+  Please check a [template](templates/maven_central_release_pom_file_template.md).
   
 ## How to Use Release Droid
 

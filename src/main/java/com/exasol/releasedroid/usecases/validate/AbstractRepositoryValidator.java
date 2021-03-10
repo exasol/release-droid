@@ -9,7 +9,7 @@ import com.exasol.releasedroid.usecases.report.ValidationResult;
 /**
  * Contains a common logic for classes implementing {@link RepositoryValidator}.
  */
-public abstract class AbstractPlatformValidator implements RepositoryValidator {
+public abstract class AbstractRepositoryValidator implements RepositoryValidator {
     /**
      * Check that the workflow file exists and is reachable.
      *

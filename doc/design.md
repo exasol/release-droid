@@ -87,7 +87,7 @@ Needs: impl
 ### User add Upload Definition Files for Their Deliverables
 `dsn~users-add-upload-definition-files-for-their-deliverables~1`
 
-Users add upload [definitions for deliverables](user_guide/github_release_template.md) in form of a [`.yml` file](https://yaml.org/) to their project.
+Users add upload [definitions for deliverables](user_guide/templates/github_release_template.md) in form of a [`.yml` file](https://yaml.org/) to their project.
 
 Covers:
 
