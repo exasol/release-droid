@@ -82,7 +82,7 @@ public class LocalRepositoryGate implements RepositoryGate {
             }
         } catch (final IOException exception) {
             throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-7")
-                    .message("Cannot retrieve a name of a local git branch.").toString());
+                    .message("Failed to retrieve latest tag from the local git repository.").toString(), exception);
         }
     }
 

@@ -7,6 +7,7 @@ Code name:
 ## Bug fixes
 
 * #114: Fixed validation of a code name for the GitHub release.
+* #124: Fixed wrong error message when retrieving the latest tag from local repository
 
 ## Features
 
