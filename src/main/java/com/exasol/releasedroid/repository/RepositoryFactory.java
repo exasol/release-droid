@@ -67,7 +67,7 @@ public class RepositoryFactory implements RepositoryGateway {
         try {
             final Language language = Language
                     .getLanguage(this.githubGateway.getRepositoryPrimaryLanguage(userInput.getRepositoryName()));
-            LOGGER.warning("The repository language was detected automatically: " + language
+            LOGGER.warning(() -> "The repository language was detected automatically: " + language
                     + ". If it was detected incorrectly, please specify it manually using -lg <language> argument.");
             return language;
         } catch (final GitHubException exception) {
