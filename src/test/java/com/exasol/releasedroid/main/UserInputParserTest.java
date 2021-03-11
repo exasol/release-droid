@@ -14,8 +14,8 @@ class UserInputParserTest {
 
     @Test
     void testParseUserInput() {
-        final UserInput expected = UserInput.builder().repositoryName("exasol/testing-release-droid")
-                .branch("some_branch").goal("validate").platforms("github", "maven").build();
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").branch("some_branch")
+                .goal("validate").platforms("github", "maven").build();
         final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "github,maven", "-branch", "some_branch" };
         assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
@@ -23,8 +23,8 @@ class UserInputParserTest {
 
     @Test
     void testParseUserInputWithRepeatedArgument() {
-        final UserInput expected = UserInput.builder().repositoryName("exasol/testing-release-droid")
-                .branch("some_branch").goal("validate").platforms("github", "maven").build();
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").branch("some_branch")
+                .goal("validate").platforms("github", "maven").build();
         final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "github", "-platforms", "maven", "-branch", "some_branch" };
         assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
@@ -32,7 +32,7 @@ class UserInputParserTest {
 
     @Test
     void testParseUserInputWithoutBranch() {
-        final UserInput expected = UserInput.builder().repositoryName("exasol/testing-release-droid").goal("validate")
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
                 .platforms("github", "maven").build();
         final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "github,maven" };
@@ -41,7 +41,7 @@ class UserInputParserTest {
 
     @Test
     void testParseUserInputWithLocal() {
-        final UserInput expected = UserInput.builder().repositoryName("exasol/testing-release-droid").goal("validate")
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
                 .platforms("github", "maven").localPath("../test-folder").build();
         final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "github,maven", "-local", "../test-folder" };
@@ -83,7 +83,7 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing required option: n"));
+        assertThat(exception.getMessage(), containsString("E-RR-4"));
     }
 
     @Test
@@ -101,7 +101,7 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing required option: g"));
+        assertThat(exception.getMessage(), containsString("E-RR-2"));
     }
 
     @Test
@@ -119,6 +119,33 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing required option: p"));
+        assertThat(exception.getMessage(), containsString("E-RR-3"));
+    }
+
+    @Test
+    void testParseUserInputWithLanguage() {
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
+                .platforms("github", "maven").language("JAVA").build();
+        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
+                "github,maven", "-language", "JAVA" };
+        assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
+    }
+
+    @Test
+    void testParseUserWithShortTagsLocal() {
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
+                .platforms("github", "maven").language("JAVA").localPath("./some/path/").build();
+        final String[] args = new String[] { "-n", "testing-release-droid", "-g", "validate", "-p", "github,maven",
+                "-lg", "JAVA", "-l", "./some/path/" };
+        assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
+    }
+
+    @Test
+    void testParseUserWithShortTagsBranch() {
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
+                .platforms("github", "maven").language("JAVA").branch("someBranch").build();
+        final String[] args = new String[] { "-n", "testing-release-droid", "-g", "validate", "-p", "github,maven",
+                "-lg", "JAVA", "-b", "someBranch" };
+        assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
     }
 }

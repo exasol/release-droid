@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.repository;
 
 import static com.exasol.releasedroid.repository.ScalaRepository.BUILD_SBT;
+import static com.exasol.releasedroid.usecases.Language.SCALA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,7 +41,7 @@ class ScalaRepositoryTest {
 
     @Test
     void testGetRepositoryLanguage() {
-        assertThat(getRepository().getRepositoryLanguage(), equalTo(Repository.Language.SCALA));
+        assertThat(getRepository().getRepositoryLanguage(), equalTo(SCALA));
     }
 
     private Repository getRepository() {

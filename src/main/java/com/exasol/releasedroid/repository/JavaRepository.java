@@ -9,6 +9,7 @@ import com.exasol.releasedroid.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.github.GithubGateway;
 import com.exasol.releasedroid.maven.JavaRepositoryValidator;
 import com.exasol.releasedroid.maven.MavenPlatformValidator;
+import com.exasol.releasedroid.usecases.Language;
 import com.exasol.releasedroid.usecases.PlatformName;
 import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;

@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.repository;
 
+import static com.exasol.releasedroid.usecases.Language.JAVA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,8 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.exasol.releasedroid.usecases.Repository;
 
 @ExtendWith(MockitoExtension.class)
 class JavaRepositoryTest {
@@ -37,6 +36,6 @@ class JavaRepositoryTest {
     @Test
     void testGetRepositoryLanguage() {
         final JavaRepository repository = createRepository();
-        assertThat(repository.getRepositoryLanguage(), equalTo(Repository.Language.JAVA));
+        assertThat(repository.getRepositoryLanguage(), equalTo(JAVA));
     }
 }

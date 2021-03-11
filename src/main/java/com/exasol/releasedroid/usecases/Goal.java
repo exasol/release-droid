@@ -25,7 +25,7 @@ public enum Goal {
             final List<String> allowedGoals = Arrays.stream(Goal.values()).map(goal -> goal.toString().toLowerCase())
                     .collect(Collectors.toList());
             throw new IllegalArgumentException(
-                    ExaError.messageBuilder("E-RR-G-1").message("Cannot parse a goal {{goalAsString}}.") //
+                    ExaError.messageBuilder("E-RR-7").message("Cannot parse a goal {{goalAsString}}.") //
                             .parameter("goalAsString", goalAsString)
                             .mitigation("Please, use one of the following goals: {{allowedGoals}}.")
                             .parameter("allowedGoals", String.join(",", allowedGoals)).toString(),

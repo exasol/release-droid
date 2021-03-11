@@ -5,6 +5,8 @@ import java.util.*;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.github.GithubGateway;
+import com.exasol.releasedroid.usecases.validate.ScalaRepositoryValidator;
+import com.exasol.releasedroid.usecases.Language;
 import com.exasol.releasedroid.usecases.PlatformName;
 import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
@@ -21,7 +23,7 @@ public class ScalaRepository extends BaseRepository {
     public ScalaRepository(final RepositoryGate repositoryGate, final GithubGateway githubGateway) {
         super(repositoryGate);
         this.releaseablePlatforms = Map.of(PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway));
-        this.platformValidators = List.of(new GitRepositoryValidator(this));
+        this.platformValidators = List.of(new GitRepositoryValidator(this), new ScalaRepositoryValidator(this));
     }
 
     @Override
