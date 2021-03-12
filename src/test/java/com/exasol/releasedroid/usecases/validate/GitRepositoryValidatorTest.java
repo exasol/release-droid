@@ -1,10 +1,11 @@
 package com.exasol.releasedroid.usecases.validate;
 
+import static com.exasol.releasedroid.usecases.validate.GitRepositoryValidator.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
+import static com.exasol.releasedroid.usecases.validate.GitRepositoryValidator.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.repository.ReleaseLetter;
+import com.exasol.releasedroid.repository.RepositoryException;
 import com.exasol.releasedroid.usecases.Repository;
 import com.exasol.releasedroid.usecases.report.Report;
 
@@ -150,5 +152,35 @@ class GitRepositoryValidatorTest {
                         containsString(
                                 "E-RR-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
                                         + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
+    }
+
+    @Test
+    void testValidateWorkflowFile() {
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
+                .thenReturn("I exist");
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH))
+                .thenReturn("I exist");
+        final Report report = this.validator.validateWorkflows();
+        assertFalse(report.hasFailures());
+    }
+
+    @Test
+    void testValidateWorkflowFileCreateOriginalChecksumMissing() {
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
+                .thenThrow(RepositoryException.class);
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH))
+                .thenReturn("I exist");
+        final Report report = this.validator.validateWorkflows();
+        assertTrue(report.hasFailures());
+    }
+
+    @Test
+    void testValidateWorkflowFilePrintQuickChecksumMissing() {
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
+                .thenReturn("I exist");
+        when(this.gitRepositoryMock.getSingleFileContentAsString(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH))
+                .thenThrow(RepositoryException.class);
+        final Report report = this.validator.validateWorkflows();
+        assertTrue(report.hasFailures());
     }
 }

@@ -43,9 +43,5 @@ public interface Repository extends RepositoryGate {
 
     public List<RepositoryValidator> getStructureValidators();
 
-    enum Language {
-        JAVA, SCALA, LANGUAGE_INDEPENDENT
-    }
-
     Map<PlatformName, RepositoryValidator> getValidatorForPlatforms();
 }

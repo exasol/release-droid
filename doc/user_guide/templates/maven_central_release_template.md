@@ -12,7 +12,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout the repository
+        uses: actions/checkout@v2
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v1
         with:

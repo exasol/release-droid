@@ -1,0 +1,38 @@
+# Templates of `github_release.yml`
+
+Copy the content into a file `/.github/workflows/github_release.yml` in your project.
+
+## For Java Maven Project
+
+See [an example from this project](../../../.github/workflows/github_release.yml).
+
+## For Scala Sbt Project
+
+```
+name: Upload GitHub Release Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_url:
+        description: 'Upload URL'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v10
+        with:
+          java-version: adopt@1.11
+      - name: Assembly with SBT skipping tests
+        run: sbt assembly
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: target/scala*/stripped/*.jar
+```

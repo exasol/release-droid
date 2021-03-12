@@ -34,8 +34,8 @@ class ReportWriterTest {
     @BeforeEach
     void setUp() {
         this.reportPath = Path.of(this.tempDir.toString(), "test-report.txt");
-        this.userInput = UserInput.builder().repositoryName("me/my-repository").goal("validate").platforms("github")
-                .build();
+        this.userInput = UserInput.builder().owner("me").repositoryName("my-repository").goal("validate")
+                .platforms("github").build();
         this.validationReport = Report.validationReport();
         this.validationReport.addResult(ValidationResult.failedValidation("SOME-CODE-1: Validations 1"));
         this.validationReport.addResult(ValidationResult.successfulValidation("Validations 2"));

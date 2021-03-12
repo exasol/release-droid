@@ -8,14 +8,13 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.*;
 
-import com.exasol.releasedroid.usecases.PlatformName;
-import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.usecases.Repository;
+import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 @ExtendWith(MockitoExtension.class)
 class BaseRepositoryTest {
@@ -94,7 +93,7 @@ class BaseRepositoryTest {
 
         @Override
         public Language getRepositoryLanguage() {
-            return Language.LANGUAGE_INDEPENDENT;
+            return Language.JAVA;
         }
 
         @Override

@@ -9,11 +9,13 @@ import com.exasol.errorreporting.ExaError;
  * This class stores user input.
  */
 public class UserInput {
+    private static final String EXASOL_REPOSITORY_OWNER = "exasol";
     private final String branch;
     private final Goal goal;
     private final List<PlatformName> platformNames;
     private final String repositoryName;
     private final String localPath;
+    private final Language language;
 
     /**
      * Get a branch name.
@@ -63,7 +65,7 @@ public class UserInput {
     /**
      * Get path to the local repository.
      * 
-     * @return path to the local repository.
+     * @return path to the local repository
      */
     public String getLocalPath() {
         return this.localPath;
@@ -78,12 +80,32 @@ public class UserInput {
         return this.localPath != null && !this.localPath.isEmpty();
     }
 
+    /**
+     * Get primary language of the repository.
+     *
+     * @return primary language of the repository
+     */
+    public Language getLanguage() {
+        return this.language;
+    }
+
+    /**
+     * Check if primary language of the repository is provided.
+     *
+     * @return true if primary language of the repository is provided
+     */
+    public boolean hasLanguage() {
+        return this.language != null;
+    }
+
     private UserInput(final Builder builder) {
         this.branch = builder.branch;
         this.goal = builder.goal;
         this.platformNames = builder.platforms;
-        this.repositoryName = builder.repositoryName;
+        final String owner = builder.owner == null ? EXASOL_REPOSITORY_OWNER : builder.owner;
+        this.repositoryName = owner + "/" + builder.repositoryName;
         this.localPath = builder.localPath;
+        this.language = builder.language;
     }
 
     /**
@@ -93,13 +115,6 @@ public class UserInput {
      */
     public static Builder builder() {
         return new Builder();
-    }
-
-    @Override
-    public String toString() {
-        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
-                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + ", localPath='"
-                + this.localPath + '\'' + '}';
     }
 
     @Override
@@ -114,12 +129,20 @@ public class UserInput {
         return Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
                 && this.platformNames.equals(userInput.platformNames)
                 && this.repositoryName.equals(userInput.repositoryName)
-                && Objects.equals(this.localPath, userInput.localPath);
+                && Objects.equals(this.localPath, userInput.localPath) && this.language == userInput.language;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath);
+        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath,
+                this.language);
+    }
+
+    @Override
+    public String toString() {
+        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
+                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + ", localPath='"
+                + this.localPath + '\'' + ", language=" + this.language + '}';
     }
 
     /**
@@ -131,6 +154,8 @@ public class UserInput {
         private List<PlatformName> platforms;
         private String repositoryName;
         private String localPath;
+        private Language language;
+        private String owner;
 
         /**
          * Add a branch.
@@ -152,7 +177,9 @@ public class UserInput {
          */
         // [impl->dsn~users-set-run-goal~1]
         public Builder goal(final String goal) {
-            this.goal = Goal.getGoal(goal);
+            if (goal != null) {
+                this.goal = Goal.getGoal(goal);
+            }
             return this;
         }
 
@@ -164,7 +191,9 @@ public class UserInput {
          */
         // [impl->dsn~users-set-release-platforms~1]
         public Builder platforms(final String... platforms) {
-            this.platforms = PlatformName.toList(platforms);
+            if (platforms != null) {
+                this.platforms = PlatformName.toList(platforms);
+            }
             return this;
         }
 
@@ -181,6 +210,17 @@ public class UserInput {
         }
 
         /**
+         * Add an owner of a repository.
+         *
+         * @param owner owner of a repository
+         * @return builder instance for fluent programming
+         */
+        public Builder owner(final String owner) {
+            this.owner = owner;
+            return this;
+        }
+
+        /**
          * Add a path to the root of a local repository.
          *
          * @param localPath path to the root of a local repository
@@ -188,6 +228,19 @@ public class UserInput {
          */
         public Builder localPath(final String localPath) {
             this.localPath = localPath;
+            return this;
+        }
+
+        /**
+         * Add a primary language of a repository.
+         *
+         * @param language primary language of a repository
+         * @return builder instance for fluent programming
+         */
+        public Builder language(final String language) {
+            if (language != null) {
+                this.language = Language.getLanguage(language);
+            }
             return this;
         }
 
@@ -225,7 +278,7 @@ public class UserInput {
             if ((this.platforms == null) || this.platforms.isEmpty()) {
                 throwExceptionForMissingParameter("E-RR-3", "platforms");
             }
-            if (this.repositoryName == null) {
+            if (this.repositoryName == null || this.repositoryName.isEmpty()) {
                 throwExceptionForMissingParameter("E-RR-4", "repository name");
             }
         }

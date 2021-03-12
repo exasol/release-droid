@@ -10,16 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 class UserInputTest {
-    private static final String REPOSITORY_NAME = "owner/repository";
+    private static final String REPOSITORY_NAME = "repository";
+    private static final String OWNER_NAME = "owner";
     private static final String PLATFORM = "github";
     private static final String GOAL = "validate";
     private static final String BRANCH = "branch";
 
     @Test
     void testValidUserInput() {
-        final UserInput userInput = builder().repositoryName(REPOSITORY_NAME).platforms(PLATFORM).goal(GOAL)
-                .branch(BRANCH).build();
-        assertAll(() -> assertThat(userInput.getRepositoryName(), equalTo(REPOSITORY_NAME)), //
+        final UserInput userInput = builder().owner(OWNER_NAME).repositoryName(REPOSITORY_NAME).platforms(PLATFORM)
+                .goal(GOAL).branch(BRANCH).build();
+        assertAll(() -> assertThat(userInput.getRepositoryName(), equalTo(OWNER_NAME + "/" + REPOSITORY_NAME)), //
                 () -> assertThat(userInput.getGoal(), equalTo(Goal.VALIDATE)), //
                 () -> assertThat(userInput.getPlatformNames(), contains(PlatformName.GITHUB)), //
                 () -> assertThat(userInput.hasBranch(), equalTo(true)), //
