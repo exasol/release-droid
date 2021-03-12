@@ -11,7 +11,6 @@ lazy val root =
     .settings(orgSettings)
     .settings(buildSettings)
     .settings(Settings.projectSettings(scalaVersion))
-    .settings(
-      resolvers ++= Dependencies.Resolvers)
+    .settings(resolvers ++= Dependencies.Resolvers)
     .enablePlugins(ReproducibleBuildsPlugin, IntegrationTestPlugin, GitVersioning)
 ```
