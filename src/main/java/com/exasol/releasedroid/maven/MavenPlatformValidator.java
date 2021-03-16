@@ -28,7 +28,6 @@ public class MavenPlatformValidator extends AbstractRepositoryValidator {
         return report;
     }
 
-    // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateMavenPom(final MavenPom mavenPom) {
         final Report report = Report.validationReport();
         final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
@@ -36,6 +35,7 @@ public class MavenPlatformValidator extends AbstractRepositoryValidator {
         return report;
     }
 
+    // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateProjectKeeperPlugin(final Map<String, MavenPlugin> plugins) {
         final Report report = Report.validationReport();
         final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(plugins);

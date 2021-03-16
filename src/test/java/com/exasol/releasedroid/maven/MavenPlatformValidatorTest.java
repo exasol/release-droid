@@ -35,6 +35,7 @@ class MavenPlatformValidatorTest {
 
     @Test
     // [utest->dsn~validate-maven-release-workflow-exists~1]
+    // [utest->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     void testValidateSuccessful() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
         when(this.mavenPomMock.getPlugins()).thenReturn(Map.of( //
