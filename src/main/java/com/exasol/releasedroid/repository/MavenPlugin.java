@@ -1,23 +1,15 @@
 package com.exasol.releasedroid.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.model.PluginExecution;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 /**
  * This class represents a Maven plugin.
  */
 public class MavenPlugin {
     private final String artifactId;
-    private final Xpp3Dom configuration;
-    private final List<PluginExecution> executions;
+    private final String version;
 
     private MavenPlugin(final Builder builder) {
         this.artifactId = builder.artifactId;
-        this.configuration = builder.configuration;
-        this.executions = builder.executions;
+        this.version = builder.version;
     }
 
     /**
@@ -39,48 +31,20 @@ public class MavenPlugin {
     }
 
     /**
-     * Get plugin's configuration.
+     * Get plugin's version.
      *
-     * @return configuration
+     * @return version
      */
-    public Xpp3Dom getConfiguration() {
-        return this.configuration;
-    }
-
-    /**
-     * Check if the plugin has configuration.
-     * 
-     * @return true if configuration presents
-     */
-    public boolean hasConfiguration() {
-        return this.configuration != null;
-    }
-
-    /**
-     * Check if the plugin has executions.
-     *
-     * @return true if executions presents
-     */
-    public boolean hasExecutions() {
-        return !this.executions.isEmpty();
-    }
-
-    /**
-     * Get plugin's executions.
-     *
-     * @return executions
-     */
-    public List<PluginExecution> getExecutions() {
-        return this.executions;
+    public String getVersion() {
+        return this.version;
     }
 
     /**
      * Builder for the {@link MavenPlugin}.
      */
     public static class Builder {
-        private List<PluginExecution> executions = new ArrayList<>();
         private String artifactId;
-        private Xpp3Dom configuration;
+        private String version;
 
         /**
          * Add artifact id.
@@ -94,24 +58,13 @@ public class MavenPlugin {
         }
 
         /**
-         * Add configuration.
+         * Add version.
          *
-         * @param configuration configuration as {@link Xpp3Dom} object
+         * @param version version
          * @return builder instance for fluent programming
          */
-        public Builder configuration(final Xpp3Dom configuration) {
-            this.configuration = configuration;
-            return this;
-        }
-
-        /**
-         * Add executions.
-         *
-         * @param executions executions as a list of {@link PluginExecution}
-         * @return builder instance for fluent programming
-         */
-        public Builder executions(final List<PluginExecution> executions) {
-            this.executions = executions;
+        public Builder version(final String version) {
+            this.version = version;
             return this;
         }
 

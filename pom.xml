@@ -9,18 +9,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <mockito.version>3.7.0</mockito.version>
+        <mockito.version>3.8.0</mockito.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.122</version>
+            <version>1.123</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>5.10.0.202012080955-r</version>
+            <version>5.11.0.202103091610-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20201115</version>
+            <version>20210307</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -45,20 +45,20 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>error-reporting-java</artifactId>
-            <version>0.2.2</version>
+            <version>0.4.0</version>
         </dependency>
         <!-- Rewriting transitive dependency to fix CVE-2020-25649.
         This dependency can be removed after it's updated inside of org.kohsuke:github-api-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.1</version>
+            <version>2.12.2</version>
         </dependency>
         <!--Unit test dependencies-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

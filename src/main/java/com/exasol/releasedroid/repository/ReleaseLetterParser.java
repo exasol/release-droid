@@ -86,7 +86,12 @@ public final class ReleaseLetterParser {
     private String parseHeader(final String headerPart) {
         final String targetTag = "code name:";
         final int startIndex = headerPart.toLowerCase().indexOf(targetTag);
-        return (startIndex != -1) ? headerPart.substring(startIndex + targetTag.length()).strip() : null;
+        if (startIndex != -1) {
+            final String header = headerPart.substring(startIndex + targetTag.length()).strip();
+            return header.isEmpty() ? null : header;
+        } else {
+            return null;
+        }
     }
 
     private List<String> getExpressionsByRegex(final String content, final String regex) {

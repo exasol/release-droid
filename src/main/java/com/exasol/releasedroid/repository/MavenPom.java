@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.repository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents maven pom.xml file.
@@ -9,7 +10,7 @@ public class MavenPom {
     private final String artifactId;
     private final String version;
     private final Map<String, String> properties;
-    private final List<MavenPlugin> plugins;
+    private final Map<String, MavenPlugin> plugins;
 
     private MavenPom(final Builder builder) {
         this.artifactId = builder.artifactId;
@@ -72,7 +73,12 @@ public class MavenPom {
         return !this.properties.isEmpty();
     }
 
-    public List<MavenPlugin> getPlugins() {
+    /**
+     * Get a map of maven plugins.
+     * 
+     * @return map with plugins' names and {@link MavenPlugin}
+     */
+    public Map<String, MavenPlugin> getPlugins() {
         return this.plugins;
     }
 
@@ -101,7 +107,7 @@ public class MavenPom {
         private String artifactId;
         private String version;
         private Map<String, String> properties = new HashMap<>();
-        private List<MavenPlugin> plugins = new ArrayList<>();
+        private Map<String, MavenPlugin> plugins = new HashMap<>();
 
         /**
          * Add version.
@@ -148,10 +154,10 @@ public class MavenPom {
         /**
          * Add plugins.
          *
-         * @param plugins list of plugins
+         * @param plugins map with plugins' names and {@link MavenPlugin}
          * @return builder instance for fluent programming
          */
-        public Builder plugins(final List<MavenPlugin> plugins) {
+        public Builder plugins(final Map<String, MavenPlugin> plugins) {
             this.plugins = plugins;
             return this;
         }
