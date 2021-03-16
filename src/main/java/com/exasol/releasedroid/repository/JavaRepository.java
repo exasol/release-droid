@@ -11,7 +11,7 @@ import com.exasol.releasedroid.maven.JavaRepositoryValidator;
 import com.exasol.releasedroid.maven.MavenPlatformValidator;
 import com.exasol.releasedroid.usecases.Language;
 import com.exasol.releasedroid.usecases.PlatformName;
-import com.exasol.releasedroid.usecases.validate.GitRepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.JavaGitRepositoryValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -28,7 +28,7 @@ public class JavaRepository extends BaseRepository {
         this.releaseablePlatforms = Map.of( //
                 PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), PlatformName.MAVEN,
                 new MavenPlatformValidator(this));
-        this.platformValidators = List.of(new GitRepositoryValidator(this), new JavaRepositoryValidator(this));
+        this.platformValidators = List.of(new JavaGitRepositoryValidator(this), new JavaRepositoryValidator(this));
     }
 
     /**

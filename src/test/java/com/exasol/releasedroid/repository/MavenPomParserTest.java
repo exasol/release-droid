@@ -1,15 +1,12 @@
 package com.exasol.releasedroid.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.model.PluginExecution;
 import org.junit.jupiter.api.Test;
 
 class MavenPomParserTest {
@@ -47,38 +44,41 @@ class MavenPomParserTest {
         final String pom = "<project>" //
                 + "    <artifactId>my-test-project</artifactId>" //
                 + "    <version>1.2.3</version>" //
+                + "    <properties>" //
+                + "        <plugin.version>5.0.4</plugin.version>" //
+                + "    </properties>" //
                 + "    <build>" //
                 + "        <plugins>" //
                 + "            <plugin>" //
                 + "                <artifactId>some-plugin</artifactId>" //
+                + "                <version>0.5.0</version>" //
                 + "            </plugin>" //
                 + "            <plugin>" //
                 + "                <artifactId>maven-assembly-plugin</artifactId>" //
-                + "                 <configuration>" //
-                + "                    <finalName>virtual-schema-dist-${vscjdbc.version}-bundle-${version}</finalName>"
-                + "                </configuration>" //
+                + "                <version>1.0.3</version>" //
                 + "            </plugin>" //
                 + "            <plugin>" //
                 + "                <artifactId>some-other-plugin</artifactId>" //
-                + "                 <configuration>" //
+                + "                <version>${plugin.version}</version>" //
+                + "                <configuration>" //
                 + "                </configuration>" //
                 + "            </plugin>" //
                 + "        </plugins>" //
                 + "    </build>" //
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
-        final List<MavenPlugin> plugins = mavenPom.getPlugins();
+        final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
         assertAll(() -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")), //
                 () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")), //
-                () -> assertThat(mavenPom.hasProperties(), equalTo(false)), //
+                () -> assertThat(mavenPom.hasProperties(), equalTo(true)), //
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(true)), //
                 () -> assertThat(plugins.size(), equalTo(3)), //
-                () -> assertThat(plugins.get(0).getArtifactId(), equalTo("some-plugin")), //
-                () -> assertThat(plugins.get(0).hasConfiguration(), equalTo(false)), //
-                () -> assertThat(plugins.get(1).getArtifactId(), equalTo("maven-assembly-plugin")), //
-                () -> assertThat(plugins.get(1).hasConfiguration(), equalTo(true)), //
-                () -> assertThat(plugins.get(2).getArtifactId(), equalTo("some-other-plugin")), //
-                () -> assertThat(plugins.get(2).hasConfiguration(), equalTo(true)) //
+                () -> assertThat(plugins.containsKey("some-plugin"), equalTo(true)), //
+                () -> assertThat(plugins.containsKey("maven-assembly-plugin"), equalTo(true)), //
+                () -> assertThat(plugins.containsKey("some-other-plugin"), equalTo(true)), //
+                () -> assertThat(plugins.get("some-plugin").getVersion(), equalTo("0.5.0")), //
+                () -> assertThat(plugins.get("maven-assembly-plugin").getVersion(), equalTo("1.0.3")), //
+                () -> assertThat(plugins.get("some-other-plugin").getVersion(), equalTo("5.0.4")) //
         );
     }
 
@@ -99,50 +99,6 @@ class MavenPomParserTest {
                 () -> assertThat(properties.size(), equalTo(1)),
                 () -> assertThat(properties.containsKey("vscjdbc.version"), equalTo(true)),
                 () -> assertThat(properties.get("vscjdbc.version"), equalTo("5.0.4")));
-    }
-
-    @Test
-    void testParseMavenPluginsWithExecutions() throws IOException {
-        final String pom = "<project>" //
-                + "    <artifactId>my-test-project</artifactId>" //
-                + "    <version>1.2.3</version>" //
-                + "    <build>" //
-                + "        <plugins>" //
-                + "            <plugin>" //
-                + "                <groupId>org.apache.maven.plugins</groupId>" //
-                + "                <artifactId>maven-gpg-plugin</artifactId>" //
-                + "                <version>1.6</version>" //
-                + "                <executions>" //
-                + "                    <execution>" //
-                + "                        <id>sign-artifacts</id>" //
-                + "                        <phase>verify</phase>" //
-                + "                        <goals>" //
-                + "                            <goal>sign</goal>" //
-                + "                        </goals>" //
-                + "                        <configuration>" //
-                + "                            <gpgArguments>" //
-                + "                                <arg>--pinentry-mode</arg>" //
-                + "                                <arg>loopback</arg>" //
-                + "                            </gpgArguments>" //
-                + "                        </configuration>" //
-                + "                    </execution>" //
-                + "                </executions>" //
-                + "            </plugin>" //
-                + "        </plugins>" //
-                + "    </build>" //
-                + "</project>";
-        final MavenPom mavenPom = getMavenPom(pom);
-        final List<MavenPlugin> plugins = mavenPom.getPlugins();
-        final List<PluginExecution> executions = plugins.get(0).getExecutions();
-        assertAll(() -> assertThat(mavenPom.hasPlugins(), equalTo(true)), //
-                () -> assertThat(plugins.size(), equalTo(1)), //
-                () -> assertThat(plugins.get(0).getArtifactId(), equalTo("maven-gpg-plugin")), //
-                () -> assertThat(plugins.get(0).hasConfiguration(), equalTo(false)), //
-                () -> assertThat(plugins.get(0).hasExecutions(), equalTo(true)), //
-                () -> assertThat(executions.size(), equalTo(1)), //
-                () -> assertThat(executions.get(0).getId(), equalTo("sign-artifacts")), //
-                () -> assertThat(executions.get(0).getConfiguration().toString(), containsString("--pinentry-mode")) //
-        );
     }
 
     @Test

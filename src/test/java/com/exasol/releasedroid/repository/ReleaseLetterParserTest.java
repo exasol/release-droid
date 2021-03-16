@@ -37,4 +37,13 @@ class ReleaseLetterParserTest {
                 () -> assertThat(letter.getTicketNumbers().isEmpty(), equalTo(true)),
                 () -> assertThat(letter.getBody().isEmpty(), equalTo(true)));
     }
+
+    @Test
+    void testParsingEmptyCodeName() {
+        final String content = "# Exasol Release Droid 0.1.0, released 2020-08-20 " + LINE_SEPARATOR //
+                + "Code name:      " + LINE_SEPARATOR //
+                + "## Features ";
+        final ReleaseLetter letter = new ReleaseLetterParser("name", content).parse();
+        assertThat(letter.getHeader().isEmpty(), equalTo(true));
+    }
 }

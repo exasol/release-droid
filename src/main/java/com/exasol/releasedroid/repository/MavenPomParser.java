@@ -5,7 +5,6 @@ import java.util.*;
 
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.exasol.errorreporting.ExaError;
@@ -45,7 +44,7 @@ public class MavenPomParser {
         final String artifactId = this.model.getArtifactId();
         final String version = this.model.getVersion();
         final Map<String, String> properties = parseProperties();
-        final List<MavenPlugin> plugins = parsePlugins();
+        final Map<String, MavenPlugin> plugins = parsePlugins(properties);
         return MavenPom.builder().version(version).artifactId(artifactId).properties(properties).plugins(plugins)
                 .build();
     }
@@ -59,20 +58,31 @@ public class MavenPomParser {
         return properties;
     }
 
-    private List<MavenPlugin> parsePlugins() {
+    private Map<String, MavenPlugin> parsePlugins(final Map<String, String> properties) {
         final Build build = this.model.getBuild();
         if (build == null) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        final List<MavenPlugin> plugins = new ArrayList<>();
+        final Map<String, MavenPlugin> plugins = new HashMap<>();
         for (final Plugin plugin : build.getPlugins()) {
             final String artifactId = plugin.getArtifactId();
-            final Xpp3Dom configurations = (Xpp3Dom) plugin.getConfiguration();
-            final List<PluginExecution> executions = plugin.getExecutions();
-            final MavenPlugin mavenPlugin = MavenPlugin.builder().artifactId(artifactId).configuration(configurations)
-                    .executions(executions).build();
-            plugins.add(mavenPlugin);
+            final String version = getString(plugin, properties);
+            final MavenPlugin mavenPlugin = MavenPlugin.builder().artifactId(artifactId).version(version).build();
+            plugins.put(artifactId, mavenPlugin);
         }
         return plugins;
+    }
+
+    private String getString(final Plugin plugin, final Map<String, String> properties) {
+        final String version = plugin.getVersion();
+        if (version.contains("$")) {
+            return findProperty(version.substring(2, version.length() - 1), properties);
+        } else {
+            return version;
+        }
+    }
+
+    private String findProperty(final String property, final Map<String, String> properties) {
+        return properties.getOrDefault(property, "");
     }
 }
