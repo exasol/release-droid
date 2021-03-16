@@ -15,7 +15,7 @@ public class MavenPluginValidator {
 
     /**
      * Create a new instance of {@link MavenPluginValidator}.
-     * 
+     *
      * @param plugins map with project's maven plugins.
      */
     public MavenPluginValidator(final Map<String, MavenPlugin> plugins) {
@@ -24,7 +24,7 @@ public class MavenPluginValidator {
 
     /**
      * Validate that plugins exists.
-     * 
+     *
      * @param pluginName plugin name to validate
      * @return instance of {@link Report}
      */
@@ -33,9 +33,8 @@ public class MavenPluginValidator {
         if (this.plugins.containsKey(pluginName)) {
             report.addResult(ValidationResult.successfulValidation("Maven plugin '" + pluginName + "'."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-13")
-                    .message("Required maven plugin is missing: {{requiredPlugin}}.")
-                    .parameter("requiredPlugin", pluginName).toString()));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-13").message(
+                    "Required maven plugin is missing: {{requiredPlugin}}.", pluginName).toString()));
         }
         return report;
     }
@@ -58,30 +57,30 @@ public class MavenPluginValidator {
     private Report validatePluginVersion(final String pluginName, final String expectedVersion) {
         final Report report = Report.validationReport();
         final String actualVersion = this.plugins.get(pluginName).getVersion();
-        if (compare(expectedVersion, actualVersion)) {
+        if (compareSemanticVersion(expectedVersion, actualVersion)) {
             report.addResult(
                     ValidationResult.successfulValidation("Maven plugin '" + pluginName + "' version is correct."));
         } else {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-14").message(
                     "Maven plugin {{pluginName}} has invalid version. The version should be {{version}} or higher.")
-                    .parameter("pluginName", pluginName) //
-                    .parameter("version", expectedVersion) //
-                    .toString()));
+                                                                       .parameter("pluginName", pluginName) //
+                                                                       .parameter("version", expectedVersion) //
+                                                                       .toString()));
         }
         return report;
     }
 
-    private boolean compare(final String expectedVersion, final String actualVersion) {
+    private boolean compareSemanticVersion(final String expectedVersion, final String actualVersion) {
         if (expectedVersion.equals(actualVersion)) {
             return true;
         } else {
             final String[] expected = expectedVersion.split("\\.");
             final String[] actual = actualVersion.split("\\.");
-            return compare(expected, actual);
+            return compareSemanticVersion(expected, actual);
         }
     }
 
-    private boolean compare(final String[] expected, final String[] actual) {
+    private boolean compareSemanticVersion(final String[] expected, final String[] actual) {
         if (actual.length != expected.length) {
             return false;
         }
