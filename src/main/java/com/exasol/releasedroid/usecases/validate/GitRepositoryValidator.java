@@ -17,8 +17,8 @@ import com.exasol.releasedroid.usecases.report.ValidationResult;
  */
 public class GitRepositoryValidator extends AbstractRepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(GitRepositoryValidator.class.getName());
-    protected static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH = ".github/workflows/prepare_original_checksum.yml";
-    protected static final String PRINT_QUICK_CHECKSUM_WORKFLOW_PATH = ".github/workflows/print_quick_checksum.yml";
+    protected static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH = ".github/workflows/release_droid_prepare_original_checksum.yml";
+    protected static final String PRINT_QUICK_CHECKSUM_WORKFLOW_PATH = ".github/workflows/release_droid_print_quick_checksum.yml";
     private final Repository repository;
 
     public GitRepositoryValidator(final Repository repository) {

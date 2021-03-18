@@ -1,9 +1,9 @@
-# Template of `maven_central_release.yml`
+# Template of `release_droid_release_on_maven_central.yml`
 
-Create a `/.github/workflows/maven_central_release.yml` file in your project with the following content:
+Create a `/.github/workflows/release_droid_release_on_maven_central.yml` file in your project with the following content:
 
 ```
-name: Maven Central Release
+name: Release Droid - Release On Maven Central
 
 on:
   workflow_dispatch:

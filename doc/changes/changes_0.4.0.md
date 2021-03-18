@@ -1,8 +1,26 @@
-# Exasol Release Droid 0.4.0, released 2021-??-??
+# Exasol Release Droid 0.4.0, released 2021-03-??
 
 Code name: Changed release strategy and added Scala support
 
 ## Summary
+
+In this release we have changed the release strategy:
+
+Before we start releasing, we run all tests, build a checksum for each packaged file (jar) and store the checksums. After that, we release on each platform skipping the tests during the build to speed up the process.
+
+If the release was interrupted, we prepare a quick checksum and compare it against a stored one. If the checksums are equal, we are skipping the tests. If not, we re-run the tests and store a new checksum.
+
+When the release is successful, we remove the checksum.
+
+To use the new version of the Release Robot you need to add two new workflows to your projects:
+
+1. `release_droid_prepare_original_checksum.yml`
+2. `release_droid_print_quick_checksum.yml`
+
+You also need to rename and update the existing templates:
+
+3. `github_release.yml` renamed to `release_droid_upload_github_release_assets.yml`
+4. `maven_central_release.yml` rename to `release_droid_release_on_maven_central.yml`
 
 ## Bug fixes
 
@@ -20,6 +38,7 @@ Code name: Changed release strategy and added Scala support
 ## Refactoring
 
 * #119: Removed maven plugin validation and added a check that `project-keeper-maven-plugin` exists instead.
+* #132: Renamed the workflow scripts.
 
 ## Dependency updates
 

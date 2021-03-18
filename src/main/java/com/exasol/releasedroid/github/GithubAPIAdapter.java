@@ -23,9 +23,9 @@ import com.exasol.releasedroid.repository.RepositoryException;
 public class GithubAPIAdapter implements GithubGateway {
     private static final Logger LOGGER = Logger.getLogger(GithubAPIAdapter.class.getName());
     private static final String GITHUB_API_ENTRY_URL = "https://api.github.com/repos/";
-    private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "prepare_original_checksum.yml";
-    private static final String GITHUB_RELEASE_WORKFLOW = "github_release.yml";
-    private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "print_quick_checksum.yml";
+    private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "release_droid_prepare_original_checksum.yml";
+    private static final String GITHUB_RELEASE_WORKFLOW = "release_droid_upload_github_release_assets.yml";
+    private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "release_droid_print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories;
     private final GitHubUser gitHubUser;
 

@@ -1,15 +1,15 @@
-# Templates of `github_release.yml`
+# Templates of `release_droid_upload_github_release_assets.yml`
 
-Copy the content into a file `/.github/workflows/github_release.yml` in your project.
+Copy the content into a file `/.github/workflows/release_droid_upload_github_release_assets.yml` in your project.
 
 ## For Java Maven Project
 
-See [an example from this project](../../../.github/workflows/github_release.yml).
+See [an example from this project](../../../.github/workflows/release_droid_upload_github_release_assets.yml).
 
 ## For Scala Sbt Project
 
 ```
-name: Upload GitHub Release Assets
+name: Release Droid - Upload GitHub Release Assets
 
 on:
   workflow_dispatch:
