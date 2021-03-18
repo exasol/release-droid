@@ -1,15 +1,15 @@
-# Templates of `print_quick_checksum.yml`
+# Templates of `release_droid_print_quick_checksum.yml`
 
-Copy the content into a file `/.github/workflows/print_quick_checksum.yml` in your project.
+Copy the content into a file `/.github/workflows/release_droid_print_quick_checksum.yml` in your project.
 
 ## For Java Maven Project
 
-See [an example from this project](../../../.github/workflows/print_quick_checksum.yml).
+See [an example from this project](../../../.github/workflows/release_droid_print_quick_checksum.yml).
 
 ## For Scala Sbt Project
 
 ```
-name: Print Quick Checksum
+name: Release Droid - Print Quick Checksum
 
 on:
   workflow_dispatch:

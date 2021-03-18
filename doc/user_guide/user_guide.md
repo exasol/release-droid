@@ -22,9 +22,9 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 * Currently, Release Droid only supports the GitHub-based projects. So the first essential requirement: the project must be uploaded to the GitHub.
 
-* The project must contain a `/.github/workflows/prepare_original_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/prepare_original_checksum_template.md).
+* The project must contain a `/.github/workflows/release_droid_prepare_original_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/prepare_original_checksum_template.md).
 
-* The project must contain a `/.github/workflows/print_quick_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/print_quick_checksum_template.md).
+* The project must contain a `/.github/workflows/release_droid_print_quick_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/print_quick_checksum_template.md).
 
 * The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
 
@@ -81,7 +81,7 @@ Also, you need to enable the plugin in the [`build.sbt` file](templates/sbt_file
 
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules. It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
-* The project must contain a `/.github/workflows/github_release.yml` file in the root directory to upload release assets. Please check [templates](templates/github_release_template.md).
+* The project must contain a `/.github/workflows/release_droid_upload_github_release_assets.yml` file in the root directory to upload release assets. Please check [templates](templates/upload_github_release_assets_template.md).
 
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. This line should appear between the file's header and the first section describing the changes.
 
@@ -95,7 +95,7 @@ Pre-requisites:
 
 Rules:
 
-* The project must contain a `/.github/workflows/maven_central_release.yml` file in the root directory. Please check a [template](templates/maven_central_release_template.md).
+* The project must contain a `/.github/workflows/release_droid_release_on_maven_central.yml` file in the root directory. Please check a [template](templates/release_on_maven_central_template.md).
 
 * The Maven file must contain all necessary plugins and settings. Please check a [template](templates/maven_central_release_pom_file_template.md).
 
