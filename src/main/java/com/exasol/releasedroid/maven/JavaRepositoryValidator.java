@@ -68,9 +68,14 @@ public class JavaRepositoryValidator implements RepositoryValidator {
     // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateProjectKeeperPlugin(final MavenPom mavenPom) {
         final Report report = Report.validationReport();
-        final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(mavenPom.getPlugins());
-        report.merge(mavenPluginValidator.validatePluginExists(PROJECT_KEEPER_PLUGIN_NAME));
-        report.merge(validateProjectKeeperVersion(mavenPom, mavenPluginValidator));
+        if (mavenPom.hasArtifactId() && mavenPom.getArtifactId().equals("release-droid")) {
+            report.addResult(ValidationResult.successfulValidation(
+                    "Skipping '" + PROJECT_KEEPER_PLUGIN_NAME + "' validation for the 'release-droid'."));
+        } else {
+            final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(mavenPom.getPlugins());
+            report.merge(mavenPluginValidator.validatePluginExists(PROJECT_KEEPER_PLUGIN_NAME));
+            report.merge(validateProjectKeeperVersion(mavenPom, mavenPluginValidator));
+        }
         return report;
     }
 
@@ -78,8 +83,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
             final MavenPluginValidator mavenPluginValidator) {
         final Report report = Report.validationReport();
         if (mavenPom.hasArtifactId() && mavenPom.getArtifactId().equals(PROJECT_KEEPER_PLUGIN_NAME)) {
-            report.addResult(ValidationResult.successfulValidation("Skipping version check for the "
-                    + PROJECT_KEEPER_PLUGIN_NAME + " in the plugin repository itself."));
+
         } else {
             report.merge(mavenPluginValidator.validatePluginVersionEqualOrGreater(PROJECT_KEEPER_PLUGIN_NAME,
                     PROJECT_KEEPER_PLUGIN_VERSION));
