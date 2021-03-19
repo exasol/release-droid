@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.4.0, released 2021-03-??
+# Exasol Release Droid 0.4.0, released 2021-03-19
 
 Code name: Changed release strategy and added Scala support
 
