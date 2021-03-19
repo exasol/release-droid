@@ -94,11 +94,11 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return report;
     }
 
-    private void prepareRepositoryForRelease(final Repository repository) throws ReleaseException {
+    private void prepareRepositoryForRelease(final Repository repository) {
         this.releaseManager.prepareForRelease(repository);
     }
 
-    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) throws ReleaseException {
+    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) {
         if (!report.hasFailures()) {
             this.releaseManager.cleanUpAfterRelease(repository);
         }

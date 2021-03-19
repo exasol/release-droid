@@ -6,9 +6,9 @@ import java.util.logging.Logger;
 
 import com.exasol.releasedroid.adapter.github.GitHubException;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.release.ReleaseManager;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryModifier;
 
 public class ReleaseManagerImpl implements ReleaseManager {
     private static final Logger LOGGER = Logger.getLogger(ReleaseManagerImpl.class.getName());
@@ -96,12 +96,12 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     @Override
     // [impl->dsn~remove-checksum~1]
-    public void cleanUpAfterRelease(final Repository repository) throws RepositoryException {
+    public void cleanUpAfterRelease(final Repository repository) {
         LOGGER.info("Removing all artifacts from '" + repository.getName() + "' repository.");
         try {
             this.githubGateway.deleteAllArtifacts(repository.getName());
-        } catch (final GitHubException e) {
-            throw new RepositoryException(e);
+        } catch (final GitHubException exception) {
+            throw new IllegalStateException(exception);
         }
     }
 

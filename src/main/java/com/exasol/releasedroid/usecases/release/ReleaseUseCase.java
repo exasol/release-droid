@@ -17,5 +17,5 @@ public interface ReleaseUseCase {
      * @return list of reports
      * @throws ReleaseException
      */
-    public List<Report> release(final UserInput userInput) throws ReleaseException;
+    public List<Report> release(final UserInput userInput);
 }
