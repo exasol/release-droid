@@ -8,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.releasedroid.adapter.github.GitHubRelease;
-
 class GitHubReleaseTest {
     @Test
     void testValidGitHubRelease() {

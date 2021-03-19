@@ -1,9 +1,8 @@
-package com.exasol.releasedroid.adapter.java;
+package com.exasol.releasedroid.adapter.maven;
 
 import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.maven.MavenPlugin;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 

@@ -9,9 +9,6 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
-import com.exasol.releasedroid.usecases.repository.ReleaseLetterParser;
-
 class ReleaseLetterParserTest {
     @Test
     void testCreateNewReleaseChangesLetter() {

@@ -13,10 +13,10 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.repository.Repository;
 
 class GitHubPlatformValidatorTest {
     @Test

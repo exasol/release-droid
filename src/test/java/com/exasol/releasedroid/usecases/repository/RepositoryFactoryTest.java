@@ -18,7 +18,6 @@ import com.exasol.releasedroid.adapter.github.GitHubException;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.java.JavaRepository;
 import com.exasol.releasedroid.adapter.scala.ScalaRepository;
-import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 @ExtendWith(MockitoExtension.class)
