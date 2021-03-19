@@ -57,8 +57,7 @@ public class MavenPluginValidator {
     private Report validatePluginVersion(final String pluginName, final String expectedVersion) {
         final Report report = Report.validationReport();
         final MavenPlugin plugin = this.plugins.get(pluginName);
-        final String actualVersion = plugin.getVersion();
-        if (plugin.hasVersion() && compareSemanticVersion(expectedVersion, actualVersion)) {
+        if (plugin.hasVersion() && compareSemanticVersion(expectedVersion, plugin.getVersion())) {
             report.addResult(
                     ValidationResult.successfulValidation("Maven plugin '" + pluginName + "' version is correct."));
         } else {
