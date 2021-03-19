@@ -75,7 +75,7 @@ public class MavenPomParser {
 
     private String getString(final Plugin plugin, final Map<String, String> properties) {
         final String version = plugin.getVersion();
-        if (version.contains("$")) {
+        if (version != null && version.contains("$")) {
             return findProperty(version.substring(2, version.length() - 1), properties);
         } else {
             return version;
