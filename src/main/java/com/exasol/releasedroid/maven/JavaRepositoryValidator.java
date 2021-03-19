@@ -15,6 +15,8 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 public class JavaRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(JavaRepositoryValidator.class.getName());
     private static final String REPRODUCIBLE_BUILD_MAVEN_PLUGIN = "reproducible-build-maven-plugin";
+    private static final String PROJECT_KEEPER_PLUGIN_NAME = "project-keeper-maven-plugin";
+    private static final String PROJECT_KEEPER_PLUGIN_VERSION = "0.5.0";
     private final JavaRepository repository;
 
     public JavaRepositoryValidator(final JavaRepository repository) {
@@ -29,6 +31,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         report.merge(validateVersion(mavenPom));
         report.merge(validateArtifactId(mavenPom));
         report.merge(validateReproducibleBuildPlugin(mavenPom));
+        report.merge(validateProjectKeeperPlugin(mavenPom));
         return report;
     }
 
@@ -59,6 +62,21 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
         final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(plugins);
         report.merge(mavenPluginValidator.validatePluginExists(REPRODUCIBLE_BUILD_MAVEN_PLUGIN));
+        return report;
+    }
+
+    // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
+    private Report validateProjectKeeperPlugin(final MavenPom mavenPom) {
+        final Report report = Report.validationReport();
+        final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(mavenPom.getPlugins());
+        report.merge(mavenPluginValidator.validatePluginExists(PROJECT_KEEPER_PLUGIN_NAME));
+        if (mavenPom.getArtifactId().equals(PROJECT_KEEPER_PLUGIN_NAME)) {
+            report.addResult(ValidationResult.successfulValidation("Skipping version check for the "
+                    + PROJECT_KEEPER_PLUGIN_NAME + " in the plugin repository itself."));
+        } else {
+            report.merge(mavenPluginValidator.validatePluginVersionEqualOrGreater(PROJECT_KEEPER_PLUGIN_NAME,
+                    PROJECT_KEEPER_PLUGIN_VERSION));
+        }
         return report;
     }
 }

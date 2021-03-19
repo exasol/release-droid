@@ -27,6 +27,7 @@ You also need to rename and update the existing templates:
 * #114: Fixed validation of a code name for the GitHub release.
 * #124: Fixed wrong error message when retrieving the latest tag from a local repository.
 * #134: Fixed parsing of the plugins in the pom file.
+* #136: Excluded `project-keeper-maven-plugin` from the version validation.
 
 ## Features
 

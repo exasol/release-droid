@@ -34,17 +34,17 @@ class MavenReleaseMakerTest {
     // [utest->dsn~create-new-maven-release~1]
     void testMakeRelease() {
         assertAll(() -> assertDoesNotThrow(() -> this.releaseMaker.makeRelease(this.repositoryMock)),
-                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
-                        "{\"ref\":\"main\"}"));
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name",
+                        "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}"));
     }
 
     @Test
     // [utest->dsn~create-new-maven-release~1]
     void testMakeReleaseFails() throws GitHubException {
-        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name", "maven_central_release.yml",
-                "{\"ref\":\"main\"}");
+        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name",
+                "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}");
         assertAll(() -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
-                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name", "maven_central_release.yml",
-                        "{\"ref\":\"main\"}"));
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name",
+                        "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}"));
     }
 }
