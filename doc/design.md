@@ -312,7 +312,7 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate `github_release.yml` Workflow Exists
+#### Validate `release_droid_upload_github_release_assets.yml` Workflow Exists
 `dsn~validate-github-workflow-exists~1`
 
 RR validates that a workflow that helps us to release on GitHub exists.
@@ -327,7 +327,7 @@ Needs: impl, utest
 
 Validations listed here are necessary for a release on the Maven CEntral.
 
-#### Validate `maven_central_release.yml` Workflow Exists
+#### Validate `release_droid_release_on_maven_central.yml` Workflow Exists
 `dsn~validate-maven-release-workflow-exists~1`
 
 RR validates that a workflow that helps us to release on Maven Central Repository exists.
