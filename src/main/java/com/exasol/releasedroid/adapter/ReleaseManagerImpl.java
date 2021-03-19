@@ -56,7 +56,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         updateRepository(repository);
     }
 
-    private void updateRepository(final Repository repository) throws GitHubException {
+    private void updateRepository(final Repository repository) {
         cleanUpAfterRelease(repository);
         prepareForRelease(repository);
     }
