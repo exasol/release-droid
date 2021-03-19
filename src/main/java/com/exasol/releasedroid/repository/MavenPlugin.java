@@ -31,6 +31,15 @@ public class MavenPlugin {
     }
 
     /**
+     * Check if the plugin has a version specified.
+     *
+     * @return version
+     */
+    public boolean hasVersion() {
+        return this.version != null && !this.version.isEmpty();
+    }
+
+    /**
      * Get plugin's version.
      *
      * @return version

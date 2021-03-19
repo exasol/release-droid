@@ -25,15 +25,14 @@ You also need to rename and update the existing templates:
 ## Bug fixes
 
 * #114: Fixed validation of a code name for the GitHub release.
-* #124: Fixed wrong error message when retrieving the latest tag from local repository.
+* #124: Fixed wrong error message when retrieving the latest tag from a local repository.
+* #134: Fixed parsing of the plugins in the pom file.
 
 ## Features
 
 * #110: Added support for Scala projects release on GitHub.
 * #116: Changed release strategy for Java repositories.
 * #128: Changed release strategy for Scala repositories.
-
-## Documentation
 
 ## Refactoring
 
@@ -42,7 +41,7 @@ You also need to rename and update the existing templates:
 
 ## Dependency updates
 
-## Runtime Dependencies
+### Runtime Dependencies
 
 * Updated `org.kohsuke:github-api:1.117` to `1.123`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.12.0` to `2.12.2`
@@ -50,12 +49,12 @@ You also need to rename and update the existing templates:
 * Updated `org.json:json:20201115` to `20210307`
 * Updated `com.exasol:error-reporting-java:0.2.2` to `0.4.0`
 
-## Test Dependencies
+### Test Dependencies
 
 * Updated `org.mockito:mockito-core:3.6.28` to `3.7.0`
 * Updated `org.mockito:mockito-junit-jupiter:3.6.28` to `3.7.0`
 * Updated `org.junit.jupiter:junit-jupiter:5.7.0` to `5.7.1`
 
-## Plugin Dependencies
+### Plugin Dependencies
 
 * Added `io.github.zlika:reproducible-build-maven-plugin:0.13`

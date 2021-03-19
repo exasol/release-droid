@@ -82,4 +82,15 @@ class MavenPlatformValidatorTest {
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-14")));
     }
+
+    @Test
+    void testValidateProjectKeeperMissingVersion() {
+        when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
+        when(this.mavenPomMock.getPlugins()).thenReturn(Map.of( //
+                "project-keeper-maven-plugin", MavenPlugin.builder().artifactId("project-keeper-maven-plugin").build() //
+        ));
+        final Report report = this.platformValidator.validate();
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-14")));
+    }
 }

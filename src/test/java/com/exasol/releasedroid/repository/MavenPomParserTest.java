@@ -76,8 +76,11 @@ class MavenPomParserTest {
                 () -> assertThat(plugins.containsKey("some-plugin"), equalTo(true)), //
                 () -> assertThat(plugins.containsKey("maven-assembly-plugin"), equalTo(true)), //
                 () -> assertThat(plugins.containsKey("some-other-plugin"), equalTo(true)), //
+                () -> assertThat(plugins.get("some-plugin").hasVersion(), equalTo(true)), //
                 () -> assertThat(plugins.get("some-plugin").getVersion(), equalTo("0.5.0")), //
+                () -> assertThat(plugins.get("maven-assembly-plugin").hasVersion(), equalTo(true)), //
                 () -> assertThat(plugins.get("maven-assembly-plugin").getVersion(), equalTo("1.0.3")), //
+                () -> assertThat(plugins.get("some-other-plugin").hasVersion(), equalTo(true)), //
                 () -> assertThat(plugins.get("some-other-plugin").getVersion(), equalTo("5.0.4")) //
         );
     }
@@ -112,5 +115,30 @@ class MavenPomParserTest {
                 () -> assertThat(mavenPom.hasArtifactId(), equalTo(false)),
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
                 () -> assertThat(mavenPom.hasProperties(), equalTo(false)));
+    }
+
+    @Test
+    void testParseMavenPomWithMissingPluginVersion() throws IOException {
+        final String pom = "<project>" //
+                + "    <artifactId>my-test-project</artifactId>" //
+                + "    <version>1.2.3</version>" //
+                + "    <build>" //
+                + "        <plugins>" //
+                + "            <plugin>" //
+                + "                <artifactId>some-plugin</artifactId>" //
+                + "            </plugin>" //
+                + "        </plugins>" //
+                + "    </build>" //
+                + "</project>";
+        final MavenPom mavenPom = getMavenPom(pom);
+        final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
+        assertAll(() -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")), //
+                () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")), //
+                () -> assertThat(mavenPom.hasProperties(), equalTo(false)), //
+                () -> assertThat(mavenPom.hasPlugins(), equalTo(true)), //
+                () -> assertThat(plugins.size(), equalTo(1)), //
+                () -> assertThat(plugins.containsKey("some-plugin"), equalTo(true)), //
+                () -> assertThat(plugins.get("some-plugin").hasVersion(), equalTo(false)) //
+        );
     }
 }
