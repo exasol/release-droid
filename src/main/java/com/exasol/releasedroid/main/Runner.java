@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
+import com.exasol.releasedroid.adapter.RepositoryFactory;
+import com.exasol.releasedroid.adapter.github.*;
+import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
-import com.exasol.releasedroid.github.*;
-import com.exasol.releasedroid.maven.MavenReleaseMaker;
-import com.exasol.releasedroid.repository.RepositoryFactory;
-import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.release.*;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
+import com.exasol.releasedroid.usecases.request.*;
 import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
@@ -31,7 +33,7 @@ public class Runner {
     }
 
     private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
-        final GithubGateway githubGateway = new GithubAPIAdapter(getGithubUser());
+        final GitHubGateway githubGateway = new GitHubAPIAdapter(getGithubUser());
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryGateway);
         if (userInput.hasLocalPath()) {
@@ -48,7 +50,7 @@ public class Runner {
     }
 
     private static ReleaseDroid createReleaseDroidForGitHub(final ValidateUseCase validateUseCase,
-            final RepositoryGateway repositoryGateway, final GithubGateway githubGateway) {
+            final RepositoryGateway repositoryGateway, final GitHubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, repositoryGateway,
@@ -60,7 +62,7 @@ public class Runner {
         return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
     }
 
-    private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GithubGateway githubGateway) {
+    private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GitHubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
         releaseMakers.put(PlatformName.GITHUB, new GitHubReleaseMaker(githubGateway));
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));

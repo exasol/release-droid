@@ -15,7 +15,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.repository.*;
+import com.exasol.releasedroid.adapter.java.JavaRepository;
+import com.exasol.releasedroid.adapter.java.JavaRepositoryValidator;
+import com.exasol.releasedroid.adapter.maven.MavenPlugin;
+import com.exasol.releasedroid.adapter.maven.MavenPom;
 import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith(MockitoExtension.class)

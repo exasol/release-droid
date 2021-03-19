@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
  * This class writes reports from {@link Report} to a file.

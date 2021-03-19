@@ -2,8 +2,9 @@ package com.exasol.releasedroid.usecases.release;
 
 import java.util.List;
 
-import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
  * Interface for the Release use case.
@@ -14,6 +15,7 @@ public interface ReleaseUseCase {
      *
      * @param userInput user input
      * @return list of reports
+     * @throws ReleaseException
      */
-    public List<Report> release(final UserInput userInput);
+    public List<Report> release(final UserInput userInput) throws ReleaseException;
 }

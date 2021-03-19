@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.usecases.Goal;
-import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.request.Goal;
+import com.exasol.releasedroid.usecases.request.UserInput;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**

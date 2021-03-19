@@ -5,11 +5,14 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releasedroid.github.GitHubException;
-import com.exasol.releasedroid.usecases.*;
+import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
+import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.request.UserInput;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -25,7 +28,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
-     * 
+     *
      * @param validateUseCase   validate use case for validating the platforms
      * @param releaseMakers     map with platform names and release makers
      * @param repositoryGateway instance of {@link RepositoryGateway}
@@ -43,6 +46,14 @@ public class ReleaseInteractor implements ReleaseUseCase {
     // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rr-runs-release-goal~1]
     public List<Report> release(final UserInput userInput) {
+        try {
+            return this.attemptToRelease(userInput);
+        } catch (final Exception exception) {
+            throw new ReleaseException(exception);
+        }
+    }
+
+    private List<Report> attemptToRelease(final UserInput userInput) {
         final List<Report> reports = new ArrayList<>();
         final Report validationReport = this.validateUseCase.validate(userInput);
         reports.add(validationReport);
@@ -83,21 +94,13 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return report;
     }
 
-    private void prepareRepositoryForRelease(final Repository repository) {
-        try {
-            this.releaseManager.prepareForRelease(repository);
-        } catch (final GitHubException exception) {
-            throw new IllegalStateException(exception);
-        }
+    private void prepareRepositoryForRelease(final Repository repository) throws ReleaseException {
+        this.releaseManager.prepareForRelease(repository);
     }
 
-    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) {
+    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) throws ReleaseException {
         if (!report.hasFailures()) {
-            try {
-                this.releaseManager.cleanUpAfterRelease(repository);
-            } catch (final GitHubException exception) {
-                throw new IllegalStateException(exception);
-            }
+            this.releaseManager.cleanUpAfterRelease(repository);
         }
     }
 

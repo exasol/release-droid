@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
-import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
+import static com.exasol.releasedroid.usecases.request.PlatformName.GITHUB;
+import static com.exasol.releasedroid.usecases.request.PlatformName.MAVEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,9 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.*;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 class ReportWriterTest {
     @TempDir

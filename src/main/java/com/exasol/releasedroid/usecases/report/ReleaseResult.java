@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.usecases.report;
 
-import com.exasol.releasedroid.usecases.PlatformName;
+import com.exasol.releasedroid.usecases.request.PlatformName;
 
 /**
  * Represents a result of a single release.

@@ -3,7 +3,7 @@ package com.exasol.releasedroid.main;
 import org.apache.commons.cli.*;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.UserInput;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
  * Parser for user input.

@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.usecases.report;
 
-import static com.exasol.releasedroid.usecases.PlatformName.GITHUB;
-import static com.exasol.releasedroid.usecases.PlatformName.MAVEN;
+import static com.exasol.releasedroid.usecases.request.PlatformName.GITHUB;
+import static com.exasol.releasedroid.usecases.request.PlatformName.MAVEN;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
