@@ -70,7 +70,14 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         final Report report = Report.validationReport();
         final MavenPluginValidator mavenPluginValidator = new MavenPluginValidator(mavenPom.getPlugins());
         report.merge(mavenPluginValidator.validatePluginExists(PROJECT_KEEPER_PLUGIN_NAME));
-        if (mavenPom.getArtifactId().equals(PROJECT_KEEPER_PLUGIN_NAME)) {
+        report.merge(validateProjectKeeperVersion(mavenPom, mavenPluginValidator));
+        return report;
+    }
+
+    private Report validateProjectKeeperVersion(final MavenPom mavenPom,
+            final MavenPluginValidator mavenPluginValidator) {
+        final Report report = Report.validationReport();
+        if (mavenPom.hasArtifactId() && mavenPom.getArtifactId().equals(PROJECT_KEEPER_PLUGIN_NAME)) {
             report.addResult(ValidationResult.successfulValidation("Skipping version check for the "
                     + PROJECT_KEEPER_PLUGIN_NAME + " in the plugin repository itself."));
         } else {
