@@ -5,9 +5,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.*;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
+import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
  * Implements the Validate use case.

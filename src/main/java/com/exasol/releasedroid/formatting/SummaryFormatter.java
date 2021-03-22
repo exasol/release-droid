@@ -7,9 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.exasol.releasedroid.usecases.UserInput;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.request.UserInput;
 
 public class SummaryFormatter {
     private final ReportFormatter reportFormatter;
