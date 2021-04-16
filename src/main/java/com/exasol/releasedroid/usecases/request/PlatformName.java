@@ -9,7 +9,7 @@ import com.exasol.errorreporting.ExaError;
  * This class contains supported release platforms.
  */
 public enum PlatformName {
-    GITHUB, MAVEN;
+    GITHUB, MAVEN, COMMUNITY;
 
     /**
      * Create a list of {@link PlatformName}s from Strings.
@@ -30,7 +30,7 @@ public enum PlatformName {
      * Sort the platforms in pre-defined priority order. 1. MAVEN 2. GITHUB
      */
     private static void sortPlatforms(final List<PlatformName> platformsList) {
-        platformsList.sort(Comparator.comparingInt(List.of(MAVEN, GITHUB)::indexOf));
+        platformsList.sort(Comparator.comparingInt(List.of(MAVEN, GITHUB, COMMUNITY)::indexOf));
     }
 
     private static PlatformName getPlatformName(final String platform) {

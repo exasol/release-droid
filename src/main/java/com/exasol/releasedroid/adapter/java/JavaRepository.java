@@ -1,12 +1,21 @@
 package com.exasol.releasedroid.adapter.java;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.github.*;
-import com.exasol.releasedroid.adapter.maven.*;
+import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
+import com.exasol.releasedroid.adapter.github.GitHubGateway;
+import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.adapter.github.GitHubRepositoryValidator;
+import com.exasol.releasedroid.adapter.maven.MavenPlatformValidator;
+import com.exasol.releasedroid.adapter.maven.MavenPom;
+import com.exasol.releasedroid.adapter.maven.MavenPomParser;
+import com.exasol.releasedroid.adapter.maven.MavenRepository;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
@@ -25,8 +34,9 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
     public JavaRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
         this.releaseablePlatforms = Map.of( //
-                PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), PlatformName.MAVEN,
-                new MavenPlatformValidator(this));
+                PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), //
+                PlatformName.MAVEN, new MavenPlatformValidator(this), //
+                PlatformName.COMMUNITY, new CommunityPlatformValidator(this));
         this.platformValidators = List.of(new GitHubRepositoryValidator(this), new JavaRepositoryValidator(this));
     }
 

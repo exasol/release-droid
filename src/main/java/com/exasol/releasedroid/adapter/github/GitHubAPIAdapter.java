@@ -1,8 +1,15 @@
 package com.exasol.releasedroid.adapter.github;
 
-import java.io.*;
-import java.net.*;
-import java.net.http.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -27,21 +34,21 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private static final String GITHUB_RELEASE_WORKFLOW = "release_droid_upload_github_release_assets.yml";
     private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "release_droid_print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories;
-    private final GitHubUser gitHubUser;
+    private final User gitHubUser;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
      *
-     * @param gitHubUser instance of {@link GitHubUser}
+     * @param gitHubUser instance of {@link User}
      */
-    public GitHubAPIAdapter(final GitHubUser gitHubUser) {
+    public GitHubAPIAdapter(final User gitHubUser) {
         this.gitHubUser = gitHubUser;
         this.repositories = new HashMap<>();
     }
 
-    private GHRepository createGHRepository(final String repositoryName, final GitHubUser user) throws GitHubException {
+    private GHRepository createGHRepository(final String repositoryName, final User user) throws GitHubException {
         try {
-            final GitHub gitHub = GitHub.connect(user.getUsername(), user.getToken());
+            final GitHub gitHub = GitHub.connect(user.getUsername(), user.getPassword());
             return gitHub.getRepository(repositoryName);
         } catch (final IOException exception) {
             throw wrapGitHubException(repositoryName, exception);
@@ -158,7 +165,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private HttpRequest.Builder getGitHubHttpRequestBuilder() {
         return HttpRequest.newBuilder() //
                 .header("Accept", "application/vnd.github.v3+json") //
-                .header("Authorization", "token " + this.gitHubUser.getToken()) //
+                .header("Authorization", "token " + this.gitHubUser.getPassword()) //
                 .header("Content-Type", "application/json");
     }
 
@@ -181,7 +188,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
         if ((response.statusCode() < HttpURLConnection.HTTP_OK) || (response.statusCode() > 302)) {
             throw new GitHubException(ExaError.messageBuilder("F-RR-GH-6")
                     .message("An HTTP request to GitHub returned a bad response. Cause: {{cause}}")
-                    .unquotedParameter("cause", response.statusCode() + " " + response.body()).toString());
+                    .parameter("cause", response.statusCode() + " " + response.body()).toString());
         }
     }
 

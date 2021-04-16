@@ -7,11 +7,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class GitHubUserTest {
-    private static GitHubUser user;
+    private static User user;
 
     @BeforeAll
     static void setUp() {
-        user = new GitHubUser("user", "token");
+        user = new User("user", "token");
     }
 
     @Test
@@ -21,6 +21,6 @@ class GitHubUserTest {
 
     @Test
     void testGetToken() {
-        assertThat(user.getToken(), equalTo("token"));
+        assertThat(user.getPassword(), equalTo("token"));
     }
 }

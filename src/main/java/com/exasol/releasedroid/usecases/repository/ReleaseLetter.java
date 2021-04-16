@@ -1,7 +1,10 @@
 package com.exasol.releasedroid.usecases.repository;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This class represents a changes file's content.
@@ -85,6 +88,22 @@ public class ReleaseLetter {
      */
     public List<Integer> getTicketNumbers() {
         return this.ticketNumbers;
+    }
+
+    /**
+     * Get summary section.
+     * 
+     * @return summary section if exists
+     */
+    public Optional<String> getSummary() {
+        final int start = this.body.indexOf("## Summary");
+        final int end = this.body.indexOf("#", start + 2);
+        if (start == -1) {
+            return Optional.empty();
+        } else {
+            final String summary = end == -1 ? this.body.substring(start + 10) : this.body.substring(start + 10, end);
+            return Optional.of(summary.strip());
+        }
     }
 
     @Override
