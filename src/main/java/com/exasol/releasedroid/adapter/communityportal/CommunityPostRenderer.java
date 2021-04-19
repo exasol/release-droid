@@ -15,7 +15,7 @@ public class CommunityPostRenderer {
      */
     public String renderCommunityPostBody(final String projectNameAndVersion, final String projectDescription,
             final String changesDescription, final String gitHubReleaseLink) {
-        final StringBuilder builder = new StringBuilder();
+        final var builder = new StringBuilder();
         builder.append("<h2>About the project</h2>") //
                 .append(formatParagraph(projectDescription)) //
                 .append("<h2>New release</h2>") //
@@ -29,10 +29,10 @@ public class CommunityPostRenderer {
     }
 
     private String formatParagraph(final String projectDescription) {
-        final StringBuilder builder = new StringBuilder();
+        final var builder = new StringBuilder();
         builder.append("<p>");
         final char[] chars = projectDescription.toCharArray();
-        for (int i = 0; i < chars.length; ++i) {
+        for (var i = 0; i < chars.length; ++i) {
             final char ch = chars[i];
             if (ch == '[') {
                 i = renderLink(builder, chars, i);
@@ -51,14 +51,14 @@ public class CommunityPostRenderer {
     }
 
     private int renderLink(final StringBuilder builder, final char[] chars, int i) {
-        final StringBuilder text = new StringBuilder();
+        final var text = new StringBuilder();
         ++i;
         while (i < chars.length && chars[i] != ']') {
             text.append(chars[i]);
             ++i;
         }
         i += 2;
-        final StringBuilder link = new StringBuilder();
+        final var link = new StringBuilder();
         while (i < chars.length && chars[i] != ')') {
             link.append(chars[i]);
             ++i;

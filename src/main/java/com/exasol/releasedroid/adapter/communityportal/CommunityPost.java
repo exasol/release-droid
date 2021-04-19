@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,10 +10,11 @@ import org.json.JSONObject;
  * This class represents a post on the Exasol Community portal.
  */
 public class CommunityPost {
-    private final static List<String> TEASERS = List.of("See what's new here.", "Learn more here.",
+    private static final List<String> TEASERS = List.of("See what's new here.", "Learn more here.",
             "Find out what's new here.", "Find out how it can help you.",
             "Find out what's changed and where you can learn more.", "Read more here.", "Find out more here.",
             "Find out what this means, here.");
+    private final SecureRandom random = new SecureRandom();
     private final String header;
     private final String body;
     private final String boardId;
@@ -71,9 +72,7 @@ public class CommunityPost {
      */
     public String getTeaser() {
         if (this.teaser == null || this.teaser.isEmpty()) {
-            final Random random = new Random();
-            final int index = random.nextInt(TEASERS.size());
-            return TEASERS.get(index);
+            return TEASERS.get(this.random.nextInt(TEASERS.size()));
         } else {
             return this.teaser;
         }
@@ -85,27 +84,27 @@ public class CommunityPost {
      * @return community post as a JSON string
      */
     public String toJson() {
-        final JSONObject board = new JSONObject();
+        final var board = new JSONObject();
         board.put("id", getBoardId());
-        final JSONObject contentWorkflowAction = new JSONObject();
+        final var contentWorkflowAction = new JSONObject();
         contentWorkflowAction.put("workflow_action", "save_draft");
-        final JSONObject tags = new JSONObject();
+        final var jsonTags = new JSONObject();
         final JSONArray tagItems = new JSONArray();
         for (final String tag : getTags()) {
             tagItems.put(new JSONObject().put("text", tag));
         }
-        tags.put("items", tagItems);
-        final JSONObject data = new JSONObject();
+        jsonTags.put("items", tagItems);
+        final var data = new JSONObject();
         data.put("type", "message");
         data.put("board", board);
         data.put("subject", getHeader());
         data.put("body", getBody());
         data.put("teaser", getTeaser());
-        data.put("tags", tags);
+        data.put("tags", jsonTags);
         data.put("content_workflow_action", contentWorkflowAction);
-        final JSONObject body = new JSONObject();
-        body.put("data", data);
-        return body.toString();
+        final var jsonBody = new JSONObject();
+        jsonBody.put("data", data);
+        return jsonBody.toString();
     }
 
     /**

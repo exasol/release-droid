@@ -48,7 +48,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private GHRepository createGHRepository(final String repositoryName, final User user) throws GitHubException {
         try {
-            final GitHub gitHub = GitHub.connect(user.getUsername(), user.getPassword());
+            final var gitHub = GitHub.connect(user.getUsername(), user.getPassword());
             return gitHub.getRepository(repositoryName);
         } catch (final IOException exception) {
             throw wrapGitHubException(repositoryName, exception);

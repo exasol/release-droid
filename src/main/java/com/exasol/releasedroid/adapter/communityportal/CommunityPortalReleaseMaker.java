@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
@@ -27,7 +26,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     public void makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Creating a draft of the release announcement on the Exasol Community Portal.");
         try {
-            final CommunityPost communityPost = getCommunityPost(repository);
+            final var communityPost = getCommunityPost(repository);
             this.communityPortalGateway.createDraftPost(communityPost);
         } catch (final CommunityPortalException exception) {
             throw new ReleaseException(exception);
@@ -36,9 +35,9 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
 
     protected CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
-        final String communityPortalTemplate = repository
+        final var communityPortalTemplate = repository
                 .getSingleFileContentAsString("community_portal_post_template.json");
-        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
+        final var releaseLetter = repository.getReleaseLetter(version);
         final String header = getProjectName(communityPortalTemplate) + " " + version;
         final List<String> tags = getTags(communityPortalTemplate);
         final String gitHubReleaseLink = "https://github.com/" + repository.getName() + "/releases/tag/" + version;
@@ -56,7 +55,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     private List<String> getTags(final String communityPortalTemplate) {
-        final JSONArray tagsArray = new JSONObject(communityPortalTemplate).getJSONArray("tags");
+        final var tagsArray = new JSONObject(communityPortalTemplate).getJSONArray("tags");
         final List<String> tags = new ArrayList<>();
         for (int i = 0; i < tagsArray.length(); ++i) {
             tags.add(tagsArray.getString(i));
@@ -66,9 +65,9 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
 
     private String renderBody(final String communityPortalTemplate, final ReleaseLetter releaseLetter,
             final String header, final String gitHubReleaseLink) {
-        final String projectDescription = new JSONObject(communityPortalTemplate).getString("project description");
+        final var projectDescription = new JSONObject(communityPortalTemplate).getString("project description");
         final String changesDescription = releaseLetter.getSummary().orElseThrow();
-        final CommunityPostRenderer communityPostRenderer = new CommunityPostRenderer();
+        final var communityPostRenderer = new CommunityPostRenderer();
         return communityPostRenderer.renderCommunityPostBody(header, projectDescription, changesDescription,
                 gitHubReleaseLink);
     }

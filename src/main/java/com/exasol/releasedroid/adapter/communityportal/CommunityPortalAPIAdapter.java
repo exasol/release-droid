@@ -36,7 +36,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
 
     private String getAuthenticationToken() throws CommunityPortalException {
         final HttpResponse<String> response = getAuthorizationResponse();
-        final CommunityPortalAuthorizationResponse portalAuthorizationResponse = CommunityPortalAuthorizationResponse
+        final var portalAuthorizationResponse = CommunityPortalAuthorizationResponse
                 .createCommunityPortalAuthorizationResponse(response.body());
         return getAuthenticationToken(portalAuthorizationResponse);
     }
@@ -72,6 +72,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
             validateResponse(response);
             return response;
         } catch (final IOException | InterruptedException exception) {
+            Thread.currentThread().interrupt();
             throw new CommunityPortalException(exception);
         }
     }
