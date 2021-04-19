@@ -57,7 +57,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     private List<String> getTags(final String communityPortalTemplate) {
         final var tagsArray = new JSONObject(communityPortalTemplate).getJSONArray("tags");
         final List<String> tags = new ArrayList<>();
-        for (int i = 0; i < tagsArray.length(); ++i) {
+        for (var i = 0; i < tagsArray.length(); ++i) {
             tags.add(tagsArray.getString(i));
         }
         return tags;

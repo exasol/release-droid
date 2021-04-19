@@ -90,7 +90,7 @@ public class CommunityPost {
         contentWorkflowAction.put("workflow_action", "save_draft");
         final var jsonTags = new JSONObject();
         final JSONArray tagItems = new JSONArray();
-        for (final String tag : getTags()) {
+        for (final var tag : getTags()) {
             tagItems.put(new JSONObject().put("text", tag));
         }
         jsonTags.put("items", tagItems);
