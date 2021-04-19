@@ -3,6 +3,9 @@ package com.exasol.releasedroid.adapter.communityportal;
 import java.util.List;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * This class represents a post on the Exasol Community portal.
  */
@@ -14,6 +17,7 @@ public class CommunityPost {
     private final String header;
     private final String body;
     private final String boardId;
+    private final String teaser;
     private final List<String> tags;
 
     private CommunityPost(final Builder builder) {
@@ -21,6 +25,7 @@ public class CommunityPost {
         this.body = builder.body;
         this.boardId = builder.boardId;
         this.tags = builder.tags;
+        this.teaser = builder.teaser;
     }
 
     /**
@@ -60,14 +65,47 @@ public class CommunityPost {
     }
 
     /**
-     * Get a random teaser for an article.
+     * Get a teaser for an article. If the teaser was not set, it returns a random teaser.
      * 
-     * @return random teaser
+     * @return teaser
      */
     public String getTeaser() {
-        final Random random = new Random();
-        final int index = random.nextInt(TEASERS.size());
-        return TEASERS.get(index);
+        if (this.teaser == null || this.teaser.isEmpty()) {
+            final Random random = new Random();
+            final int index = random.nextInt(TEASERS.size());
+            return TEASERS.get(index);
+        } else {
+            return this.teaser;
+        }
+    }
+
+    /**
+     * Transform the community post to the JSON format.
+     * 
+     * @return community post as a JSON string
+     */
+    public String toJson() {
+        final JSONObject board = new JSONObject();
+        board.put("id", getBoardId());
+        final JSONObject contentWorkflowAction = new JSONObject();
+        contentWorkflowAction.put("workflow_action", "save_draft");
+        final JSONObject tags = new JSONObject();
+        final JSONArray tagItems = new JSONArray();
+        for (final String tag : getTags()) {
+            tagItems.put(new JSONObject().put("text", tag));
+        }
+        tags.put("items", tagItems);
+        final JSONObject data = new JSONObject();
+        data.put("type", "message");
+        data.put("board", board);
+        data.put("subject", getHeader());
+        data.put("body", getBody());
+        data.put("teaser", getTeaser());
+        data.put("tags", tags);
+        data.put("content_workflow_action", contentWorkflowAction);
+        final JSONObject body = new JSONObject();
+        body.put("data", data);
+        return body.toString();
     }
 
     /**
@@ -86,6 +124,7 @@ public class CommunityPost {
         private String header;
         private String body;
         private String boardId;
+        private String teaser;
         private List<String> tags;
 
         public Builder header(final String header) {
@@ -100,6 +139,11 @@ public class CommunityPost {
 
         public Builder boardId(final String boardId) {
             this.boardId = boardId;
+            return this;
+        }
+
+        public Builder teaser(final String teaser) {
+            this.teaser = teaser;
             return this;
         }
 
