@@ -1,5 +1,8 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * Renders a Community Post Body.
  */
@@ -31,59 +34,62 @@ public class CommunityPostRenderer {
     private String formatParagraph(final String projectDescription) {
         final var builder = new StringBuilder();
         builder.append("<p>");
-        final char[] chars = projectDescription.toCharArray();
-        for (var i = 0; i < chars.length; ++i) {
-            final char ch = chars[i];
-            if (ch == '[') {
-                i = renderLink(builder, chars, i);
-            } else if (ch == '\'' && (i == 0 || chars[i - 1] == ' ')) {
-                i = renderCodeReference(builder, chars, i);
-            } else if (ch == '\n') {
-                if (i == 0 || chars[i - 1] != '\n') {
+        final Queue<Character> chars = createQueue(projectDescription);
+        Character previous = null;
+        while (!chars.isEmpty()) {
+            final char cur = chars.poll();
+            if (cur == '[') {
+                builder.append(renderLink(chars));
+            } else if (cur == '\'' && (previous == null || previous == ' ')) {
+                builder.append(renderCodeReference(chars));
+            } else if (cur == '\n') {
+                if (previous == null || previous != '\n') {
                     builder.append("</p><p>");
                 }
             } else {
-                builder.append(ch);
+                builder.append(cur);
             }
+            previous = cur;
         }
         builder.append("</p>");
         return builder.toString();
     }
 
-    private int renderLink(final StringBuilder builder, final char[] chars, int i) {
-        final var text = new StringBuilder();
-        ++i;
-        while (i < chars.length && chars[i] != ']') {
-            text.append(chars[i]);
-            ++i;
+    private Queue<Character> createQueue(final String projectDescription) {
+        final Queue<Character> queue = new LinkedList<>();
+        for (final char c : projectDescription.toCharArray()) {
+            queue.add(c);
         }
-        i += 2;
-        final var link = new StringBuilder();
-        while (i < chars.length && chars[i] != ')') {
-            link.append(chars[i]);
-            ++i;
-        }
-        builder.append("<a href=\"") //
-                .append(link) //
-                .append("\" target=\"_blank\" rel=\"noopener\">") //
-                .append(text) //
-                .append("</a>");
-        return i;
+        return queue;
     }
 
-    private int renderCodeReference(final StringBuilder builder, final char[] chars, int i) {
+    private String renderLink(final Queue<Character> chars) {
+        final var text = new StringBuilder();
+        while (!chars.isEmpty() && chars.peek() != ']') {
+            text.append(chars.poll());
+        }
+        chars.remove(); // remove `]`
+        chars.remove(); // remove '('
+        final var link = new StringBuilder();
+        while (!chars.isEmpty() && chars.peek() != ')') {
+            link.append(chars.poll());
+        }
+        chars.remove(); // remove `)`
+        return "<a href=\"" + link + "\" target=\"_blank\" rel=\"noopener\">" + text + "</a>";
+    }
+
+    private String renderCodeReference(final Queue<Character> chars) {
+        final var builder = new StringBuilder();
         builder.append("<code>");
-        ++i;
-        while (i < chars.length) {
-            final char ch = chars[i];
-            ++i;
-            if (ch == '\'' && (i == chars.length || chars[i] == ' ')) {
+        while (!chars.isEmpty()) {
+            final char ch = chars.poll();
+            if (ch == '\'' && (chars.isEmpty() || chars.peek() == ' ')) {
                 break;
             } else {
                 builder.append(ch);
             }
         }
-        builder.append("</code> ");
-        return i;
+        builder.append("</code>");
+        return builder.toString();
     }
 }
