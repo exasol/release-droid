@@ -12,9 +12,10 @@ class GitHubReleaseTest {
     @Test
     void testValidGitHubRelease() {
         final GitHubRelease release = GitHubRelease.builder().repositoryName("repo").version("1.0.0").header("header")
-                .releaseLetter("release letter").defaultBranchName("main").build();
+                .releaseLetter("release letter").build();
         assertAll(() -> assertThat(release.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(release.getHeader(), equalTo("header")),
+                () -> assertThat(release.getRepositoryName(), equalTo("repo")),
                 () -> assertThat(release.getReleaseLetter(), equalTo("release letter")));
     }
 

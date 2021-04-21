@@ -23,7 +23,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
     @Override
     public void prepareForRelease(final Repository repository) {
         try {
-            final List<String> artifactIds = getArtifactIds(repository.getName());
+            final List<Long> artifactIds = getArtifactIds(repository.getName());
             if (artifactIds.isEmpty()) {
                 createOriginalChecksum(repository);
             } else if (artifactIds.size() == 1) {
@@ -42,7 +42,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         prepareChecksumArtifact(repository);
     }
 
-    private void validateOriginalChecksumAgainstQuickChecksum(final Repository repository, final String artifactId)
+    private void validateOriginalChecksumAgainstQuickChecksum(final Repository repository, final long artifactId)
             throws GitHubException {
         LOGGER.info("Found an artifact on '" + repository.getName() + "' repository.");
         if (!validateChecksum(artifactId, repository.getName())) {
@@ -62,7 +62,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
     }
 
     // [impl->dsn~compare-checksum~1]
-    private boolean validateChecksum(final String artifactId, final String repositoryName) throws GitHubException {
+    private boolean validateChecksum(final long artifactId, final String repositoryName) throws GitHubException {
         final Map<String, String> originalChecksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
                 artifactId);
         final Map<String, String> quickChecksum = this.githubGateway.createQuickCheckSum(repositoryName);
@@ -105,7 +105,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         }
     }
 
-    private List<String> getArtifactIds(final String repositoryName) throws GitHubException {
+    private List<Long> getArtifactIds(final String repositoryName) throws GitHubException {
         return this.githubGateway.getRepositoryArtifactsIds(repositoryName);
     }
 

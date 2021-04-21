@@ -10,14 +10,12 @@ public class GitHubRelease {
     private final String version;
     private final String header;
     private final String releaseLetter;
-    private final String defaultBranchName;
 
     private GitHubRelease(final Builder builder) {
         this.repositoryName = builder.repositoryName;
         this.version = builder.version;
         this.header = builder.header;
         this.releaseLetter = builder.releaseLetter;
-        this.defaultBranchName = builder.defaultBranchName;
     }
 
     /**
@@ -57,15 +55,6 @@ public class GitHubRelease {
     }
 
     /**
-     * Get default branch name.
-     *
-     * @return default branch name
-     */
-    public String getDefaultBranchName() {
-        return this.defaultBranchName;
-    }
-
-    /**
      * Get repository name.
      *
      * @return repository name
@@ -82,7 +71,6 @@ public class GitHubRelease {
         private String version;
         private String header;
         private String releaseLetter = "";
-        private String defaultBranchName;
 
         /**
          * Set a repository name.
@@ -129,17 +117,6 @@ public class GitHubRelease {
         }
 
         /**
-         * Set a default branch name.
-         *
-         * @param defaultBranchName default branch name
-         * @return builder instance for fluent programming
-         */
-        public Builder defaultBranchName(final String defaultBranchName) {
-            this.defaultBranchName = defaultBranchName;
-            return this;
-        }
-
-        /**
          * Create a new instance if {@link GitHubRelease}.
          *
          * @return instance of {@link GitHubRelease}
@@ -158,9 +135,6 @@ public class GitHubRelease {
             }
             if ((this.header == null) || this.header.isEmpty()) {
                 throw createExceptionWithInvalidField("header");
-            }
-            if ((this.defaultBranchName == null) || this.defaultBranchName.isEmpty()) {
-                throw createExceptionWithInvalidField("defaultBranchName");
             }
         }
 
