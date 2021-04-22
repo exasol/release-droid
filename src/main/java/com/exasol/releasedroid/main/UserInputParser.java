@@ -65,7 +65,7 @@ public class UserInputParser {
             return parser.parse(options, args);
         } catch (final ParseException exception) {
             printHelp(options);
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-RUN-1").message("{{cause}}")
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-9").message("{{cause}}")
                     .unquotedParameter("cause", exception.getMessage()).toString());
         }
     }

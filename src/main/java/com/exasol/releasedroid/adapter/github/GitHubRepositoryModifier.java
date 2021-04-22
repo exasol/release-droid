@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryModifier;
 
 /**
  * Writes changes to a GitHub repository.
@@ -44,9 +46,9 @@ public class GitHubRepositoryModifier implements RepositoryModifier {
         } else {
             if (changes.contains("released") && changes.contains(LINE_SEPARATOR)) {
                 final String substring = getSubstringToReplace(changes);
-                return changes.replace(substring, "released " + LocalDate.now().toString() + LINE_SEPARATOR);
+                return changes.replace(substring, "released " + LocalDate.now() + LINE_SEPARATOR);
             } else {
-                throw new RepositoryException(ExaError.messageBuilder("E-REP-GH-1")
+                throw new RepositoryException(ExaError.messageBuilder("E-RR-GH-6")
                         .message("Unable to detect a release date stab in the changes file.")
                         .mitigation("Please, update the release date manually").toString());
             }

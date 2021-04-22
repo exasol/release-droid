@@ -15,8 +15,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.adapter.java.JavaRepository;
-import com.exasol.releasedroid.adapter.java.JavaRepositoryValidator;
 import com.exasol.releasedroid.adapter.maven.MavenPlugin;
 import com.exasol.releasedroid.adapter.maven.MavenPom;
 import com.exasol.releasedroid.usecases.report.Report;
@@ -48,7 +46,7 @@ class JavaRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-11")), //
+                () -> assertThat(report.toString(), containsString("E-RR-VAL-7")), //
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-12")), //
                 () -> assertThat(report.toString(), containsString("project-keeper-maven-plugin")),
                 () -> assertThat(report.toString(), containsString("E-RR-VAL-13")));

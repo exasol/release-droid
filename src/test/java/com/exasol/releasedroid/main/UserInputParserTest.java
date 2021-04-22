@@ -74,7 +74,7 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing argument for option: n"));
+        assertThat(exception.getMessage(), containsString("E-RR-9: Missing argument for option: n"));
     }
 
     @Test
@@ -92,7 +92,7 @@ class UserInputParserTest {
                 "-branch", "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing argument for option: g"));
+        assertThat(exception.getMessage(), containsString("E-RR-9: Missing argument for option: g"));
     }
 
     @Test
@@ -110,7 +110,7 @@ class UserInputParserTest {
                 "-branch", "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RR-RUN-1: Missing argument for option: p"));
+        assertThat(exception.getMessage(), containsString("E-RR-9: Missing argument for option: p"));
     }
 
     @Test

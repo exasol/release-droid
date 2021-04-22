@@ -1,6 +1,8 @@
 package com.exasol.releasedroid.main;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,7 +42,7 @@ public class SummaryWriter {
             writer.write(this.responseFormatter.formatResponse(userInput, reports));
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-RW-2").message("Unable to write a report.").toString(), exception);
+                    ExaError.messageBuilder("E-RR-10").message("Unable to write a report.").toString(), exception);
         }
         LOGGER.info(() -> "A full report is available: " + reportPath.toString());
     }
@@ -52,7 +54,7 @@ public class SummaryWriter {
             logFilePreparation(createdNewFile);
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-RW-1").message("Unable to prepare a file for a report.").toString(),
+                    ExaError.messageBuilder("E-RR-5").message("Unable to prepare a file for a report.").toString(),
                     exception);
         }
         return reportFile;

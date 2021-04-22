@@ -139,7 +139,7 @@ public class GitHubRelease {
         }
 
         private IllegalArgumentException createExceptionWithInvalidField(final String fieldName) {
-            return new IllegalArgumentException(ExaError.messageBuilder("E-GH-REL-1")
+            return new IllegalArgumentException(ExaError.messageBuilder("E-RR-GH-9")
                     .message("Cannot create a GitHubRelease class, because {{fieldName}} field is null or empty.")
                     .parameter("fieldName", fieldName).toString());
         }
