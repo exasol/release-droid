@@ -10,12 +10,12 @@ class ReleaseLetterTest {
     @Test
     void testGetSummary() {
         final String body = "## Summary\n\n" //
-                + "We have added a few new features.\n\n" //
+                + "We have added a few #new #features.\n\n" //
                 + "## Features\n\n" //
                 + "* #1: feature 1\n" //
                 + "* #2: feature 2";
         final ReleaseLetter releaseLetter = ReleaseLetter.builder("file").body(body).build();
-        assertThat(releaseLetter.getSummary().orElseThrow(), equalTo("We have added a few new features."));
+        assertThat(releaseLetter.getSummary().orElseThrow(), equalTo("We have added a few #new #features."));
     }
 
     @Test

@@ -9,5 +9,5 @@ public interface CommunityPortalGateway {
      * 
      * @param communityPost instance of {@link CommunityPost}
      */
-    void createDraftPost(CommunityPost communityPost) throws CommunityPortalException;
+    void sendDraftPost(CommunityPost communityPost) throws CommunityPortalException;
 }

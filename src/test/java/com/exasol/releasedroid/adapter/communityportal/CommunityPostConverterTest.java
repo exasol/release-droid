@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-class CommunityPostTest {
+class CommunityPostConverterTest {
     @Test
     void testToJson() {
         final CommunityPost communityPost = CommunityPost.builder() //
@@ -17,7 +17,7 @@ class CommunityPostTest {
                 .header("New tech article!") //
                 .body("Here is my article!") //
                 .build();
-        assertThat(communityPost.toJson(), equalTo("{\"data\":" //
+        assertThat(CommunityPostConverter.toJson(communityPost), equalTo("{\"data\":" //
                 + "{\"subject\":\"New tech article!\"," //
                 + "\"type\":\"message\"," //
                 + "\"body\":\"Here is my article!\"," //

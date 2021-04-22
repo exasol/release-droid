@@ -1,10 +1,7 @@
 package com.exasol.releasedroid.usecases.repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * This class represents a changes file's content.
@@ -97,7 +94,7 @@ public class ReleaseLetter {
      */
     public Optional<String> getSummary() {
         final int start = this.body.indexOf("## Summary");
-        final int end = this.body.indexOf("#", start + 2);
+        final int end = this.body.indexOf("##", start + 2);
         if (start == -1) {
             return Optional.empty();
         } else {

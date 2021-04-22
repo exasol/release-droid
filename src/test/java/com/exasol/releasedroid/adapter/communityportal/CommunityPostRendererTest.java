@@ -14,7 +14,7 @@ class CommunityPostRendererTest {
                 + "data source accessible from an Exasol database through regular SQL commands. The contents of the "
                 + "external ElasticSearch data source are mapped to virtual tables which look like, "
                 + "and can be queried as, any regular Exasol table.";
-        final String changes = "The 'SQL_DIALECT' property used when executing 'CREATE VIRTUAL SCHEMA' from the Exasol "
+        final String changes = "The `SQL_DIALECT` property used when executing `CREATE VIRTUAL SCHEMA` from the Exasol "
                 + "database is obsolete from this version. Please do not provide this property anymore.\n\n"
                 + "This release also adds support for a few scalar functions.";
         final String gitHubReleaseLink = "https://github.com/exasol/elasticsearch-virtual-schema/releases/tag/2.0.0";
@@ -22,10 +22,18 @@ class CommunityPostRendererTest {
         final String body = communityPortalReleaseMaker.renderCommunityPostBody(projectNameAndVersion,
                 communityPortalTemplate, changes, gitHubReleaseLink);
         assertThat(body, equalTo("<h2>About the project</h2>"
-                + "<p>The <a href=\"https://github.com/exasol/elasticsearch-virtual-schema\" target=\"_blank\" rel=\"noopener\">ElasticSearch Virtual Schema</a> provides an abstraction layer that makes an external <a href=\"https://www.elastic.co/\" target=\"_blank\" rel=\"noopener\">ElasticSearch</a> data source accessible from an Exasol database through regular SQL commands. The contents of the external ElasticSearch data source are mapped to virtual tables which look like, and can be queried as, any regular Exasol table.</p>"
+                + "<p>The <a href=\"https://github.com/exasol/elasticsearch-virtual-schema\" "
+                + "target=\"_blank\" rel=\"noopener\">ElasticSearch Virtual Schema</a> provides an abstraction "
+                + "layer that makes an external <a href=\"https://www.elastic.co/\" target=\"_blank\" rel=\"noopener\">"
+                + "ElasticSearch</a> data source accessible from an Exasol database through regular SQL commands. "
+                + "The contents of the external ElasticSearch data source are mapped to virtual tables which look like, "
+                + "and can be queried as, any regular Exasol table.</p>\n" //
                 + "<h2>New release</h2>"
-                + "<p>The <code>SQL_DIALECT</code> property used when executing <code>CREATE VIRTUAL SCHEMA</code> from the Exasol database is obsolete from this version. Please do not provide this property anymore.</p>"
-                + "<p>This release also adds support for a few scalar functions.</p>"
-                + "<p>For more information check out the <a href=\"https://github.com/exasol/elasticsearch-virtual-schema/releases/tag/2.0.0\" target=\"_blank\" rel=\"noopener\">ElasticSearch Virtual Schema 2.0.0</a> release on GitHub.</p>"));
+                + "<p>The <code>SQL_DIALECT</code> property used when executing <code>CREATE VIRTUAL SCHEMA</code> "
+                + "from the Exasol database is obsolete from this version. Please do not provide this property anymore.</p>\n"
+                + "<p>This release also adds support for a few scalar functions.</p>\n"
+                + "<p>For more information check out the "
+                + "<a href=\"https://github.com/exasol/elasticsearch-virtual-schema/releases/tag/2.0.0\" "
+                + "target=\"_blank\" rel=\"noopener\">ElasticSearch Virtual Schema 2.0.0</a> release on GitHub.</p>\n"));
     }
 }
