@@ -8,6 +8,8 @@ Code name:
 
 ## Features
 
+* #111: Added support for Exasol Community Portal release article. 
+
 ## Refactoring
 
 * #138: Organized packages structure

@@ -1,11 +1,17 @@
 package com.exasol.releasedroid.adapter.scala;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.github.*;
+import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
+import com.exasol.releasedroid.adapter.github.GitHubGateway;
+import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.adapter.github.GitHubRepositoryValidator;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.BaseRepository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
@@ -20,7 +26,8 @@ public class ScalaRepository extends BaseRepository {
 
     public ScalaRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
-        this.releaseablePlatforms = Map.of(PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway));
+        this.releaseablePlatforms = Map.of(PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), //
+                PlatformName.COMMUNITY, new CommunityPlatformValidator(this));
         this.platformValidators = List.of(new GitHubRepositoryValidator(this), new ScalaRepositoryValidator(this));
     }
 

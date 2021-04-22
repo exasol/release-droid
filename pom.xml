@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <name>Exasol Release Droid</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,6 +46,11 @@
             <groupId>com.exasol</groupId>
             <artifactId>error-reporting-java</artifactId>
             <version>0.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.17.1</version>
         </dependency>
         <!-- Rewriting transitive dependency to fix CVE-2020-25649.
         This dependency can be removed after it's updated inside of org.kohsuke:github-api-->

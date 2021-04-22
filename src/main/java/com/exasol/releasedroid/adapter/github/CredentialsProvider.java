@@ -1,7 +1,13 @@
 package com.exasol.releasedroid.adapter.github;
 
-import java.io.*;
-import java.util.*;
+import java.io.Console;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -14,6 +20,8 @@ public final class CredentialsProvider {
             + "credentials";
     private static final String GITHUB_USERNAME_KEY = "github_username";
     private static final String GITHUB_TOKEN_KEY = "github_oauth_access_token";
+    private static final String COMMUNITY_USERNAME_KEY = "community_username";
+    private static final String COMMUNITY_PASSWORD_KEY = "community_password";
     private static CredentialsProvider credentialsProvider;
 
     private CredentialsProvider() {
@@ -35,13 +43,17 @@ public final class CredentialsProvider {
     /**
      * Get GitHub credentials.
      *
-     * @return new instance of {@link GitHubUser}
+     * @return new instance of {@link User}
      */
-    public GitHubUser provideGitHubUserWithCredentials() {
-        final Map<String, String> credentials = getCredentials(GITHUB_USERNAME_KEY, GITHUB_TOKEN_KEY);
-        final String username = credentials.get(GITHUB_USERNAME_KEY);
-        final String token = credentials.get(GITHUB_TOKEN_KEY);
-        return new GitHubUser(username, token);
+    public User provideGitHubUser() {
+        return createUserWithUserNameAndPassword(GITHUB_USERNAME_KEY, GITHUB_TOKEN_KEY);
+    }
+
+    private User createUserWithUserNameAndPassword(final String usernameKey, final String usernamePassword) {
+        final Map<String, String> credentials = getCredentials(usernameKey, usernamePassword);
+        final String username = credentials.get(usernameKey);
+        final String token = credentials.get(usernamePassword);
+        return new User(username, token);
     }
 
     private Map<String, String> getCredentials(final String... mapKeys) {
@@ -90,5 +102,14 @@ public final class CredentialsProvider {
             credentials.put(key, value);
         }
         return credentials;
+    }
+
+    /**
+     * Get Exasol Community Portal credentials.
+     *
+     * @return new instance of {@link User}
+     */
+    public User provideCommunityPortalUser() {
+        return createUserWithUserNameAndPassword(COMMUNITY_USERNAME_KEY, COMMUNITY_PASSWORD_KEY);
     }
 }

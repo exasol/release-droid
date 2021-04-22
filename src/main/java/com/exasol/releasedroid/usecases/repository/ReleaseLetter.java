@@ -87,6 +87,22 @@ public class ReleaseLetter {
         return this.ticketNumbers;
     }
 
+    /**
+     * Get summary section.
+     * 
+     * @return summary section if exists
+     */
+    public Optional<String> getSummary() {
+        final int start = this.body.indexOf("## Summary");
+        final int end = this.body.indexOf("##", start + 2);
+        if (start == -1) {
+            return Optional.empty();
+        } else {
+            final String summary = end == -1 ? this.body.substring(start + 10) : this.body.substring(start + 10, end);
+            return Optional.of(summary.strip());
+        }
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
