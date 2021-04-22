@@ -36,7 +36,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
 
     protected CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
-        final CommunityPortalTemplate communityPortalTemplate = getCommunityPortalTemplate(repository);
+        final var communityPortalTemplate = getCommunityPortalTemplate(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
         final String header = communityPortalTemplate.getProjectName() + " " + version;
         final String gitHubReleaseLink = "https://github.com/" + repository.getName() + "/releases/tag/" + version;
@@ -50,7 +50,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
-        final String json = repository.getSingleFileContentAsString("community_portal_post_template.json");
+        final var json = repository.getSingleFileContentAsString("community_portal_post_template.json");
         return CommunityPortalTemplateJsonParser.parse(json);
     }
 

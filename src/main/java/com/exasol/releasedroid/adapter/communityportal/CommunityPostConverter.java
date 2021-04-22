@@ -45,12 +45,12 @@ public class CommunityPostConverter {
     private static String getTeaser(final CommunityPost communityPost) {
         final String teaser = communityPost.getTeaser();
         if (teaser == null || teaser.isEmpty()) {
-            final List<String> TEASERS = List.of("See what's new here.", "Learn more here.",
+            final List<String> teasers = List.of("See what's new here.", "Learn more here.",
                     "Find out what's new here.", "Find out how it can help you.",
                     "Find out what's changed and where you can learn more.", "Read more here.", "Find out more here.",
                     "Find out what this means, here.");
-            final SecureRandom random = new SecureRandom();
-            return TEASERS.get(random.nextInt(TEASERS.size()));
+            final var random = new SecureRandom();
+            return teasers.get(random.nextInt(teasers.size()));
         } else {
             return teaser;
         }

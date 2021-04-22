@@ -10,6 +10,9 @@ import org.json.JSONObject;
  * A parser for Community portal template in the JSON format.
  */
 public class CommunityPortalTemplateJsonParser {
+    private CommunityPortalTemplateJsonParser() {
+    }
+
     /**
      * Parse community portal template.
      *
@@ -17,7 +20,7 @@ public class CommunityPortalTemplateJsonParser {
      * @return community portal template
      */
     public static CommunityPortalTemplate parse(final String json) {
-        final JSONObject jsonObject = new JSONObject(json);
+        final var jsonObject = new JSONObject(json);
         final String projectName = getProjectName(jsonObject);
         final String projectDescription = getProjectDescription(jsonObject);
         final List<String> tags = getTags(jsonObject);
