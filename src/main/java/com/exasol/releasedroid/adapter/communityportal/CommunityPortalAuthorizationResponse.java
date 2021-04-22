@@ -15,6 +15,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.exasol.errorreporting.ExaError;
+
 /**
  * This class represents a response from the Exasol Community Portal authorization service.
  */
@@ -91,7 +93,7 @@ public class CommunityPortalAuthorizationResponse {
             try {
                 return this.xPath.compile(path).evaluate(document);
             } catch (final XPathExpressionException exception) {
-                throw new IllegalStateException(exception);
+                throw createExternalError(exception);
             }
         }
 
@@ -113,8 +115,14 @@ public class CommunityPortalAuthorizationResponse {
             try {
                 return factory.newDocumentBuilder().parse(inputSource);
             } catch (final ParserConfigurationException | SAXException | IOException exception) {
-                throw new IllegalStateException(exception);
+                throw createExternalError(exception);
             }
+        }
+
+        private IllegalStateException createExternalError(final Exception exception) {
+            return new IllegalStateException(ExaError.messageBuilder("F-RR-1") //
+                    .message("External error: {{cause}}", exception) //
+                    .ticketMitigation().toString());
         }
     }
 }

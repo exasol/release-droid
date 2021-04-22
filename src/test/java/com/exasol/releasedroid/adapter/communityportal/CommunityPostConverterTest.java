@@ -12,7 +12,6 @@ class CommunityPostConverterTest {
     void testToJson() {
         final CommunityPost communityPost = CommunityPost.builder() //
                 .boardId("myBoard") //
-                .teaser("My teaser") //
                 .tags(List.of("Docker", "Exasol", "Integration")) //
                 .header("New tech article!") //
                 .body("Here is my article!") //
@@ -23,7 +22,7 @@ class CommunityPostConverterTest {
                 + "\"body\":\"Here is my article!\"," //
                 + "\"board\":{\"id\":\"myBoard\"}," //
                 + "\"content_workflow_action\":{\"workflow_action\":\"save_draft\"}," //
-                + "\"teaser\":\"My teaser\"," //
+                + "\"teaser\":\"Find out how it can help you.\"," //
                 + "\"tags\":{\"items\":[{\"text\":\"Docker\"},{\"text\":\"Exasol\"},{\"text\":\"Integration\"}]}" //
                 + "}" //
                 + "}"));

@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import java.security.SecureRandom;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -49,8 +48,7 @@ public class CommunityPostConverter {
                     "Find out what's new here.", "Find out how it can help you.",
                     "Find out what's changed and where you can learn more.", "Read more here.", "Find out more here.",
                     "Find out what this means, here.");
-            final var random = new SecureRandom();
-            return teasers.get(random.nextInt(teasers.size()));
+            return teasers.get(communityPost.getBody().length() % teasers.size());
         } else {
             return teaser;
         }
