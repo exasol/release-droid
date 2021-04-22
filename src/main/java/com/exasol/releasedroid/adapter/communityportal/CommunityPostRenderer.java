@@ -12,6 +12,10 @@ import org.commonmark.renderer.html.HtmlRenderer;
  * Renders a Community Post Body.
  */
 public class CommunityPostRenderer {
+    private final Parser mdParser = Parser.builder().build();
+    private final HtmlRenderer htmlRenderer = HtmlRenderer.builder() //
+            .attributeProviderFactory(context -> new LinkAttributeProvider()).build();
+
     /**
      * Render an Exasol release announcement community post body in the format the portal supports.
      * 
@@ -23,16 +27,17 @@ public class CommunityPostRenderer {
      */
     public String renderCommunityPostBody(final String projectNameAndVersion, final String projectDescription,
             final String changesDescription, final String gitHubReleaseLink) {
-        final var mdParser = Parser.builder().build();
-        final var htmlRenderer = HtmlRenderer.builder() //
-                .attributeProviderFactory(context -> new LinkAttributeProvider()).build();
         final String lastParagraph = "For more information check out the [" + projectNameAndVersion + "]("
                 + gitHubReleaseLink + ") release on GitHub.";
         return "<h2>About the project</h2>" + //
-                htmlRenderer.render(mdParser.parse(projectDescription)) + //
+                renderHtml(projectDescription) + //
                 "<h2>New release</h2>" + //
-                htmlRenderer.render(mdParser.parse(changesDescription)) + //
-                htmlRenderer.render(mdParser.parse(lastParagraph));
+                renderHtml(changesDescription) + //
+                renderHtml(lastParagraph);
+    }
+
+    private String renderHtml(final String projectDescription) {
+        return this.htmlRenderer.render(this.mdParser.parse(projectDescription));
     }
 
     private static class LinkAttributeProvider implements AttributeProvider {

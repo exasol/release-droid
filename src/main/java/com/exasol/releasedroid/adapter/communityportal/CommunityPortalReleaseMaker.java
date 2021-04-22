@@ -34,7 +34,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         }
     }
 
-    protected CommunityPost getCommunityPost(final Repository repository) {
+    private CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
         final var communityPortalTemplate = getCommunityPortalTemplate(repository);
         final var releaseLetter = repository.getReleaseLetter(version);

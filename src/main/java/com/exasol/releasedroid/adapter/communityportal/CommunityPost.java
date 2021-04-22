@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a post on the Exasol Community portal.
@@ -72,6 +73,24 @@ public class CommunityPost {
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final CommunityPost that = (CommunityPost) o;
+        return this.header.equals(that.header) && this.body.equals(that.body) && this.boardId.equals(that.boardId)
+                && this.tags.equals(that.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.header, this.body, this.boardId, this.tags);
     }
 
     /**
