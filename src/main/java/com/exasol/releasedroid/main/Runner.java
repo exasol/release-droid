@@ -8,12 +8,19 @@ import java.util.logging.LogManager;
 
 import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
 import com.exasol.releasedroid.adapter.RepositoryFactory;
+import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter;
+import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
+import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
-import com.exasol.releasedroid.usecases.release.*;
+import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
+import com.exasol.releasedroid.usecases.release.ReleaseMaker;
+import com.exasol.releasedroid.usecases.release.ReleaseManager;
+import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
-import com.exasol.releasedroid.usecases.request.*;
+import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.request.UserInput;
 import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
@@ -58,14 +65,20 @@ public class Runner {
         return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 
-    private static GitHubUser getGithubUser() {
-        return CredentialsProvider.getInstance().provideGitHubUserWithCredentials();
+    private static User getGithubUser() {
+        return CredentialsProvider.getInstance().provideGitHubUser();
     }
 
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GitHubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
         releaseMakers.put(PlatformName.GITHUB, new GitHubReleaseMaker(githubGateway));
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));
+        final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getCommunityPortalUser());
+        releaseMakers.put(PlatformName.COMMUNITY, new CommunityPortalReleaseMaker(communityPortalGateway));
         return releaseMakers;
+    }
+
+    private static User getCommunityPortalUser() {
+        return CredentialsProvider.getInstance().provideCommunityPortalUser();
     }
 }

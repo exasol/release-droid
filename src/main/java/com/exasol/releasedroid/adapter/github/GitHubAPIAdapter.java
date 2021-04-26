@@ -24,21 +24,21 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private static final String GITHUB_RELEASE_WORKFLOW = "release_droid_upload_github_release_assets.yml";
     private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "release_droid_print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories;
-    private final GitHubUser gitHubUser;
+    private final User gitHubUser;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
      *
-     * @param gitHubUser instance of {@link GitHubUser}
+     * @param gitHubUser instance of {@link User}
      */
-    public GitHubAPIAdapter(final GitHubUser gitHubUser) {
+    public GitHubAPIAdapter(final User gitHubUser) {
         this.gitHubUser = gitHubUser;
         this.repositories = new HashMap<>();
     }
 
-    private GHRepository createGHRepository(final String repositoryName, final GitHubUser user) throws GitHubException {
+    private GHRepository createGHRepository(final String repositoryName, final User user) throws GitHubException {
         try {
-            final GitHub gitHub = GitHub.connect(user.getUsername(), user.getToken());
+            final var gitHub = GitHub.connect(user.getUsername(), user.getPassword());
             return gitHub.getRepository(repositoryName);
         } catch (final IOException exception) {
             throw wrapGitHubException(repositoryName, exception);
