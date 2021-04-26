@@ -23,23 +23,28 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "release_droid_prepare_original_checksum.yml";
     private static final String GITHUB_RELEASE_WORKFLOW = "release_droid_upload_github_release_assets.yml";
     private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "release_droid_print_quick_checksum.yml";
-    private final Map<String, GHRepository> repositories;
-    private final User gitHubUser;
+    private final Map<String, GHRepository> repositories = new HashMap<>();
+    private final GitHub gitHub;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
      *
-     * @param gitHubUser instance of {@link User}
+     * @param gitHub instance of {@link GitHub}
      */
-    public GitHubAPIAdapter(final User gitHubUser) {
-        this.gitHubUser = gitHubUser;
-        this.repositories = new HashMap<>();
+    public GitHubAPIAdapter(final GitHub gitHub) {
+        this.gitHub = gitHub;
     }
 
-    private GHRepository createGHRepository(final String repositoryName, final User user) throws GitHubException {
+    private GHRepository getRepository(final String repositoryName) throws GitHubException {
+        if (!this.repositories.containsKey(repositoryName)) {
+            this.repositories.put(repositoryName, this.createGHRepository(repositoryName));
+        }
+        return this.repositories.get(repositoryName);
+    }
+
+    private GHRepository createGHRepository(final String repositoryName) throws GitHubException {
         try {
-            final var gitHub = GitHub.connect(user.getUsername(), user.getPassword());
-            return gitHub.getRepository(repositoryName);
+            return this.gitHub.getRepository(repositoryName);
         } catch (final IOException exception) {
             throw wrapGitHubException(repositoryName, exception);
         }
@@ -79,13 +84,6 @@ public class GitHubAPIAdapter implements GitHubGateway {
                             .message("Exception happened during releasing a new tag on the GitHub.").toString(),
                     exception);
         }
-    }
-
-    private GHRepository getRepository(final String repositoryName) throws GitHubException {
-        if (!this.repositories.containsKey(repositoryName)) {
-            this.repositories.put(repositoryName, this.createGHRepository(repositoryName, this.gitHubUser));
-        }
-        return this.repositories.get(repositoryName);
     }
 
     // [impl->dsn~upload-github-release-assets~1]
@@ -148,7 +146,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private String getWorkflowConclusion(final GHRepository repository, final long workflowId)
             throws GitHubException, IOException {
-        final int workflowMonitoringTimeout = 150;
+        final var workflowMonitoringTimeout = 150;
         int minutesPassed = 0;
         long lastWorkflowRunId = -1;
         while (minutesPassed < workflowMonitoringTimeout) {
@@ -159,7 +157,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             if (lastWorkflowRunId == -1) {
                 lastWorkflowRunId = findLastWorkflowRunId(repository, workflowId);
             }
-            final GHWorkflowRun ghWorkflowRun = getWorkflowRunById(repository, lastWorkflowRunId);
+            final var ghWorkflowRun = getWorkflowRunById(repository, lastWorkflowRunId);
             final boolean actionCompleted = ghWorkflowRun.getConclusion() != null;
             if (actionCompleted) {
                 return ghWorkflowRun.getConclusion().toString();
@@ -179,10 +177,9 @@ public class GitHubAPIAdapter implements GitHubGateway {
             throws IOException, GitHubException {
         GHWorkflowRun lastRun = null;
         for (final GHWorkflowRun ghWorkflowRun : repository.queryWorkflowRuns().list()) {
-            if (ghWorkflowRun.getWorkflowId() == workflowId) {
-                if (lastRun == null || ghWorkflowRun.getCreatedAt().after(lastRun.getCreatedAt())) {
-                    lastRun = ghWorkflowRun;
-                }
+            if (ghWorkflowRun.getWorkflowId() == workflowId
+                    && (lastRun == null || ghWorkflowRun.getCreatedAt().after(lastRun.getCreatedAt()))) {
+                lastRun = ghWorkflowRun;
             }
         }
         validateLastRun(workflowId, lastRun);
@@ -303,7 +300,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             throws GitHubException {
         try {
             final GHArtifact artifact = getRepository(repositoryName).getArtifact(artifactId);
-            final String checksumAsString = artifact.download(this::getStringFromInputStream);
+            final var checksumAsString = artifact.download(this::getStringFromInputStream);
             return ChecksumFormatter.createChecksumMap(checksumAsString);
         } catch (final IOException exception) {
             throw new GitHubException(exception);
@@ -311,8 +308,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     private String getStringFromInputStream(final InputStream input) throws IOException {
-        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                final ZipInputStream zipInputStream = new ZipInputStream(input)) {
+        try (final var byteArrayOutputStream = new ByteArrayOutputStream();
+                final var zipInputStream = new ZipInputStream(input)) {
             while (zipInputStream.getNextEntry() != null) {
                 byteArrayOutputStream.write(zipInputStream.readAllBytes());
             }
