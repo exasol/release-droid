@@ -13,6 +13,7 @@ import com.exasol.releasedroid.usecases.repository.Repository;
  */
 public class MavenReleaseMaker implements ReleaseMaker {
     private static final Logger LOGGER = Logger.getLogger(MavenReleaseMaker.class.getName());
+    private static final String RELEASE_ON_MAVEN_CENTRAL_WORKFLOW = "release_droid_release_on_maven_central.yml";
     private final GitHubGateway githubGateway;
 
     /**
@@ -29,7 +30,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
     public void makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on Maven.");
         try {
-            this.githubGateway.executeWorkflow(repository.getName(), "release_droid_release_on_maven_central.yml");
+            this.githubGateway.executeWorkflow(repository.getName(), RELEASE_ON_MAVEN_CENTRAL_WORKFLOW);
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }
