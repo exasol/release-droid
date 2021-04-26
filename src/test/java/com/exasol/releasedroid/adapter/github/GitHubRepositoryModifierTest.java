@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.BaseRepository;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetterParser;
 
 @ExtendWith(MockitoExtension.class)
 // [utest->dsn~automatically-modifying-release-date~1]
@@ -80,6 +82,6 @@ class GitHubRepositoryModifierTest {
         when(this.repositoryMock.getSingleFileContentAsString(CHANGES_PATH)).thenReturn(releaseLetterAsString);
         final RepositoryException repositoryException = assertThrows(RepositoryException.class,
                 () -> this.gitHubRepositoryModifier.writeReleaseDate(this.repositoryMock));
-        assertThat(repositoryException.getMessage(), containsString("E-REP-GH-1"));
+        assertThat(repositoryException.getMessage(), containsString("E-RR-GH-6"));
     }
 }

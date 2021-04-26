@@ -25,7 +25,6 @@ class MavenReleaseMakerTest {
 
     @BeforeEach
     void beforeEach() {
-        when(this.repositoryMock.getBranchName()).thenReturn("main");
         when(this.repositoryMock.getName()).thenReturn("name");
         this.releaseMaker = new MavenReleaseMaker(this.githubGatewayMock);
     }
@@ -35,16 +34,16 @@ class MavenReleaseMakerTest {
     void testMakeRelease() {
         assertAll(() -> assertDoesNotThrow(() -> this.releaseMaker.makeRelease(this.repositoryMock)),
                 () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name",
-                        "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}"));
+                        "release_droid_release_on_maven_central.yml"));
     }
 
     @Test
     // [utest->dsn~create-new-maven-release~1]
     void testMakeReleaseFails() throws GitHubException {
         doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow("name",
-                "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}");
+                "release_droid_release_on_maven_central.yml");
         assertAll(() -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock)),
                 () -> verify(this.githubGatewayMock, times(1)).executeWorkflow("name",
-                        "release_droid_release_on_maven_central.yml", "{\"ref\":\"main\"}"));
+                        "release_droid_release_on_maven_central.yml"));
     }
 }

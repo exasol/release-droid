@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import org.kohsuke.github.GitHub;
+
 import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
 import com.exasol.releasedroid.adapter.RepositoryFactory;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter;
@@ -14,10 +16,7 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMak
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
-import com.exasol.releasedroid.usecases.release.ReleaseInteractor;
-import com.exasol.releasedroid.usecases.release.ReleaseMaker;
-import com.exasol.releasedroid.usecases.release.ReleaseManager;
-import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
+import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
@@ -39,8 +38,10 @@ public class Runner {
         createReleaseDroid(userInput).run(userInput);
     }
 
-    private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
-        final GitHubGateway githubGateway = new GitHubAPIAdapter(getGithubUser());
+    private static ReleaseDroid createReleaseDroid(final UserInput userInput) throws IOException {
+        final var githubUser = getGithubUser();
+        final GitHubGateway githubGateway = new GitHubAPIAdapter(
+                GitHub.connect(githubUser.getUsername(), githubUser.getPassword()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryGateway);
         if (userInput.hasLocalPath()) {

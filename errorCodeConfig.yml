@@ -1,0 +1,18 @@
+error-tags:
+  RR:
+    packages:
+      - com.exasol.releasedroid.main
+      - com.exasol.releasedroid.usecases.request
+    highest-index: 10
+  RR-VAL:
+    packages:
+      - com.exasol.releasedroid.usecases.validate
+    highest-index: 15
+  RR-REP:
+    packages:
+      - com.exasol.releasedroid.adapter
+    highest-index: 10
+  RR-GH:
+    packages:
+      - com.exasol.releasedroid.adapter.github
+    highest-index: 9

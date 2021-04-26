@@ -19,6 +19,15 @@ public class GitHubException extends Exception {
     /**
      * Create a new instance of {@link GitHubException}.
      *
+     * @param cause exception cause
+     */
+    public GitHubException(final Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * Create a new instance of {@link GitHubException}.
+     *
      * @param message exception description
      */
     public GitHubException(final String message) {

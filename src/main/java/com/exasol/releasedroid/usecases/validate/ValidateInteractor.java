@@ -64,7 +64,7 @@ public class ValidateInteractor implements ValidateUseCase {
         if (validators.containsKey(platformName)) {
             return validators.get(platformName).validate();
         }
-        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-5") //
+        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-VAL-15") //
                 .message("{{platform}} platform is not supported for this project.") //
                 .parameter("platform", platformName).toString());
     }

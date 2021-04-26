@@ -1,24 +1,36 @@
 package com.exasol.releasedroid.adapter.github;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Gateway for interacting with Github.
  */
 public interface GitHubGateway {
     /**
-     * Executes a GitHub workflow by a workflow name.
+     * Executes a GitHub workflow by a workflow name on the default branch.
      *
      * @param repositoryName fully qualified name of the repository
      * @param workflowName   name of a workflow
-     * @param payload        the payload in json format
+     * @param dispatches     map with the dispatches arguments. Can be empty
      * @throws GitHubException when some problems occur
      */
-    public void executeWorkflow(String repositoryName, String workflowName, String payload) throws GitHubException;
+    public void executeWorkflow(String repositoryName, String workflowName, Map<String, Object> dispatches)
+            throws GitHubException;
 
     /**
-     * Make a GitHub release.
+     * Executes a GitHub workflow by a workflow name on the default branch.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @param workflowName   name of a workflow
+     * @throws GitHubException when some problems occur
+     */
+    public void executeWorkflow(String repositoryName, String workflowName) throws GitHubException;
+
+    /**
+     * Make a GitHub release on the head of default branch.
      * 
      * @param gitHubRelease instance of {@link GitHubRelease} with release information
      * @throws GitHubException when some problems occur
@@ -92,7 +104,7 @@ public interface GitHubGateway {
      * @return list of artifact's ids
      * @throws GitHubException when some problems occur
      */
-    public List<String> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
+    public List<Long> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
 
     /**
      * Prepare a checksum on the repository.
@@ -110,7 +122,7 @@ public interface GitHubGateway {
      * @return map with jar names and their checksums
      * @throws GitHubException when some problems occur
      */
-    public Map<String, String> downloadChecksumFromArtifactory(String repositoryName, String artifactId)
+    public Map<String, String> downloadChecksumFromArtifactory(String repositoryName, long artifactId)
             throws GitHubException;
 
     /**

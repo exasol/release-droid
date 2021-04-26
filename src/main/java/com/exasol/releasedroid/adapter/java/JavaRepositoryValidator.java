@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.maven.*;
+import com.exasol.releasedroid.adapter.maven.MavenPlugin;
+import com.exasol.releasedroid.adapter.maven.MavenPluginValidator;
+import com.exasol.releasedroid.adapter.maven.MavenPom;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
@@ -40,7 +42,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         if (mavenPom.hasVersion()) {
             report.addResult(ValidationResult.successfulValidation("'version' in the pom file exists."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-11")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-7")
                     .message("Cannot detect a 'version' in the pom file.").toString()));
         }
         return report;

@@ -12,9 +12,10 @@ class GitHubReleaseTest {
     @Test
     void testValidGitHubRelease() {
         final GitHubRelease release = GitHubRelease.builder().repositoryName("repo").version("1.0.0").header("header")
-                .releaseLetter("release letter").defaultBranchName("main").build();
+                .releaseLetter("release letter").build();
         assertAll(() -> assertThat(release.getVersion(), equalTo("1.0.0")),
                 () -> assertThat(release.getHeader(), equalTo("header")),
+                () -> assertThat(release.getRepositoryName(), equalTo("repo")),
                 () -> assertThat(release.getReleaseLetter(), equalTo("release letter")));
     }
 
@@ -38,13 +39,5 @@ class GitHubReleaseTest {
                 .header("");
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(exception.getMessage(), containsString("'header' field is null or empty"));
-    }
-
-    @Test
-    void testGitHubReleaseEmptyDefaultBranchName() {
-        final GitHubRelease.Builder builder = GitHubRelease.builder().repositoryName("repo").version("1.0.0")
-                .header("header");
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("'defaultBranchName' field is null or empty"));
     }
 }
