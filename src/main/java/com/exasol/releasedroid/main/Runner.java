@@ -39,7 +39,7 @@ public class Runner {
     }
 
     private static ReleaseDroid createReleaseDroid(final UserInput userInput) throws IOException {
-        final User githubUser = getGithubUser();
+        final var githubUser = getGithubUser();
         final GitHubGateway githubGateway = new GitHubAPIAdapter(
                 GitHub.connect(githubUser.getUsername(), githubUser.getPassword()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);

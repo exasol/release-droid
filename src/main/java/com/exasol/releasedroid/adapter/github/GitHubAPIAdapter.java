@@ -153,7 +153,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final int minutes = getNextResultCheckDelayInMinutes(minutesPassed);
             minutesPassed += minutes;
             waitMinutes(minutes);
-            LOGGER.info("Workflow is running for about " + minutesPassed + " minutes.");
+            LOGGER.info(getMessage(minutesPassed));
             if (lastWorkflowRunId == -1) {
                 lastWorkflowRunId = findLastWorkflowRunId(repository, workflowId);
             }
@@ -164,6 +164,10 @@ public class GitHubAPIAdapter implements GitHubGateway {
             }
         }
         throw new GitHubException(getTimeoutExceptionMessage(minutesPassed));
+    }
+
+    private String getMessage(final int minutesPassed) {
+        return "Workflow is running for about " + minutesPassed + " minutes.";
     }
 
     private String getTimeoutExceptionMessage(final int minutesPassed) {
