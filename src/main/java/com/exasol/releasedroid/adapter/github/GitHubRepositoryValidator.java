@@ -3,7 +3,9 @@ package com.exasol.releasedroid.adapter.github;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -66,7 +68,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         if (version.matches(VERSION_REGEX)) {
             report.addResult(ValidationResult.successfulValidation("Version format."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-3")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-3")
                     .message("A version or tag found in this repository has invalid format: {{version}}. "
                             + "The valid format is: <major>.<minor>.<fix>.")
                     .unquotedParameter("version", version).toString()));
@@ -93,7 +95,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         if (possibleVersions.contains(newTag)) {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-4")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-4")
                     .message("The new version {{newTag}} does not fit the versioning rules. "
                             + "Possible versions for the release are: {{possibleVersions}}")
                     .parameter("newTag", newTag) //
@@ -120,7 +122,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         final Report report = Report.validationReport();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (!changelog.contains(changelogContent)) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-5")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-5")
                     .message("The file 'changelog.md' doesn't contain the following link.")
                     .mitigation("Please add {{changelogContent}} to the file.")
                     .parameter("changelogContent", changelogContent).toString()));
@@ -145,7 +147,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         final Report report = Report.validationReport();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-6")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-6")
                     .message("The file {{fileName}} does not mention the current version.")
                     .parameter("fileName", changes.getFileName())
                     .mitigation("Please, follow the changes file's format rules.").toString()));
@@ -172,7 +174,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
 
     private Report reportWrongDate(final String fileName) {
         final Report report = Report.validationReport();
-        final String warningMessage = ExaError.messageBuilder("W-RR-VAL-2").message(
+        final String warningMessage = ExaError.messageBuilder("W-RD-VAL-2").message(
                 "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically. "
                         + "If direct commits to the main branch are disabled for this repository, please, "
                         + "update the date manually.")
@@ -188,7 +190,7 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         final Report report = Report.validationReport();
         if (changes.getBody().isEmpty()) {
             report.addResult(ValidationResult.failedValidation(
-                    ExaError.messageBuilder("E-RR-VAL-8").message("Cannot find the {{fileName}} body.") //
+                    ExaError.messageBuilder("E-RD-VAL-8").message("Cannot find the {{fileName}} body.") //
                             .parameter("fileName", changes.getFileName())
                             .mitigation("Please, make sure you added the changes you made to the file.").toString()));
         } else {

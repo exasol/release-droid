@@ -42,7 +42,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         if (mavenPom.hasVersion()) {
             report.addResult(ValidationResult.successfulValidation("'version' in the pom file exists."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-7")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-7")
                     .message("Cannot detect a 'version' in the pom file.").toString()));
         }
         return report;
@@ -53,7 +53,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         if (mavenPom.hasArtifactId()) {
             report.addResult(ValidationResult.successfulValidation("'artifactId' in the pom file exists."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-12")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-12")
                     .message("Cannot detect an 'artifactId' in the pom file.").toString()));
         }
         return report;

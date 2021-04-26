@@ -4,7 +4,9 @@ import static org.eclipse.jgit.lib.Constants.R_TAGS;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +42,7 @@ public class LocalRepositoryGate implements RepositoryGate {
         try {
             return Files.readString(path);
         } catch (final IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-1")
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-1")
                     .message("Cannot read a file from the local repository: {{path}}.")
                     .parameter("path", this.localPath + filePath)
                     .mitigation("Please check that the file exists and the local path is correct").toString());
@@ -49,7 +51,7 @@ public class LocalRepositoryGate implements RepositoryGate {
 
     @Override
     public void updateFileContent(final String filePath, final String newContent, final String commitMessage) {
-        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-REP-8")
+        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-REP-8")
                 .message("File updates are not currently supported on a local repository.").toString());
     }
 
@@ -66,7 +68,7 @@ public class LocalRepositoryGate implements RepositoryGate {
         try (final Git git = Git.open(rootDirectory)) {
             return git.getRepository().getBranch();
         } catch (final IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-6")
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-6")
                     .message("Cannot retrieve a name of a local git branch.").toString());
         }
     }
@@ -84,7 +86,7 @@ public class LocalRepositoryGate implements RepositoryGate {
             }
         } catch (final IOException exception) {
             throw new RepositoryException(
-                    ExaError.messageBuilder("E-RR-REP-7")
+                    ExaError.messageBuilder("E-RD-REP-7")
                             .message("Failed to retrieve latest tag from the local git repository.").toString(),
                     exception);
         }

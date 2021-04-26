@@ -48,7 +48,7 @@ public class GitHubRepositoryModifier implements RepositoryModifier {
                 final String substring = getSubstringToReplace(changes);
                 return changes.replace(substring, "released " + LocalDate.now() + LINE_SEPARATOR);
             } else {
-                throw new RepositoryException(ExaError.messageBuilder("E-RR-GH-6")
+                throw new RepositoryException(ExaError.messageBuilder("E-RD-GH-6")
                         .message("Unable to detect a release date stab in the changes file.")
                         .mitigation("Please, update the release date manually").toString());
             }

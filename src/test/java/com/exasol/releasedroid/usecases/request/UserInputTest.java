@@ -33,21 +33,21 @@ class UserInputTest {
     void testUserInputWithoutGoal() {
         final Builder builder = builder();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RR-2"));
+        assertThat(exception.getMessage(), containsString("E-RD-2"));
     }
 
     @Test
     void testUserInputWithoutPlatforms() {
         final Builder builder = builder().goal(GOAL);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RR-3"));
+        assertThat(exception.getMessage(), containsString("E-RD-3"));
     }
 
     @Test
     void testUserInputWithoutRepositoryName() {
         final Builder builder = builder().goal(GOAL).platforms(PLATFORM);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RR-4"));
+        assertThat(exception.getMessage(), containsString("E-RD-4"));
     }
 
     @Test
@@ -55,6 +55,6 @@ class UserInputTest {
         final Builder builder = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
                 .branch(BRANCH);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RR-1"));
+        assertThat(exception.getMessage(), containsString("E-RD-1"));
     }
 }

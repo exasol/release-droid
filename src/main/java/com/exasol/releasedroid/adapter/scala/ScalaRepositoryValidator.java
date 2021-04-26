@@ -20,7 +20,7 @@ public class ScalaRepositoryValidator implements RepositoryValidator {
         if (buildSbt.contains("ReproducibleBuildsPlugin")) {
             report.addResult(ValidationResult.successfulValidation("'sbt-reproducible-builds' plugin is included."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-11")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-11")
                     .message("Cannot find required plugin: `sbt-reproducible-builds`.")
                     .mitigation("Please, check user guide and add this plugin to the build.").toString()));
         }

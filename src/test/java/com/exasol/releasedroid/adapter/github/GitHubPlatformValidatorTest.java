@@ -8,7 +8,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,7 +39,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-1")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-1")));
     }
 
     @Test
@@ -48,7 +50,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-1")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-1")));
     }
 
     @Test
@@ -78,7 +80,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
         final Report report = validator.validateGitHubTickets(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-2")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-2")));
     }
 
     @Test
@@ -107,7 +109,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
         final Report report = validator.validateGitHubTickets(releaseLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-10")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-10")));
     }
 
     @Test
@@ -128,6 +130,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-9")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-9")));
     }
 }

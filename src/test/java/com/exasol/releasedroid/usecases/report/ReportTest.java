@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-// [utest->dsn~rr-creates-release-report~1]
+// [utest->dsn~rd-creates-release-report~1]
 class ReportTest {
     private Report report;
 

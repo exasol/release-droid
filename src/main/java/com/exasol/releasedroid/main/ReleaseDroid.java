@@ -42,8 +42,8 @@ public class ReleaseDroid {
     /**
      * Main entry point for all Release Droid's calls.
      */
-    // [impl->dsn~rr-creates-validation-report~1]
-    // [impl->dsn~rr-creates-release-report~1]
+    // [impl->dsn~rd-creates-validation-report~1]
+    // [impl->dsn~rd-creates-release-report~1]
     public void run(final UserInput userInput) {
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getRepositoryName() + "'.");

@@ -22,7 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.repository.Repository;
 
 @ExtendWith(MockitoExtension.class)
 class GitHubRepositoryValidatorTest {
@@ -49,7 +50,7 @@ class GitHubRepositoryValidatorTest {
         final String changelog = "";
         final Report report = this.validator.validateChangelog(changelog, "1.0.0");
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-5: The file "
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-5: The file "
                         + "'changelog.md' doesn't contain the following link. Please add '[1.0.0](changes_1.0.0.md)' to the file")));
     }
 
@@ -97,7 +98,7 @@ class GitHubRepositoryValidatorTest {
         when(changesMock.getFileName()).thenReturn("file");
         final Report report = this.validator.validateChanges(changesMock, "3.1.0", true);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-6")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-6")));
     }
 
     @Test
@@ -110,7 +111,7 @@ class GitHubRepositoryValidatorTest {
         when(changesMock.getFileName()).thenReturn("file");
         final Report report = this.validator.validateChanges(changesMock, "2.1.0", true);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-8")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-8")));
     }
 
     @ParameterizedTest
@@ -119,7 +120,7 @@ class GitHubRepositoryValidatorTest {
     void testValidateInvalidVersionFormat(final String version) {
         final Report report = this.validator.validateNewVersion(version);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RR-VAL-3")));
+                () -> assertThat(report.toString(), containsString("E-RD-VAL-3")));
     }
 
     @ParameterizedTest
@@ -149,7 +150,7 @@ class GitHubRepositoryValidatorTest {
         assertAll(() -> assertTrue(report.hasFailures()),
                 () -> assertThat(report.toString(),
                         containsString(
-                                "E-RR-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
+                                "E-RD-VAL-4: The new version '" + version + "' does not fit the versioning rules. "
                                         + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }
 

@@ -65,6 +65,6 @@ class RepositoryFactoryTest {
         final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.repositoryGateway.getRepository(userInput));
-        assertThat(exception.getMessage(), containsString("E-RR-8"));
+        assertThat(exception.getMessage(), containsString("E-RD-8"));
     }
 }

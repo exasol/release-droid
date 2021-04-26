@@ -1,6 +1,8 @@
 package com.exasol.releasedroid.usecases.release;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -43,8 +45,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     @Override
-    // [impl->dsn~rr-starts-release-only-if-all-validation-succeed~1]
-    // [impl->dsn~rr-runs-release-goal~1]
+    // [impl->dsn~rd-starts-release-only-if-all-validation-succeed~1]
+    // [impl->dsn~rd-runs-release-goal~1]
     public List<Report> release(final UserInput userInput) {
         try {
             return this.attemptToRelease(userInput);

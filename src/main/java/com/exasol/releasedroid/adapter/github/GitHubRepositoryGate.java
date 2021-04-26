@@ -7,7 +7,8 @@ import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.BaseRepository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 
 /**
  * This class represents a GitHub-based repository.
@@ -36,7 +37,7 @@ public class GitHubRepositoryGate implements RepositoryGate {
         try {
             return getContent(this.githubGateway.getFileContent(getName(), this.branchName, filePath));
         } catch (final IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("F-RR-REP-1")
+            throw new RepositoryException(ExaError.messageBuilder("F-RD-REP-1")
                     .message("Cannot convert the file {{filePath}} in the repository {{repositoryName}} to a string.")
                     .parameter("filePath", filePath) //
                     .parameter("repositoryName", getName()).toString(), exception);
