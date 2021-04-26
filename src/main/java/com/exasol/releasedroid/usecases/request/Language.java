@@ -25,7 +25,7 @@ public enum Language {
             final List<String> allowedLanguages = Arrays.stream(Language.values())
                     .map(language -> language.toString().toLowerCase()).collect(Collectors.toList());
             throw new IllegalArgumentException(
-                    ExaError.messageBuilder("E-RR-8").message("Cannot parse a language {{languageAsString}}.") //
+                    ExaError.messageBuilder("E-RD-8").message("Cannot parse a language {{languageAsString}}.") //
                             .parameter("languageAsString", languageAsString)
                             .mitigation("Please, use one of the following languages: {{allowedLanguages}}.")
                             .parameter("allowedLanguages", String.join(",", allowedLanguages)).toString(),

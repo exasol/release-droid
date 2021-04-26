@@ -258,7 +258,7 @@ public class UserInput {
 
         private void validateLocalPath() {
             if ((this.localPath != null) && ((this.goal == Goal.RELEASE) || (this.branch != null))) {
-                throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-6")
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-6")
                         .message("The 'local' argument can't be used together with 'branch' or RELEASE 'goal'.")
                         .toString());
             }
@@ -266,20 +266,20 @@ public class UserInput {
 
         private void validateGoalAndBranch() {
             if ((this.goal == Goal.RELEASE) && (this.branch != null)) {
-                throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-1")
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-1")
                         .message("Please, remove branch parameter if you want to make a release.").toString());
             }
         }
 
         private void validateMandatoryParameters() {
             if (this.goal == null) {
-                throwExceptionForMissingParameter("E-RR-2", "goal");
+                throwExceptionForMissingParameter("E-RD-2", "goal");
             }
             if ((this.platforms == null) || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("E-RR-3", "platforms");
+                throwExceptionForMissingParameter("E-RD-3", "platforms");
             }
             if (this.repositoryName == null || this.repositoryName.isEmpty()) {
-                throwExceptionForMissingParameter("E-RR-4", "repository name");
+                throwExceptionForMissingParameter("E-RD-4", "repository name");
             }
         }
 

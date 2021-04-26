@@ -19,7 +19,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
-import com.exasol.releasedroid.usecases.report.*;
+import com.exasol.releasedroid.usecases.report.ReleaseResult;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 class ReportWriterTest {
@@ -48,7 +50,7 @@ class ReportWriterTest {
     }
 
     @Test
-    // [utest->dsn~rr-writes-report-to-file~1]
+    // [utest->dsn~rd-writes-report-to-file~1]
     void testWriteValidationReportToFile() throws IOException {
         this.reportWriter.writeResponseToDisk(this.reportPath, this.userInput,
                 List.of(this.validationReport, this.releaseReport));

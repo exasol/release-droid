@@ -1,9 +1,6 @@
 package com.exasol.releasedroid.adapter.java;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +9,7 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidato
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.adapter.github.GitHubRepositoryValidator;
-import com.exasol.releasedroid.adapter.maven.MavenPlatformValidator;
-import com.exasol.releasedroid.adapter.maven.MavenPom;
-import com.exasol.releasedroid.adapter.maven.MavenPomParser;
-import com.exasol.releasedroid.adapter.maven.MavenRepository;
+import com.exasol.releasedroid.adapter.maven.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
@@ -69,7 +63,7 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
             return tempPomFile;
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-REP-4")
+                    ExaError.messageBuilder("E-RD-REP-4")
                             .message("Some problem happened during creating a temporary pom file.").toString(),
                     exception);
         }
@@ -80,7 +74,7 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
         if (getMavenPom().hasVersion()) {
             return getMavenPom().getVersion();
         } else {
-            throw new RepositoryException(ExaError.messageBuilder("E-RR-REP-5")
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-5")
                     .message("Cannot find the current version in the repository.").toString());
         }
     }

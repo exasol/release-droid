@@ -13,7 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 
 @ExtendWith(MockitoExtension.class)
 class ScalaRepositoryTest {
@@ -36,7 +37,7 @@ class ScalaRepositoryTest {
                 + ".settings(orgSettings)";
         when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
         final RepositoryException exception = assertThrows(RepositoryException.class, repository::getVersion);
-        assertThat(exception.getMessage(), containsString("E-RR-REP-9"));
+        assertThat(exception.getMessage(), containsString("E-RD-REP-9"));
     }
 
     private Repository getRepository() {

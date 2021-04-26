@@ -158,4 +158,4 @@ Notice:
 
 ## Debugging
 
-If you need to debug RR, you can adjust Java's log level. The default level for this project is `INFO`. To do that you need to change a logging level in a `logging.properties` file in the `src/main/resources/logging.properties` directory. 
+If you need to debug RD, you can adjust Java's log level. The default level for this project is `INFO`. To do that you need to change a logging level in a `logging.properties` file in the `src/main/resources/logging.properties` directory. 

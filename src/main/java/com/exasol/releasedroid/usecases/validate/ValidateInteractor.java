@@ -30,7 +30,7 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     @Override
-    // [impl->dsn~rr-runs-validate-goal~1]
+    // [impl->dsn~rd-runs-validate-goal~1]
     public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepository(userInput);
@@ -64,7 +64,7 @@ public class ValidateInteractor implements ValidateUseCase {
         if (validators.containsKey(platformName)) {
             return validators.get(platformName).validate();
         }
-        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RR-VAL-15") //
+        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-VAL-15") //
                 .message("{{platform}} platform is not supported for this project.") //
                 .parameter("platform", platformName).toString());
     }

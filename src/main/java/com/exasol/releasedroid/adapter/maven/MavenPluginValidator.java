@@ -32,7 +32,7 @@ public class MavenPluginValidator {
         if (this.plugins.containsKey(pluginName)) {
             report.addResult(ValidationResult.successfulValidation("Maven plugin '" + pluginName + "'."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-13")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-13")
                     .message("Required maven plugin is missing: {{requiredPlugin}}.", pluginName).toString()));
         }
         return report;
@@ -60,7 +60,7 @@ public class MavenPluginValidator {
             report.addResult(
                     ValidationResult.successfulValidation("Maven plugin '" + pluginName + "' version is correct."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RR-VAL-14")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-14")
                     .message("Maven plugin {{pluginName}} has invalid version or the version is not specified."
                             + " The version must be {{version}} or higher.")
                     .parameter("pluginName", pluginName) //

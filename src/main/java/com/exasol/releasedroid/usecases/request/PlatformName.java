@@ -39,7 +39,7 @@ public enum PlatformName {
         } catch (final IllegalArgumentException exception) {
             final Set<String> availablePlatforms = Arrays.stream(PlatformName.values())
                     .map(name -> name.toString().toLowerCase()).collect(Collectors.toSet());
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-RR-12") //
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-12") //
                     .message("Cannot parse a platform {{platform}}.").parameter("platform", platform)
                     .mitigation("Please, use one of the following platforms: {{availablePlatforms}}.")
                     .unquotedParameter("availablePlatforms", String.join(",", availablePlatforms)).toString(),

@@ -35,14 +35,14 @@ public class SummaryWriter {
      * @param userInput  instance of {@link UserInput}
      * @param reports    list of reports to write
      */
-    // [impl->dsn~rr-writes-report-to-file~1]
+    // [impl->dsn~rd-writes-report-to-file~1]
     public void writeResponseToDisk(final Path reportPath, final UserInput userInput, final List<Report> reports) {
         final File reportFile = prepareFile(reportPath);
         try (final FileWriter writer = new FileWriter(reportFile.getAbsoluteFile())) {
             writer.write(this.responseFormatter.formatResponse(userInput, reports));
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-10").message("Unable to write a report.").toString(), exception);
+                    ExaError.messageBuilder("E-RD-10").message("Unable to write a report.").toString(), exception);
         }
         LOGGER.info(() -> "A full report is available: " + reportPath.toString());
     }
@@ -54,7 +54,7 @@ public class SummaryWriter {
             logFilePreparation(createdNewFile);
         } catch (final IOException exception) {
             throw new IllegalStateException(
-                    ExaError.messageBuilder("E-RR-5").message("Unable to prepare a file for a report.").toString(),
+                    ExaError.messageBuilder("E-RD-5").message("Unable to prepare a file for a report.").toString(),
                     exception);
         }
         return reportFile;

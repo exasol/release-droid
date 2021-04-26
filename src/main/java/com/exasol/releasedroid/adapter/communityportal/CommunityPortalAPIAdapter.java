@@ -46,11 +46,11 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
             throws CommunityPortalException {
         if (portalAuthorizationResponse.isStatusOk()) {
             return portalAuthorizationResponse.getToken()
-                    .orElseThrow(() -> new CommunityPortalException(ExaError.messageBuilder("E-RR-CP-1").message(
+                    .orElseThrow(() -> new CommunityPortalException(ExaError.messageBuilder("E-RD-CP-1").message(
                             "The Exasol Community Portal authentication token was not parsed correctly or missing.")
                             .toString()));
         } else {
-            throw new CommunityPortalException(ExaError.messageBuilder("E-RR-CP-2").message("{{message}}")
+            throw new CommunityPortalException(ExaError.messageBuilder("E-RD-CP-2").message("{{message}}")
                     .parameter("message",
                             portalAuthorizationResponse.getErrorMessage().orElse("Error message is missing."))
                     .toString());
@@ -89,7 +89,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
 
     private void validateResponse(final HttpResponse<String> response) throws CommunityPortalException {
         if (response.statusCode() != 200) {
-            throw new CommunityPortalException(ExaError.messageBuilder("E-RR-CP-4") //
+            throw new CommunityPortalException(ExaError.messageBuilder("E-RD-CP-4") //
                     .message("The response from the Exasol Community Portal had a bad status: {{statusCode}}.",
                             response.statusCode()) //
                     .toString());

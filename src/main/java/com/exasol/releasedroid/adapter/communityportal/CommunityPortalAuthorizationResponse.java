@@ -120,7 +120,7 @@ public class CommunityPortalAuthorizationResponse {
         }
 
         private IllegalStateException createExternalError(final Exception exception) {
-            return new IllegalStateException(ExaError.messageBuilder("F-RR-1") //
+            return new IllegalStateException(ExaError.messageBuilder("F-RD-1") //
                     .message("External error: {{cause}}", exception) //
                     .ticketMitigation().toString());
         }

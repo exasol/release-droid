@@ -35,7 +35,7 @@ public class ScalaRepository extends BaseRepository {
     public String getVersion() {
         final String buildFile = getSingleFileContentAsString(BUILD_SBT);
         final Optional<String> version = getValueFromBuildFile(buildFile, VERSION_PATTERN);
-        return version.orElseThrow(() -> new RepositoryException(ExaError.messageBuilder("E-RR-REP-9")
+        return version.orElseThrow(() -> new RepositoryException(ExaError.messageBuilder("E-RD-REP-9")
                 .message("Cannot detect Scala's project version in {{filename}} file.") //
                 .parameter("filename", BUILD_SBT).toString()));
 

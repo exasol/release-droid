@@ -52,7 +52,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private GitHubException wrapGitHubException(final String repositoryName, final IOException exception) {
         final String originalMessage = exception.getMessage();
-        final ErrorMessageBuilder errorMessageBuilder = ExaError.messageBuilder("E-RR-GH-1");
+        final ErrorMessageBuilder errorMessageBuilder = ExaError.messageBuilder("E-RD-GH-1");
         if (originalMessage.contains("Not Found")) {
             errorMessageBuilder.message(
                     "Repository {{input}} not found. The repository doesn't exist or the user doesn't have permissions to see it.")
@@ -80,7 +80,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
         } catch (final IOException exception) {
             throw new GitHubException(
-                    ExaError.messageBuilder("F-RR-GH-3")
+                    ExaError.messageBuilder("F-RD-GH-3")
                             .message("Exception happened during releasing a new tag on the GitHub.").toString(),
                     exception);
         }
@@ -101,7 +101,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     .collect(Collectors.toSet());
         } catch (final IOException exception) {
             throw new GitHubException(
-                    ExaError.messageBuilder("F-RR-GH-4")
+                    ExaError.messageBuilder("F-RD-GH-4")
                             .message("Unable to retrieve a list of closed tickets on the GitHub.").toString(),
                     exception);
         }
@@ -113,7 +113,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHRelease release = this.getRepository(repositoryName).getLatestRelease();
             return (release == null) ? null : release.getTagName();
         } catch (final IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("F-RR-GH-5")
+            throw new RepositoryException(ExaError.messageBuilder("F-RD-GH-5")
                     .message("GitHub connection problem happened during retrieving the latest release.").toString(),
                     exception);
         }
@@ -171,7 +171,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     private String getTimeoutExceptionMessage(final int minutesPassed) {
-        return ExaError.messageBuilder("E-RR-GH-3")
+        return ExaError.messageBuilder("E-RD-GH-3")
                 .message("GitHub workflow runs too long. The timeout for monitoring is {{timeout}} minutes.")
                 .parameter("timeout", minutesPassed) //
                 .toString();
@@ -192,7 +192,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private void validateLastRun(final long workflowId, final GHWorkflowRun lastRun) throws GitHubException {
         if (lastRun == null) {
-            throw new GitHubException(ExaError.messageBuilder("E-RR-GH-4") //
+            throw new GitHubException(ExaError.messageBuilder("E-RD-GH-4") //
                     .message("Cannot find runs of GitHub workflow with id {{workflowId}}.") //
                     .parameter("workflowId", workflowId) //
                     .toString());
@@ -206,7 +206,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                 return ghWorkflowRun;
             }
         }
-        throw new GitHubException(ExaError.messageBuilder("E-RR-GH-5") //
+        throw new GitHubException(ExaError.messageBuilder("E-RD-GH-5") //
                 .message("GitHub workflow run with id {{id}} not found") //
                 .parameter("id", lastWorkflowRunId) //
                 .toString());
@@ -229,7 +229,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private void validateWorkflowConclusion(final String workflowConclusion) throws GitHubException {
         if (!workflowConclusion.equalsIgnoreCase("success")) {
-            throw new GitHubException(ExaError.messageBuilder("E-RR-GH-2")
+            throw new GitHubException(ExaError.messageBuilder("E-RD-GH-2")
                     .message("Workflow run failed. Run result: {{workflowConclusion}}")
                     .parameter("workflowConclusion", workflowConclusion)
                     .mitigation("Please check the action logs on the GitHub to analyze the problem.").toString());
@@ -249,7 +249,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHContent content = repository.getFileContent(filePath, branchName);
             return content.read();
         } catch (final IOException exception) {
-            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-7")
+            throw new GitHubException(ExaError.messageBuilder("F-RD-GH-7")
                     .message("Cannot find or read the file {{filePath}} in the repository {{repositoryName}}.")
                     .parameter("filePath", filePath) //
                     .parameter("repositoryName", repositoryName) //
@@ -265,7 +265,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHContent content = repository.getFileContent(filePath, branchName);
             content.update(newContent, commitMessage, branchName);
         } catch (final IOException exception) {
-            throw new GitHubException(ExaError.messageBuilder("F-RR-GH-8")
+            throw new GitHubException(ExaError.messageBuilder("F-RD-GH-8")
                     .message("Cannot update the file {{filePath}} in the repository {{repositoryName}}.")
                     .parameter("filePath", filePath) //
                     .parameter("repositoryName", repositoryName).toString(), exception);

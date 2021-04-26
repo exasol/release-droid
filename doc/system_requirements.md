@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Release Droid (short "RR") is a combination of validators and automation that make a software release safer, faster and more convenient.
+Release Droid (short "RD") is a combination of validators and automation that make a software release safer, faster and more convenient.
 
 ## About This Document
 
@@ -31,7 +31,7 @@ When reading this section please remember that the listed stakeholders are roles
 
 ### Software Developers
 
-Software Developers use RR to validate whether their contributions affecting the next release of software project are complete and correct.
+Software Developers use RD to validate whether their contributions affecting the next release of software project are complete and correct.
 
 ### Software Integrators
 
@@ -39,7 +39,7 @@ Software Integrators are responsible for integrating the various parts of a soft
 
 ### Terms and Abbreviations
 
-The following list gives you an overview of terms and abbreviations commonly used in RR documents.
+The following list gives you an overview of terms and abbreviations commonly used in RD documents.
 
 <dl>
 <dt>Deliverables</dt><dd>Files that are published in a release.</dd>
@@ -49,40 +49,40 @@ The following list gives you an overview of terms and abbreviations commonly use
 
 ## Features
 
-Features are the highest level requirements in this document that describe the main functionality of RR.
+Features are the highest level requirements in this document that describe the main functionality of RD.
 
 ### Release Validation
 `feat~release-validation~1`
 
-RR lets Software Developers and Integrators check whether all conditions for a release are fulfilled.
+RD lets Software Developers and Integrators check whether all conditions for a release are fulfilled.
 
 Needs: req
 
 ### Release Automation
 `feat~release-automation~1`
 
-RR generates releases without human interaction.
+RD generates releases without human interaction.
 
 Needs: req
 
 ### Maven Support
 `feat~maven-support~1`
 
-RR support releases based on Apache Maven projects.
+RD support releases based on Apache Maven projects.
 
 Needs: req
 
 ### GitHub Support
 `feat~github-support~1`
 
-RR supports releasing on GitHub.
+RD supports releasing on GitHub.
 
 Needs: req
 
 ### Report
 `feat~report~1`
 
-RR writes a report that summarizes all steps and their results.
+RD writes a report that summarizes all steps and their results.
 
 Needs: req
 
@@ -91,7 +91,7 @@ Needs: req
 ### Access Project Files
 `req~access-project-files~1`
 
-RR accesses the project's files it needs for validations and releases.
+RD accesses the project's files it needs for validations and releases.
 
 Covers:
 
@@ -99,10 +99,10 @@ Covers:
 
 Needs: dsn
 
-### Users Provide RR Parameters
-`req~users-provide-rr-parameters~1`
+### Users Provide RD Parameters
+`req~users-provide-rd-parameters~1`
 
-Users provide parameters RR needs for releases and validations.
+Users provide parameters RD needs for releases and validations.
 
 Covers:
 
@@ -113,7 +113,7 @@ Needs: dsn
 ### Validate Project
 `req~validate-project~1`
 
-RR runs validations on a user-specified project.
+RD runs validations on a user-specified project.
 
 Covers:
 
@@ -124,7 +124,7 @@ Needs: dsn
 ### Validation Report
 `req~validation-report~1`
 
-RR creates a validation report containing all successful and failed validations.
+RD creates a validation report containing all successful and failed validations.
 
 Covers:
 
@@ -135,7 +135,7 @@ Needs: dsn
 ### Release Project
 `req~release-project~1`
 
-RR releases a user-specified project.
+RD releases a user-specified project.
 
 Covers:
 
@@ -146,7 +146,7 @@ Needs: dsn
 ### Release Report
 `req~release-report~1`
 
-RR creates a release report containing information about releases.
+RD creates a release report containing information about releases.
 
 Covers:
 
@@ -161,14 +161,14 @@ Users can set a branch to perform a validation on.
 
 Rationale:
 
-This allows users to run RR on a specified git branch and fix problems it detects before merging the branch into master.
+This allows users to run RD on a specified git branch and fix problems it detects before merging the branch into master.
 
 Needs: dsn
 
 ### Run Tests Only Once
 `req~run-tests-only-once~1`
 
-RR runs all project's tests only once. This means RR will not run the tests again in case the release was not finished and no changes were made on the project, and a new release command is triggered.
+RD runs all project's tests only once. This means RD will not run the tests again in case the release was not finished and no changes were made on the project, and a new release command is triggered.
 
 Covers:
 
@@ -193,12 +193,12 @@ The [Apache Maven](https://maven.apache.org/) framework for example is well know
 
 Other parts however are more team-specific or company-specific like the decision about contents and layout of a release letter or versioning schemes.
 
-RR must be able to cover both ways of pre-condition validation, one where it uses the validations built into the build framework and defining additional validation rules for the parts the build framework does not cover.
+RD must be able to cover both ways of pre-condition validation, one where it uses the validations built into the build framework and defining additional validation rules for the parts the build framework does not cover.
 
 ##### Validate Mandatory Directory Tree Elements
 `req~validate-mandatory-directory-tree-elements~1`
 
-RR validates mandatory directory tree elements.
+RD validates mandatory directory tree elements.
 
 Comment:
 
@@ -217,7 +217,7 @@ Needs: dsn
 ##### Stopping the Release on Failed Step Validation
 `req~stopping-the-release-on-failed-step-validation~1`
 
-RR stops a release if a step's validation fails.
+RD stops a release if a step's validation fails.
 
 Rationale:
 
@@ -232,7 +232,7 @@ Needs: dsn
 ##### Stopping the Release in Case of Version Conflicts in the Project Sources
 `req~detect-version-conflicts-in-the-project-sources~1`
 
-RR stops a release if there is detects one of the version conflicts listed below:
+RD stops a release if there is detects one of the version conflicts listed below:
 
 * Version number of the current release was already used in a previous release.
 * Version numbering has a gap (e.g it jumped from 1.1.0 to 3.0.0)
@@ -270,7 +270,7 @@ Since the step validation rules depend on the platform the step is executed on, 
 ##### Releasing on Maven Central Repository
 `req~releasing-on-maven~1`
 
-RR can create a Maven Central Repository release.
+RD can create a Maven Central Repository release.
 
 Covers:
 
@@ -281,7 +281,7 @@ Needs: dsn
 ##### Detect Current Version From Maven POM
 `req~detect-current-version-from-maven-pom~1`
 
-RR can derive the current version from the project's POM file.
+RD can derive the current version from the project's POM file.
 
 Rationale:
 
@@ -296,7 +296,7 @@ Needs: dsn
 ##### Detect Deliverables in a Maven Project
 `req~detect-deliverables-in-a-maven-project~1`
 
-RR detects which files in a Maven Project are deliverables.
+RD detects which files in a Maven Project are deliverables.
 
 Rationale:
 
@@ -313,7 +313,7 @@ Needs: dsn
 ##### Releasing on GitHub
 `req~releasing-on-github~1`
 
-RR can create a GitHub release.
+RD can create a GitHub release.
 
 Rationale:
 
@@ -328,7 +328,7 @@ Needs: dsn
 ##### Automatically Modifying Release Date
 `req~automatically-modifying-release-date~1`
 
-RR can automatically commit a release date before starting the release process.
+RD can automatically commit a release date before starting the release process.
 
 Covers:
 
@@ -339,7 +339,7 @@ Needs: dsn
 ##### GitHub Release Description From Release Letter
 `req~gitub-release-description-from-release-letter~1`
 
-RR copies the release letter into the release description of a GitHub release.
+RD copies the release letter into the release description of a GitHub release.
 
 Rationale:
 
@@ -354,7 +354,7 @@ Needs: dsn
 ##### GitHub Release Title From Release Letter
 `req~github-release-title-from-release-letter~1`
 
-RR extracts the GitHub release title from the release letter.
+RD extracts the GitHub release title from the release letter.
 
 Rationale:
 
@@ -369,11 +369,11 @@ Needs: dsn
 ##### Validating GitHub Issue Ticket Numbers
 `req~validation-github-issue-ticket-numbers~1`
 
-RR validates that the issue ticket numbers mentioned in the release letter exist.
+RD validates that the issue ticket numbers mentioned in the release letter exist.
 
 Rationale:
 
-Typos in ticket IDs happen an RR should find them before users do.
+Typos in ticket IDs happen an RD should find them before users do.
 
 Covers:
 
@@ -384,7 +384,7 @@ Needs: dsn
 ##### Validating That GitHub Issues are Closed
 `req~validating-that-github-issues-are-closed~1`
 
-RR validates that the issue ticket numbers mentioned in the release letter are all closed.
+RD validates that the issue ticket numbers mentioned in the release letter are all closed.
 
 Rationale:
 
@@ -399,11 +399,11 @@ Needs: dsn
 ##### Attaching Deliverables to a GitHub Release
 `req~attaching-deliverables-to-a-github-release~1`
 
-RR attaches the deliverables to a GitHub release.
+RD attaches the deliverables to a GitHub release.
 
 Rationale:
 
-After it found out, what the deliverables are in a separate step (see e.g. ["Detect Deliverables in a Maven Project"](#detect-deliverables-in-a-maven-project)), RR is capable of uploading them to GitHub without user intervention.
+After it found out, what the deliverables are in a separate step (see e.g. ["Detect Deliverables in a Maven Project"](#detect-deliverables-in-a-maven-project)), RD is capable of uploading them to GitHub without user intervention.
 
 Covers:
 

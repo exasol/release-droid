@@ -82,6 +82,6 @@ class GitHubRepositoryModifierTest {
         when(this.repositoryMock.getSingleFileContentAsString(CHANGES_PATH)).thenReturn(releaseLetterAsString);
         final RepositoryException repositoryException = assertThrows(RepositoryException.class,
                 () -> this.gitHubRepositoryModifier.writeReleaseDate(this.repositoryMock));
-        assertThat(repositoryException.getMessage(), containsString("E-RR-GH-6"));
+        assertThat(repositoryException.getMessage(), containsString("E-RD-GH-6"));
     }
 }

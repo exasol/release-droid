@@ -1,5 +1,5 @@
 # Latest Used Error Codes
 
-E-RR-REP-10
-E-RR-8
-F-RR-GH-14
+E-RD-REP-10
+E-RD-8
+F-RD-GH-14
