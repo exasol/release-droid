@@ -46,10 +46,11 @@ class JavaRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-7")), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-12")), //
+                () -> assertThat(report.toString(), containsString("E-RD-REP-12")), //
+                () -> assertThat(report.toString(), containsString("E-RD-REP-13")), //
                 () -> assertThat(report.toString(), containsString("project-keeper-maven-plugin")),
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-13")));
+                () -> assertThat(report.toString(), containsString("reproducible-build-maven-plugin")),
+                () -> assertThat(report.toString(), containsString("E-RD-REP-15")));
     }
 
     @ParameterizedTest
@@ -75,7 +76,7 @@ class JavaRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), CoreMatchers.containsString("E-RD-VAL-14")));
+                () -> assertThat(report.toString(), CoreMatchers.containsString("E-RD-REP-16")));
     }
 
     @Test
@@ -87,7 +88,7 @@ class JavaRepositoryValidatorTest {
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), CoreMatchers.containsString("E-RD-VAL-14")));
+                () -> assertThat(report.toString(), CoreMatchers.containsString("E-RD-REP-16")));
     }
 
     @Test

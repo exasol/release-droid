@@ -83,7 +83,8 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RD-4"));
+        assertThat(exception.getMessage(),
+                containsString("E-RD-2: Please specify a mandatory parameter 'repository name'"));
     }
 
     @Test
@@ -101,7 +102,7 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RD-2"));
+        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'goal'"));
     }
 
     @Test
@@ -119,7 +120,7 @@ class UserInputParserTest {
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RD-3"));
+        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
     }
 
     @Test

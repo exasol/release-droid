@@ -10,7 +10,6 @@ import java.util.zip.ZipInputStream;
 
 import org.kohsuke.github.*;
 
-import com.exasol.errorreporting.ErrorMessageBuilder;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.ChecksumFormatter;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
@@ -52,17 +51,21 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private GitHubException wrapGitHubException(final String repositoryName, final IOException exception) {
         final String originalMessage = exception.getMessage();
-        final ErrorMessageBuilder errorMessageBuilder = ExaError.messageBuilder("E-RD-GH-1");
         if (originalMessage.contains("Not Found")) {
-            errorMessageBuilder.message(
-                    "Repository {{input}} not found. The repository doesn't exist or the user doesn't have permissions to see it.")
-                    .parameter("repositoryName", repositoryName);
+            return new GitHubException(ExaError.messageBuilder("E-RD-GH-1") //
+                    .message(
+                            "Repository {{repositoryName}} not found. "
+                                    + "The repository doesn't exist or the user doesn't have permissions to see it.",
+                            repositoryName)
+                    .toString(), exception);
         } else if (originalMessage.contains("Bad credentials")) {
-            errorMessageBuilder.message("A GitHub account with specified username and password doesn't exist.");
+            return new GitHubException(ExaError.messageBuilder("E-RD-GH-13") //
+                    .message("A GitHub account with specified username and password doesn't exist.").toString(),
+                    exception);
         } else {
-            errorMessageBuilder.message(originalMessage);
+            return new GitHubException(ExaError.messageBuilder("E-RD-GH-14") //
+                    .message("{{originalMessage}}", originalMessage).toString(), exception);
         }
-        return new GitHubException(errorMessageBuilder.toString(), exception);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
         } catch (final IOException exception) {
             throw new GitHubException(
-                    ExaError.messageBuilder("F-RD-GH-3")
+                    ExaError.messageBuilder("F-RD-GH-11")
                             .message("Exception happened during releasing a new tag on the GitHub.").toString(),
                     exception);
         }
@@ -101,7 +104,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     .collect(Collectors.toSet());
         } catch (final IOException exception) {
             throw new GitHubException(
-                    ExaError.messageBuilder("F-RD-GH-4")
+                    ExaError.messageBuilder("F-RD-GH-12")
                             .message("Unable to retrieve a list of closed tickets on the GitHub.").toString(),
                     exception);
         }
@@ -113,7 +116,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHRelease release = this.getRepository(repositoryName).getLatestRelease();
             return (release == null) ? null : release.getTagName();
         } catch (final IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("F-RD-GH-5")
+            throw new RepositoryException(ExaError.messageBuilder("F-RD-GH-10")
                     .message("GitHub connection problem happened during retrieving the latest release.").toString(),
                     exception);
         }

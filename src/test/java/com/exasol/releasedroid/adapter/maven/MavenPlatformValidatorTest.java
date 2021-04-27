@@ -42,6 +42,6 @@ class MavenPlatformValidatorTest {
                 .thenThrow(RepositoryException.class);
         final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-9")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-19")));
     }
 }

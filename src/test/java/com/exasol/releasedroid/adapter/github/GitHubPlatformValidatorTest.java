@@ -39,7 +39,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-1")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-21")));
     }
 
     @Test
@@ -50,7 +50,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
         final Report report = validator.validateContainsHeader(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-1")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-21")));
     }
 
     @Test
@@ -80,7 +80,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
         final Report report = validator.validateGitHubTickets(changesLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-2")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-23")));
     }
 
     @Test
@@ -109,7 +109,7 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
         final Report report = validator.validateGitHubTickets(releaseLetter);
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-10")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-22")));
     }
 
     @Test
@@ -130,6 +130,6 @@ class GitHubPlatformValidatorTest {
         final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
         final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-9")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-19")));
     }
 }

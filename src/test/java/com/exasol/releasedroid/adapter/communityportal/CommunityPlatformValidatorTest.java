@@ -50,8 +50,8 @@ class CommunityPlatformValidatorTest {
         final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
         final Report report = validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-16")), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-19")) //
+                () -> assertThat(report.toString(), containsString("E-RD-CP-3")), //
+                () -> assertThat(report.toString(), containsString("E-RD-CP-7")) //
         );
     }
 
@@ -66,9 +66,9 @@ class CommunityPlatformValidatorTest {
         final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
         final Report report = validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-17: 'Project name'")), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-17: 'Project description'")), //
-                () -> assertThat(report.toString(), containsString("E-RD-VAL-18")) //
+                () -> assertThat(report.toString(), containsString("E-RD-CP-5: 'Project name'")), //
+                () -> assertThat(report.toString(), containsString("E-RD-CP-5: 'Project description'")), //
+                () -> assertThat(report.toString(), containsString("E-RD-CP-6")) //
         );
     }
 }

@@ -3,7 +3,9 @@ package com.exasol.releasedroid.adapter.maven;
 import java.io.*;
 import java.util.*;
 
-import org.apache.maven.model.*;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -30,7 +32,7 @@ public class MavenPomParser {
             final MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
             return xpp3Reader.read(reader);
         } catch (final XmlPullParserException | IOException exception) {
-            throw new RepositoryException(ExaError.messageBuilder("E-POM-1").message("Cannot parse pom.xml file.")
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-17").message("Cannot parse pom.xml file.")
                     .mitigation("Please, check if the 'pom.xml' file exists and has a valid format.").toString(),
                     exception);
         }

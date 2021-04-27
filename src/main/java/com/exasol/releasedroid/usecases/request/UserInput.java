@@ -273,20 +273,21 @@ public class UserInput {
 
         private void validateMandatoryParameters() {
             if (this.goal == null) {
-                throwExceptionForMissingParameter("E-RD-2", "goal");
+                throwExceptionForMissingParameter("goal");
             }
             if ((this.platforms == null) || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("E-RD-3", "platforms");
+                throwExceptionForMissingParameter("platforms");
             }
             if (this.repositoryName == null || this.repositoryName.isEmpty()) {
-                throwExceptionForMissingParameter("E-RD-4", "repository name");
+                throwExceptionForMissingParameter("repository name");
             }
         }
 
-        private void throwExceptionForMissingParameter(final String exceptionCode, final String parameter) {
-            throw new IllegalArgumentException(ExaError.messageBuilder(exceptionCode)
-                    .message("Please, specify a mandatory parameter {{parameter}} and re-run the Release Droid")
-                    .parameter("parameter", parameter).toString());
+        private void throwExceptionForMissingParameter(final String parameter) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-2")
+                    .message("Please specify a mandatory parameter {{parameter}} and re-run the Release Droid.",
+                            parameter)
+                    .toString());
         }
     }
 }

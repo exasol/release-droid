@@ -42,7 +42,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
             final var templateAsString = this.repository.getSingleFileContentAsString(COMMUNITY_PORTAL_POST_TEMPLATE);
             report.merge(validateTemplate(templateAsString));
         } catch (final RepositoryException exception) {
-            report.addResult(failedValidation(ExaError.messageBuilder("E-RD-VAL-16") //
+            report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-3") //
                     .message("Cannot find a file {{fileName}}.", COMMUNITY_PORTAL_POST_TEMPLATE) //
                     .mitigation(" Please, add this file according to the user guide.").toString()));
         }
@@ -73,7 +73,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
     }
 
     private ValidationResult getFailedResult(final String value) {
-        return failedValidation(ExaError.messageBuilder("E-RD-VAL-17") //
+        return failedValidation(ExaError.messageBuilder("E-RD-CP-5") //
                 .message("{{value}} for releasing on the community portal is missing. .", value)
                 .mitigation("Please add it according to the user guide.").toString());
     }
@@ -93,7 +93,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
         if (template.hasTags()) {
             report.addResult(getSuccessfulResult("Tags"));
         } else {
-            report.addResult(failedValidation(ExaError.messageBuilder("E-RD-VAL-18") //
+            report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-6") //
                     .message("Tags for releasing on the community portal are missing.")
                     .mitigation("Please add at least one tag.").toString()));
         }
@@ -107,7 +107,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
         if (summary.isPresent()) {
             report.addResult(ValidationResult.successfulValidation("Changes description from the changes file."));
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-19")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-CP-7")
                     .message("## Changes section of the {{releaseLetter}} is missing", releaseLetter.getFileName())
                     .mitigation("Please add this section in order to release on the Community Portal.").toString()));
         }

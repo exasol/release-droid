@@ -25,7 +25,7 @@ public abstract class AbstractRepositoryValidator implements RepositoryValidator
             repository.getSingleFileContentAsString(filePath);
             report.addResult(ValidationResult.successfulValidation(fileDescription));
         } catch (final RepositoryException exception) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-9")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-19")
                     .message("The file {{filePath}} does not exist in the project.") //
                     .parameter("filePath", filePath) //
                     .mitigation("Please, add this file.").toString()));
