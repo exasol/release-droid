@@ -28,17 +28,19 @@ public class CommunityPortalTemplateJsonParser {
     }
 
     private static String getProjectName(final JSONObject jsonObject) {
-        return jsonObject.getString("project name");
+        return jsonObject.has("project name") ? jsonObject.getString("project name") : null;
     }
 
     private static String getProjectDescription(final JSONObject jsonObject) {
-        return jsonObject.getString("project description");
+        return jsonObject.has("project description") ? jsonObject.getString("project description") : null;
     }
 
     private static List<String> getTags(final JSONObject jsonObject) {
-        final Iterator<Object> tagsArrayIterator = jsonObject.getJSONArray("tags").iterator();
         final List<String> tags = new ArrayList<>();
-        tagsArrayIterator.forEachRemaining(tag -> tags.add(tag.toString()));
+        if (jsonObject.has("tags")) {
+            final Iterator<Object> tagsArrayIterator = jsonObject.getJSONArray("tags").iterator();
+            tagsArrayIterator.forEachRemaining(tag -> tags.add(tag.toString()));
+        }
         return tags;
     }
 }

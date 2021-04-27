@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_PORTAL_POST_TEMPLATE;
+
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
@@ -50,7 +52,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
-        final var json = repository.getSingleFileContentAsString("community_portal_post_template.json");
+        final var json = repository.getSingleFileContentAsString(COMMUNITY_PORTAL_POST_TEMPLATE);
         return CommunityPortalTemplateJsonParser.parse(json);
     }
 

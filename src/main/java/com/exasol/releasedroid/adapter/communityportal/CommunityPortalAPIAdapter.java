@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.EXASOL_COMMUNITY_PORTAL_URL;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import com.exasol.releasedroid.adapter.github.User;
  * Implements an adapter to interact with Exasol Community Portal via API.
  */
 public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
-    private static final String EXAMOLE_COMMUNITY_PORTAL_URL = "https://community.exasol.com/";
     private final User user;
 
     /**
@@ -59,7 +59,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
 
     private HttpResponse<String> getAuthorizationResponse() throws CommunityPortalException {
         final HttpRequest request = HttpRequest.newBuilder() //
-                .uri(URI.create(EXAMOLE_COMMUNITY_PORTAL_URL + "restapi/vc/authentication/sessions/login")) //
+                .uri(URI.create(EXASOL_COMMUNITY_PORTAL_URL + "restapi/vc/authentication/sessions/login")) //
                 .header("Content-Type", "application/x-www-form-urlencoded ") //
                 .POST(credentialsFormData(this.user)) //
                 .build();
@@ -81,7 +81,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
     private void createPost(final String post, final String token) throws CommunityPortalException {
         final HttpRequest request = HttpRequest.newBuilder() //
                 .header("li-api-session-key", token) //
-                .uri(URI.create(EXAMOLE_COMMUNITY_PORTAL_URL + "api/2.0/messages")) //
+                .uri(URI.create(EXASOL_COMMUNITY_PORTAL_URL + "api/2.0/messages")) //
                 .POST(HttpRequest.BodyPublishers.ofString(post)) //
                 .build();
         sendRequest(request);
