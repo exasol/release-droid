@@ -36,6 +36,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         }
     }
 
+    // [impl->dsn~extract-release-changes-description-from-release-letter~1]
     private CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
         final var communityPortalTemplate = getCommunityPortalTemplate(repository);
@@ -51,6 +52,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
                 .build();
     }
 
+    // [impl->dsn~extract-project-description-from-json-file~1]
     private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
         final var json = repository.getSingleFileContentAsString(COMMUNITY_PORTAL_POST_TEMPLATE);
         return CommunityPortalTemplateJsonParser.parse(json);

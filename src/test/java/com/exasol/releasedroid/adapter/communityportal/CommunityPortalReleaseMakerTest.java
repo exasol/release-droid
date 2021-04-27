@@ -15,6 +15,8 @@ import com.exasol.releasedroid.usecases.repository.Repository;
 
 class CommunityPortalReleaseMakerTest {
     @Test
+    // [utest->dsn~extract-release-changes-description-from-release-letter~1]
+    // [utest->dsn~extract-project-description-from-json-file~1]
     void testGetCommunityPost() throws CommunityPortalException {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         final CommunityPortalGateway gatewayMock = Mockito.mock(CommunityPortalGateway.class);

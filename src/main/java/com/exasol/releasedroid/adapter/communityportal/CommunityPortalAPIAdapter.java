@@ -30,6 +30,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
     }
 
     @Override
+    // [impl->dsn~create-new-release-announcement-on-exasol-community-portal~1]
     public void sendDraftPost(final CommunityPost communityPost) throws CommunityPortalException {
         final String token = getAuthenticationToken();
         createPost(CommunityPostConverter.toJson(communityPost), token);

@@ -79,6 +79,13 @@ RD supports releasing on GitHub.
 
 Needs: req
 
+### Exasol Community Portal Support
+`feat~exasol-community-portal-support~1`
+
+RD supports releasing on the [Exasol Community Portal](https://community.exasol.com/).
+
+Needs: req
+
 ### Report
 `feat~report~1`
 
@@ -351,7 +358,7 @@ Covers:
 
 Needs: dsn
 
-##### GitHub Release Title From Release Letter
+##### GitHub Release Title from Release Letter
 `req~github-release-title-from-release-letter~1`
 
 RD extracts the GitHub release title from the release letter.
@@ -408,6 +415,45 @@ After it found out, what the deliverables are in a separate step (see e.g. ["Det
 Covers:
 
 * [feat~github-support~1](#github-support)
+
+Needs: dsn
+
+### Exasol Community Portal Support
+
+##### Releasing on Exasol Community Portal
+`req~releasing-on-exasol-community-portal~1`
+
+RD can create a release announcement draft on the Exasol Community Portal.
+
+Rationale:
+
+We create a release announcement draft after each release. The announcements have the same structure, therefore it is easy to automate them.
+
+Covers:
+
+* [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
+
+Needs: dsn
+
+##### Release Changes Description from Release Letter
+`req~release-changes-description-from-release-letter~1`
+
+RD copies the changes from the release letter into the announcement.
+
+Covers:
+
+* [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
+
+Needs: dsn
+
+##### Get Project Description from Repository
+`req~get-project-description-from-repository~1`
+
+RD get the general project-related information from the repository.
+
+Covers:
+
+* [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
 
 Needs: dsn
 
