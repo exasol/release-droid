@@ -28,8 +28,8 @@ public class RepositoryFactory implements RepositoryGateway {
 
     @Override
     public Repository getRepository(final UserInput userInput) {
-        final RepositoryGate repositoryGate = getRepositoryGate(userInput);
-        final Language language = getLanguage(userInput);
+        final var repositoryGate = getRepositoryGate(userInput);
+        final var language = getLanguage(userInput);
         switch (language) {
         case JAVA:
             return new JavaRepository(repositoryGate, this.githubGateway);
@@ -37,8 +37,7 @@ public class RepositoryFactory implements RepositoryGateway {
             return new ScalaRepository(repositoryGate, this.githubGateway);
         default:
             throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-REP-10") //
-                    .message("Unsupported programming language: {{language}}.") //
-                    .parameter("language", language).toString());
+                    .message("Unsupported programming language: {{language}}.", language).toString());
         }
     }
 
@@ -73,13 +72,24 @@ public class RepositoryFactory implements RepositoryGateway {
 
     private Language detectLanguageAutomatically(final UserInput userInput) {
         try {
-            final Language language = Language
-                    .getLanguage(this.githubGateway.getRepositoryPrimaryLanguage(userInput.getRepositoryName()));
+            final String repositoryPrimaryLanguage = this.githubGateway
+                    .getRepositoryPrimaryLanguage(userInput.getRepositoryName());
+            validateLanguage(repositoryPrimaryLanguage);
+            final var language = Language.getLanguage(repositoryPrimaryLanguage);
             LOGGER.warning(() -> "The repository language was detected automatically: " + language
                     + ". If it was detected incorrectly, please specify it manually using -lg <language> argument.");
             return language;
         } catch (final GitHubException exception) {
             throw new RepositoryException(exception);
+        }
+    }
+
+    private void validateLanguage(final String repositoryPrimaryLanguage) {
+        if (repositoryPrimaryLanguage == null || repositoryPrimaryLanguage.isEmpty()) {
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-11") //
+                    .message("Repository language cannot be detected automatically.") //
+                    .mitigation("Please provide the language via user input (check the user guide).") //
+                    .toString());
         }
     }
 }

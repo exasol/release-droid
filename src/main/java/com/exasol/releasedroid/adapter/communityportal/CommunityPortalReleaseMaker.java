@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
-import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
 /**
@@ -43,7 +42,8 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         final var releaseLetter = repository.getReleaseLetter(version);
         final String header = communityPortalTemplate.getProjectName() + " " + version;
         final String gitHubReleaseLink = "https://github.com/" + repository.getName() + "/releases/tag/" + version;
-        final String body = renderBody(communityPortalTemplate, releaseLetter, header, gitHubReleaseLink);
+        final String body = renderBody(header, communityPortalTemplate.getProjectDescription(),
+                releaseLetter.getSummary().orElseThrow(), gitHubReleaseLink);
         return CommunityPost.builder() //
                 .boardId("ProductNews") //
                 .header(header + " released") //
@@ -58,10 +58,8 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         return CommunityPortalTemplateJsonParser.parse(json);
     }
 
-    private String renderBody(final CommunityPortalTemplate communityPortalTemplate, final ReleaseLetter releaseLetter,
-            final String header, final String gitHubReleaseLink) {
-        final var projectDescription = communityPortalTemplate.getProjectDescription();
-        final String changesDescription = releaseLetter.getSummary().orElseThrow();
+    private String renderBody(final String header, final String projectDescription, final String changesDescription,
+            final String gitHubReleaseLink) {
         final var communityPostRenderer = new CommunityPostRenderer();
         return communityPostRenderer.renderCommunityPostBody(header, projectDescription, changesDescription,
                 gitHubReleaseLink);

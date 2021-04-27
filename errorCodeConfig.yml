@@ -7,11 +7,11 @@ error-tags:
   RD-VAL:
     packages:
       - com.exasol.releasedroid.usecases.validate
-    highest-index: 15
+    highest-index: 19
   RD-REP:
     packages:
       - com.exasol.releasedroid.adapter
-    highest-index: 10
+    highest-index: 11
   RD-GH:
     packages:
       - com.exasol.releasedroid.adapter.github
