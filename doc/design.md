@@ -452,6 +452,41 @@ Covers:
 
 Needs: impl, utest
 
+### Release on Exasol Community Portal
+
+#### Create new Release Announcement on Exasol Community Portal
+`dsn~create-new-release-announcement-on-exasol-community-portal~1`
+
+RD creates a new release announcement draft on the Exasol Community Portal via Khoros API.
+
+Covers:
+
+* `req~releasing-on-exasol-community-portal~1`
+
+Needs: impl
+
+#### Extract Release Changes Description from Release Letter
+`dsn~extract-release-changes-description-from-release-letter~1`
+
+RD extracts a release changes description from the `## Summary` section of the release letter.
+
+Covers:
+
+* `req~release-changes-description-from-release-letter~1`
+
+Needs: impl, utest
+
+#### Extract Project Description from File
+`dsn~extract-project-description-from-file~1`
+
+RD extracts information required to create a release announcement from the `release_config.yml` file that is located in the root directory of the project.
+
+Covers:
+
+* `req~get-project-description-from-repository~1`
+
+Needs: impl, utest
+
 ### Release Clean Up
 
 #### Remove Checksum

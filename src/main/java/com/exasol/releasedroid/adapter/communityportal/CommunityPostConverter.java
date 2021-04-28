@@ -21,7 +21,7 @@ public class CommunityPostConverter {
         final var board = new JSONObject();
         board.put("id", communityPost.getBoardId());
         final var contentWorkflowAction = new JSONObject();
-        contentWorkflowAction.put("workflow_action", "save_draft");
+        contentWorkflowAction.put("workflow_action", "submit_for_review");
         final var jsonTags = new JSONObject();
         final var tagItems = new JSONArray();
         for (final var tag : communityPost.getTags()) {

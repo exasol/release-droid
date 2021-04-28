@@ -47,7 +47,7 @@ class GitHubAPIAdapterTest {
     }
 
     @Test
-    void getDefaultBranch() throws GitHubException {
+    void testGetLanguage() throws GitHubException {
         final String language = "Java";
         when(this.repositoryMock.getLanguage()).thenReturn(language);
         assertThat(this.apiAdapter.getRepositoryPrimaryLanguage(REPOSITORY_NAME), equalTo(language));

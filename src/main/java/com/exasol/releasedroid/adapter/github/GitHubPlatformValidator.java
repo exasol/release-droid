@@ -54,7 +54,7 @@ public class GitHubPlatformValidator extends AbstractRepositoryValidator {
         final Report report = Report.validationReport();
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty() || header.get().isEmpty()) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-1").message(
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-21").message(
                     "The file {{fileName}} does not contain 'Code name' section which is used as a GitHub release header."
                             + " Please, add this section to the file.")
                     .parameter("fileName", changes.getFileName()).toString()));
@@ -77,7 +77,7 @@ public class GitHubPlatformValidator extends AbstractRepositoryValidator {
                 report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
             }
         } catch (final GitHubException exception) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-10")
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-22")
                     .message("Unable to retrieve a list of closed tickets on GitHub: {{cause}}")
                     .unquotedParameter("cause", exception.getMessage()).toString()));
         }
@@ -89,13 +89,13 @@ public class GitHubPlatformValidator extends AbstractRepositoryValidator {
         final Report report = Report.validationReport();
         final String wrongTicketsString = String.join(", ", wrongTickets);
         if (isDefaultBranch) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-VAL-2").message(
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-23").message(
                     "Some of the mentioned GitHub issues are not closed or do not exists: {{wrongTicketsString}}.")
                     .unquotedParameter("wrongTicketsString", wrongTicketsString)
                     .mitigation("Please, check the issues numbers in your {{fileName}}.")
                     .parameter("fileName", fileName).toString()));
         } else {
-            final String warningMessage = ExaError.messageBuilder("W-RD-VAL-1").message(
+            final var warningMessage = ExaError.messageBuilder("W-RD-GH-24").message(
                     "Don't forget to close the tickets mentioned in the {{fileName}} file before you release: {{wrongTicketsString}}.")
                     .parameter("fileName", fileName) //
                     .unquotedParameter("wrongTicketsString", wrongTicketsString).toString();

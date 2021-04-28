@@ -40,14 +40,15 @@ class UserInputTest {
     void testUserInputWithoutPlatforms() {
         final Builder builder = builder().goal(GOAL);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RD-3"));
+        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
     }
 
     @Test
     void testUserInputWithoutRepositoryName() {
         final Builder builder = builder().goal(GOAL).platforms(PLATFORM);
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
-        assertThat(exception.getMessage(), containsString("E-RD-4"));
+        assertThat(exception.getMessage(),
+                containsString("E-RD-2: Please specify a mandatory parameter 'repository name'"));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -15,18 +16,16 @@ import com.exasol.releasedroid.usecases.repository.Repository;
 
 class CommunityPortalReleaseMakerTest {
     @Test
+    // [utest->dsn~extract-release-changes-description-from-release-letter~1]
+    // [utest->dsn~extract-project-description-from-file~1]
     void testGetCommunityPost() throws CommunityPortalException {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         final CommunityPortalGateway gatewayMock = Mockito.mock(CommunityPortalGateway.class);
-        final String communityPortalTemplate = "{\n"
-                + "  \"tags\": [\"Release Droid\", \"Java Tools\", \"Open Source\", \"GitHub\"],"
-                + " \"project name\": \"Virtual Schema for ElasticSearch\"," //
-                + "  \"project description\": \"Here is a project description.\"}";
+        final String communityPortalTemplate = getCommunityPortalTemplate();
         final ReleaseLetter releaseLetter = getReleaseLetter();
         when(repositoryMock.getName()).thenReturn("exasol/elasticsearch-virtual-schema");
         when(repositoryMock.getVersion()).thenReturn("2.0.0");
-        when(repositoryMock.getSingleFileContentAsString("community_portal_post_template.json"))
-                .thenReturn(communityPortalTemplate);
+        when(repositoryMock.getSingleFileContentAsString(RELEASE_CONFIG)).thenReturn(communityPortalTemplate);
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
         communityPortalReleaseMaker.makeRelease(repositoryMock);
@@ -42,6 +41,16 @@ class CommunityPortalReleaseMakerTest {
                 .tags(List.of("Release Droid", "Java Tools", "Open Source", "GitHub")) //
                 .boardId("ProductNews").build();
         verify(gatewayMock, times(1)).sendDraftPost(communityPost);
+    }
+
+    private String getCommunityPortalTemplate() {
+        return "community-tags:\n" //
+                + "- Release Droid\n" //
+                + "- Java Tools\n" //
+                + "- Open Source\n" //
+                + "- GitHub\n" //
+                + "community-project-name: Virtual Schema for ElasticSearch\n" //
+                + "community-project-description: Here is a project description.\n";
     }
 
     private ReleaseLetter getReleaseLetter() {
@@ -60,15 +69,11 @@ class CommunityPortalReleaseMakerTest {
     void testGetCommunityPostThrowsException() throws CommunityPortalException {
         final Repository repositoryMock = Mockito.mock(Repository.class);
         final CommunityPortalGateway gatewayMock = Mockito.mock(CommunityPortalGateway.class);
-        final String communityPortalTemplate = "{\n"
-                + "  \"tags\": [\"Release Droid\", \"Java Tools\", \"Open Source\", \"GitHub\"],"
-                + " \"project name\": \"Virtual Schema for ElasticSearch\"," //
-                + "  \"project description\": \"Here is a project description.\"}";
+        final String communityPortalTemplate = getCommunityPortalTemplate();
         final ReleaseLetter releaseLetter = getReleaseLetter();
         when(repositoryMock.getName()).thenReturn("exasol/elasticsearch-virtual-schema");
         when(repositoryMock.getVersion()).thenReturn("2.0.0");
-        when(repositoryMock.getSingleFileContentAsString("community_portal_post_template.json"))
-                .thenReturn(communityPortalTemplate);
+        when(repositoryMock.getSingleFileContentAsString(RELEASE_CONFIG)).thenReturn(communityPortalTemplate);
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
         doThrow(CommunityPortalException.class).when(gatewayMock).sendDraftPost(any());

@@ -49,4 +49,31 @@ public class CommunityPortalTemplate {
     public String getProjectDescription() {
         return this.projectDescription;
     }
+
+    /**
+     * Check if has a project name.
+     *
+     * @return true if has a project name
+     */
+    public boolean hasProjectName() {
+        return this.projectName != null && !this.projectName.isEmpty();
+    }
+
+    /**
+     * Check if has a project description.
+     *
+     * @return true if has a project description
+     */
+    public boolean hasProjectDescription() {
+        return this.projectDescription != null && !this.projectDescription.isEmpty();
+    }
+
+    /**
+     * Check if has tags.
+     *
+     * @return true if has tags
+     */
+    public boolean hasTags() {
+        return this.tags != null && !this.tags.isEmpty();
+    }
 }

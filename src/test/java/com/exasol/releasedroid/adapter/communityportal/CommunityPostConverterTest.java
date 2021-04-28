@@ -21,7 +21,7 @@ class CommunityPostConverterTest {
                 + "\"type\":\"message\"," //
                 + "\"body\":\"Here is my article!\"," //
                 + "\"board\":{\"id\":\"myBoard\"}," //
-                + "\"content_workflow_action\":{\"workflow_action\":\"save_draft\"}," //
+                + "\"content_workflow_action\":{\"workflow_action\":\"submit_for_review\"}," //
                 + "\"teaser\":\"Find out how it can help you.\"," //
                 + "\"tags\":{\"items\":[{\"text\":\"Docker\"},{\"text\":\"Exasol\"},{\"text\":\"Integration\"}]}" //
                 + "}" //

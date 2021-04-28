@@ -6,9 +6,12 @@ Code name:
 
 ## Bug fixes
 
+* #146: Fixed NullPointerException caused by validation a branch on an empty repository. 
+
 ## Features
 
 * #111: Added support for Exasol Community Portal release article. 
+* #141: Added validation for Exasol Community Portal release.
 
 ## Refactoring
 
@@ -22,9 +25,24 @@ Code name:
 
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.12.2` to `2.12.3`
 * Updated `org.apache.maven:maven-model:3.6.3` to `3.8.1`
+* Added `org.commonmark:commonmark:0.17.1`
 * Updated `org.kohsuke:github-api:1.123` to `1.128`
+* Added `org.yaml:snakeyaml:1.28`
+
+### Test Dependency Updates
+
+* Updated `org.mockito:mockito-core:3.8.0` to `3.9.0`
+* Updated `org.mockito:mockito-junit-jupiter:3.8.0` to `3.9.0`
 
 ### Plugin Dependency Updates
 
-* Added `com.exasol:error-code-crawler-maven-plugin:0.1.1`
-* Added `com.exasol:project-keeper-maven-plugin:0.6.1`
+* Added `com.exasol:error-code-crawler-maven-plugin:0.3.0`
+* Added `com.exasol:project-keeper-maven-plugin:0.7.0`
+* Updated `org.apache.maven.plugins:maven-clean-plugin:2.5` to `3.1.0`
+* Updated `org.apache.maven.plugins:maven-deploy-plugin:2.7` to `2.8.2`
+* Updated `org.apache.maven.plugins:maven-install-plugin:2.4` to `2.5.2`
+* Updated `org.apache.maven.plugins:maven-jar-plugin:2.4` to `3.2.0`
+* Updated `org.apache.maven.plugins:maven-resources-plugin:2.6` to `3.2.0`
+* Updated `org.apache.maven.plugins:maven-site-plugin:3.3` to `3.9.1`
+* Updated `org.codehaus.mojo:versions-maven-plugin:2.7` to `2.8.1`
+* Updated `org.jacoco:jacoco-maven-plugin:0.8.5` to `0.8.6`
