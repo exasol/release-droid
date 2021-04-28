@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_PORTAL_POST_TEMPLATE;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
 
 import java.util.logging.Logger;
 
@@ -52,10 +52,9 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
                 .build();
     }
 
-    // [impl->dsn~extract-project-description-from-json-file~1]
+    // [impl->dsn~extract-project-description-from-file~1]
     private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
-        final var json = repository.getSingleFileContentAsString(COMMUNITY_PORTAL_POST_TEMPLATE);
-        return CommunityPortalTemplateJsonParser.parse(json);
+        return CommunityPortalTemplateParser.parse(repository.getSingleFileContentAsString(RELEASE_CONFIG));
     }
 
     private String renderBody(final String header, final String projectDescription, final String changesDescription,

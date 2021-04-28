@@ -102,25 +102,24 @@ Rules:
 
 ### Rules for Release on Exasol Community Portal
 
-* The project must contain a `community_portal_post_template.json` file in the root directory. This json file has a few required objects:
+* The project must contain a `release_config.yml` file in the root directory. This file has a few required objects:
 
-1. Array of strings `tags`: one or more tag of the project to be added to the community post;
-1. String `project name`: this is how the project name will be displayed in the post header;
-1. String `project description`: a short description of the project. Please, use markdown in the description;
+1. Array of strings `community-tags`: one or more tag of the project to be added to the community post;
+1. String `community-project-name`: this is how the project name will be displayed in the post header;
+1. String `community-project-description`: a short description of the project. Please, use markdown in the description;
 
 An example of the file:
 
-```json
-{
-  "tags": [
-    "Release Droid Testing",
-    "Java Tools",
-    "Open Source",
-    "GitHub"
-  ],
-  "project name": "Testing Release Droid",
-  "project description": "This is a project that helps us testing the [Release Droid](https://github.com/exasol/release-droid)."
-}
+```yaml
+community-tags:
+  - Release Droid Testing
+  - Java Tools
+  - Open Source
+  - GitHub
+community-project-name: Testing Release Robot
+community-project-description: |
+  This is an `open-source tool` that helps integration us testing
+  the [Release Droid](https://github.com/exasol/release-droid).
 ```
 
 * A `changes_<version>.md` file must contain a `## Summary` section. Please describe the changes nicely as we copy the section directly into the releaese announcement. 

@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_PORTAL_POST_TEMPLATE;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.failedValidation;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.successfulValidation;
 
@@ -39,11 +39,11 @@ public class CommunityPlatformValidator implements RepositoryValidator {
     private Report validateCommunityPortalTemplate() {
         final var report = Report.validationReport();
         try {
-            final var templateAsString = this.repository.getSingleFileContentAsString(COMMUNITY_PORTAL_POST_TEMPLATE);
+            final var templateAsString = this.repository.getSingleFileContentAsString(RELEASE_CONFIG);
             report.merge(validateTemplate(templateAsString));
         } catch (final RepositoryException exception) {
             report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-3") //
-                    .message("Cannot find a file {{fileName}}.", COMMUNITY_PORTAL_POST_TEMPLATE) //
+                    .message("Cannot find a file {{fileName}}.", RELEASE_CONFIG) //
                     .mitigation(" Please, add this file according to the user guide.").toString()));
         }
         return report;
@@ -51,7 +51,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
 
     private Report validateTemplate(final String templateAsString) {
         final var report = Report.validationReport();
-        final var template = CommunityPortalTemplateJsonParser.parse(templateAsString);
+        final var template = CommunityPortalTemplateParser.parse(templateAsString);
         report.merge(validateProjectName(template));
         report.merge(validateProjectDescription(template));
         report.merge(validateTags(template));
@@ -74,7 +74,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
 
     private ValidationResult getFailedResult(final String value) {
         return failedValidation(ExaError.messageBuilder("E-RD-CP-5") //
-                .message("{{value}} for releasing on the community portal is missing. .", value)
+                .message("{{value}} for releasing on the community portal is missing.", value)
                 .mitigation("Please add it according to the user guide.").toString());
     }
 

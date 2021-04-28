@@ -476,10 +476,10 @@ Covers:
 
 Needs: impl, utest
 
-#### Extract Project Description from JSON File
-`dsn~extract-project-description-from-json-file~1`
+#### Extract Project Description from File
+`dsn~extract-project-description-from-file~1`
 
-RD extracts information required to create a release announcement from the `community_portal_post_template.json` file that is located in the root directory of the project.
+RD extracts information required to create a release announcement from the `release_config.yml` file that is located in the root directory of the project.
 
 Covers:
 
