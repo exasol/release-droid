@@ -15,6 +15,7 @@ Code name:
 
 ## Refactoring
 
+* #131: Refactored pom.xml plugins validations.
 * #138: Organized packages structure.
 * #142: Updated GitHub API library and used recently added features from it.
 * #144: Changed the project tag from RR to RD.
