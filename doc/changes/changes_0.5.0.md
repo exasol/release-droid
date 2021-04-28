@@ -27,6 +27,7 @@ Code name:
 * Updated `org.apache.maven:maven-model:3.6.3` to `3.8.1`
 * Added `org.commonmark:commonmark:0.17.1`
 * Updated `org.kohsuke:github-api:1.123` to `1.128`
+* Added `org.yaml:snakeyaml:1.28`
 
 ### Test Dependency Updates
 
@@ -36,7 +37,7 @@ Code name:
 ### Plugin Dependency Updates
 
 * Added `com.exasol:error-code-crawler-maven-plugin:0.3.0`
-* Added `com.exasol:project-keeper-maven-plugin:0.6.1`
+* Added `com.exasol:project-keeper-maven-plugin:0.7.0`
 * Updated `org.apache.maven.plugins:maven-clean-plugin:2.5` to `3.1.0`
 * Updated `org.apache.maven.plugins:maven-deploy-plugin:2.7` to `2.8.2`
 * Updated `org.apache.maven.plugins:maven-install-plugin:2.4` to `2.5.2`

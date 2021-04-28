@@ -43,7 +43,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
             report.merge(validateTemplate(templateAsString));
         } catch (final RepositoryException exception) {
             report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-3") //
-                    .message("Cannot find a file {{fileName}}.", RELEASE_CONFIG) //
+                    .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG) //
                     .mitigation(" Please, add this file according to the user guide.").toString()));
         }
         return report;
@@ -108,7 +108,7 @@ public class CommunityPlatformValidator implements RepositoryValidator {
             report.addResult(ValidationResult.successfulValidation("Changes description from the changes file."));
         } else {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-CP-7")
-                    .message("## Changes section of the {{releaseLetter}} is missing", releaseLetter.getFileName())
+                    .message("Cannot find the ## Summary section in the release letter {{releaseLetter}}.", releaseLetter.getFileName())
                     .mitigation("Please add this section in order to release on the Community Portal.").toString()));
         }
         return report;

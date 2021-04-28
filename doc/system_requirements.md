@@ -438,7 +438,7 @@ Needs: dsn
 ##### Release Changes Description from Release Letter
 `req~release-changes-description-from-release-letter~1`
 
-RD copies the changes from the release letter into the announcement.
+RD copies the new release changes description from the release letter into the release announcement.
 
 Covers:
 
@@ -449,7 +449,7 @@ Needs: dsn
 ##### Get Project Description from Repository
 `req~get-project-description-from-repository~1`
 
-RD get the general project-related information from the repository.
+RD gets the general project-related information from the repository.
 
 Covers:
 
