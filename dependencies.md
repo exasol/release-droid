@@ -52,9 +52,9 @@
 [15]: http://www.snakeyaml.org
 [11]: https://github.com/exasol/error-reporting-java
 [1]: https://www.opensource.org/licenses/mit-license.php
+[13]: https://github.com/commonmark/commonmark-java
 [16]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [29]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[13]: https://github.com/commonmark/commonmark-java/commonmark
 [12]: https://opensource.org/licenses/MIT
 [21]: https://github.com/mockito/mockito
 [35]: http://www.mojohaus.org/versions-maven-plugin/
