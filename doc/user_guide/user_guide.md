@@ -116,7 +116,7 @@ community-tags:
   - Java Tools
   - Open Source
   - GitHub
-community-project-name: Testing Release Robot
+community-project-name: Testing Release Droid
 community-project-description: |
   This is an `open-source tool` that helps integration us testing
   the [Release Droid](https://github.com/exasol/release-droid).
