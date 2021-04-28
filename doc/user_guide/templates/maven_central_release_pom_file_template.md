@@ -107,6 +107,23 @@ Check if your `pom.xml` file contains all necessary components.
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.exasol</groupId>
+                <artifactId>project-keeper-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <modules>
+                        <module>maven_central</module>
+                    </modules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
