@@ -4,14 +4,14 @@ Code name:
 
 ## Summary
 
-## Bug fixes
-
-* #146: Fixed NullPointerException caused by validation a branch on an empty repository. 
-
 ## Features
 
 * #111: Added support for Exasol Community Portal release article. 
 * #141: Added validation for Exasol Community Portal release.
+
+## Bug fixes
+
+* #146: Fixed NullPointerException caused by validation a branch on an empty repository.
 
 ## Refactoring
 
@@ -19,6 +19,7 @@ Code name:
 * #138: Organized packages structure.
 * #142: Updated GitHub API library and used recently added features from it.
 * #144: Changed the project tag from RR to RD.
+* #126: Updated changes file template.
 
 ## Dependency Updates
 

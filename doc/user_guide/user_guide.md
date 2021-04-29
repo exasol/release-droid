@@ -170,7 +170,7 @@ If you miss this step Release Droid will ask you to input the credentials direct
 |-------------|--------------|-----------|----------------------------------------------------|----------------------------------------|
 | -branch     | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name                |
 | -goal       | -g           | Yes       | Goal to execute                                    | `validate`, `release`                  |
-| -help       | -n           | No        | Prints help                                        |                                        |
+| -help       | -h           | No        | Prints help                                        |                                        |
 | -language   | -lg          | No        | Specify repository language if not auto-detected   | `java`, `scala`                        |
 | -local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
 | -name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
