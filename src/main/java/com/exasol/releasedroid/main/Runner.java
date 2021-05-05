@@ -8,8 +8,7 @@ import java.util.logging.LogManager;
 
 import org.kohsuke.github.GitHub;
 
-import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
-import com.exasol.releasedroid.adapter.RepositoryFactory;
+import com.exasol.releasedroid.adapter.*;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;

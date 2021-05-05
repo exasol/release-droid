@@ -1,43 +1,62 @@
 package com.exasol.releasedroid.adapter.github;
 
-import static com.exasol.releasedroid.adapter.github.GitHubPlatformValidator.GITHUB_WORKFLOW_PATH;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_RELEASE_WORKFLOW_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
+@ExtendWith(MockitoExtension.class)
 class GitHubPlatformValidatorTest {
+    private static final String VERSION = "1.0.1";
+    @Mock
+    private Repository repositoryMock;
+    @Mock
+    private ReleaseLetter releaseLetterMock;
+    @Mock
+    private GitHubGateway githubGatewayMock;
+    private GitHubPlatformValidator validator;
+
+    @BeforeEach
+    void beforeEach() {
+        when(this.repositoryMock.getVersion()).thenReturn(VERSION);
+        when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
+        this.validator = new GitHubPlatformValidator(this.repositoryMock, this.githubGatewayMock);
+    }
+
     @Test
-    // [utest->dsn~validate-release-letter~1]
-    void testValidateContainsHeader() {
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        when(changesLetter.getHeader()).thenReturn(Optional.of("header"));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
-        final Report report = validator.validateContainsHeader(changesLetter);
-        assertFalse(report.hasFailures());
+    // [utest->dsn~validate-github-issues-exists~1]
+    // [utest->dsn~validate-github-issues-are-closed~1]
+    void testValidationSuccessful() throws GitHubException {
+        when(this.repositoryMock.getStructureValidators()).thenReturn(List.of());
+        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_RELEASE_WORKFLOW_PATH)).thenReturn("");
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
+        when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2));
+        assertFalse(this.validator.validate().hasFailures());
     }
 
     @Test
     // [utest->dsn~validate-release-letter~1]
     void testValidateContainCodeNameEmptyOptional() {
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        when(changesLetter.getHeader()).thenReturn(Optional.empty());
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
-        final Report report = validator.validateContainsHeader(changesLetter);
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.empty());
+        final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-GH-21")));
     }
@@ -45,10 +64,8 @@ class GitHubPlatformValidatorTest {
     @Test
     // [utest->dsn~validate-release-letter~1]
     void testValidateContainCodeNameEmptyString() {
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        when(changesLetter.getHeader()).thenReturn(Optional.of(""));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(null, null);
-        final Report report = validator.validateContainsHeader(changesLetter);
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of(""));
+        final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-GH-21")));
     }
@@ -56,79 +73,45 @@ class GitHubPlatformValidatorTest {
     @Test
     // [utest->dsn~validate-github-issues-exists~1]
     // [utest->dsn~validate-github-issues-are-closed~1]
-    void testValidateGitHubTickets() throws GitHubException {
-        final GitHubGateway githubGateway = Mockito.mock(GitHubGateway.class);
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(githubGateway.getClosedTickets(anyString())).thenReturn(Set.of(1, 2, 3, 4));
-        when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
-        final Report report = validator.validateGitHubTickets(changesLetter);
-        assertFalse(report.hasFailures());
-    }
-
-    @Test
-    // [utest->dsn~validate-github-issues-exists~1]
-    // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() throws GitHubException {
-        final GitHubGateway githubGateway = Mockito.mock(GitHubGateway.class);
-        final ReleaseLetter changesLetter = Mockito.mock(ReleaseLetter.class);
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(repositoryMock.isOnDefaultBranch()).thenReturn(true);
-        when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
-        when(changesLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
-        final Report report = validator.validateGitHubTickets(changesLetter);
+        when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
+        when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
+        when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
+        final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-23")));
+                () -> assertThat(report.toString(), containsString(
+                        "E-RD-GH-23: Some of the mentioned GitHub issues are not closed or do not exists: 5, 6")));
     }
 
     @Test
     // [utest->dsn~validate-github-issues-exists~1]
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsOnUserSpecifiedBranch() throws GitHubException {
-        final GitHubGateway githubGateway = Mockito.mock(GitHubGateway.class);
-        final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(repositoryMock.isOnDefaultBranch()).thenReturn(false);
-        when(githubGateway.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
-        when(releaseLetter.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
-        final Report report = validator.validateGitHubTickets(releaseLetter);
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.repositoryMock.isOnDefaultBranch()).thenReturn(false);
+        when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
+        when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));
+        final Report report = this.validator.validate();
         assertFalse(report.hasFailures());
     }
 
     @Test
     // [utest->dsn~validate-github-issues-exists~1]
     void testValidateGitHubTicketsCannotRetrieveTickets() throws GitHubException {
-        final GitHubGateway githubGateway = Mockito.mock(GitHubGateway.class);
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        final ReleaseLetter releaseLetter = Mockito.mock(ReleaseLetter.class);
-        when(repositoryMock.getName()).thenReturn("name");
-        when(githubGateway.getClosedTickets("name")).thenThrow(new GitHubException(""));
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, githubGateway);
-        final Report report = validator.validateGitHubTickets(releaseLetter);
+        when(this.githubGatewayMock.getClosedTickets(any())).thenThrow(GitHubException.class);
+        final Report report = this.validator.validate();
+        System.out.println(report.toString());
+
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-GH-22")));
     }
 
     @Test
     // [utest->dsn~validate-github-workflow-exists~1]
-    void testValidateWorkflowFile() {
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenReturn("I exist");
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
-        final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
-        assertFalse(report.hasFailures());
-    }
-
-    @Test
-    // [utest->dsn~validate-github-workflow-exists~1]
     void testValidateWorkflowFileFails() {
-        final Repository repositoryMock = Mockito.mock(Repository.class);
-        when(repositoryMock.getSingleFileContentAsString(GITHUB_WORKFLOW_PATH)).thenThrow(RepositoryException.class);
-        final GitHubPlatformValidator validator = new GitHubPlatformValidator(repositoryMock, null);
-        final Report report = validator.validateFileExists(repositoryMock, GITHUB_WORKFLOW_PATH, "file");
+        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_RELEASE_WORKFLOW_PATH))
+                .thenThrow(RepositoryException.class);
+        final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-REP-19")));
     }

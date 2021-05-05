@@ -5,9 +5,9 @@ import com.exasol.releasedroid.usecases.report.Report;
 /**
  * This interface provides repository-related validations.
  */
-public interface RepositoryValidator {
+public interface StructureValidator {
     /**
-     * Validate content of a repository.
+     * Validate structure of a repository.
      *
      * @return validation report
      */

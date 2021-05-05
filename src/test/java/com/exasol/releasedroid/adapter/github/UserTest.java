@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class GitHubUserTest {
+import com.exasol.releasedroid.adapter.User;
+
+class UserTest {
     private static User user;
 
     @BeforeAll

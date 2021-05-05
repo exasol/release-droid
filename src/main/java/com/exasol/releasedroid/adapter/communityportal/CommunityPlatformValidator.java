@@ -11,12 +11,12 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 
 /**
  * Contains validations for releasing on the Community Portal.
  */
-public class CommunityPlatformValidator implements RepositoryValidator {
+public class CommunityPlatformValidator implements ReleasePlatformValidator {
     private final Repository repository;
 
     /**

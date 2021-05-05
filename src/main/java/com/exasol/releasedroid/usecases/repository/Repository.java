@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
+import com.exasol.releasedroid.usecases.validate.StructureValidator;
 
 /**
  * This class represents a repository content based on the latest commit of the user-specified branch.
@@ -33,7 +34,17 @@ public interface Repository extends RepositoryGate {
     // [impl->dsn~repository-provides-current-version~1]
     public String getVersion();
 
-    public List<RepositoryValidator> getStructureValidators();
+    /**
+     * Get the structure validators.
+     *
+     * @return structure validators
+     */
+    public List<StructureValidator> getStructureValidators();
 
-    Map<PlatformName, RepositoryValidator> getValidatorForPlatforms();
+    /**
+     * Get the platform validators.
+     *
+     * @return platform validators
+     */
+    public Map<PlatformName, ReleasePlatformValidator> getPlatformValidators();
 }

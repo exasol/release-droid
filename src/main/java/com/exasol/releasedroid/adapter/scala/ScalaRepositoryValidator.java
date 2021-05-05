@@ -3,9 +3,9 @@ package com.exasol.releasedroid.adapter.scala;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
-import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
+import com.exasol.releasedroid.usecases.validate.StructureValidator;
 
-public class ScalaRepositoryValidator implements RepositoryValidator {
+public class ScalaRepositoryValidator implements StructureValidator {
     protected static final String BUILD_SBT = "build.sbt";
     private final ScalaRepository repository;
 
@@ -16,7 +16,7 @@ public class ScalaRepositoryValidator implements RepositoryValidator {
     @Override
     public Report validate() {
         final String buildSbt = this.repository.getSingleFileContentAsString(BUILD_SBT);
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         if (buildSbt.contains("ReproducibleBuildsPlugin")) {
             report.addResult(ValidationResult.successfulValidation("'sbt-reproducible-builds' plugin is included."));
         } else {

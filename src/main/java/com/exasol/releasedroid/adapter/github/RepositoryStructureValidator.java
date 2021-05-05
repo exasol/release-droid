@@ -1,5 +1,8 @@
 package com.exasol.releasedroid.adapter.github;
 
+import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
@@ -9,43 +12,46 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.AbstractRepositoryValidator;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.validate.StructureValidator;
 
 /**
- * Contains validations for a Git project.
+ * Contains validations for a repository structure.
  */
-public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
-    private static final Logger LOGGER = Logger.getLogger(GitHubRepositoryValidator.class.getName());
-    protected static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH = ".github/workflows/release_droid_prepare_original_checksum.yml";
-    protected static final String PRINT_QUICK_CHECKSUM_WORKFLOW_PATH = ".github/workflows/release_droid_print_quick_checksum.yml";
+public class RepositoryStructureValidator implements StructureValidator {
+    private static final Logger LOGGER = Logger.getLogger(RepositoryStructureValidator.class.getName());
     private final Repository repository;
 
-    public GitHubRepositoryValidator(final Repository repository) {
+    /**
+     * Create a new instance of {@link Repository}.
+     *
+     * @param repository repository
+     */
+    public RepositoryStructureValidator(final Repository repository) {
         this.repository = repository;
     }
 
     @Override
     public Report validate() {
         LOGGER.fine("Validating repository on branch '" + this.repository.getBranchName() + "'.");
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final String version = this.repository.getVersion();
-        report.merge(validateNewVersion(version));
+        report.merge(validateVersion(version));
         if (!report.hasFailures()) {
             final String changelog = this.repository.getChangelogFile();
             report.merge(validateChangelog(changelog, version));
-            final ReleaseLetter changes = this.repository.getReleaseLetter(version);
-            report.merge(validateChanges(changes, version, this.repository.isOnDefaultBranch()));
+            final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
+            report.merge(validateChanges(releaseLetter, version, this.repository.isOnDefaultBranch()));
         }
         report.merge(validateWorkflows());
         return report;
     }
 
-    protected Report validateWorkflows() {
-        final Report report = Report.validationReport();
+    private Report validateWorkflows() {
+        final var report = Report.validationReport();
         report.merge(validateFileExists(this.repository, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH,
                 "Workflow for running test and creating checksum."));
         report.merge(validateFileExists(this.repository, PRINT_QUICK_CHECKSUM_WORKFLOW_PATH,
@@ -53,31 +59,31 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         return report;
     }
 
-    protected Report validateNewVersion(final String newVersion) {
+    private Report validateVersion(final String version) {
         LOGGER.fine("Validating a new version.");
-        final Report report = Report.validationReport();
-        report.merge(validateVersionFormat(newVersion));
+        final var report = Report.validationReport();
+        report.merge(validateVersionFormat(version));
         if (!report.hasFailures()) {
-            report.merge(validateIfNewReleaseTagValid(newVersion));
+            report.merge(validateIfNewReleaseTagValid(version));
         }
         return report;
     }
 
     private Report validateVersionFormat(final String version) {
-        final Report report = Report.validationReport();
-        if (version.matches(VERSION_REGEX)) {
+        final var report = Report.validationReport();
+        if (version != null && version.matches(VERSION_REGEX)) {
             report.addResult(ValidationResult.successfulValidation("Version format."));
         } else {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-15")
-                    .message("A version or tag found in this repository has invalid format: {{version}}. "
-                            + "The valid format is: <major>.<minor>.<fix>.")
-                    .unquotedParameter("version", version).toString()));
+                    .message("A version or tag found in this repository has invalid format: {{version|uq}}. "
+                            + "The valid format is: <major>.<minor>.<fix>.", version)
+                    .toString()));
         }
         return report;
     }
 
     private Report validateIfNewReleaseTagValid(final String newVersion) {
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
             report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
@@ -90,16 +96,17 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
     // [impl->dsn~validate-release-version-format~1]
     // [impl->dsn~validate-release-version-increased-correctly~1]
     private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (possibleVersions.contains(newTag)) {
             report.addResult(ValidationResult.successfulValidation("A new tag."));
         } else {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-16")
-                    .message("The new version {{newTag}} does not fit the versioning rules. "
-                            + "Possible versions for the release are: {{possibleVersions}}")
-                    .parameter("newTag", newTag) //
-                    .unquotedParameter("possibleVersions", possibleVersions.toString()).toString()));
+                    .message(
+                            "The new version {{newTag}} does not fit the versioning rules. "
+                                    + "Possible versions for the release are: {{possibleVersions|uq}}",
+                            newTag, possibleVersions.toString())
+                    .toString()));
         }
         return report;
     }
@@ -117,15 +124,15 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
     }
 
     // [impl->dsn~validate-changelog~1]
-    protected Report validateChangelog(final String changelog, final String version) {
+    private Report validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating 'changelog.md' file.");
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
-        if (!changelog.contains(changelogContent)) {
+        if (changelog == null || !changelog.contains(changelogContent)) {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-17")
                     .message("The file 'changelog.md' doesn't contain the following link.")
-                    .mitigation("Please add {{changelogContent}} to the file.")
-                    .parameter("changelogContent", changelogContent).toString()));
+                    .mitigation("Please add {{changelogContent}} to the file.", changelogContent) //
+                    .toString()));
         } else {
             report.addResult(ValidationResult.successfulValidation("'changelog.md' file."));
             LOGGER.fine("Validation of 'changelog.md' file was successful.");
@@ -133,23 +140,28 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
         return report;
     }
 
-    protected Report validateChanges(final ReleaseLetter changes, final String version, final boolean isDefaultBranch) {
-        LOGGER.fine("Validating '" + changes.getFileName() + "' file.");
-        final Report report = Report.validationReport();
-        report.merge(validateVersionInChanges(changes, version));
-        report.merge(validateDateInChanges(changes, isDefaultBranch));
-        report.merge(validateHasBody(changes));
+    private Report validateChanges(final ReleaseLetter releaseLetter, final String version,
+            final boolean isDefaultBranch) {
+        final var report = Report.validationReport();
+        if (releaseLetter != null) {
+            LOGGER.fine("Validating '" + releaseLetter.getFileName() + "' file.");
+            report.merge(validateVersionInChanges(releaseLetter, version));
+            report.merge(validateDateInChanges(releaseLetter, isDefaultBranch));
+            report.merge(validateHasBody(releaseLetter));
+        } else {
+            report.addResult(ValidationResult.failedValidation(
+                    ExaError.messageBuilder("E-RD-GH-24").message("The release letter does not exist.").toString()));
+        }
         return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-version~1]
     private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-18")
-                    .message("The file {{fileName}} does not mention the current version.")
-                    .parameter("fileName", changes.getFileName())
+                    .message("The file {{fileName}} does not mention the current version.", changes.getFileName())
                     .mitigation("Please, follow the changes file's format rules.").toString()));
         } else {
             report.addResult(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
@@ -158,8 +170,8 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
     }
 
     private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
-        final Report report = Report.validationReport();
-        final LocalDate dateToday = LocalDate.now();
+        final var report = Report.validationReport();
+        final var dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if (missingReleaseDate(isDefaultBranch, dateToday, releaseDate)) {
             report.merge(reportWrongDate(changes.getFileName()));
@@ -173,12 +185,13 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
     }
 
     private Report reportWrongDate(final String fileName) {
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         final var warningMessage = ExaError.messageBuilder("W-RD-GH-19").message(
                 "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically. "
                         + "If direct commits to the main branch are disabled for this repository, please, "
-                        + "update the date manually.")
-                .parameter("fileName", fileName).toString();
+                        + "update the date manually.",
+                fileName) //
+                .toString();
         report.addResult(ValidationResult.successfulValidation(
                 "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
         LOGGER.warning(warningMessage);
@@ -187,12 +200,11 @@ public class GitHubRepositoryValidator extends AbstractRepositoryValidator {
 
     // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private Report validateHasBody(final ReleaseLetter changes) {
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         if (changes.getBody().isEmpty()) {
-            report.addResult(ValidationResult.failedValidation(
-                    ExaError.messageBuilder("E-RD-GH-20").message("Cannot find the {{fileName}} body.") //
-                            .parameter("fileName", changes.getFileName())
-                            .mitigation("Please, make sure you added the changes you made to the file.").toString()));
+            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-20")
+                    .message("Cannot find the {{fileName}} body.", changes.getFileName()) //
+                    .mitigation("Please, make sure you added the changes you made to the file.").toString()));
         } else {
             report.addResult(
                     ValidationResult.successfulValidation("Release body in '" + changes.getFileName() + "' file."));

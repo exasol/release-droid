@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.github;
+package com.exasol.releasedroid.adapter;
 
 /**
  * Represents a user with username and password.
