@@ -6,23 +6,23 @@ import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
+import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
-import com.exasol.releasedroid.adapter.github.RepositoryStructureValidator;
 import com.exasol.releasedroid.adapter.maven.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * Maven-based Java repository.
  */
 public class JavaRepository extends BaseRepository implements MavenRepository {
     private static final String POM_PATH = "pom.xml";
-    private final List<StructureValidator> structureValidators = List.of(new RepositoryStructureValidator(this),
+    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this),
             new JavaRepositoryValidator(this));
     private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
     private MavenPom pom;
@@ -82,8 +82,8 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
     }
 
     @Override
-    public List<StructureValidator> getStructureValidators() {
-        return this.structureValidators;
+    public List<RepositoryValidator> getRepositoryValidators() {
+        return this.repositoryValidators;
     }
 
     @Override

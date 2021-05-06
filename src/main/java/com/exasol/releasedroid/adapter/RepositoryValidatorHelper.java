@@ -7,7 +7,7 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * Contains a common logic for repository validators.
@@ -25,7 +25,7 @@ public class RepositoryValidatorHelper {
      * @return new instance of {@link Report}
      */
     public static Report validateFileExists(final Repository repository, final String filePath,
-                                            final String fileDescription) {
+            final String fileDescription) {
         final var report = Report.validationReport();
         try {
             repository.getSingleFileContentAsString(filePath);
@@ -40,14 +40,14 @@ public class RepositoryValidatorHelper {
     }
 
     /**
-     * Validate with structure validators and return a report.
+     * Validate a repository and return a report.
      *
-     * @param structureValidators structure validators
+     * @param repositoryValidators repository validators
      * @return report
      */
-    public static Report validateRepositories(final List<StructureValidator> structureValidators) {
+    public static Report validateRepositories(final List<RepositoryValidator> repositoryValidators) {
         final var report = Report.validationReport();
-        for (final StructureValidator repositoryValidator : structureValidators) {
+        for (final RepositoryValidator repositoryValidator : repositoryValidators) {
             report.merge(repositoryValidator.validate());
         }
         return report;

@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 @ExtendWith(MockitoExtension.class)
 class BaseRepositoryTest {
@@ -95,7 +95,7 @@ class BaseRepositoryTest {
         }
 
         @Override
-        public List<StructureValidator> getStructureValidators() {
+        public List<RepositoryValidator> getRepositoryValidators() {
             return null;
         }
 

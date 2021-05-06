@@ -26,7 +26,7 @@ public class MavenPlatformValidator implements ReleasePlatformValidator {
     // [impl->dsn~validate-maven-release-workflow-exists~1]
     public Report validate() {
         final var report = Report.validationReport();
-        report.merge(validateRepositories(this.repository.getStructureValidators()));
+        report.merge(validateRepositories(this.repository.getRepositoryValidators()));
         report.merge(validateFileExists(this.repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
         return report;
     }

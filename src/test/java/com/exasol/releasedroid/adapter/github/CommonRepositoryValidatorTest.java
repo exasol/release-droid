@@ -26,17 +26,17 @@ import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
 @ExtendWith(MockitoExtension.class)
-class RepositoryStructureValidatorTest {
+class CommonRepositoryValidatorTest {
     private static final String VERSION = "2.1.0";
     @Mock
     private Repository repositoryMock;
     @Mock
     private ReleaseLetter releaseLetterMock;
-    private RepositoryStructureValidator validator;
+    private CommonRepositoryValidator validator;
 
     @BeforeEach
     void beforeEach() {
-        this.validator = new RepositoryStructureValidator(this.repositoryMock);
+        this.validator = new CommonRepositoryValidator(this.repositoryMock);
     }
 
     @Test

@@ -3,9 +3,9 @@ package com.exasol.releasedroid.adapter.scala;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
-public class ScalaRepositoryValidator implements StructureValidator {
+public class ScalaRepositoryValidator implements RepositoryValidator {
     protected static final String BUILD_SBT = "build.sbt";
     private final ScalaRepository repository;
 

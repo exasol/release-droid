@@ -6,15 +6,15 @@ import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
+import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
-import com.exasol.releasedroid.adapter.github.RepositoryStructureValidator;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * Sbt-based scala repository.
@@ -22,7 +22,7 @@ import com.exasol.releasedroid.usecases.validate.StructureValidator;
 public class ScalaRepository extends BaseRepository {
     private static final String VERSION_PATTERN = "settings(version";
     protected static final String BUILD_SBT = "build.sbt";
-    private final List<StructureValidator> structureValidators = List.of(new RepositoryStructureValidator(this),
+    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this),
             new ScalaRepositoryValidator(this));
     private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
 
@@ -56,8 +56,8 @@ public class ScalaRepository extends BaseRepository {
     }
 
     @Override
-    public List<StructureValidator> getStructureValidators() {
-        return this.structureValidators;
+    public List<RepositoryValidator> getRepositoryValidators() {
+        return this.repositoryValidators;
     }
 
     @Override

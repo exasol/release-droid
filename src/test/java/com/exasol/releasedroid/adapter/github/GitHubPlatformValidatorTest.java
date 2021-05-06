@@ -44,7 +44,7 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-issues-exists~1]
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidationSuccessful() throws GitHubException {
-        when(this.repositoryMock.getStructureValidators()).thenReturn(List.of());
+        when(this.repositoryMock.getRepositoryValidators()).thenReturn(List.of());
         when(this.repositoryMock.getSingleFileContentAsString(GITHUB_RELEASE_WORKFLOW_PATH)).thenReturn("");
         when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
         when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));

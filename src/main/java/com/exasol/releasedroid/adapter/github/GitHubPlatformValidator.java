@@ -37,7 +37,7 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate() {
         final var report = Report.validationReport();
-        report.merge(validateRepositories(this.repository.getStructureValidators()));
+        report.merge(validateRepositories(this.repository.getRepositoryValidators()));
         LOGGER.fine("Validating GitHub-specific requirements.");
         final String version = this.repository.getVersion();
         final var releaseLetter = this.repository.getReleaseLetter(version);

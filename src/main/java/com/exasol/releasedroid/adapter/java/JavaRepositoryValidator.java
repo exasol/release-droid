@@ -7,12 +7,12 @@ import com.exasol.releasedroid.adapter.maven.MavenPluginValidator;
 import com.exasol.releasedroid.adapter.maven.MavenPom;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
  * This class validates a maven repository.
  */
-public class JavaRepositoryValidator implements StructureValidator {
+public class JavaRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(JavaRepositoryValidator.class.getName());
     private static final String PROJECT_KEEPER_PLUGIN_NAME = "project-keeper-maven-plugin";
     private static final String PROJECT_KEEPER_PLUGIN_VERSION = "0.6.0";

@@ -52,7 +52,6 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
                 .build();
     }
 
-    // We should return this link from the GitHub release maker and store somewhere until the release is finished
     private String buildGitHubReleaseLink(final Repository repository, final String version) {
         return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
     }

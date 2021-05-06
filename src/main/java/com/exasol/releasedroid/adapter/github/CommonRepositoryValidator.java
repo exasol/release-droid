@@ -16,21 +16,21 @@ import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.validate.StructureValidator;
+import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
- * Contains validations for a repository structure.
+ * Contains language-independent validations for a repository.
  */
-public class RepositoryStructureValidator implements StructureValidator {
-    private static final Logger LOGGER = Logger.getLogger(RepositoryStructureValidator.class.getName());
+public class CommonRepositoryValidator implements RepositoryValidator {
+    private static final Logger LOGGER = Logger.getLogger(CommonRepositoryValidator.class.getName());
     private final Repository repository;
 
     /**
-     * Create a new instance of {@link Repository}.
+     * Create a new instance of {@link CommonRepositoryValidator}.
      *
      * @param repository repository
      */
-    public RepositoryStructureValidator(final Repository repository) {
+    public CommonRepositoryValidator(final Repository repository) {
         this.repository = repository;
     }
 
