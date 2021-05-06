@@ -29,7 +29,8 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         LOGGER.fine("Creating a draft of the release announcement on the Exasol Community Portal.");
         try {
             final var communityPost = getCommunityPost(repository);
-            this.communityPortalGateway.sendDraftPost(communityPost);
+            final String draftPostUrl = this.communityPortalGateway.sendDraftPost(communityPost);
+            LOGGER.info(() -> "A community draft post was created at: " + draftPostUrl);
         } catch (final CommunityPortalException exception) {
             throw new ReleaseException(exception);
         }

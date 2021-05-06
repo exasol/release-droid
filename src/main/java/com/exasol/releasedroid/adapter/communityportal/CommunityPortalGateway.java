@@ -8,6 +8,7 @@ public interface CommunityPortalGateway {
      * Create a draft post.
      * 
      * @param communityPost instance of {@link CommunityPost}
+     * @return URL of the created draft
      */
-    void sendDraftPost(CommunityPost communityPost) throws CommunityPortalException;
+    String sendDraftPost(CommunityPost communityPost) throws CommunityPortalException;
 }

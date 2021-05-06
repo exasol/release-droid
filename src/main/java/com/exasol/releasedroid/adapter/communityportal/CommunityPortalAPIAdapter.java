@@ -11,6 +11,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.json.JSONObject;
+
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.User;
 
@@ -31,9 +33,9 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
 
     @Override
     // [impl->dsn~create-new-release-announcement-on-exasol-community-portal~1]
-    public void sendDraftPost(final CommunityPost communityPost) throws CommunityPortalException {
+    public String sendDraftPost(final CommunityPost communityPost) throws CommunityPortalException {
         final String token = getAuthenticationToken();
-        createPost(CommunityPostConverter.toJson(communityPost), token);
+        return createPost(CommunityPostConverter.toJson(communityPost), token);
     }
 
     private String getAuthenticationToken() throws CommunityPortalException {
@@ -79,13 +81,18 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
         }
     }
 
-    private void createPost(final String post, final String token) throws CommunityPortalException {
+    private String createPost(final String post, final String token) throws CommunityPortalException {
         final HttpRequest request = HttpRequest.newBuilder() //
                 .header("li-api-session-key", token) //
                 .uri(URI.create(EXASOL_COMMUNITY_PORTAL_URL + "api/2.0/messages")) //
                 .POST(HttpRequest.BodyPublishers.ofString(post)) //
                 .build();
-        sendRequest(request);
+        final HttpResponse<String> response = sendRequest(request);
+        return extractPostUrl(response.body());
+    }
+
+    private String extractPostUrl(final String body) {
+        return new JSONObject(body).getJSONObject("data").getString("view_href");
     }
 
     private void validateResponse(final HttpResponse<String> response) throws CommunityPortalException {
