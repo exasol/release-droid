@@ -8,6 +8,7 @@ Code name:
 
 * #111: Added support for Exasol Community Portal release article. 
 * #141: Added validation for Exasol Community Portal release.
+* #151: Added log output for created community post URL.
 
 ## Bug fixes
 
