@@ -36,7 +36,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-release-changes-description-from-release-letter~1]
-    private CommunityPost getCommunityPost(final Repository repository) throws CommunityPortalException {
+    private CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
         final var communityPortalTemplate = getCommunityPortalTemplate(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
