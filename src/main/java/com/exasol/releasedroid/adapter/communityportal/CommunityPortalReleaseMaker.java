@@ -36,12 +36,12 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-release-changes-description-from-release-letter~1]
-    private CommunityPost getCommunityPost(final Repository repository) {
+    private CommunityPost getCommunityPost(final Repository repository) throws CommunityPortalException {
         final String version = repository.getVersion();
         final var communityPortalTemplate = getCommunityPortalTemplate(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
         final String header = communityPortalTemplate.getProjectName() + " " + version;
-        final String gitHubReleaseLink = "https://github.com/" + repository.getName() + "/releases/tag/" + version;
+        final String gitHubReleaseLink = buildGitHubReleaseLink(repository, version);
         final String body = renderBody(header, communityPortalTemplate.getProjectDescription(),
                 releaseLetter.getSummary().orElseThrow(), gitHubReleaseLink);
         return CommunityPost.builder() //
@@ -50,6 +50,11 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
                 .tags(communityPortalTemplate.getTags()) //
                 .body(body) //
                 .build();
+    }
+
+    // We should return this link from the GitHub release maker and store somewhere until the release is finished
+    private String buildGitHubReleaseLink(final Repository repository, final String version) {
+        return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
     }
 
     // [impl->dsn~extract-project-description-from-file~1]

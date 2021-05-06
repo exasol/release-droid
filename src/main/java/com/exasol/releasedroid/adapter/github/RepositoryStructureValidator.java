@@ -150,7 +150,7 @@ public class RepositoryStructureValidator implements StructureValidator {
             report.merge(validateHasBody(releaseLetter));
         } else {
             report.addResult(ValidationResult.failedValidation(
-                    ExaError.messageBuilder("E-RD-GH-24").message("The release letter does not exist.").toString()));
+                    ExaError.messageBuilder("E-RD-GH-26").message("The release letter does not exist.").toString()));
         }
         return report;
     }
