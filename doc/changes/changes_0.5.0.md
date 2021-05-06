@@ -14,6 +14,7 @@ Code name: Community Portal Support
 
 * #146: Fixed NullPointerException caused by validation a branch on an empty repository.
 * #150: Fixed community portal validation: we don't check the repository structure with this platform.
+* #155: Refactored the credentials reading: we don't need the credentials to the portal during validations.
 
 ## Refactoring
 

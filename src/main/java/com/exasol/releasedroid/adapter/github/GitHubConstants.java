@@ -12,6 +12,8 @@ public class GitHubConstants {
     public static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH = WORKFLOW_DIRECTORY
             + PREPARE_ORIGINAL_CHECKSUM_WORKFLOW;
     public static final String PRINT_QUICK_CHECKSUM_WORKFLOW_PATH = WORKFLOW_DIRECTORY + PRINT_QUICK_CHECKSUM_WORKFLOW;
+    public static final String GITHUB_USERNAME_KEY = "github_username";
+    public static final String GITHUB_TOKEN_KEY = "github_oauth_access_token";
 
     private GitHubConstants() {
     }

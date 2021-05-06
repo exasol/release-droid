@@ -22,15 +22,15 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
 public class GitHubAPIAdapter implements GitHubGateway {
     private static final Logger LOGGER = Logger.getLogger(GitHubAPIAdapter.class.getName());
     private final Map<String, GHRepository> repositories = new HashMap<>();
-    private final GitHub gitHub;
+    private final GitHubConnector gitHubConnector;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
      *
-     * @param gitHub instance of {@link GitHub}
+     * @param gitHubConnector GitHub connector
      */
-    public GitHubAPIAdapter(final GitHub gitHub) {
-        this.gitHub = gitHub;
+    public GitHubAPIAdapter(final GitHubConnector gitHubConnector) {
+        this.gitHubConnector = gitHubConnector;
     }
 
     private GHRepository getRepository(final String repositoryName) throws GitHubException {
@@ -42,7 +42,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     private GHRepository createGHRepository(final String repositoryName) throws GitHubException {
         try {
-            return this.gitHub.getRepository(repositoryName);
+            return this.gitHubConnector.connectToGitHub().getRepository(repositoryName);
         } catch (final IOException exception) {
             throw wrapGitHubException(repositoryName, exception);
         }
