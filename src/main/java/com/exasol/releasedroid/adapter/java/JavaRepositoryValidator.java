@@ -18,6 +18,11 @@ public class JavaRepositoryValidator implements RepositoryValidator {
     private static final String PROJECT_KEEPER_PLUGIN_VERSION = "0.6.0";
     private final JavaRepository repository;
 
+    /**
+     * Create a new instance of {@link JavaRepositoryValidator}.
+     *
+     * @param repository java repository
+     */
     public JavaRepositoryValidator(final JavaRepository repository) {
         this.repository = repository;
     }

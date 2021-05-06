@@ -12,7 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.github.User;
+import com.exasol.releasedroid.adapter.User;
 
 /**
  * Implements an adapter to interact with Exasol Community Portal via API.

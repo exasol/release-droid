@@ -16,7 +16,7 @@ public class ScalaRepositoryValidator implements RepositoryValidator {
     @Override
     public Report validate() {
         final String buildSbt = this.repository.getSingleFileContentAsString(BUILD_SBT);
-        final Report report = Report.validationReport();
+        final var report = Report.validationReport();
         if (buildSbt.contains("ReproducibleBuildsPlugin")) {
             report.addResult(ValidationResult.successfulValidation("'sbt-reproducible-builds' plugin is included."));
         } else {

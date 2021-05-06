@@ -41,7 +41,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         final var communityPortalTemplate = getCommunityPortalTemplate(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
         final String header = communityPortalTemplate.getProjectName() + " " + version;
-        final String gitHubReleaseLink = "https://github.com/" + repository.getName() + "/releases/tag/" + version;
+        final String gitHubReleaseLink = buildGitHubReleaseLink(repository, version);
         final String body = renderBody(header, communityPortalTemplate.getProjectDescription(),
                 releaseLetter.getSummary().orElseThrow(), gitHubReleaseLink);
         return CommunityPost.builder() //
@@ -50,6 +50,10 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
                 .tags(communityPortalTemplate.getTags()) //
                 .body(body) //
                 .build();
+    }
+
+    private String buildGitHubReleaseLink(final Repository repository, final String version) {
+        return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
     }
 
     // [impl->dsn~extract-project-description-from-file~1]

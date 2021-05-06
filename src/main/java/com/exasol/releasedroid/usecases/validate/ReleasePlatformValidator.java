@@ -3,11 +3,11 @@ package com.exasol.releasedroid.usecases.validate;
 import com.exasol.releasedroid.usecases.report.Report;
 
 /**
- * This interface provides repository-related validations.
+ * This interface provides platform-related validations.
  */
-public interface RepositoryValidator {
+public interface ReleasePlatformValidator {
     /**
-     * Validate structure of a repository.
+     * Validate if the project is ready for a release on a platform.
      *
      * @return validation report
      */

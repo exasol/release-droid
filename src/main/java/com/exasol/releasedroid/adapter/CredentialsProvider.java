@@ -1,13 +1,7 @@
-package com.exasol.releasedroid.adapter.github;
+package com.exasol.releasedroid.adapter;
 
-import java.io.Console;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**

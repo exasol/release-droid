@@ -6,14 +6,15 @@ import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
+import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
-import com.exasol.releasedroid.adapter.github.GitHubRepositoryValidator;
 import com.exasol.releasedroid.adapter.maven.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -21,17 +22,18 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public class JavaRepository extends BaseRepository implements MavenRepository {
     private static final String POM_PATH = "pom.xml";
-    private final Map<PlatformName, RepositoryValidator> releaseablePlatforms;
-    private final List<RepositoryValidator> platformValidators;
+    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this),
+            new JavaRepositoryValidator(this));
+    private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
     private MavenPom pom;
 
     public JavaRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
-        this.releaseablePlatforms = Map.of( //
+        this.platformValidators = Map.of( //
                 PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), //
                 PlatformName.MAVEN, new MavenPlatformValidator(this), //
-                PlatformName.COMMUNITY, new CommunityPlatformValidator(this));
-        this.platformValidators = List.of(new GitHubRepositoryValidator(this), new JavaRepositoryValidator(this));
+                PlatformName.COMMUNITY, new CommunityPlatformValidator(this) //
+        );
     }
 
     /**
@@ -80,12 +82,12 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
     }
 
     @Override
-    public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
-        return this.releaseablePlatforms;
+    public List<RepositoryValidator> getRepositoryValidators() {
+        return this.repositoryValidators;
     }
 
     @Override
-    public List<RepositoryValidator> getStructureValidators() {
+    public Map<PlatformName, ReleasePlatformValidator> getPlatformValidators() {
         return this.platformValidators;
     }
 }

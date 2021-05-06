@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.adapter.github;
 
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +21,6 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
  */
 public class GitHubAPIAdapter implements GitHubGateway {
     private static final Logger LOGGER = Logger.getLogger(GitHubAPIAdapter.class.getName());
-    private static final String PREPARE_ORIGINAL_CHECKSUM_WORKFLOW = "release_droid_prepare_original_checksum.yml";
-    private static final String GITHUB_RELEASE_WORKFLOW = "release_droid_upload_github_release_assets.yml";
-    private static final String PRINT_QUICK_CHECKSUM_WORKFLOW = "release_droid_print_quick_checksum.yml";
     private final Map<String, GHRepository> repositories = new HashMap<>();
     private final GitHub gitHub;
 

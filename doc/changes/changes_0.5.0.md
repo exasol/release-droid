@@ -1,6 +1,6 @@
-# Exasol Release Droid 0.5.0, released 2021-??-??
+# Exasol Release Droid 0.5.0, released 2021-05-??
 
-Code name:
+Code name: Community Portal Support
 
 ## Summary
 
@@ -12,6 +12,7 @@ Code name:
 ## Bug fixes
 
 * #146: Fixed NullPointerException caused by validation a branch on an empty repository.
+* #150: Fixed community portal validation: we don't check the repository structure with this platform.
 
 ## Refactoring
 

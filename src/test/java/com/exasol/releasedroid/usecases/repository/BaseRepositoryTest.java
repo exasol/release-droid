@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,12 +95,12 @@ class BaseRepositoryTest {
         }
 
         @Override
-        public List<RepositoryValidator> getStructureValidators() {
+        public List<RepositoryValidator> getRepositoryValidators() {
             return null;
         }
 
         @Override
-        public Map<PlatformName, RepositoryValidator> getValidatorForPlatforms() {
+        public Map<PlatformName, ReleasePlatformValidator> getPlatformValidators() {
             return null;
         }
     }

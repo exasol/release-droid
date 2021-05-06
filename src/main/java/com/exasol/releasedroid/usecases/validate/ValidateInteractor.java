@@ -34,25 +34,18 @@ public class ValidateInteractor implements ValidateUseCase {
     public Report validate(final UserInput userInput) {
         LOGGER.info(() -> "Validation started.");
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        final Report validationReport = runValidation(repository, userInput.getPlatformNames());
-        logResults(validationReport);
-        return validationReport;
+        final var report = validatePlatforms(repository, userInput.getPlatformNames());
+        logResults(report);
+        return report;
     }
 
     private void logResults(final Report releaseReport) {
         this.reportLogger.logResults(releaseReport);
     }
 
-    private Report runValidation(final Repository repository, final List<PlatformName> platformNames) {
-        final Report report = Report.validationReport();
-        report.merge(validateRepositories(repository));
-        report.merge(validatePlatforms(repository, platformNames));
-        return report;
-    }
-
     private Report validatePlatforms(final Repository repository, final List<PlatformName> platformNames) {
-        final Report report = Report.validationReport();
-        final Map<PlatformName, RepositoryValidator> validators = repository.getValidatorForPlatforms();
+        final var report = Report.validationReport();
+        final Map<PlatformName, ReleasePlatformValidator> validators = repository.getPlatformValidators();
         for (final PlatformName platformName : platformNames) {
             report.merge(this.validateForPlatform(platformName, validators));
         }
@@ -60,21 +53,12 @@ public class ValidateInteractor implements ValidateUseCase {
     }
 
     private Report validateForPlatform(final PlatformName platformName,
-            final Map<PlatformName, RepositoryValidator> validators) {
+            final Map<PlatformName, ReleasePlatformValidator> validators) {
         if (validators.containsKey(platformName)) {
             return validators.get(platformName).validate();
         }
         throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-VAL-15") //
                 .message("{{platform}} platform is not supported for this project.") //
                 .parameter("platform", platformName).toString());
-    }
-
-    private Report validateRepositories(final Repository repository) {
-        final Report report = Report.validationReport();
-        final List<RepositoryValidator> repositoryValidators = repository.getStructureValidators(); // structureRepoValidator,
-        for (final RepositoryValidator repositoryValidator : repositoryValidators) {
-            report.merge(repositoryValidator.validate());
-        }
-        return report;
     }
 }
