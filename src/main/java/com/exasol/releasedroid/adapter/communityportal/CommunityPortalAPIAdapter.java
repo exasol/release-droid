@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.EXASOL_COMMUNITY_PORTAL_URL;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -14,21 +14,21 @@ import java.net.http.HttpResponse;
 import org.json.JSONObject;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.User;
+import com.exasol.releasedroid.usecases.PropertyReader;
 
 /**
  * Implements an adapter to interact with Exasol Community Portal via API.
  */
 public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
-    private final User user;
+    private final PropertyReader propertyReader;
 
     /**
      * Create a new instance of {@link CommunityPortalAPIAdapter}.
      * 
-     * @param user user with valid Community Portal credentials
+     * @param propertyReader property reader
      */
-    public CommunityPortalAPIAdapter(final User user) {
-        this.user = user;
+    public CommunityPortalAPIAdapter(final PropertyReader propertyReader) {
+        this.propertyReader = propertyReader;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
         final HttpRequest request = HttpRequest.newBuilder() //
                 .uri(URI.create(EXASOL_COMMUNITY_PORTAL_URL + "restapi/vc/authentication/sessions/login")) //
                 .header("Content-Type", "application/x-www-form-urlencoded ") //
-                .POST(credentialsFormData(this.user)) //
+                .POST(credentialsFormData()) //
                 .build();
         return sendRequest(request);
     }
@@ -104,9 +104,11 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
         }
     }
 
-    private HttpRequest.BodyPublisher credentialsFormData(final User user) {
-        final String formData = encode("user.login") + "=" + encode(user.getUsername()) //
-                + "&" + encode("user.password") + "=" + encode(user.getPassword());
+    private HttpRequest.BodyPublisher credentialsFormData() {
+        final String username = this.propertyReader.readProperty(COMMUNITY_USERNAME_KEY);
+        final String password = this.propertyReader.readProperty(COMMUNITY_PASSWORD_KEY);
+        final String formData = encode("user.login") + "=" + encode(username) //
+                + "&" + encode("user.password") + "=" + encode(password);
         return HttpRequest.BodyPublishers.ofString(formData);
     }
 

@@ -1,20 +1,22 @@
 package com.exasol.releasedroid.main;
 
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogManager;
 
-import org.kohsuke.github.GitHub;
-
-import com.exasol.releasedroid.adapter.*;
+import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
+import com.exasol.releasedroid.adapter.RepositoryFactory;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
+import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -37,10 +39,8 @@ public class Runner {
         createReleaseDroid(userInput).run(userInput);
     }
 
-    private static ReleaseDroid createReleaseDroid(final UserInput userInput) throws IOException {
-        final var githubUser = getGithubUser();
-        final GitHubGateway githubGateway = new GitHubAPIAdapter(
-                GitHub.connect(githubUser.getUsername(), githubUser.getPassword()));
+    private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
+        final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryGateway);
         if (userInput.hasLocalPath()) {
@@ -50,8 +50,14 @@ public class Runner {
         }
     }
 
+    private static PropertyReaderImpl getPropertyReader() {
+        final String homeDirectory = System.getProperty("user.home");
+        final String pathToPropertyFile = homeDirectory + RELEASE_DROID_CREDENTIALS;
+        return new PropertyReaderImpl(pathToPropertyFile);
+    }
+
     private static void setUpLogging() throws IOException {
-        final ClassLoader classLoader = LogFormatter.class.getClassLoader();
+        final var classLoader = LogFormatter.class.getClassLoader();
         final InputStream loggingProperties = classLoader.getResourceAsStream("logging.properties");
         LogManager.getLogManager().readConfiguration(loggingProperties);
     }
@@ -65,20 +71,12 @@ public class Runner {
         return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 
-    private static User getGithubUser() {
-        return CredentialsProvider.getInstance().provideGitHubUser();
-    }
-
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GitHubGateway githubGateway) {
         final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
         releaseMakers.put(PlatformName.GITHUB, new GitHubReleaseMaker(githubGateway));
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));
-        final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getCommunityPortalUser());
+        final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getPropertyReader());
         releaseMakers.put(PlatformName.COMMUNITY, new CommunityPortalReleaseMaker(communityPortalGateway));
         return releaseMakers;
-    }
-
-    private static User getCommunityPortalUser() {
-        return CredentialsProvider.getInstance().provideCommunityPortalUser();
     }
 }

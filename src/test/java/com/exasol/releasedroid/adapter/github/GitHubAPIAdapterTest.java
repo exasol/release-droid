@@ -23,12 +23,15 @@ class GitHubAPIAdapterTest {
     @Mock
     private GitHub gitHubMock;
     @Mock
+    private GitHubConnector gitHubConnectorMock;
+    @Mock
     private GHRepository repositoryMock;
     private GitHubAPIAdapter apiAdapter;
 
     @BeforeEach
     void beforeEach() throws IOException {
-        this.apiAdapter = new GitHubAPIAdapter(this.gitHubMock);
+        this.apiAdapter = new GitHubAPIAdapter(this.gitHubConnectorMock);
+        when(this.gitHubConnectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
     }
 
