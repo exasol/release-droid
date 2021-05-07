@@ -8,48 +8,29 @@ import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
  * Implements the Validate use case.
  */
 public class ValidateInteractor implements ValidateUseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
-    private final RepositoryGateway repositoryGateway;
     private final ReportLogger reportLogger = new ReportLogger();
-
-    /**
-     * Create a new instance of {@link ValidateInteractor}.
-     *
-     * @param repositoryGateway the repositoryGateway
-     */
-    public ValidateInteractor(final RepositoryGateway repositoryGateway) {
-        this.repositoryGateway = repositoryGateway;
-    }
 
     @Override
     // [impl->dsn~rd-runs-validate-goal~1]
-    public Report validate(final UserInput userInput) {
+    public Report validate(final Repository repository, final List<PlatformName> platforms) {
         LOGGER.info(() -> "Validation started.");
-        final Repository repository = this.repositoryGateway.getRepository(userInput);
-        final var report = validatePlatforms(repository, userInput.getPlatformNames());
+        final var report = Report.validationReport();
+        for (final PlatformName platformName : platforms) {
+            report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
+        }
         logResults(report);
         return report;
     }
 
     private void logResults(final Report releaseReport) {
         this.reportLogger.logResults(releaseReport);
-    }
-
-    private Report validatePlatforms(final Repository repository, final List<PlatformName> platformNames) {
-        final var report = Report.validationReport();
-        final Map<PlatformName, ReleasePlatformValidator> validators = repository.getPlatformValidators();
-        for (final PlatformName platformName : platformNames) {
-            report.merge(this.validateForPlatform(platformName, validators));
-        }
-        return report;
     }
 
     private Report validateForPlatform(final PlatformName platformName,

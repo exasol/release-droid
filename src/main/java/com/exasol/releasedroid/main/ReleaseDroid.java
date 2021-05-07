@@ -6,16 +6,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
-import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
+import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.Goal;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
+import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -28,19 +33,21 @@ public class ReleaseDroid {
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
     private final SummaryWriter summaryWriter;
+    private final RepositoryGateway repositoryGateway;
 
-    private ReleaseDroid(final ValidateUseCase validateUseCase, final ReleaseUseCase releaseUseCase) {
-        this.releaseUseCase = releaseUseCase;
-        this.validateUseCase = validateUseCase;
+    /**
+     * Create a new instance of {@link ReleaseDroid}.
+     *
+     * @param repositoryGateway repository gateway
+     * @param releaseMakers     release makers
+     * @param releaseManager    release manager
+     */
+    public ReleaseDroid(final RepositoryGateway repositoryGateway, final Map<PlatformName, ReleaseMaker> releaseMakers,
+            final ReleaseManager releaseManager) {
+        this.repositoryGateway = repositoryGateway;
+        this.validateUseCase = new ValidateInteractor();
+        this.releaseUseCase = new ReleaseInteractor(this.validateUseCase, releaseMakers, releaseManager);
         this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
-    }
-
-    public static ReleaseDroid of(final ValidateUseCase validateUseCase) {
-        return new ReleaseDroid(validateUseCase, null);
-    }
-
-    public static ReleaseDroid of(final ValidateUseCase validateUseCase, final ReleaseUseCase releaseUseCase) {
-        return new ReleaseDroid(validateUseCase, releaseUseCase);
     }
 
     /**
@@ -49,21 +56,22 @@ public class ReleaseDroid {
     // [impl->dsn~rd-creates-validation-report~1]
     // [impl->dsn~rd-creates-release-report~1]
     public void run(final UserInput userInput) {
-        validateUserInput(userInput);
+        final Repository repository = this.repositoryGateway.getRepository(userInput);
+        validateUserInput(userInput, repository.getReleaseConfig());
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
         if (userInput.getGoal() == Goal.VALIDATE) {
-            reports.add(this.validateUseCase.validate(userInput));
-        } else if (userInput.getGoal() == Goal.RELEASE && this.releaseUseCase != null) {
-            reports.addAll(this.releaseUseCase.release(userInput));
+            reports.add(this.validateUseCase.validate(repository, userInput.getPlatformNames()));
+        } else if (userInput.getGoal() == Goal.RELEASE) {
+            reports.addAll(this.releaseUseCase.release(repository, userInput.getPlatformNames()));
         }
         writeReportToDisk(userInput, reports);
     }
 
-    private void validateUserInput(final UserInput userInput) {
+    private void validateUserInput(final UserInput userInput, final ReleaseConfig releaseConfig) {
         if (!userInput.hasPlatforms()) {
-            userInput.setPlatformNames(getPlatformNamesFromConfig());
+            userInput.setPlatformNames(getPlatformNamesFromReleaseConfig(releaseConfig));
         }
         if (!userInput.hasOwner()) {
             userInput.setOwner(EXASOL_REPOSITORY_OWNER);
@@ -73,8 +81,12 @@ public class ReleaseDroid {
         validateLocalPath(userInput);
     }
 
-    private List<PlatformName> getPlatformNamesFromConfig() {
-        return null;
+    private List<PlatformName> getPlatformNamesFromReleaseConfig(final ReleaseConfig releaseConfig) {
+        if (releaseConfig.hasReleasePlatforms()) {
+            return releaseConfig.getReleasePlatforms();
+        } else {
+            return List.of();
+        }
     }
 
     private void validateMandatoryParameters(final UserInput userInput) {

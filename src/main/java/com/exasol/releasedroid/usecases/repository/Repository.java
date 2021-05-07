@@ -12,6 +12,13 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public interface Repository extends RepositoryGate {
     /**
+     * Get a release config.
+     *
+     * @return release config
+     */
+    public ReleaseConfig getReleaseConfig();
+
+    /**
      * Get a changelog file as a string.
      *
      * @return changelog file as a string

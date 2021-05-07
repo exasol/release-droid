@@ -12,9 +12,7 @@ import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseResult;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.request.UserInput;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -24,44 +22,41 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
-    private final RepositoryGateway repositoryGateway;
     private final ReportLogger reportLogger = new ReportLogger();
     private final ReleaseManager releaseManager;
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
      *
-     * @param validateUseCase   validate use case for validating the platforms
-     * @param releaseMakers     map with platform names and release makers
-     * @param repositoryGateway instance of {@link RepositoryGateway}
-     * @param releaseManager    instance of {@link ReleaseManager}
+     * @param validateUseCase validate use case for validating the platforms
+     * @param releaseMakers   map with platform names and release makers
+     * @param releaseManager  instance of {@link ReleaseManager}
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final RepositoryGateway repositoryGateway, final ReleaseManager releaseManager) {
+            final ReleaseManager releaseManager) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
-        this.repositoryGateway = repositoryGateway;
         this.releaseManager = releaseManager;
     }
 
     @Override
     // [impl->dsn~rd-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rd-runs-release-goal~1]
-    public List<Report> release(final UserInput userInput) {
+    public List<Report> release(final Repository repository, final List<PlatformName> platforms) {
         try {
-            return this.attemptToRelease(userInput);
+            return this.attemptToRelease(repository, platforms);
         } catch (final Exception exception) {
             throw new ReleaseException(exception);
         }
     }
 
-    private List<Report> attemptToRelease(final UserInput userInput) {
+    private List<Report> attemptToRelease(final Repository repository, final List<PlatformName> platforms) {
         final List<Report> reports = new ArrayList<>();
-        final Report validationReport = this.validateUseCase.validate(userInput);
+        final Report validationReport = this.validateUseCase.validate(repository, platforms);
         reports.add(validationReport);
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
-            final Report releaseReport = this.makeRelease(userInput);
+            final Report releaseReport = this.makeRelease(repository, platforms);
             logResults(releaseReport);
             reports.add(releaseReport);
         }
@@ -72,18 +67,17 @@ public class ReleaseInteractor implements ReleaseUseCase {
         this.reportLogger.logResults(releaseReport);
     }
 
-    private Report makeRelease(final UserInput userInput) {
-        final Report report = Report.releaseReport();
-        final Repository repository = this.repositoryGateway.getRepository(userInput);
+    private Report makeRelease(final Repository repository, final List<PlatformName> platforms) {
+        final var report = Report.releaseReport();
         prepareRepositoryForRelease(repository);
-        report.merge(releaseOnPlatforms(userInput, repository));
+        report.merge(releaseOnPlatforms(repository, platforms));
         cleanRepositoryAfterRelease(repository, report);
         return report;
     }
 
-    private Report releaseOnPlatforms(final UserInput userInput, final Repository repository) {
+    private Report releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
         final Report report = Report.releaseReport();
-        for (final PlatformName platformName : userInput.getPlatformNames()) {
+        for (final PlatformName platformName : platforms) {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             try {
                 this.getReleaseMaker(platformName).makeRelease(repository);

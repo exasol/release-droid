@@ -17,12 +17,10 @@ import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
-import com.exasol.releasedroid.usecases.release.*;
+import com.exasol.releasedroid.usecases.release.ReleaseMaker;
+import com.exasol.releasedroid.usecases.release.ReleaseManager;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.request.UserInput;
-import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
  * This class contains main method.
@@ -34,20 +32,16 @@ public class Runner {
      * @param args arguments
      */
     public static void main(final String[] args) throws IOException {
-        final UserInput userInput = new UserInputParser().parseUserInput(args);
         setUpLogging();
-        createReleaseDroid(userInput).run(userInput);
+        createReleaseDroid().run(new UserInputParser().parseUserInput(args));
     }
 
-    private static ReleaseDroid createReleaseDroid(final UserInput userInput) {
+    private static ReleaseDroid createReleaseDroid() {
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
-        final ValidateUseCase validateUseCase = new ValidateInteractor(repositoryGateway);
-        if (userInput.hasLocalPath()) {
-            return ReleaseDroid.of(validateUseCase);
-        } else {
-            return createReleaseDroidForGitHub(validateUseCase, repositoryGateway, githubGateway);
-        }
+        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
+        final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
+        return new ReleaseDroid(repositoryGateway, releaseMakers, releaseManager);
     }
 
     private static PropertyReaderImpl getPropertyReader() {
@@ -60,15 +54,6 @@ public class Runner {
         final var classLoader = LogFormatter.class.getClassLoader();
         final InputStream loggingProperties = classLoader.getResourceAsStream("logging.properties");
         LogManager.getLogManager().readConfiguration(loggingProperties);
-    }
-
-    private static ReleaseDroid createReleaseDroidForGitHub(final ValidateUseCase validateUseCase,
-            final RepositoryGateway repositoryGateway, final GitHubGateway githubGateway) {
-        final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
-        final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
-        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, repositoryGateway,
-                releaseManager);
-        return ReleaseDroid.of(validateUseCase, releaseUseCase);
     }
 
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GitHubGateway githubGateway) {
