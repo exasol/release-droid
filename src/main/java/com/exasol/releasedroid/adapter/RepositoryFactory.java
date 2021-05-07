@@ -43,10 +43,10 @@ public class RepositoryFactory implements RepositoryGateway {
 
     private RepositoryGate getRepositoryGate(final UserInput userInput) {
         if (userInput.hasLocalPath()) {
-            return new LocalRepositoryGate(userInput.getLocalPath(), userInput.getRepositoryName());
+            return new LocalRepositoryGate(userInput.getLocalPath(), userInput.getFullRepositoryName());
         } else {
             final String branch = getBranch(userInput);
-            return new GitHubRepositoryGate(this.githubGateway, branch, userInput.getRepositoryName());
+            return new GitHubRepositoryGate(this.githubGateway, branch, userInput.getFullRepositoryName());
         }
     }
 
@@ -55,7 +55,7 @@ public class RepositoryFactory implements RepositoryGateway {
             return userInput.getBranch();
         } else {
             try {
-                return this.githubGateway.getDefaultBranch(userInput.getRepositoryName());
+                return this.githubGateway.getDefaultBranch(userInput.getFullRepositoryName());
             } catch (final GitHubException exception) {
                 throw new RepositoryException(exception);
             }
@@ -73,7 +73,7 @@ public class RepositoryFactory implements RepositoryGateway {
     private Language detectLanguageAutomatically(final UserInput userInput) {
         try {
             final String repositoryPrimaryLanguage = this.githubGateway
-                    .getRepositoryPrimaryLanguage(userInput.getRepositoryName());
+                    .getRepositoryPrimaryLanguage(userInput.getFullRepositoryName());
             validateLanguage(repositoryPrimaryLanguage);
             final var language = Language.getLanguage(repositoryPrimaryLanguage);
             LOGGER.warning(() -> "The repository language was detected automatically: " + language

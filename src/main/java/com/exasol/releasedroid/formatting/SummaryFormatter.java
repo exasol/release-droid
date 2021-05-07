@@ -24,11 +24,11 @@ public class SummaryFormatter {
 
     private String formatInputUser(final UserInput userInput) {
         final String now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        final StringBuilder stringBuilder = new StringBuilder();
+        final var stringBuilder = new StringBuilder();
         stringBuilder.append(println(now));
         stringBuilder.append(println(""));
         stringBuilder.append(println("Goal: " + userInput.getGoal()));
-        stringBuilder.append(println("Repository: " + userInput.getRepositoryName()));
+        stringBuilder.append(println("Repository: " + userInput.getFullRepositoryName()));
         stringBuilder.append(println("Platforms: "
                 + userInput.getPlatformNames().stream().map(Enum::name).collect(Collectors.joining(", "))));
         if (userInput.hasBranch()) {
@@ -43,7 +43,7 @@ public class SummaryFormatter {
     }
 
     private String formatReports(final List<Report> reports) {
-        final StringBuilder stringBuilder = new StringBuilder();
+        final var stringBuilder = new StringBuilder();
         for (final Report report : reports) {
             stringBuilder.append(this.reportFormatter.formatReport(report));
             stringBuilder.append(LINE_SEPARATOR);

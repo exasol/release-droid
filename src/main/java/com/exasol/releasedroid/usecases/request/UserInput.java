@@ -3,16 +3,14 @@ package com.exasol.releasedroid.usecases.request;
 import java.util.List;
 import java.util.Objects;
 
-import com.exasol.errorreporting.ExaError;
-
 /**
  * This class stores user input.
  */
 public class UserInput {
-    private static final String EXASOL_REPOSITORY_OWNER = "exasol";
+    private String owner;
     private final String branch;
     private final Goal goal;
-    private final List<PlatformName> platformNames;
+    private List<PlatformName> platformNames;
     private final String repositoryName;
     private final String localPath;
     private final Language language;
@@ -27,12 +25,30 @@ public class UserInput {
     }
 
     /**
+     * Check if input contains a branch.
+     *
+     * @return true if a branch presents
+     */
+    public boolean hasBranch() {
+        return (this.branch != null) && !this.branch.isEmpty();
+    }
+
+    /**
      * Get a goal.
      *
      * @return goal
      */
     public Goal getGoal() {
         return this.goal;
+    }
+
+    /**
+     * Check if input contains goal.
+     *
+     * @return true if a goal present
+     */
+    public boolean hasGoal() {
+        return this.goal != null;
     }
 
     /**
@@ -45,6 +61,24 @@ public class UserInput {
     }
 
     /**
+     * Check if input contains platforms.
+     *
+     * @return true if platforms present
+     */
+    public boolean hasPlatforms() {
+        return (this.platformNames != null) && !this.platformNames.isEmpty();
+    }
+
+    /**
+     * Set platform names.
+     *
+     * @param platformNames platform names
+     */
+    public void setPlatformNames(final List<PlatformName> platformNames) {
+        this.platformNames = platformNames;
+    }
+
+    /**
      * Get a repository name.
      *
      * @return repository name
@@ -54,12 +88,39 @@ public class UserInput {
     }
 
     /**
-     * Check if input contains a branch.
+     * Check if input contains a repository name.
      *
-     * @return true if a branch presents
+     * @return true if a repository name present
      */
-    public boolean hasBranch() {
-        return (this.branch != null) && !this.branch.isEmpty();
+    public boolean hasRepositoryName() {
+        return this.repositoryName != null && !this.repositoryName.isEmpty();
+    }
+
+    /**
+     * Get the owner.
+     *
+     * @return owner
+     */
+    public String getOwner() {
+        return this.owner;
+    }
+
+    /**
+     * Check if input contains an owner.
+     *
+     * @return true if an owner present
+     */
+    public boolean hasOwner() {
+        return this.owner != null && !this.owner.isEmpty();
+    }
+
+    /**
+     * Set the owner.
+     *
+     * @param owner owner
+     */
+    public void setOwner(final String owner) {
+        this.owner = owner;
     }
 
     /**
@@ -98,12 +159,21 @@ public class UserInput {
         return this.language != null;
     }
 
+    /**
+     * Get a full repository name in format owner/repository.
+     * 
+     * @return full repository name
+     */
+    public String getFullRepositoryName() {
+        return getOwner() + "/" + getRepositoryName();
+    }
+
     private UserInput(final Builder builder) {
         this.branch = builder.branch;
         this.goal = builder.goal;
         this.platformNames = builder.platforms;
-        final String owner = builder.owner == null ? EXASOL_REPOSITORY_OWNER : builder.owner;
-        this.repositoryName = owner + "/" + builder.repositoryName;
+        this.owner = builder.owner;
+        this.repositoryName = builder.repositoryName;
         this.localPath = builder.localPath;
         this.language = builder.language;
     }
@@ -126,15 +196,15 @@ public class UserInput {
             return false;
         }
         final UserInput userInput = (UserInput) o;
-        return Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
-                && this.platformNames.equals(userInput.platformNames)
-                && this.repositoryName.equals(userInput.repositoryName)
+        return Objects.equals(this.owner, userInput.owner) && Objects.equals(this.branch, userInput.branch)
+                && this.goal == userInput.goal && Objects.equals(this.platformNames, userInput.platformNames)
+                && Objects.equals(this.repositoryName, userInput.repositoryName)
                 && Objects.equals(this.localPath, userInput.localPath) && this.language == userInput.language;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath,
+        return Objects.hash(this.owner, this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath,
                 this.language);
     }
 
@@ -250,44 +320,7 @@ public class UserInput {
          * @return new {@link UserInput} instance
          */
         public UserInput build() {
-            validateMandatoryParameters();
-            validateGoalAndBranch();
-            validateLocalPath();
             return new UserInput(this);
-        }
-
-        private void validateLocalPath() {
-            if ((this.localPath != null) && ((this.goal == Goal.RELEASE) || (this.branch != null))) {
-                throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-6")
-                        .message("The 'local' argument can't be used together with 'branch' or RELEASE 'goal'.")
-                        .toString());
-            }
-        }
-
-        private void validateGoalAndBranch() {
-            if ((this.goal == Goal.RELEASE) && (this.branch != null)) {
-                throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-1")
-                        .message("Please, remove branch parameter if you want to make a release.").toString());
-            }
-        }
-
-        private void validateMandatoryParameters() {
-            if (this.goal == null) {
-                throwExceptionForMissingParameter("goal");
-            }
-            if ((this.platforms == null) || this.platforms.isEmpty()) {
-                throwExceptionForMissingParameter("platforms");
-            }
-            if (this.repositoryName == null || this.repositoryName.isEmpty()) {
-                throwExceptionForMissingParameter("repository name");
-            }
-        }
-
-        private void throwExceptionForMissingParameter(final String parameter) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-2")
-                    .message("Please specify a mandatory parameter {{parameter}} and re-run the Release Droid.",
-                            parameter)
-                    .toString());
         }
     }
 }
