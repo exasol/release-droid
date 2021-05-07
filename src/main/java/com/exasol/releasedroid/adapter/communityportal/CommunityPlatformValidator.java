@@ -1,15 +1,15 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.failedValidation;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.successfulValidation;
 
 import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 
@@ -38,29 +38,28 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
 
     private Report validateCommunityPortalTemplate() {
         final var report = Report.validationReport();
-        try {
-            final var templateAsString = this.repository.getSingleFileContentAsString(RELEASE_CONFIG);
-            report.merge(validateTemplate(templateAsString));
-        } catch (final RepositoryException exception) {
+        final Optional<ReleaseConfig> releaseConfig = this.repository.getReleaseConfig();
+        if (releaseConfig.isPresent()) {
+            report.merge(validateConfigurations(releaseConfig.get()));
+        } else {
             report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-3") //
-                    .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG) //
+                    .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG_PATH) //
                     .mitigation(" Please, add this file according to the user guide.").toString()));
         }
         return report;
     }
 
-    private Report validateTemplate(final String templateAsString) {
+    private Report validateConfigurations(final ReleaseConfig releaseConfig) {
         final var report = Report.validationReport();
-        final var template = CommunityPortalTemplateParser.parse(templateAsString);
-        report.merge(validateProjectName(template));
-        report.merge(validateProjectDescription(template));
-        report.merge(validateTags(template));
+        report.merge(validateProjectName(releaseConfig));
+        report.merge(validateProjectDescription(releaseConfig));
+        report.merge(validateTags(releaseConfig));
         return report;
     }
 
-    private Report validateProjectName(final CommunityPortalTemplate template) {
+    private Report validateProjectName(final ReleaseConfig config) {
         final var report = Report.validationReport();
-        if (template.hasProjectName()) {
+        if (config.hasCommunityProjectName()) {
             report.addResult(getSuccessfulResult("Project name"));
         } else {
             report.addResult(getFailedResult("Project name"));
@@ -78,9 +77,9 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
                 .mitigation("Please add it according to the user guide.").toString());
     }
 
-    private Report validateProjectDescription(final CommunityPortalTemplate template) {
+    private Report validateProjectDescription(final ReleaseConfig config) {
         final var report = Report.validationReport();
-        if (template.hasProjectDescription()) {
+        if (config.hasCommunityProjectDescription()) {
             report.addResult(getSuccessfulResult("Project description"));
         } else {
             report.addResult(getFailedResult("Project description"));
@@ -88,9 +87,9 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
         return report;
     }
 
-    private Report validateTags(final CommunityPortalTemplate template) {
+    private Report validateTags(final ReleaseConfig config) {
         final var report = Report.validationReport();
-        if (template.hasTags()) {
+        if (config.hasCommunityTags()) {
             report.addResult(getSuccessfulResult("Tags"));
         } else {
             report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-6") //
@@ -108,7 +107,8 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
             report.addResult(ValidationResult.successfulValidation("Changes description from the changes file."));
         } else {
             report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-CP-7")
-                    .message("Cannot find the ## Summary section in the release letter {{releaseLetter}}.", releaseLetter.getFileName())
+                    .message("Cannot find the ## Summary section in the release letter {{releaseLetter}}.",
+                            releaseLetter.getFileName())
                     .mitigation("Please add this section in order to release on the Community Portal.").toString()));
         }
         return report;

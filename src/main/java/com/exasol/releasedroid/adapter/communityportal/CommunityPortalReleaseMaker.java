@@ -1,11 +1,14 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
+import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
 /**
@@ -37,18 +40,18 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-release-changes-description-from-release-letter~1]
-    private CommunityPost getCommunityPost(final Repository repository) {
+    private CommunityPost getCommunityPost(final Repository repository) throws CommunityPortalException {
         final String version = repository.getVersion();
-        final var communityPortalTemplate = getCommunityPortalTemplate(repository);
+        final ReleaseConfig config = getConfig(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
-        final String header = communityPortalTemplate.getProjectName() + " " + version;
+        final String header = config.getCommunityProjectName() + " " + version;
         final String gitHubReleaseLink = buildGitHubReleaseLink(repository, version);
-        final String body = renderBody(header, communityPortalTemplate.getProjectDescription(),
+        final String body = renderBody(header, config.getCommunityProjectDescription(),
                 releaseLetter.getSummary().orElseThrow(), gitHubReleaseLink);
         return CommunityPost.builder() //
                 .boardId("ProductNews") //
                 .header(header + " released") //
-                .tags(communityPortalTemplate.getTags()) //
+                .tags(config.getCommunityTags()) //
                 .body(body) //
                 .build();
     }
@@ -58,8 +61,15 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-project-description-from-file~1]
-    private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
-        return CommunityPortalTemplateParser.parse(repository.getSingleFileContentAsString(RELEASE_CONFIG));
+    private ReleaseConfig getConfig(final Repository repository) throws CommunityPortalException {
+        final Optional<ReleaseConfig> releaseConfig = repository.getReleaseConfig();
+        if (releaseConfig.isPresent()) {
+            return releaseConfig.get();
+        } else {
+            throw new CommunityPortalException(ExaError.messageBuilder("E-RD-CP-9") //
+                    .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG_PATH) //
+                    .mitigation("Please, add this file according to the user guide.").toString());
+        }
     }
 
     private String renderBody(final String header, final String projectDescription, final String changesDescription,

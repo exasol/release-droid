@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.exasol.releasedroid.usecases.exception.RepositoryException;
+
 /**
  * Base implementation of repository.
  */
@@ -25,11 +27,15 @@ public abstract class BaseRepository implements Repository {
     }
 
     @Override
-    public ReleaseConfig getReleaseConfig() {
+    public Optional<ReleaseConfig> getReleaseConfig() {
         if (this.releaseConfig == null) {
-            this.releaseConfig = new ReleaseConfigParser().parse(getSingleFileContentAsString(RELEASE_CONFIG_PATH));
+            try {
+                this.releaseConfig = ReleaseConfigParser.parse(getSingleFileContentAsString(RELEASE_CONFIG_PATH));
+            } catch (final RepositoryException exception) {
+                this.releaseConfig = null;
+            }
         }
-        return this.releaseConfig;
+        return Optional.ofNullable(this.releaseConfig);
     }
 
     @Override

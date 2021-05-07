@@ -4,9 +4,7 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.EXASOL_REPO
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -57,7 +55,7 @@ public class ReleaseDroid {
     // [impl->dsn~rd-creates-release-report~1]
     public void run(final UserInput userInput) {
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        validateUserInput(userInput, repository.getReleaseConfig());
+        validateUserInput(userInput, repository);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
@@ -69,9 +67,10 @@ public class ReleaseDroid {
         writeReportToDisk(userInput, reports);
     }
 
-    private void validateUserInput(final UserInput userInput, final ReleaseConfig releaseConfig) {
-        if (!userInput.hasPlatforms()) {
-            userInput.setPlatformNames(getPlatformNamesFromReleaseConfig(releaseConfig));
+    private void validateUserInput(final UserInput userInput, final Repository repository) {
+        final Optional<ReleaseConfig> releaseConfig = repository.getReleaseConfig();
+        if (!userInput.hasPlatforms() && releaseConfig.isPresent()) {
+            userInput.setPlatformNames(getPlatformNamesFromReleaseConfig(releaseConfig.get()));
         }
         if (!userInput.hasOwner()) {
             userInput.setOwner(EXASOL_REPOSITORY_OWNER);

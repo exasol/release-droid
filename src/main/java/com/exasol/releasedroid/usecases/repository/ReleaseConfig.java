@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.usecases.repository;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
@@ -90,6 +91,34 @@ public class ReleaseConfig {
      */
     public boolean hasReleasePlatforms() {
         return this.releasePlatforms != null && !this.releasePlatforms.isEmpty();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ReleaseConfig that = (ReleaseConfig) o;
+        return Objects.equals(this.communityTags, that.communityTags)
+                && Objects.equals(this.communityProjectName, that.communityProjectName)
+                && Objects.equals(this.communityProjectDescription, that.communityProjectDescription)
+                && Objects.equals(this.releasePlatforms, that.releasePlatforms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.communityTags, this.communityProjectName, this.communityProjectDescription,
+                this.releasePlatforms);
+    }
+
+    @Override
+    public String toString() {
+        return "ReleaseConfig{" + "communityTags=" + this.communityTags + ", communityProjectName='"
+                + this.communityProjectName + '\'' + ", communityProjectDescription='"
+                + this.communityProjectDescription + '\'' + ", releasePlatforms=" + this.releasePlatforms + '}';
     }
 
     /**

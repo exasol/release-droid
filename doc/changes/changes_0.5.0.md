@@ -9,6 +9,7 @@ Code name: Community Portal Support
 * #111: Added support for Exasol Community Portal release article. 
 * #141: Added validation for Exasol Community Portal release.
 * #151: Added log output for created community post URL.
+* #154: Added support for specifying platforms via config file.
 
 ## Bug fixes
 

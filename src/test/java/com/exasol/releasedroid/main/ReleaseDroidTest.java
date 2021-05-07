@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,7 +89,16 @@ class ReleaseDroidTest {
     @Test
     void testUserInputWithoutPlatforms() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().build();
-        when(this.repositoryMock.getReleaseConfig()).thenReturn(releaseConfig);
+        when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
+        final UserInput userInput = builder().goal(GOAL).build();
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> this.releaseDroid.run(userInput));
+        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
+    }
+
+    @Test
+    void testUserInputWithoutPlatforms2() {
+        when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.empty());
         final UserInput userInput = builder().goal(GOAL).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
@@ -98,7 +108,7 @@ class ReleaseDroidTest {
     @Test
     void testSetPlatformsFromProperties() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
-        when(this.repositoryMock.getReleaseConfig()).thenReturn(releaseConfig);
+        when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
         final UserInput userInput = builder().goal("RELEASE").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));

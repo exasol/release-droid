@@ -2,6 +2,7 @@ package com.exasol.releasedroid.usecases.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
@@ -16,7 +17,7 @@ public interface Repository extends RepositoryGate {
      *
      * @return release config
      */
-    public ReleaseConfig getReleaseConfig();
+    public Optional<ReleaseConfig> getReleaseConfig();
 
     /**
      * Get a changelog file as a string.
