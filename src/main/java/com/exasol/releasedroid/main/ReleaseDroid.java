@@ -56,23 +56,38 @@ public class ReleaseDroid {
     // [impl->dsn~rd-creates-release-report~1]
     public void run(final UserInput userInput) {
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        validateUserInput(userInput, repository);
+        final List<PlatformName> platformNames = getPlatformNames(userInput, repository);
+        validatePlatformNames(platformNames);
+        validateUserInput(userInput);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
         if (userInput.getGoal() == Goal.VALIDATE) {
-            reports.add(this.validateUseCase.validate(repository, userInput.getPlatformNames()));
+            reports.add(this.validateUseCase.validate(repository, platformNames));
         } else if (userInput.getGoal() == Goal.RELEASE) {
-            reports.addAll(this.releaseUseCase.release(repository, userInput.getPlatformNames()));
+            reports.addAll(this.releaseUseCase.release(repository, platformNames));
         }
         writeReportToDisk(userInput, reports);
     }
 
-    private void validateUserInput(final UserInput userInput, final Repository repository) {
+    private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
         final Optional<ReleaseConfig> releaseConfig = repository.getReleaseConfig();
-        if (!userInput.hasPlatforms() && releaseConfig.isPresent()) {
-            userInput.setPlatformNames(getPlatformNamesFromReleaseConfig(releaseConfig.get()));
+        if (userInput.hasPlatforms()) {
+            return userInput.getPlatformNames();
+        } else if (releaseConfig.isPresent() && releaseConfig.get().hasReleasePlatforms()) {
+            return releaseConfig.get().getReleasePlatforms();
+        } else {
+            return List.of();
         }
+    }
+
+    private void validatePlatformNames(final List<PlatformName> platformNames) {
+        if (platformNames.isEmpty()) {
+            throwExceptionForMissingParameter("platforms");
+        }
+    }
+
+    private void validateUserInput(final UserInput userInput) {
         if (!userInput.hasOwner()) {
             userInput.setOwner(EXASOL_REPOSITORY_OWNER);
         }
@@ -81,20 +96,9 @@ public class ReleaseDroid {
         validateLocalPath(userInput);
     }
 
-    private List<PlatformName> getPlatformNamesFromReleaseConfig(final ReleaseConfig releaseConfig) {
-        if (releaseConfig.hasReleasePlatforms()) {
-            return releaseConfig.getReleasePlatforms();
-        } else {
-            return List.of();
-        }
-    }
-
     private void validateMandatoryParameters(final UserInput userInput) {
         if (!userInput.hasGoal()) {
             throwExceptionForMissingParameter("goal");
-        }
-        if (!userInput.hasPlatforms()) {
-            throwExceptionForMissingParameter("platforms");
         }
         if (!userInput.hasRepositoryName()) {
             throwExceptionForMissingParameter("repository name");
