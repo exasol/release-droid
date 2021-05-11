@@ -4,13 +4,15 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.EXASOL_REPO
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.logging.ReportFormatter;
-import com.exasol.releasedroid.usecases.release.*;
+import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -18,7 +20,6 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.Goal;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
-import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -37,14 +38,14 @@ public class ReleaseDroid {
      * Create a new instance of {@link ReleaseDroid}.
      *
      * @param repositoryGateway repository gateway
-     * @param releaseMakers     release makers
-     * @param releaseManager    release manager
+     * @param releaseUseCase    release usecase
+     * @param validateUseCase   validate usecase
      */
-    public ReleaseDroid(final RepositoryGateway repositoryGateway, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final ReleaseManager releaseManager) {
+    public ReleaseDroid(final RepositoryGateway repositoryGateway, final ValidateUseCase validateUseCase,
+            final ReleaseUseCase releaseUseCase) {
         this.repositoryGateway = repositoryGateway;
-        this.validateUseCase = new ValidateInteractor();
-        this.releaseUseCase = new ReleaseInteractor(this.validateUseCase, releaseMakers, releaseManager);
+        this.validateUseCase = validateUseCase;
+        this.releaseUseCase = releaseUseCase;
         this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
     }
 

@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +38,7 @@ class ReleaseDroidTest {
     @BeforeEach
     void beforeEach() {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
-        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, Map.of(), null);
+        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, null, null);
     }
 
     @Test
