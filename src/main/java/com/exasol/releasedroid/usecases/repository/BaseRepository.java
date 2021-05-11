@@ -14,7 +14,6 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
  */
 public abstract class BaseRepository implements Repository {
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
-    private ReleaseConfig releaseConfig;
     private final RepositoryGate repositoryGate;
 
     /**
@@ -28,14 +27,11 @@ public abstract class BaseRepository implements Repository {
 
     @Override
     public Optional<ReleaseConfig> getReleaseConfig() {
-        if (this.releaseConfig == null) {
-            try {
-                this.releaseConfig = ReleaseConfigParser.parse(getSingleFileContentAsString(RELEASE_CONFIG_PATH));
-            } catch (final RepositoryException exception) {
-                this.releaseConfig = null;
-            }
+        try {
+            return Optional.of(ReleaseConfigParser.parse(getSingleFileContentAsString(RELEASE_CONFIG_PATH)));
+        } catch (final RepositoryException exception) {
+            return Optional.empty();
         }
-        return Optional.ofNullable(this.releaseConfig);
     }
 
     @Override

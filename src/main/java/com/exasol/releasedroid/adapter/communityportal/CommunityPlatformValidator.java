@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.failedValidation;
 import static com.exasol.releasedroid.usecases.report.ValidationResult.successfulValidation;
@@ -7,9 +8,9 @@ import static com.exasol.releasedroid.usecases.report.ValidationResult.successfu
 import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationResult;
-import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 
@@ -38,10 +39,10 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
 
     private Report validateCommunityPortalTemplate() {
         final var report = Report.validationReport();
-        final Optional<ReleaseConfig> releaseConfig = this.repository.getReleaseConfig();
-        if (releaseConfig.isPresent()) {
-            report.merge(validateConfigurations(releaseConfig.get()));
-        } else {
+        try {
+            final String communityConfig = this.repository.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH);
+            report.merge(validateConfigurations(CommunityConfigParser.parse(communityConfig)));
+        } catch (final RepositoryException exception) {
             report.addResult(failedValidation(ExaError.messageBuilder("E-RD-CP-3") //
                     .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG_PATH) //
                     .mitigation(" Please, add this file according to the user guide.").toString()));
@@ -49,7 +50,7 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
         return report;
     }
 
-    private Report validateConfigurations(final ReleaseConfig releaseConfig) {
+    private Report validateConfigurations(final CommunityConfig releaseConfig) {
         final var report = Report.validationReport();
         report.merge(validateProjectName(releaseConfig));
         report.merge(validateProjectDescription(releaseConfig));
@@ -57,7 +58,7 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
         return report;
     }
 
-    private Report validateProjectName(final ReleaseConfig config) {
+    private Report validateProjectName(final CommunityConfig config) {
         final var report = Report.validationReport();
         if (config.hasCommunityProjectName()) {
             report.addResult(getSuccessfulResult("Project name"));
@@ -77,7 +78,7 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
                 .mitigation("Please add it according to the user guide.").toString());
     }
 
-    private Report validateProjectDescription(final ReleaseConfig config) {
+    private Report validateProjectDescription(final CommunityConfig config) {
         final var report = Report.validationReport();
         if (config.hasCommunityProjectDescription()) {
             report.addResult(getSuccessfulResult("Project description"));
@@ -87,7 +88,7 @@ public class CommunityPlatformValidator implements ReleasePlatformValidator {
         return report;
     }
 
-    private Report validateTags(final ReleaseConfig config) {
+    private Report validateTags(final CommunityConfig config) {
         final var report = Report.validationReport();
         if (config.hasCommunityTags()) {
             report.addResult(getSuccessfulResult("Tags"));

@@ -1,16 +1,18 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
+import com.exasol.releasedroid.usecases.repository.ReleaseLetterParser;
+import com.exasol.releasedroid.usecases.repository.Repository;
 
 class CommunityPortalReleaseMakerTest {
     @Test
@@ -22,7 +24,7 @@ class CommunityPortalReleaseMakerTest {
         final ReleaseLetter releaseLetter = getReleaseLetter();
         when(repositoryMock.getName()).thenReturn("exasol/elasticsearch-virtual-schema");
         when(repositoryMock.getVersion()).thenReturn("2.0.0");
-        when(repositoryMock.getReleaseConfig()).thenReturn(Optional.of(getReleaseConfig()));
+        when(repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH)).thenReturn(getReleaseConfig());
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
         communityPortalReleaseMaker.makeRelease(repositoryMock);
@@ -40,12 +42,15 @@ class CommunityPortalReleaseMakerTest {
         verify(gatewayMock, times(1)).sendDraftPost(communityPost);
     }
 
-    private ReleaseConfig getReleaseConfig() {
-        return ReleaseConfig.builder() //
-                .communityTags(List.of("Release Droid", "Java Tools", "Open Source", "GitHub")) //
-                .communityProjectName("Virtual Schema for ElasticSearch") //
-                .communityProjectDescription("Here is a project description.") //
-                .build();
+    private String getReleaseConfig() {
+        return "community-tags:\n" //
+                + "- Release Droid\n" //
+                + "- Java Tools\n" //
+                + "- Open Source\n" //
+                + "- GitHub\n" //
+                + "community-project-name: Virtual Schema for ElasticSearch\n" //
+                + "community-project-description: Here is a project description.\n" //
+        ;
     }
 
     private ReleaseLetter getReleaseLetter() {
@@ -67,7 +72,7 @@ class CommunityPortalReleaseMakerTest {
         final ReleaseLetter releaseLetter = getReleaseLetter();
         when(repositoryMock.getName()).thenReturn("exasol/elasticsearch-virtual-schema");
         when(repositoryMock.getVersion()).thenReturn("2.0.0");
-        when(repositoryMock.getReleaseConfig()).thenReturn(Optional.of(getReleaseConfig()));
+        when(repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH)).thenReturn(getReleaseConfig());
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
         doThrow(CommunityPortalException.class).when(gatewayMock).sendDraftPost(any());

@@ -1,14 +1,11 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 
-import java.util.Optional;
 import java.util.logging.Logger;
 
-import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
-import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
 /**
@@ -40,9 +37,9 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-release-changes-description-from-release-letter~1]
-    private CommunityPost getCommunityPost(final Repository repository) throws CommunityPortalException {
+    private CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
-        final ReleaseConfig config = getConfig(repository);
+        final CommunityConfig config = getConfig(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
         final String header = config.getCommunityProjectName() + " " + version;
         final String gitHubReleaseLink = buildGitHubReleaseLink(repository, version);
@@ -61,15 +58,8 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-project-description-from-file~1]
-    private ReleaseConfig getConfig(final Repository repository) throws CommunityPortalException {
-        final Optional<ReleaseConfig> releaseConfig = repository.getReleaseConfig();
-        if (releaseConfig.isPresent()) {
-            return releaseConfig.get();
-        } else {
-            throw new CommunityPortalException(ExaError.messageBuilder("E-RD-CP-9") //
-                    .message("Cannot find a required config file {{fileName}}.", RELEASE_CONFIG_PATH) //
-                    .mitigation("Please, add this file according to the user guide.").toString());
-        }
+    private CommunityConfig getConfig(final Repository repository) {
+        return CommunityConfigParser.parse(repository.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH));
     }
 
     private String renderBody(final String header, final String projectDescription, final String changesDescription,
