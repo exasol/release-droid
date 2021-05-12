@@ -105,7 +105,7 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testSetPlatformsFromProperties() {
+    void testPlatformsFromConfig() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
         final UserInput userInput = builder().goal("RELEASE").build();

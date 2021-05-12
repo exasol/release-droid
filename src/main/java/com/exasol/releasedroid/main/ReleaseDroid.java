@@ -82,7 +82,7 @@ public class ReleaseDroid {
     }
 
     private void validatePlatformNames(final List<PlatformName> platformNames) {
-        if (platformNames.isEmpty()) {
+        if (platformNames == null || platformNames.isEmpty()) {
             throwExceptionForMissingParameter("platforms");
         }
     }

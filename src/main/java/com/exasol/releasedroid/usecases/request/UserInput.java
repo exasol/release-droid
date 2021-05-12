@@ -10,7 +10,7 @@ public class UserInput {
     private String owner;
     private final String branch;
     private final Goal goal;
-    private List<PlatformName> platformNames;
+    private final List<PlatformName> platformNames;
     private final String repositoryName;
     private final String localPath;
     private final Language language;
@@ -67,15 +67,6 @@ public class UserInput {
      */
     public boolean hasPlatforms() {
         return (this.platformNames != null) && !this.platformNames.isEmpty();
-    }
-
-    /**
-     * Set platform names.
-     *
-     * @param platformNames platform names
-     */
-    public void setPlatformNames(final List<PlatformName> platformNames) {
-        this.platformNames = platformNames;
     }
 
     /**
