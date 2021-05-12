@@ -10,6 +10,9 @@ public final class ReleaseDroidConstants {
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String RELEASE_DROID_CREDENTIALS = FILE_SEPARATOR + ".release-droid" + FILE_SEPARATOR
             + "credentials";
+    public static final String EXASOL_REPOSITORY_OWNER = "exasol";
+    public static final String RELEASE_CONFIG_PATH = "release_config.yml";
+    public static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
 
     private ReleaseDroidConstants() {
         // prevent instantiation

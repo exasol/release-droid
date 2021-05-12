@@ -2,6 +2,7 @@ package com.exasol.releasedroid.usecases.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
@@ -11,6 +12,13 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  * This class represents a repository content based on the latest commit of the user-specified branch.
  */
 public interface Repository extends RepositoryGate {
+    /**
+     * Get a release config.
+     *
+     * @return release config
+     */
+    public Optional<ReleaseConfig> getReleaseConfig();
+
     /**
      * Get a changelog file as a string.
      *

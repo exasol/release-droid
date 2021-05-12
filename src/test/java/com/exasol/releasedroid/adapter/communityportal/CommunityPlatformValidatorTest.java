@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,20 +24,24 @@ class CommunityPlatformValidatorTest {
     @Test
     void validateSuccessful() {
         final String version = "1.0.0";
-        final String communityPortalTemplate = "community-tags:\n" //
+        final ReleaseLetter releaseLetter = ReleaseLetter.builder("changes_0.1.0.md") //
+                .body("## Summary \nHere is a short summary. \n## Feature").build();
+        when(this.repositoryMock.getVersion()).thenReturn(version);
+        when(this.repositoryMock.getReleaseLetter(version)).thenReturn(releaseLetter);
+        when(this.repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH)).thenReturn(getReleaseConfig());
+        final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
+        assertFalse(validator.validate().hasFailures());
+    }
+
+    private String getReleaseConfig() {
+        return "community-tags:\n" //
                 + "- Release Droid\n" //
                 + "- Java Tools\n" //
                 + "- Open Source\n" //
                 + "- GitHub\n" //
                 + "community-project-name: Virtual Schema for ElasticSearch\n" //
-                + "community-project-description: Here is a project description.\n";
-        final ReleaseLetter releaseLetter = ReleaseLetter.builder("changes_0.1.0.md") //
-                .body("## Summary \nHere is a short summary. \n## Feature").build();
-        when(this.repositoryMock.getVersion()).thenReturn(version);
-        when(this.repositoryMock.getReleaseLetter(version)).thenReturn(releaseLetter);
-        when(this.repositoryMock.getSingleFileContentAsString(RELEASE_CONFIG)).thenReturn(communityPortalTemplate);
-        final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
-        assertFalse(validator.validate().hasFailures());
+                + "community-project-description: Here is a project description.\n" //
+        ;
     }
 
     @Test
@@ -47,7 +51,8 @@ class CommunityPlatformValidatorTest {
                 .body("## Feature").build();
         when(this.repositoryMock.getVersion()).thenReturn(version);
         when(this.repositoryMock.getReleaseLetter(version)).thenReturn(releaseLetter);
-        when(this.repositoryMock.getSingleFileContentAsString(RELEASE_CONFIG)).thenThrow(RepositoryException.class);
+        when(this.repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH))
+                .thenThrow(RepositoryException.class);
         final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
         final Report report = validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
@@ -63,7 +68,7 @@ class CommunityPlatformValidatorTest {
                 .body("## Summary \nHere is a short summary. \n## Feature").build();
         when(this.repositoryMock.getVersion()).thenReturn(version);
         when(this.repositoryMock.getReleaseLetter(version)).thenReturn(releaseLetter);
-        when(this.repositoryMock.getSingleFileContentAsString(RELEASE_CONFIG)).thenReturn("{}");
+        when(this.repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH)).thenReturn("");
         final CommunityPlatformValidator validator = new CommunityPlatformValidator(this.repositoryMock);
         final Report report = validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //

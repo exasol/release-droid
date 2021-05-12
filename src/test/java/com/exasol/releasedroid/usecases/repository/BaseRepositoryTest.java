@@ -72,6 +72,12 @@ class BaseRepositoryTest {
         assertThat(repository.isOnDefaultBranch(), equalTo(false));
     }
 
+    @Test
+    void testGetReleaseConfig() {
+        final Repository repository = createRepository("");
+        assertThat(repository.getReleaseConfig(), equalTo(Optional.of(ReleaseConfig.builder().build())));
+    }
+
     private Repository createRepository(final String fileContent) {
         return new DummyRepository(this.repositoryGateMock, fileContent);
     }

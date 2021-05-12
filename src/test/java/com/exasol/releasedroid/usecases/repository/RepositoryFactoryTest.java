@@ -41,7 +41,8 @@ class RepositoryFactoryTest {
     @Test
     void getJavaRepositoryWithAutoDetectedLanguage() throws GitHubException {
         when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("java");
-        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate").build();
+        final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
+                .goal("validate").build();
         assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(JavaRepository.class));
     }
 
@@ -55,14 +56,16 @@ class RepositoryFactoryTest {
     @Test
     void getScalaRepositoryWithAutoDetectedLanguage() throws GitHubException {
         when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("scala");
-        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate").build();
+        final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
+                .goal("validate").build();
         assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(ScalaRepository.class));
     }
 
     @Test
     void tryCreatingUnsupportedRepository() throws GitHubException {
         when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("python");
-        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate").build();
+        final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
+                .goal("validate").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.repositoryGateway.getRepository(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-8"));

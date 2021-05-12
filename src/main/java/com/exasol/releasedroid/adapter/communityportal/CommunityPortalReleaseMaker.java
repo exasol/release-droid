@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.RELEASE_CONFIG;
+import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 
 import java.util.logging.Logger;
 
@@ -39,16 +39,16 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     // [impl->dsn~extract-release-changes-description-from-release-letter~1]
     private CommunityPost getCommunityPost(final Repository repository) {
         final String version = repository.getVersion();
-        final var communityPortalTemplate = getCommunityPortalTemplate(repository);
+        final CommunityConfig config = getConfig(repository);
         final var releaseLetter = repository.getReleaseLetter(version);
-        final String header = communityPortalTemplate.getProjectName() + " " + version;
+        final String header = config.getCommunityProjectName() + " " + version;
         final String gitHubReleaseLink = buildGitHubReleaseLink(repository, version);
-        final String body = renderBody(header, communityPortalTemplate.getProjectDescription(),
+        final String body = renderBody(header, config.getCommunityProjectDescription(),
                 releaseLetter.getSummary().orElseThrow(), gitHubReleaseLink);
         return CommunityPost.builder() //
                 .boardId("ProductNews") //
                 .header(header + " released") //
-                .tags(communityPortalTemplate.getTags()) //
+                .tags(config.getCommunityTags()) //
                 .body(body) //
                 .build();
     }
@@ -58,8 +58,8 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     // [impl->dsn~extract-project-description-from-file~1]
-    private CommunityPortalTemplate getCommunityPortalTemplate(final Repository repository) {
-        return CommunityPortalTemplateParser.parse(repository.getSingleFileContentAsString(RELEASE_CONFIG));
+    private CommunityConfig getConfig(final Repository repository) {
+        return CommunityConfigParser.parse(repository.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH));
     }
 
     private String renderBody(final String header, final String projectDescription, final String changesDescription,

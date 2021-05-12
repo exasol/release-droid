@@ -31,6 +31,13 @@ class UserInputParserTest {
     }
 
     @Test
+    void testParseUserInputWithoutPlatforms() {
+        final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate").build();
+        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate" };
+        assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
+    }
+
+    @Test
     void testParseUserInputWithoutBranch() {
         final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").goal("validate")
                 .platforms("github", "maven").build();
@@ -49,42 +56,12 @@ class UserInputParserTest {
     }
 
     @Test
-    void testParseUserInputWithLocalAndReleaseGoal() {
-        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "release", "-platforms",
-                "github,maven", "-local", "./test-folder" };
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(),
-                containsString("E-RD-6: The 'local' argument can't be used together with 'branch' or RELEASE 'goal'"));
-    }
-
-    @Test
-    void testParseUserInputWithLocalAndBranch() {
-        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
-                "github,maven", "-local", "./test-folder", "-branch", "my-branch" };
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(),
-                containsString("E-RD-6: The 'local' argument can't be used together with 'branch' or RELEASE 'goal'"));
-    }
-
-    @Test
     void testParseUserInputMissingRepositoryNameArgument() {
         final String[] args = new String[] { "-name", "-goal", "validate", "-platforms", "github,maven", "-branch",
                 "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
         assertThat(exception.getMessage(), containsString("E-RD-9: Missing argument for option: n"));
-    }
-
-    @Test
-    void testParseUserInputMissingRepositoryNameOption() {
-        final String[] args = new String[] { "-goal", "validate", "-platforms", "github,maven", "-branch",
-                "some_branch" };
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(),
-                containsString("E-RD-2: Please specify a mandatory parameter 'repository name'"));
     }
 
     @Test
@@ -97,30 +74,12 @@ class UserInputParserTest {
     }
 
     @Test
-    void testParseUserInputMissingGoalOption() {
-        final String[] args = new String[] { "-name", "testing-release-droid", "-platforms", "github,maven", "-branch",
-                "some_branch" };
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'goal'"));
-    }
-
-    @Test
     void testParseUserInputMissingPlatformsArgument() {
         final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
                 "-branch", "some_branch" };
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.userInputParser.parseUserInput(args));
         assertThat(exception.getMessage(), containsString("E-RD-9: Missing argument for option: p"));
-    }
-
-    @Test
-    void testParseUserInputMissingPlatformsOption() {
-        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-branch",
-                "some_branch" };
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.userInputParser.parseUserInput(args));
-        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
     }
 
     @Test

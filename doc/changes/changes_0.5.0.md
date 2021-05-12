@@ -1,14 +1,13 @@
-# Exasol Release Droid 0.5.0, released 2021-05-??
+# Exasol Release Droid 0.5.0, released 2021-05-12
 
 Code name: Community Portal Support
-
-## Summary
 
 ## Features
 
 * #111: Added support for Exasol Community Portal release article. 
 * #141: Added validation for Exasol Community Portal release.
 * #151: Added log output for created community post URL.
+* #154: Added support for specifying platforms via config file.
 
 ## Bug fixes
 

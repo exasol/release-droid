@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 /**
@@ -30,16 +31,16 @@ public class SummaryWriter {
 
     /**
      * Write a list of reports to a single file on disk.
-     *
-     * @param reportPath path to the file on disk
+     *  @param reportPath path to the file on disk
      * @param userInput  instance of {@link UserInput}
+     * @param platformNames
      * @param reports    list of reports to write
      */
     // [impl->dsn~rd-writes-report-to-file~1]
-    public void writeResponseToDisk(final Path reportPath, final UserInput userInput, final List<Report> reports) {
+    public void writeResponseToDisk(final Path reportPath, final UserInput userInput, final List<PlatformName> platformNames, final List<Report> reports) {
         final File reportFile = prepareFile(reportPath);
         try (final FileWriter writer = new FileWriter(reportFile.getAbsoluteFile())) {
-            writer.write(this.responseFormatter.formatResponse(userInput, reports));
+            writer.write(this.responseFormatter.formatResponse(userInput, platformNames, reports));
         } catch (final IOException exception) {
             throw new IllegalStateException(
                     ExaError.messageBuilder("E-RD-10").message("Unable to write a report.").toString(), exception);

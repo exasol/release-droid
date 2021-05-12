@@ -1,12 +1,18 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import java.util.*;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.CHANGELOG_FILE_PATH;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import com.exasol.releasedroid.usecases.exception.RepositoryException;
 
 /**
  * Base implementation of repository.
  */
 public abstract class BaseRepository implements Repository {
-    private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
     private final RepositoryGate repositoryGate;
 
@@ -17,6 +23,15 @@ public abstract class BaseRepository implements Repository {
      */
     protected BaseRepository(final RepositoryGate repositoryGate) {
         this.repositoryGate = repositoryGate;
+    }
+
+    @Override
+    public Optional<ReleaseConfig> getReleaseConfig() {
+        try {
+            return Optional.of(ReleaseConfigParser.parse(getSingleFileContentAsString(RELEASE_CONFIG_PATH)));
+        } catch (final RepositoryException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
