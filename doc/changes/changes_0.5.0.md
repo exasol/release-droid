@@ -1,8 +1,6 @@
-# Exasol Release Droid 0.5.0, released 2021-05-??
+# Exasol Release Droid 0.5.0, released 2021-05-12
 
 Code name: Community Portal Support
-
-## Summary
 
 ## Features
 

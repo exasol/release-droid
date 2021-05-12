@@ -52,7 +52,7 @@ class ReportWriterTest {
     @Test
     // [utest->dsn~rd-writes-report-to-file~1]
     void testWriteValidationReportToFile() throws IOException {
-        this.reportWriter.writeResponseToDisk(this.reportPath, this.userInput,
+        this.reportWriter.writeResponseToDisk(this.reportPath, this.userInput, List.of(GITHUB),
                 List.of(this.validationReport, this.releaseReport));
         final List<String> report = Files.readAllLines(this.reportPath);
         assertAll(() -> assertThat(report.size(), equalTo(16)), //

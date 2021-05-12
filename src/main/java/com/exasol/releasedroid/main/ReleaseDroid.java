@@ -55,10 +55,10 @@ public class ReleaseDroid {
     // [impl->dsn~rd-creates-validation-report~1]
     // [impl->dsn~rd-creates-release-report~1]
     public void run(final UserInput userInput) {
+        validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);
         final List<PlatformName> platformNames = getPlatformNames(userInput, repository);
         validatePlatformNames(platformNames);
-        validateUserInput(userInput);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
@@ -67,7 +67,7 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
         }
-        writeReportToDisk(userInput, reports);
+        writeReportToDisk(userInput, platformNames, reports);
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
@@ -126,7 +126,7 @@ public class ReleaseDroid {
                 .toString());
     }
 
-    private void writeReportToDisk(final UserInput userInput, final List<Report> reports) {
-        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, reports);
+    private void writeReportToDisk(final UserInput userInput, final List<PlatformName> platformNames, final List<Report> reports) {
+        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, platformNames, reports);
     }
 }

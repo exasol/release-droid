@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.main;
 
 import static com.exasol.releasedroid.usecases.request.UserInput.builder;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +36,6 @@ class ReleaseDroidTest {
 
     @BeforeEach
     void beforeEach() {
-        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, null, null);
     }
 
@@ -87,9 +85,10 @@ class ReleaseDroidTest {
 
     @Test
     void testUserInputWithoutPlatforms() {
+        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().build();
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        final UserInput userInput = builder().goal(GOAL).build();
+        final UserInput userInput = builder().repositoryName("name").goal(GOAL).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
@@ -97,8 +96,9 @@ class ReleaseDroidTest {
 
     @Test
     void testUserInputWithoutPlatforms2() {
+        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.empty());
-        final UserInput userInput = builder().goal(GOAL).build();
+        final UserInput userInput = builder().repositoryName("name").goal(GOAL).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
@@ -107,10 +107,9 @@ class ReleaseDroidTest {
     @Test
     void testPlatformsFromConfig() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
+        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        final UserInput userInput = builder().goal("RELEASE").build();
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(), not(containsString("Please specify a mandatory parameter 'platforms'")));
+        final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
+        assertThrows(NullPointerException.class, () -> this.releaseDroid.run(userInput));
     }
 }
