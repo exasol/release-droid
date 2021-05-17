@@ -54,10 +54,9 @@ public class ReleaseState {
         try {
             Files.createDirectory(directory);
         } catch (final IOException exception) {
-            throw new ReleaseException(
-                    ExaError.messageBuilder("E-RD-13")
-                            .message("Unable to create the release progress directory: " + this.directory).toString(),
-                    exception);
+            throw new ReleaseException(ExaError.messageBuilder("E-RD-13")
+                    .message("Unable to create the release progress directory: {{directory}}", this.directory)
+                    .toString(), exception);
         }
     }
 
@@ -65,12 +64,12 @@ public class ReleaseState {
         try {
             Files.createFile(pathToProgressFile);
         } catch (final IOException exception) {
-            throw new ReleaseException(
-                    ExaError.messageBuilder("E-RD-11").message("Unable to create the release progress file.")
-                            .mitigation("Please make sure that your use has writing access to the following directory: "
-                                    + this.directory)
-                            .toString(),
-                    exception);
+            throw new ReleaseException(ExaError.messageBuilder("E-RD-11")
+                    .message("Unable to create the release progress file.")
+                    .mitigation(
+                            "Please make sure that your use has writing access to the following directory: {{directory}}",
+                            this.directory)
+                    .toString(), exception);
         }
     }
 
@@ -78,8 +77,9 @@ public class ReleaseState {
         try {
             Files.write(pathToProgressFile, (text + LINE_SEPARATOR).getBytes(), StandardOpenOption.APPEND);
         } catch (final IOException exception) {
-            throw new ReleaseException(ExaError.messageBuilder("E-RD-12")
-                    .message("Unable to save the release progress to the file " + pathToProgressFile)
+            throw new ReleaseException(ExaError.messageBuilder("E-RD-14")
+                    .message("Unable to save the release progress to the file {{pathToProgressFile}}",
+                            pathToProgressFile)
                     .mitigation("Please make sure that your use has writing access to the mentioned file.").toString(),
                     exception);
         }
