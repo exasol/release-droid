@@ -8,8 +8,10 @@ public final class ReleaseDroidConstants {
     public static final String DATE_REGEX = "\\d{4}-\\d{2}-\\d{2}";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
-    public static final String RELEASE_DROID_CREDENTIALS = FILE_SEPARATOR + ".release-droid" + FILE_SEPARATOR
-            + "credentials";
+    public static final String RELEASE_DROID_DIRECTORY = System.getProperty("user.home") + FILE_SEPARATOR
+            + ".release-droid";
+    public static final String RELEASE_DROID_STATE_DIRECTORY = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "state";
+    public static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
     public static final String EXASOL_REPOSITORY_OWNER = "exasol";
     public static final String RELEASE_CONFIG_PATH = "release_config.yml";
     public static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";

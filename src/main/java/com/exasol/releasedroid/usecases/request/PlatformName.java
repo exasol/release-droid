@@ -41,9 +41,9 @@ public enum PlatformName {
                     .map(name -> name.toString().toLowerCase()).collect(Collectors.toSet());
             throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-12") //
                     .message("Cannot parse a platform {{platform}}.").parameter("platform", platform)
-                    .mitigation("Please, use one of the following platforms: {{availablePlatforms}}.")
-                    .unquotedParameter("availablePlatforms", String.join(",", availablePlatforms)).toString(),
-                    exception);
+                    .mitigation("Please, use one of the following platforms: {{availablePlatforms|uq}}.",
+                            String.join(",", availablePlatforms))
+                    .toString(), exception);
         }
     }
 }

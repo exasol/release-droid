@@ -14,4 +14,14 @@ public class ReleaseException extends RuntimeException {
     public ReleaseException(final Throwable cause) {
         super(cause);
     }
+
+    /**
+     * Create a new instance of {@link ReleaseException}.
+     *
+     * @param message message
+     * @param cause   exception cause
+     */
+    public ReleaseException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

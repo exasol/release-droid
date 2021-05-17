@@ -48,9 +48,7 @@ public class Runner {
     }
 
     private static PropertyReaderImpl getPropertyReader() {
-        final String homeDirectory = System.getProperty("user.home");
-        final String pathToPropertyFile = homeDirectory + RELEASE_DROID_CREDENTIALS;
-        return new PropertyReaderImpl(pathToPropertyFile);
+        return new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
     }
 
     private static void setUpLogging() throws IOException {
