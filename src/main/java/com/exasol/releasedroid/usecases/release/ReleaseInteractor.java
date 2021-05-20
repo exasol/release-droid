@@ -70,44 +70,55 @@ public class ReleaseInteractor implements ReleaseUseCase {
 
     private Report makeRelease(final Repository repository, final List<PlatformName> platforms) {
         final var report = Report.releaseReport();
-        final Set<PlatformName> released = getAlreadyReleasedPlatforms(repository.getName(), repository.getVersion());
-        if (unreleasedPlatformsPresent(platforms, released)) {
-            report.merge(release(repository, platforms, released));
+        final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
+                repository.getVersion());
+        if (areUnreleasedPlatformsPresent(platforms, releasedPlatforms)) {
+            final List<PlatformName> unreleasedPlatforms = getUnreleasedPlatforms(platforms, releasedPlatforms);
+            report.merge(releaseRepositoryOnPlatforms(repository, unreleasedPlatforms));
         } else {
             LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
         }
         return report;
     }
 
+    private List<PlatformName> getUnreleasedPlatforms(final List<PlatformName> platforms,
+            final Set<PlatformName> releasedPlatforms) {
+        final List<PlatformName> unreleasedPlatforms = new ArrayList<>();
+        for (final PlatformName platform : platforms) {
+            if (releasedPlatforms.contains(platform)) {
+                LOGGER.info(() -> "Skipping " + platform + " platform, the release has been already performed there.");
+            } else {
+                unreleasedPlatforms.add(platform);
+            }
+        }
+        return unreleasedPlatforms;
+    }
+
     private Set<PlatformName> getAlreadyReleasedPlatforms(final String repositoryName, final String releaseVersion) {
         return this.releaseState.getProgress(repositoryName, releaseVersion);
     }
 
-    private boolean unreleasedPlatformsPresent(final List<PlatformName> platforms, final Set<PlatformName> released) {
-        return !released.containsAll(platforms);
+    private boolean areUnreleasedPlatformsPresent(final List<PlatformName> platforms,
+            final Set<PlatformName> releasedPlatforms) {
+        return !releasedPlatforms.containsAll(platforms);
     }
 
-    private Report release(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> released) {
+    private Report releaseRepositoryOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
         prepareRepositoryForRelease(repository);
-        final Report report = releaseOnPlatforms(repository, platforms, released);
-        cleanRepositoryAfterRelease(repository, report.hasFailures());
+        final Report report = releaseOnPlatforms(repository, platforms);
+        if (!report.hasFailures()) {
+            cleanRepositoryAfterRelease(repository);
+        }
         return report;
     }
 
-    private Report releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> released) {
+    private Report releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
         final Report report = Report.releaseReport();
         for (final PlatformName platformName : platforms) {
-            if (released.contains(platformName)) {
-                LOGGER.info(
-                        () -> "Skipping " + platformName + " platform, the release has been already performed there.");
-            } else {
-                final Report platformReport = releaseOnPlatform(repository, platformName);
-                report.merge(platformReport);
-                if (platformReport.hasFailures()) {
-                    break;
-                }
+            final Report platformReport = releaseOnPlatform(repository, platformName);
+            report.merge(platformReport);
+            if (platformReport.hasFailures()) {
+                break;
             }
         }
         return report;
@@ -134,10 +145,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
         this.releaseManager.prepareForRelease(repository);
     }
 
-    private void cleanRepositoryAfterRelease(final Repository repository, final boolean hasFailures) {
-        if (!hasFailures) {
-            this.releaseManager.cleanUpAfterRelease(repository);
-        }
+    private void cleanRepositoryAfterRelease(final Repository repository) {
+        this.releaseManager.cleanUpAfterRelease(repository);
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {

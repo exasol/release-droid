@@ -16,7 +16,7 @@ import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
 /**
- * This class responsible for the release state.
+ * This class is responsible for the release state.
  */
 public class ReleaseState {
     private final String directory;
