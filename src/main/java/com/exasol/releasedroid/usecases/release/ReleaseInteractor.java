@@ -1,8 +1,8 @@
 package com.exasol.releasedroid.usecases.release;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
+
+import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -23,6 +23,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReportLogger reportLogger = new ReportLogger();
+    private final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
     private final ReleaseManager releaseManager;
 
     /**
@@ -69,35 +70,83 @@ public class ReleaseInteractor implements ReleaseUseCase {
 
     private Report makeRelease(final Repository repository, final List<PlatformName> platforms) {
         final var report = Report.releaseReport();
+        final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
+                repository.getVersion());
+        if (areUnreleasedPlatformsPresent(platforms, releasedPlatforms)) {
+            final List<PlatformName> unreleasedPlatforms = getUnreleasedPlatforms(platforms, releasedPlatforms);
+            report.merge(releaseRepositoryOnPlatforms(repository, unreleasedPlatforms));
+        } else {
+            LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
+        }
+        return report;
+    }
+
+    private List<PlatformName> getUnreleasedPlatforms(final List<PlatformName> platforms,
+            final Set<PlatformName> releasedPlatforms) {
+        final List<PlatformName> unreleasedPlatforms = new ArrayList<>();
+        for (final PlatformName platform : platforms) {
+            if (releasedPlatforms.contains(platform)) {
+                LOGGER.info(() -> "Skipping " + platform + " platform, the release has been already performed there.");
+            } else {
+                unreleasedPlatforms.add(platform);
+            }
+        }
+        return unreleasedPlatforms;
+    }
+
+    private Set<PlatformName> getAlreadyReleasedPlatforms(final String repositoryName, final String releaseVersion) {
+        return this.releaseState.getProgress(repositoryName, releaseVersion);
+    }
+
+    private boolean areUnreleasedPlatformsPresent(final List<PlatformName> platforms,
+            final Set<PlatformName> releasedPlatforms) {
+        return !releasedPlatforms.containsAll(platforms);
+    }
+
+    private Report releaseRepositoryOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
         prepareRepositoryForRelease(repository);
-        report.merge(releaseOnPlatforms(repository, platforms));
-        cleanRepositoryAfterRelease(repository, report);
+        final Report report = releaseOnPlatforms(repository, platforms);
+        if (!report.hasFailures()) {
+            cleanRepositoryAfterRelease(repository);
+        }
         return report;
     }
 
     private Report releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
         final Report report = Report.releaseReport();
         for (final PlatformName platformName : platforms) {
-            LOGGER.info(() -> "Releasing on " + platformName + " platform.");
-            try {
-                this.getReleaseMaker(platformName).makeRelease(repository);
-                report.addResult(ReleaseResult.successfulRelease(platformName));
-            } catch (final ReleaseException exception) {
-                report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
+            final Report platformReport = releaseOnPlatform(repository, platformName);
+            report.merge(platformReport);
+            if (platformReport.hasFailures()) {
                 break;
             }
         }
         return report;
     }
 
+    private Report releaseOnPlatform(final Repository repository, final PlatformName platformName) {
+        final var report = Report.releaseReport();
+        try {
+            LOGGER.info(() -> "Releasing on " + platformName + " platform.");
+            getReleaseMaker(platformName).makeRelease(repository);
+            saveProgress(platformName, repository);
+            report.addResult(ReleaseResult.successfulRelease(platformName));
+        } catch (final Exception exception) {
+            report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
+        }
+        return report;
+    }
+
+    private void saveProgress(final PlatformName platformName, final Repository repository) {
+        this.releaseState.saveProgress(repository.getName(), repository.getVersion(), platformName);
+    }
+
     private void prepareRepositoryForRelease(final Repository repository) {
         this.releaseManager.prepareForRelease(repository);
     }
 
-    private void cleanRepositoryAfterRelease(final Repository repository, final Report report) {
-        if (!report.hasFailures()) {
-            this.releaseManager.cleanUpAfterRelease(repository);
-        }
+    private void cleanRepositoryAfterRelease(final Repository repository) {
+        this.releaseManager.cleanUpAfterRelease(repository);
     }
 
     private ReleaseMaker getReleaseMaker(final PlatformName platformName) {
