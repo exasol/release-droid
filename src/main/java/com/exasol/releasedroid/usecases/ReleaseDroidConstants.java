@@ -19,6 +19,9 @@ public final class ReleaseDroidConstants {
     public static final String RELEASE_CONFIG_PATH = "release_config.yml";
     public static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
     public static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     private ReleaseDroidConstants() {
         // prevent instantiation

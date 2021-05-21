@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.output;
+package com.exasol.releasedroid.formatting;
 
 import com.exasol.releasedroid.usecases.report.Report;
 

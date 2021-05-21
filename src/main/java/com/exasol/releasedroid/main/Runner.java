@@ -17,9 +17,7 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
-import com.exasol.releasedroid.formatting.LogFormatter;
-import com.exasol.releasedroid.formatting.ReportLoggerFormatter;
-import com.exasol.releasedroid.formatting.ReportSummaryFormatter;
+import com.exasol.releasedroid.formatting.*;
 import com.exasol.releasedroid.output.ResponseDiskWriter;
 import com.exasol.releasedroid.output.ResponseLogger;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
@@ -56,7 +54,7 @@ public class Runner {
 
     private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
         return List.of( //
-                new ResponseDiskWriter(new ReportSummaryFormatter(), REPORT_PATH), //
+                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH), //
                 new ResponseLogger(new ReportLoggerFormatter()));
     }
 

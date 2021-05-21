@@ -2,6 +2,7 @@ package com.exasol.releasedroid.output;
 
 import java.util.logging.Logger;
 
+import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.main.ReleaseDroidResponseConsumer;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;

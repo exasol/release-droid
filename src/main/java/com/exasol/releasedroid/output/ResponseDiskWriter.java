@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.formatting.HeaderFormatter;
+import com.exasol.releasedroid.formatting.ReportFormatter;
 import com.exasol.releasedroid.main.ReleaseDroidResponseConsumer;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
@@ -17,7 +18,7 @@ import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
  */
 public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
     private static final Logger LOGGER = Logger.getLogger(ResponseDiskWriter.class.getName());
-    private final HeaderFormatter headerFormatter = new HeaderFormatter();
+    private final HeaderFormatter headerFormatter;
     private final ReportFormatter reportFormatter;
     private final Path pathToWrite;
 
@@ -27,8 +28,10 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
      * @param reportFormatter formatter
      * @param pathToWrite     path to the file to write to
      */
-    public ResponseDiskWriter(final ReportFormatter reportFormatter, final Path pathToWrite) {
+    public ResponseDiskWriter(final ReportFormatter reportFormatter, final HeaderFormatter headerFormatter,
+            final Path pathToWrite) {
         this.reportFormatter = reportFormatter;
+        this.headerFormatter = headerFormatter;
         this.pathToWrite = pathToWrite;
     }
 
