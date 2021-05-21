@@ -62,7 +62,7 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
         }
-        this.reportConsumer.consumeReport(reports, userInput, platformNames);
+        this.reportConsumer.consumeReports(reports, userInput, platformNames);
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
