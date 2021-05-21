@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
-import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.ReleaseReport;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -22,7 +21,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
-    private final ReportLogger reportLogger = new ReportLogger();
     private final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
     private final ReleaseManager releaseManager;
 
@@ -58,14 +56,9 @@ public class ReleaseInteractor implements ReleaseUseCase {
         if (!validationReport.hasFailures()) {
             LOGGER.info(() -> "Release started.");
             final Report releaseReport = this.makeRelease(repository, platforms);
-            logResults(releaseReport);
             reports.add(releaseReport);
         }
         return reports;
-    }
-
-    private void logResults(final Report releaseReport) {
-        this.reportLogger.logResults(releaseReport);
     }
 
     private Report makeRelease(final Repository repository, final List<PlatformName> platforms) {
@@ -120,6 +113,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
             if (platformReport.hasFailures()) {
                 break;
             }
+            LOGGER.info(() -> "Release on platform " + platformName + " is finished!");
         }
         return report;
     }

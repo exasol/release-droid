@@ -16,6 +16,7 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.Goal;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
+import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -23,25 +24,26 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  */
 public class ReleaseDroid {
     private static final Logger LOGGER = Logger.getLogger(ReleaseDroid.class.getName());
-    private final ReleaseUseCase releaseUseCase;
-    private final ReportConsumer reportConsumer;
-    private final ValidateUseCase validateUseCase;
     private final RepositoryGateway repositoryGateway;
+    private final ReleaseUseCase releaseUseCase;
+    private final ValidateUseCase validateUseCase;
+    private final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers;
 
     /**
      * Create a new instance of {@link ReleaseDroid}.
      *
-     * @param repositoryGateway repository gateway
-     * @param releaseUseCase    release usecase
-     * @param validateUseCase   validate usecase
-     * @param reportConsumer    report consumer
+     * @param repositoryGateway             repository gateway
+     * @param validateUseCase               validate use case
+     * @param releaseUseCase                release use case
+     * @param releaseDroidResponseConsumers response consumers
      */
     public ReleaseDroid(final RepositoryGateway repositoryGateway, final ValidateUseCase validateUseCase,
-            final ReleaseUseCase releaseUseCase, final ReportConsumer reportConsumer) {
+            final ReleaseUseCase releaseUseCase,
+            final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers) {
         this.repositoryGateway = repositoryGateway;
         this.validateUseCase = validateUseCase;
         this.releaseUseCase = releaseUseCase;
-        this.reportConsumer = reportConsumer;
+        this.releaseDroidResponseConsumers = releaseDroidResponseConsumers;
     }
 
     /**
@@ -62,7 +64,25 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
         }
-        this.reportConsumer.consumeReports(reports, userInput, platformNames);
+        sendResponse(createResponse(reports, userInput, platformNames));
+    }
+
+    private void sendResponse(final ReleaseDroidResponse response) {
+        for (final ReleaseDroidResponseConsumer releaseDroidResponseConsumer : this.releaseDroidResponseConsumers) {
+            releaseDroidResponseConsumer.consumeResponse(response);
+        }
+    }
+
+    private ReleaseDroidResponse createResponse(final List<Report> reports, final UserInput userInput,
+            final List<PlatformName> platformNames) {
+        return ReleaseDroidResponse.builder() //
+                .fullRepositoryName(userInput.getFullRepositoryName()) //
+                .goal(userInput.getGoal()) //
+                .platformNames(platformNames) //
+                .localPath(userInput.getLocalPath()) //
+                .branch(userInput.getBranch()) //
+                .reports(reports) //
+                .build();
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {

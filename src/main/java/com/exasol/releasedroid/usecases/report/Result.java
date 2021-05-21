@@ -1,6 +1,8 @@
 package com.exasol.releasedroid.usecases.report;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
@@ -11,7 +13,7 @@ public class Result {
     private final boolean successful;
     private final String actionDescription;
     private final String message;
-    private final Set<PlatformName> platformNames = new HashSet<>();
+    private final List<PlatformName> platformNames = new ArrayList<>();
 
     protected Result(final boolean successful, final String actionDescription, final String message) {
         this.successful = successful;
@@ -52,11 +54,15 @@ public class Result {
      * @return platform names
      */
     public List<PlatformName> getPlatformNames() {
-        return new ArrayList<>(this.platformNames);
+        return this.platformNames;
     }
 
-    protected void addPlatforms(final List<PlatformName> platformName) {
-        this.platformNames.addAll(platformName);
+    protected void addPlatforms(final List<PlatformName> platformNames) {
+        for (final PlatformName platformName : platformNames) {
+            if (!this.platformNames.contains(platformName)) {
+                this.platformNames.add(platformName);
+            }
+        }
     }
 
     @Override
