@@ -2,16 +2,12 @@ package com.exasol.releasedroid.main;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.EXASOL_REPOSITORY_OWNER;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
@@ -27,11 +23,9 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  */
 public class ReleaseDroid {
     private static final Logger LOGGER = Logger.getLogger(ReleaseDroid.class.getName());
-    private static final String HOME_DIRECTORY = System.getProperty("user.home");
-    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
     private final ReleaseUseCase releaseUseCase;
+    private final ReportConsumer reportConsumer;
     private final ValidateUseCase validateUseCase;
-    private final SummaryWriter summaryWriter;
     private final RepositoryGateway repositoryGateway;
 
     /**
@@ -40,13 +34,14 @@ public class ReleaseDroid {
      * @param repositoryGateway repository gateway
      * @param releaseUseCase    release usecase
      * @param validateUseCase   validate usecase
+     * @param reportConsumer    report consumer
      */
     public ReleaseDroid(final RepositoryGateway repositoryGateway, final ValidateUseCase validateUseCase,
-            final ReleaseUseCase releaseUseCase) {
+            final ReleaseUseCase releaseUseCase, final ReportConsumer reportConsumer) {
         this.repositoryGateway = repositoryGateway;
         this.validateUseCase = validateUseCase;
         this.releaseUseCase = releaseUseCase;
-        this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
+        this.reportConsumer = reportConsumer;
     }
 
     /**
@@ -67,7 +62,7 @@ public class ReleaseDroid {
         } else if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
         }
-        writeReportToDisk(userInput, platformNames, reports);
+        this.reportConsumer.consumeReport(reports, userInput, platformNames);
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
@@ -124,9 +119,5 @@ public class ReleaseDroid {
         throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-2")
                 .message("Please specify a mandatory parameter {{parameter}} and re-run the Release Droid.", parameter)
                 .toString());
-    }
-
-    private void writeReportToDisk(final UserInput userInput, final List<PlatformName> platformNames, final List<Report> reports) {
-        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, platformNames, reports);
     }
 }

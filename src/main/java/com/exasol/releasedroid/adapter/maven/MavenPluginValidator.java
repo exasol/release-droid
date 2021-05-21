@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 
 /**
  * Validator for Maven plugins.
@@ -28,12 +28,12 @@ public class MavenPluginValidator {
      * @return instance of {@link Report}
      */
     public Report validatePluginExists(final String pluginName) {
-        final Report report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (this.plugins.containsKey(pluginName)) {
-            report.addResult(ValidationResult.successfulValidation("Maven plugin '" + pluginName + "'."));
+            report.addSuccessfulResult("Maven plugin '" + pluginName + "'.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-15")
-                    .message("Required maven plugin is missing: {{requiredPlugin}}.", pluginName).toString()));
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-15")
+                    .message("Required maven plugin is missing: {{requiredPlugin}}.", pluginName).toString());
         }
         return report;
     }
@@ -46,7 +46,7 @@ public class MavenPluginValidator {
      * @return instance of {@link Report}
      */
     public Report validatePluginVersionEqualOrGreater(final String pluginName, final String expectedVersion) {
-        final Report report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (this.plugins.containsKey(pluginName)) {
             report.merge(validatePluginVersion(pluginName, expectedVersion));
         }
@@ -54,18 +54,17 @@ public class MavenPluginValidator {
     }
 
     private Report validatePluginVersion(final String pluginName, final String expectedVersion) {
-        final Report report = Report.validationReport();
+        final var report = ValidationReport.create();
         final MavenPlugin plugin = this.plugins.get(pluginName);
         if (plugin.hasVersion() && compareSemanticVersion(expectedVersion, plugin.getVersion())) {
-            report.addResult(
-                    ValidationResult.successfulValidation("Maven plugin '" + pluginName + "' version is correct."));
+            report.addSuccessfulResult("Maven plugin '" + pluginName + "' version is correct.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-16")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-16")
                     .message("Maven plugin {{pluginName}} has invalid version or the version is not specified."
                             + " The version must be {{version}} or higher.")
                     .parameter("pluginName", pluginName) //
                     .parameter("version", expectedVersion) //
-                    .toString()));
+                    .toString());
         }
         return report;
     }

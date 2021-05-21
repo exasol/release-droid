@@ -4,6 +4,7 @@ import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validate
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateRepositories;
 
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
 
 /**
@@ -25,7 +26,7 @@ public class MavenPlatformValidator implements ReleasePlatformValidator {
     @Override
     // [impl->dsn~validate-maven-release-workflow-exists~1]
     public Report validate() {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateRepositories(this.repository.getRepositoryValidators()));
         report.merge(validateFileExists(this.repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
         return report;

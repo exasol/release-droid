@@ -138,7 +138,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getVersion()).thenReturn(version);
         when(this.repositoryMock.getLatestTag()).thenReturn(Optional.empty());
         final Report report = this.validator.validate();
-        assertThat(report.toString(), containsString("Success. Version format"));
+        assertThat(report.toString(), containsString("Version format is correct"));
     }
 
     @ParameterizedTest
@@ -148,7 +148,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getVersion()).thenReturn(version);
         when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
         final Report report = this.validator.validate();
-        assertThat(report.toString(), containsString("Success. Version format"));
+        assertThat(report.toString(), containsString("Version format is correct"));
     }
 
     @ParameterizedTest

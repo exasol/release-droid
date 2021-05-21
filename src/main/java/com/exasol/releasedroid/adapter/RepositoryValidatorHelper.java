@@ -5,7 +5,7 @@ import java.util.List;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
@@ -26,15 +26,15 @@ public class RepositoryValidatorHelper {
      */
     public static Report validateFileExists(final Repository repository, final String filePath,
             final String fileDescription) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         try {
             repository.getSingleFileContentAsString(filePath);
-            report.addResult(ValidationResult.successfulValidation(fileDescription));
+            report.addSuccessfulResult(fileDescription);
         } catch (final RepositoryException exception) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-19")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-19")
                     .message("The file {{filePath}} does not exist in the project.") //
                     .parameter("filePath", filePath) //
-                    .mitigation("Please, add this file.").toString()));
+                    .mitigation("Please, add this file.").toString());
         }
         return report;
     }
@@ -46,7 +46,7 @@ public class RepositoryValidatorHelper {
      * @return report
      */
     public static Report validateRepositories(final List<RepositoryValidator> repositoryValidators) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         for (final RepositoryValidator repositoryValidator : repositoryValidators) {
             report.merge(repositoryValidator.validate());
         }

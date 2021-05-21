@@ -9,7 +9,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
-import com.exasol.releasedroid.usecases.report.ReleaseResult;
+import com.exasol.releasedroid.usecases.report.ReleaseReport;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -69,7 +69,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Report makeRelease(final Repository repository, final List<PlatformName> platforms) {
-        final var report = Report.releaseReport();
+        final var report = ReleaseReport.create();
         final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
                 repository.getVersion());
         if (areUnreleasedPlatformsPresent(platforms, releasedPlatforms)) {
@@ -113,7 +113,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Report releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
-        final Report report = Report.releaseReport();
+        final var report = ReleaseReport.create();
         for (final PlatformName platformName : platforms) {
             final Report platformReport = releaseOnPlatform(repository, platformName);
             report.merge(platformReport);
@@ -125,14 +125,14 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Report releaseOnPlatform(final Repository repository, final PlatformName platformName) {
-        final var report = Report.releaseReport();
+        final var report = ReleaseReport.create(platformName);
         try {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
             getReleaseMaker(platformName).makeRelease(repository);
             saveProgress(platformName, repository);
-            report.addResult(ReleaseResult.successfulRelease(platformName));
+            report.addSuccessfulResult("Release finished.");
         } catch (final Exception exception) {
-            report.addResult(ReleaseResult.failedRelease(platformName, ExceptionUtils.getStackTrace(exception)));
+            report.addFailedResult(ExceptionUtils.getStackTrace(exception));
         }
         return report;
     }

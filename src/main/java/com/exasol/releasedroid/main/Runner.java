@@ -16,7 +16,9 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMak
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.LogFormatter;
+import com.exasol.releasedroid.formatting.SummaryFormatter;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
+import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -44,7 +46,8 @@ public class Runner {
         final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor();
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
-        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase);
+        final ReportConsumer reportConsumer = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
+        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, reportConsumer);
     }
 
     private static PropertyReaderImpl getPropertyReader() {

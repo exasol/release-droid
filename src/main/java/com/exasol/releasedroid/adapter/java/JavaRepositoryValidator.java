@@ -6,7 +6,7 @@ import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.maven.MavenPluginValidator;
 import com.exasol.releasedroid.adapter.maven.MavenPom;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -31,7 +31,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
     public Report validate() {
         LOGGER.fine("Validating pom file content.");
         final MavenPom mavenPom = this.repository.getMavenPom();
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateVersion(mavenPom));
         report.merge(validateArtifactId(mavenPom));
         report.merge(validateProjectKeeperPlugin(mavenPom));
@@ -39,30 +39,30 @@ public class JavaRepositoryValidator implements RepositoryValidator {
     }
 
     private Report validateVersion(final MavenPom mavenPom) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (mavenPom.hasVersion()) {
-            report.addResult(ValidationResult.successfulValidation("'version' in the pom file exists."));
+            report.addSuccessfulResult("'version' in the pom file exists.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-12")
-                    .message("Cannot detect a 'version' in the pom file.").toString()));
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-12")
+                    .message("Cannot detect a 'version' in the pom file.").toString());
         }
         return report;
     }
 
     private Report validateArtifactId(final MavenPom mavenPom) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (mavenPom.hasArtifactId()) {
-            report.addResult(ValidationResult.successfulValidation("'artifactId' in the pom file exists."));
+            report.addSuccessfulResult("'artifactId' in the pom file exists.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-REP-13")
-                    .message("Cannot detect an 'artifactId' in the pom file.").toString()));
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-13")
+                    .message("Cannot detect an 'artifactId' in the pom file.").toString());
         }
         return report;
     }
 
     // [impl->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     private Report validateProjectKeeperPlugin(final MavenPom mavenPom) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final var mavenPluginValidator = new MavenPluginValidator(mavenPom.getPlugins());
         report.merge(mavenPluginValidator.validatePluginExists(PROJECT_KEEPER_PLUGIN_NAME));
         report.merge(validateProjectKeeperVersion(mavenPom, mavenPluginValidator));
@@ -71,7 +71,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
 
     private Report validateProjectKeeperVersion(final MavenPom mavenPom,
             final MavenPluginValidator mavenPluginValidator) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (mavenPom.hasArtifactId() && !mavenPom.getArtifactId().equals(PROJECT_KEEPER_PLUGIN_NAME)) {
             report.merge(mavenPluginValidator.validatePluginVersionEqualOrGreater(PROJECT_KEEPER_PLUGIN_NAME,
                     PROJECT_KEEPER_PLUGIN_VERSION));

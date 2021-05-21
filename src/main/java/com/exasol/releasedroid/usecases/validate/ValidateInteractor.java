@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.logging.ReportLogger;
 import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
@@ -21,7 +22,7 @@ public class ValidateInteractor implements ValidateUseCase {
     // [impl->dsn~rd-runs-validate-goal~1]
     public Report validate(final Repository repository, final List<PlatformName> platforms) {
         LOGGER.info(() -> "Validation started.");
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         for (final PlatformName platformName : platforms) {
             report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
         }
@@ -35,11 +36,14 @@ public class ValidateInteractor implements ValidateUseCase {
 
     private Report validateForPlatform(final PlatformName platformName,
             final Map<PlatformName, ReleasePlatformValidator> validators) {
+        final var report = ValidationReport.create(platformName);
         if (validators.containsKey(platformName)) {
-            return validators.get(platformName).validate();
+            report.merge(validators.get(platformName).validate());
+        } else {
+            throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-VAL-15") //
+                    .message("{{platform}} platform is not supported for this project.") //
+                    .parameter("platform", platformName).toString());
         }
-        throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-VAL-15") //
-                .message("{{platform}} platform is not supported for this project.") //
-                .parameter("platform", platformName).toString());
+        return report;
     }
 }

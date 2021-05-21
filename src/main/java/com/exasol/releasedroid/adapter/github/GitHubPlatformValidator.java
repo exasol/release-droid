@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
@@ -36,35 +36,36 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     @Override
     // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate() {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateRepositories(this.repository.getRepositoryValidators()));
         LOGGER.fine("Validating GitHub-specific requirements.");
         final String version = this.repository.getVersion();
         final var releaseLetter = this.repository.getReleaseLetter(version);
         report.merge(validateChangesFile(releaseLetter));
-        report.merge(validateFileExists(this.repository, GITHUB_RELEASE_WORKFLOW_PATH, "Workflow for a GitHub release."));
+        report.merge(
+                validateFileExists(this.repository, GITHUB_RELEASE_WORKFLOW_PATH, "Workflow for a GitHub release."));
         return report;
     }
 
     // [impl->dsn~validate-release-letter~1]
     private Report validateChangesFile(final ReleaseLetter releaseLetter) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateContainsHeader(releaseLetter));
         report.merge(validateGitHubTickets(releaseLetter));
         return report;
     }
 
     private Report validateContainsHeader(final ReleaseLetter changes) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final Optional<String> header = changes.getHeader();
         if (header.isEmpty() || header.get().isEmpty()) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-21").message(
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-21").message(
                     "The file {{fileName}} does not contain 'Code name' section which is used as a GitHub release header."
                             + " Please, add this section to the file.",
                     changes.getFileName()) //
-                    .toString()));
+                    .toString());
         } else {
-            report.addResult(ValidationResult.successfulValidation("Release letter header."));
+            report.addSuccessfulResult("Release letter header.");
         }
         return report;
     }
@@ -72,41 +73,40 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     // [impl->dsn~validate-github-issues-exists~1]
     // [impl->dsn~validate-github-issues-are-closed~1]
     private Report validateGitHubTickets(final ReleaseLetter releaseLetter) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         try {
             final List<String> wrongTickets = collectWrongTickets(this.repository.getName(), releaseLetter);
             if (!wrongTickets.isEmpty()) {
                 report.merge(reportWrongTickets(this.repository.isOnDefaultBranch(), releaseLetter.getFileName(),
                         wrongTickets));
             } else {
-                report.addResult(ValidationResult.successfulValidation("Mentioned GitHub tickets."));
+                report.addSuccessfulResult("Mentioned GitHub tickets.");
             }
         } catch (final GitHubException exception) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-22")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-22")
                     .message("Unable to retrieve a list of closed tickets on GitHub: {{cause|uq}}",
                             exception.getMessage())
-                    .toString()));
+                    .toString());
         }
         return report;
     }
 
     private Report reportWrongTickets(final boolean isDefaultBranch, final String fileName,
             final List<String> wrongTickets) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final var wrongTicketsString = String.join(", ", wrongTickets);
         if (isDefaultBranch) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-23").message(
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-23").message(
                     "Some of the mentioned GitHub issues are not closed or do not exists: {{wrongTicketsString|uq}}.",
                     wrongTicketsString) //
                     .mitigation("Please, check the issues numbers in your {{fileName}}.")
-                    .parameter("fileName", fileName).toString()));
+                    .parameter("fileName", fileName).toString());
         } else {
             final var warningMessage = ExaError.messageBuilder("W-RD-GH-24").message(
                     "Don't forget to close the tickets mentioned in the {{fileName}} file before you release: {{wrongTicketsString|uq}}.",
                     fileName, wrongTicketsString) //
                     .toString();
-            report.addResult(ValidationResult
-                    .successfulValidation("Skipping mentioned GitHub tickets validation. " + warningMessage));
+            report.addSuccessfulResult("Skipping mentioned GitHub tickets validation. " + warningMessage);
             LOGGER.warning(warningMessage);
         }
         return report;
