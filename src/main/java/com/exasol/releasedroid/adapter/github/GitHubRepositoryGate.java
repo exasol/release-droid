@@ -64,7 +64,10 @@ public class GitHubRepositoryGate implements RepositoryGate {
         try {
             this.githubGateway.updateFileContent(getName(), this.branchName, filePath, newContent, commitMessage);
         } catch (final GitHubException exception) {
-            throw new RepositoryException(exception);
+            throw new RepositoryException(
+                    ExaError.messageBuilder("E-RD-GH-27")
+                            .message("Cannot update a file in the repository: {{file}}", filePath).toString(),
+                    exception);
         }
     }
 

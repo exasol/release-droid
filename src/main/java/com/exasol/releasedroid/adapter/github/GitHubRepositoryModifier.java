@@ -30,8 +30,14 @@ public class GitHubRepositoryModifier implements RepositoryModifier {
         final String filePath = getChangesFilePath(repository);
         final String changes = repository.getSingleFileContentAsString(filePath);
         final String modifiedChanges = modifyChanges(releaseLetter, changes);
-        repository.updateFileContent(filePath, modifiedChanges,
-                "Automatic release date update for " + repository.getVersion());
+        try {
+            repository.updateFileContent(filePath, modifiedChanges,
+                    "Automatic release date update for " + repository.getVersion());
+        } catch (final RepositoryException exception) {
+            throw new IllegalStateException(ExaError.messageBuilder("E-RD-GH-28")
+                    .message("Cannot update the release date automatically in the file {{file}}", filePath)
+                    .mitigation("Please, update it manually and try again.").toString(), exception);
+        }
     }
 
     private String getChangesFilePath(final Repository repository) {
