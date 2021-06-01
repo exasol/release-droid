@@ -31,7 +31,3 @@ Be aware that the release state is saved on the machine the RD running on. It me
 * #162: Refactored reports.
 
 ## Dependency Updates
-
-### Compile Dependency Updates
-
-* Added `org.projectlombok:lombok:1.18.20`

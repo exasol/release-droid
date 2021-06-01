@@ -58,11 +58,6 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.28</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-        </dependency>
         <!-- Rewriting transitive dependency to fix CVE-2020-25649.
         This dependency can be removed after it's updated inside of org.kohsuke:github-api-->
         <dependency>
