@@ -25,5 +25,6 @@ Be aware that the release state is saved on the machine the RD running on. It me
 ## Features
 
 * #159: Saved the release state.
+* #161: Made VALIDATE a default goal.
 
 ## Dependency Updates

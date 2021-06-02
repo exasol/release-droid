@@ -25,7 +25,6 @@ import com.exasol.releasedroid.usecases.request.UserInput;
 class ReleaseDroidTest {
     private static final String REPOSITORY_NAME = "repository";
     private static final String PLATFORM = "github";
-    private static final String GOAL = "validate";
     private static final String BRANCH = "branch";
     private static final String LOCAL_PATH = "some/path";
     @Mock
@@ -40,16 +39,8 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithoutGoal() {
-        final UserInput userInput = builder().platforms(PLATFORM).build();
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'goal'"));
-    }
-
-    @Test
     void testUserInputWithoutRepositoryName() {
-        final UserInput userInput = builder().goal(GOAL).platforms(PLATFORM).build();
+        final UserInput userInput = builder().platforms(PLATFORM).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(),
@@ -67,8 +58,8 @@ class ReleaseDroidTest {
 
     @Test
     void testUserInputWithLocalPathAndBranch() {
-        final UserInput userInput = builder().goal("VALIDATE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
-                .branch(BRANCH).localPath(LOCAL_PATH).build();
+        final UserInput userInput = builder().platforms(PLATFORM).repositoryName(REPOSITORY_NAME).branch(BRANCH)
+                .localPath(LOCAL_PATH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-6"));
@@ -88,7 +79,7 @@ class ReleaseDroidTest {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().build();
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        final UserInput userInput = builder().repositoryName("name").goal(GOAL).build();
+        final UserInput userInput = builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
@@ -98,7 +89,7 @@ class ReleaseDroidTest {
     void testUserInputWithoutPlatforms2() {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.empty());
-        final UserInput userInput = builder().repositoryName("name").goal(GOAL).build();
+        final UserInput userInput = builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));

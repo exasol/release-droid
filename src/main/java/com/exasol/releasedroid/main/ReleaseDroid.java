@@ -62,10 +62,10 @@ public class ReleaseDroid {
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
-        if (userInput.getGoal() == Goal.VALIDATE) {
-            reports.add(this.validateUseCase.validate(repository, platformNames));
-        } else if (userInput.getGoal() == Goal.RELEASE) {
+        if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
+        } else {
+            reports.add(this.validateUseCase.validate(repository, platformNames));
         }
         writeReportToDisk(userInput, platformNames, reports);
     }
@@ -88,18 +88,26 @@ public class ReleaseDroid {
     }
 
     private void validateUserInput(final UserInput userInput) {
-        if (!userInput.hasOwner()) {
-            userInput.setOwner(EXASOL_REPOSITORY_OWNER);
-        }
-        validateMandatoryParameters(userInput);
+        validateOwner(userInput);
+        validateGoal(userInput);
+        validateRepositoryName(userInput);
         validateGoalAndBranch(userInput);
         validateLocalPath(userInput);
     }
 
-    private void validateMandatoryParameters(final UserInput userInput) {
-        if (!userInput.hasGoal()) {
-            throwExceptionForMissingParameter("goal");
+    private void validateOwner(final UserInput userInput) {
+        if (!userInput.hasOwner()) {
+            userInput.setOwner(EXASOL_REPOSITORY_OWNER);
         }
+    }
+
+    private void validateGoal(final UserInput userInput) {
+        if (!userInput.hasGoal()) {
+            userInput.setGoal(Goal.VALIDATE);
+        }
+    }
+
+    private void validateRepositoryName(final UserInput userInput) {
         if (!userInput.hasRepositoryName()) {
             throwExceptionForMissingParameter("repository name");
         }
