@@ -30,8 +30,8 @@ public class HeaderFormatter {
         if (response.getBranch() != null) {
             stringBuilder.append(println("Git branch: " + response.getBranch()));
         }
-        if (response.getLocalPath() != null) {
-            stringBuilder.append(println("Local path: " + response.getLocalPath()));
+        if (response.getLocalRepositoryPath() != null) {
+            stringBuilder.append(println("Local path: " + response.getLocalRepositoryPath()));
         }
         stringBuilder.append(println(""));
         return stringBuilder.toString();

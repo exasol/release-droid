@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.usecases.release;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARATOR;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,6 +20,8 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  */
 public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
+    private static final String RELEASE_DROID_STATE_DIRECTORY = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "state";
+
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);

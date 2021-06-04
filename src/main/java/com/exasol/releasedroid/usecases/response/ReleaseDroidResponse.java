@@ -13,7 +13,7 @@ public class ReleaseDroidResponse {
     private final String fullRepositoryName;
     private final Goal goal;
     private final String branch;
-    private final String localPath;
+    private final String localRepositoryPath;
     private final List<PlatformName> platformNames;
     private final List<Report> reports;
 
@@ -21,7 +21,7 @@ public class ReleaseDroidResponse {
         this.fullRepositoryName = builder.fullRepositoryName;
         this.goal = builder.goal;
         this.branch = builder.branch;
-        this.localPath = builder.localPath;
+        this.localRepositoryPath = builder.localRepositoryPath;
         this.platformNames = builder.platformNames;
         this.reports = builder.reports;
     }
@@ -54,12 +54,12 @@ public class ReleaseDroidResponse {
     }
 
     /**
-     * Get the local path.
+     * Get the path to a local repository.
      *
      * @return local path
      */
-    public String getLocalPath() {
-        return this.localPath;
+    public String getLocalRepositoryPath() {
+        return this.localRepositoryPath;
     }
 
     /**
@@ -96,7 +96,7 @@ public class ReleaseDroidResponse {
         private String fullRepositoryName;
         private Goal goal;
         private String branch;
-        private String localPath;
+        private String localRepositoryPath;
         private List<PlatformName> platformNames;
         private List<Report> reports;
 
@@ -134,13 +134,13 @@ public class ReleaseDroidResponse {
         }
 
         /**
-         * Add local path.
+         * Add path to a local repository.
          *
-         * @param localPath local path
+         * @param localRepositoryPath local repository path
          * @return builder
          */
-        public Builder localPath(final String localPath) {
-            this.localPath = localPath;
+        public Builder localRepositoryPath(final String localRepositoryPath) {
+            this.localRepositoryPath = localRepositoryPath;
             return this;
         }
 

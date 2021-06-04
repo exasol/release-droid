@@ -20,7 +20,7 @@ class HeaderFormatterTest {
                 .goal(Goal.VALIDATE) //
                 .platformNames(List.of(PlatformName.GITHUB, PlatformName.MAVEN)) //
                 .branch("my_branch") //
-                .localPath(".") //
+                .localRepositoryPath(".") //
                 .build();
         final HeaderFormatter headerFormatter = new HeaderFormatter();
         final String header = headerFormatter.formatHeader(response);

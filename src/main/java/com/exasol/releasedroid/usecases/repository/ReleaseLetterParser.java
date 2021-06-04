@@ -1,16 +1,21 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter.Builder;
 
 public final class ReleaseLetterParser {
-    public static final String TICKET_NUMBER_REGEX = "\\* #[1-9]\\d*\\b";
+    private static final String DATE_REGEX = "\\d{4}-\\d{2}-\\d{2}";
+    private static final String TICKET_NUMBER_REGEX = "\\* #[1-9]\\d*\\b";
+
     private final Builder builder;
     private final String content;
 

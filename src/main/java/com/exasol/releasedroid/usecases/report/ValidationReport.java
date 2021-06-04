@@ -6,8 +6,8 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
  * Report for the validation use case.
  */
 public class ValidationReport extends AbstractReport {
-    private ValidationReport(final String validation, final PlatformName platformName) {
-        super(validation, platformName);
+    private ValidationReport(final String reportName, final PlatformName platformName) {
+        super(reportName, platformName);
     }
 
     /**

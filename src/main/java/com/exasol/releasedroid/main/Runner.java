@@ -1,10 +1,11 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.REPORT_PATH;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,9 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  * This class contains main method.
  */
 public class Runner {
+    private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
+    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
+
     /**
      * Run the Release Droid.
      *
@@ -55,7 +59,7 @@ public class Runner {
     private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
         return List.of( //
                 new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH), //
-                new ResponseLogger(new ReportLoggerFormatter()));
+                new ResponseLogger(new ReportLogFormatter()));
     }
 
     private static PropertyReaderImpl getPropertyReader() {

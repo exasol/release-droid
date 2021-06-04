@@ -1,7 +1,5 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.EXASOL_REPOSITORY_OWNER;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,8 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  */
 public class ReleaseDroid {
     private static final Logger LOGGER = Logger.getLogger(ReleaseDroid.class.getName());
+    private static final String EXASOL_REPOSITORY_OWNER = "exasol";
+
     private final RepositoryGateway repositoryGateway;
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
@@ -64,10 +64,10 @@ public class ReleaseDroid {
         } else {
             reports.add(this.validateUseCase.validate(repository, platformNames));
         }
-        sendResponse(createResponse(reports, userInput, platformNames));
+        processResponse(createResponse(reports, userInput, platformNames));
     }
 
-    private void sendResponse(final ReleaseDroidResponse response) {
+    private void processResponse(final ReleaseDroidResponse response) {
         for (final ReleaseDroidResponseConsumer releaseDroidResponseConsumer : this.releaseDroidResponseConsumers) {
             releaseDroidResponseConsumer.consumeResponse(response);
         }
@@ -79,7 +79,7 @@ public class ReleaseDroid {
                 .fullRepositoryName(userInput.getFullRepositoryName()) //
                 .goal(userInput.getGoal()) //
                 .platformNames(platformNames) //
-                .localPath(userInput.getLocalPath()) //
+                .localRepositoryPath(userInput.getLocalPath()) //
                 .branch(userInput.getBranch()) //
                 .reports(reports) //
                 .build();

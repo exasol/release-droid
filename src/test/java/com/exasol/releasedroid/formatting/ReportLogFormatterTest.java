@@ -1,6 +1,8 @@
 package com.exasol.releasedroid.formatting;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
+import static com.exasol.releasedroid.formatting.ReportLogFormatter.ANSI_GREEN;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.ANSI_RESET;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -11,8 +13,8 @@ import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
-class ReportLoggerFormatterTest {
-    private final ReportLoggerFormatter formatter = new ReportLoggerFormatter();
+class ReportLogFormatterTest {
+    private final ReportLogFormatter formatter = new ReportLogFormatter();
 
     @Test
     void testFormatReleaseReport() {

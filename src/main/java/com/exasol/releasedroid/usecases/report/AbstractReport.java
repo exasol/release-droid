@@ -3,7 +3,6 @@ package com.exasol.releasedroid.usecases.report;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
 /**
@@ -31,12 +30,6 @@ public abstract class AbstractReport implements Report {
 
     @Override
     public void merge(final Report report) {
-        if (!report.getReportName().equals(getReportName())) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("F-RD-15")
-                    .message("Cannot merge two reports of different types: {{first}}, {{second}}.",
-                            report.getReportName(), getReportName())
-                    .ticketMitigation().toString());
-        }
         for (final Result result : report.getResults()) {
             addResult(result);
         }

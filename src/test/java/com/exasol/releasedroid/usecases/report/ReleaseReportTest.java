@@ -2,7 +2,6 @@ package com.exasol.releasedroid.usecases.report;
 
 import static com.exasol.releasedroid.usecases.request.PlatformName.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,17 +88,6 @@ class ReleaseReportTest {
                         equalTo(new Result(true, "Release succeeded.", "Another release is done!"))), //
                 () -> assertThat(resultList.get(1), equalTo(new Result(true, "Release succeeded.", "Release is done!"))) //
         );
-    }
-
-    @Test
-    void testMergeReportsFails() {
-        final ReleaseReport releaseReport = ReleaseReport.create();
-        releaseReport.addSuccessfulResult("Release is done!");
-        final ValidationReport validationReport = ValidationReport.create();
-        validationReport.addSuccessfulResult("Validation is fine!");
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> releaseReport.merge(validationReport));
-        assertThat(exception.getMessage(), containsString("F-RD-15"));
     }
 
     @Test
