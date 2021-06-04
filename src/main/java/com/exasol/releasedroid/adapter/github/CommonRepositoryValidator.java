@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationResult;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
@@ -37,7 +37,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     @Override
     public Report validate() {
         LOGGER.fine("Validating repository on branch '" + this.repository.getBranchName() + "'.");
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final String version = this.repository.getVersion();
         report.merge(validateVersion(version));
         if (!report.hasFailures()) {
@@ -51,7 +51,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     }
 
     private Report validateWorkflows() {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateFileExists(this.repository, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH,
                 "Workflow for running test and creating checksum."));
         report.merge(validateFileExists(this.repository, PRINT_QUICK_CHECKSUM_WORKFLOW_PATH,
@@ -61,7 +61,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
 
     private Report validateVersion(final String version) {
         LOGGER.fine("Validating a new version.");
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         report.merge(validateVersionFormat(version));
         if (!report.hasFailures()) {
             report.merge(validateIfNewReleaseTagValid(version));
@@ -70,25 +70,25 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     }
 
     private Report validateVersionFormat(final String version) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (version != null && version.matches(VERSION_REGEX)) {
-            report.addResult(ValidationResult.successfulValidation("Version format."));
+            report.addSuccessfulResult("Version format is correct.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-15")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-15")
                     .message("A version or tag found in this repository has invalid format: {{version|uq}}. "
                             + "The valid format is: <major>.<minor>.<fix>.", version)
-                    .toString()));
+                    .toString());
         }
         return report;
     }
 
     private Report validateIfNewReleaseTagValid(final String newVersion) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final Optional<String> latestReleaseTag = this.repository.getLatestTag();
         if (latestReleaseTag.isPresent()) {
             report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
         } else {
-            report.addResult(ValidationResult.successfulValidation("A new tag. This is the first release."));
+            report.addSuccessfulResult("A new tag. This is the first release.");
         }
         return report;
     }
@@ -96,17 +96,17 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     // [impl->dsn~validate-release-version-format~1]
     // [impl->dsn~validate-release-version-increased-correctly~1]
     private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final Set<String> possibleVersions = getPossibleVersions(latestTag);
         if (possibleVersions.contains(newTag)) {
-            report.addResult(ValidationResult.successfulValidation("A new tag."));
+            report.addSuccessfulResult("A new tag.");
         } else {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-16")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-16")
                     .message(
                             "The new version {{newTag}} does not fit the versioning rules. "
                                     + "Possible versions for the release are: {{possibleVersions|uq}}",
                             newTag, possibleVersions.toString())
-                    .toString()));
+                    .toString());
         }
         return report;
     }
@@ -126,15 +126,15 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     // [impl->dsn~validate-changelog~1]
     private Report validateChangelog(final String changelog, final String version) {
         LOGGER.fine("Validating 'changelog.md' file.");
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (changelog == null || !changelog.contains(changelogContent)) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-17")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-17")
                     .message("The file 'changelog.md' doesn't contain the following link.")
                     .mitigation("Please add {{changelogContent}} to the file.", changelogContent) //
-                    .toString()));
+                    .toString());
         } else {
-            report.addResult(ValidationResult.successfulValidation("'changelog.md' file."));
+            report.addSuccessfulResult("'changelog.md' file.");
             LOGGER.fine("Validation of 'changelog.md' file was successful.");
         }
         return report;
@@ -142,35 +142,35 @@ public class CommonRepositoryValidator implements RepositoryValidator {
 
     private Report validateChanges(final ReleaseLetter releaseLetter, final String version,
             final boolean isDefaultBranch) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (releaseLetter != null) {
             LOGGER.fine("Validating '" + releaseLetter.getFileName() + "' file.");
             report.merge(validateVersionInChanges(releaseLetter, version));
             report.merge(validateDateInChanges(releaseLetter, isDefaultBranch));
             report.merge(validateHasBody(releaseLetter));
         } else {
-            report.addResult(ValidationResult.failedValidation(
-                    ExaError.messageBuilder("E-RD-GH-26").message("The release letter does not exist.").toString()));
+            report.addFailedResult(
+                    ExaError.messageBuilder("E-RD-GH-26").message("The release letter does not exist.").toString());
         }
         return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-version~1]
     private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-18")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-18")
                     .message("The file {{fileName}} does not mention the current version.", changes.getFileName())
-                    .mitigation("Please, follow the changes file's format rules.").toString()));
+                    .mitigation("Please, follow the changes file's format rules.").toString());
         } else {
-            report.addResult(ValidationResult.successfulValidation("'" + changes.getFileName() + "' file."));
+            report.addSuccessfulResult("'" + changes.getFileName() + "' file.");
         }
         return report;
     }
 
     private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         final var dateToday = LocalDate.now();
         final Optional<LocalDate> releaseDate = changes.getReleaseDate();
         if (missingReleaseDate(isDefaultBranch, dateToday, releaseDate)) {
@@ -185,29 +185,23 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     }
 
     private Report reportWrongDate(final String fileName) {
-        final var report = Report.validationReport();
-        final var warningMessage = ExaError.messageBuilder("W-RD-GH-19").message(
-                "The release date in {{fileName}} is outdated. The Release Droid will try to change it automatically. "
-                        + "If direct commits to the main branch are disabled for this repository, please, "
-                        + "update the date manually.",
-                fileName) //
-                .toString();
-        report.addResult(ValidationResult.successfulValidation(
-                "Skipping validation of release date in the '" + fileName + "' file. " + warningMessage));
-        LOGGER.warning(warningMessage);
+        final var report = ValidationReport.create();
+        report.addSuccessfulResult("The release date in " + fileName
+                + " is outdated, but the Release Droid will try to change it automatically. "
+                + "If direct commits to the main branch are disabled for this repository, please, "
+                + "update the date manually.");
         return report;
     }
 
     // [impl->dsn~validate-changes-file-contains-release-letter-body~1]
     private Report validateHasBody(final ReleaseLetter changes) {
-        final var report = Report.validationReport();
+        final var report = ValidationReport.create();
         if (changes.getBody().isEmpty()) {
-            report.addResult(ValidationResult.failedValidation(ExaError.messageBuilder("E-RD-GH-20")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-20")
                     .message("Cannot find the {{fileName}} body.", changes.getFileName()) //
-                    .mitigation("Please, make sure you added the changes you made to the file.").toString()));
+                    .mitigation("Please, make sure you added the changes you made to the file.").toString());
         } else {
-            report.addResult(
-                    ValidationResult.successfulValidation("Release body in '" + changes.getFileName() + "' file."));
+            report.addSuccessfulResult("Release body in '" + changes.getFileName() + "' file.");
         }
         return report;
     }

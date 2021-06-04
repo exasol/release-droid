@@ -1,17 +1,11 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.EXASOL_REPOSITORY_OWNER;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.formatting.SummaryFormatter;
-import com.exasol.releasedroid.usecases.logging.ReportFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
@@ -20,6 +14,7 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.Goal;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
+import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
@@ -27,26 +22,28 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  */
 public class ReleaseDroid {
     private static final Logger LOGGER = Logger.getLogger(ReleaseDroid.class.getName());
-    private static final String HOME_DIRECTORY = System.getProperty("user.home");
-    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
+    private static final String EXASOL_REPOSITORY_OWNER = "exasol";
+
+    private final RepositoryGateway repositoryGateway;
     private final ReleaseUseCase releaseUseCase;
     private final ValidateUseCase validateUseCase;
-    private final SummaryWriter summaryWriter;
-    private final RepositoryGateway repositoryGateway;
+    private final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers;
 
     /**
      * Create a new instance of {@link ReleaseDroid}.
      *
-     * @param repositoryGateway repository gateway
-     * @param releaseUseCase    release usecase
-     * @param validateUseCase   validate usecase
+     * @param repositoryGateway             repository gateway
+     * @param validateUseCase               validate use case
+     * @param releaseUseCase                release use case
+     * @param releaseDroidResponseConsumers response consumers
      */
     public ReleaseDroid(final RepositoryGateway repositoryGateway, final ValidateUseCase validateUseCase,
-            final ReleaseUseCase releaseUseCase) {
+            final ReleaseUseCase releaseUseCase,
+            final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers) {
         this.repositoryGateway = repositoryGateway;
         this.validateUseCase = validateUseCase;
         this.releaseUseCase = releaseUseCase;
-        this.summaryWriter = new SummaryWriter(new SummaryFormatter(new ReportFormatter()));
+        this.releaseDroidResponseConsumers = releaseDroidResponseConsumers;
     }
 
     /**
@@ -67,7 +64,25 @@ public class ReleaseDroid {
         } else {
             reports.add(this.validateUseCase.validate(repository, platformNames));
         }
-        writeReportToDisk(userInput, platformNames, reports);
+        processResponse(createResponse(reports, userInput, platformNames));
+    }
+
+    private void processResponse(final ReleaseDroidResponse response) {
+        for (final ReleaseDroidResponseConsumer releaseDroidResponseConsumer : this.releaseDroidResponseConsumers) {
+            releaseDroidResponseConsumer.consumeResponse(response);
+        }
+    }
+
+    private ReleaseDroidResponse createResponse(final List<Report> reports, final UserInput userInput,
+            final List<PlatformName> platformNames) {
+        return ReleaseDroidResponse.builder() //
+                .fullRepositoryName(userInput.getFullRepositoryName()) //
+                .goal(userInput.getGoal()) //
+                .platformNames(platformNames) //
+                .localRepositoryPath(userInput.getLocalPath()) //
+                .branch(userInput.getBranch()) //
+                .reports(reports) //
+                .build();
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
@@ -132,10 +147,5 @@ public class ReleaseDroid {
         throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-2")
                 .message("Please specify a mandatory parameter {{parameter}} and re-run the Release Droid.", parameter)
                 .toString());
-    }
-
-    private void writeReportToDisk(final UserInput userInput, final List<PlatformName> platformNames,
-            final List<Report> reports) {
-        this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, platformNames, reports);
     }
 }

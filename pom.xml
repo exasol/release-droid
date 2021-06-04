@@ -259,7 +259,9 @@
                 </executions>
                 <configuration>
                     <linkReplacements>
-                        <linkReplacement>https://github.com/commonmark/commonmark-java/commonmark|https://github.com/commonmark/commonmark-java</linkReplacement>
+                        <linkReplacement>
+                            https://github.com/commonmark/commonmark-java/commonmark|https://github.com/commonmark/commonmark-java
+                        </linkReplacement>
                     </linkReplacements>
                 </configuration>
             </plugin>

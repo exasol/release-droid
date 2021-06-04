@@ -4,6 +4,8 @@ error-tags:
       - com.exasol.releasedroid.main
       - com.exasol.releasedroid.usecases.request
       - com.exasol.releasedroid.usecases.release
+      - com.exasol.releasedroid.usecases.report
+      - com.exasol.releasedroid.output
     highest-index: 14
   RD-VAL:
     packages:

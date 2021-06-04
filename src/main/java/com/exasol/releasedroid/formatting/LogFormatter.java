@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.formatting;
 
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.ANSI_RESET;
+
 import java.util.logging.*;
 
 /**
@@ -7,7 +9,6 @@ import java.util.logging.*;
  */
 public class LogFormatter extends Formatter {
     private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_RESET = "\u001B[0m";
     private final Formatter formatter = new SimpleFormatter();
 
     @Override

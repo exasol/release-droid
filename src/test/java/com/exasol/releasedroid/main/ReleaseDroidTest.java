@@ -35,7 +35,7 @@ class ReleaseDroidTest {
 
     @BeforeEach
     void beforeEach() {
-        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, null, null);
+        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, null, null, null);
     }
 
     @Test

@@ -1,10 +1,13 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
@@ -15,7 +18,9 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
-import com.exasol.releasedroid.formatting.LogFormatter;
+import com.exasol.releasedroid.formatting.*;
+import com.exasol.releasedroid.output.ResponseDiskWriter;
+import com.exasol.releasedroid.output.ResponseLogger;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
@@ -27,6 +32,9 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  * This class contains main method.
  */
 public class Runner {
+    private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
+    private static final Path REPORT_PATH = Paths.get(HOME_DIRECTORY, ".release-droid", "last_report.txt");
+
     /**
      * Run the Release Droid.
      *
@@ -44,7 +52,14 @@ public class Runner {
         final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor();
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
-        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase);
+        final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
+        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, releaseDroidResponseConsumers);
+    }
+
+    private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
+        return List.of( //
+                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH), //
+                new ResponseLogger(new ReportLogFormatter()));
     }
 
     private static PropertyReaderImpl getPropertyReader() {
