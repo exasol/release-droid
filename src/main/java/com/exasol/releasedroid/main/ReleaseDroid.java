@@ -88,20 +88,20 @@ public class ReleaseDroid {
     }
 
     private void validateUserInput(final UserInput userInput) {
-        validateOwner(userInput);
-        validateGoal(userInput);
+        checkOwner(userInput);
+        checkGoal(userInput);
         validateRepositoryName(userInput);
         validateGoalAndBranch(userInput);
         validateLocalPath(userInput);
     }
 
-    private void validateOwner(final UserInput userInput) {
+    private void checkOwner(final UserInput userInput) {
         if (!userInput.hasOwner()) {
             userInput.setOwner(EXASOL_REPOSITORY_OWNER);
         }
     }
 
-    private void validateGoal(final UserInput userInput) {
+    private void checkGoal(final UserInput userInput) {
         if (!userInput.hasGoal()) {
             userInput.setGoal(Goal.VALIDATE);
         }
@@ -134,7 +134,8 @@ public class ReleaseDroid {
                 .toString());
     }
 
-    private void writeReportToDisk(final UserInput userInput, final List<PlatformName> platformNames, final List<Report> reports) {
+    private void writeReportToDisk(final UserInput userInput, final List<PlatformName> platformNames,
+            final List<Report> reports) {
         this.summaryWriter.writeResponseToDisk(REPORT_PATH, userInput, platformNames, reports);
     }
 }
