@@ -166,28 +166,40 @@ If you miss this step Release Droid will ask you to input the credentials direct
 
 #### Command Line Arguments
 
-| Long Option | Short Option | Mandatory | Description                                        | Possible values                        |
-|-------------|--------------|-----------|----------------------------------------------------|----------------------------------------|
-| -branch     | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name                |
-| -goal       | -g           | Yes       | Goal to execute                                    | `validate`, `release`                  |
-| -help       | -h           | No        | Prints help                                        |                                        |
-| -language   | -lg          | No        | Specify repository language if not auto-detected   | `java`, `scala`                        |
-| -local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
-| -name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
-| -platforms  | -p           | Yes       | Comma-separated list of release platforms          | `github`, `maven`, `community`         |
+| Long Option  | Short Option | Mandatory | Description                                        | Possible values                        |
+|--------------|--------------|-----------|----------------------------------------------------|----------------------------------------|
+| --branch     | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name                |
+| --goal       | -g           | No        | Goal to execute. `validate` is a default goal.     | `validate`, `release`                  |
+| --help       | -h           | No        | Prints help                                        |                                        |
+| --language   | -lg          | No        | Specify repository language if not auto-detected   | `java`, `scala`                        |
+| --local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
+| --name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
+| --platforms  | -p           | No        | Comma-separated list of release platforms.*         | `github`, `maven`, `community`        |
 
 Notice:
 
-* There are two ways to specify multiple platforms:
+* You can specify the release platforms on the project level once instead of providing them each time via CLI.
+  To specify the release platforms, add `release-platforms` list to the `release_config.yml` file.
+
+Example:
+
+```yaml
+release-platforms:
+  - GitHub
+  - Maven
+  - Community
+```
+
+* There are two ways to specify multiple platforms via CLI:
 
 1. `-p github -p maven`
 1. `-p github,maven` (This is a deprecated way, which is going to be removed in future)
 
 #### Release Goals
 
-* `validate` - use it when you are not ready to release yet, but want to check whether your branch is ready to be released. This goal works with the git `master` branch by default, but you can also choose another branch available on GitHub.
+* `validate` - check if the repository is ready to be released. Runs on default branch if `--branch` is not provided.
 
-* `release` - use it to validate and immediately start the release process. This goal always works with the git `master` branch. Note that you don't need to run `validate` goal before the release, as the `release` goal itself also runs validations.
+* `release` - validate and immediately start the release process. Only runs on the default branch.
 
 ## Debugging
 

@@ -9,7 +9,7 @@ import java.util.Objects;
 public class UserInput {
     private String owner;
     private final String branch;
-    private final Goal goal;
+    private Goal goal;
     private final List<PlatformName> platformNames;
     private final String repositoryName;
     private final String localPath;
@@ -49,6 +49,15 @@ public class UserInput {
      */
     public boolean hasGoal() {
         return this.goal != null;
+    }
+
+    /**
+     * Set goal.
+     *
+     * @param goal goal
+     */
+    public void setGoal(final Goal goal) {
+        this.goal = goal;
     }
 
     /**
