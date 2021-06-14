@@ -10,8 +10,8 @@ public interface ReleaseMaker {
     /**
      * Make a release.
      *
-     * @param branch instance of {@link Repository}
+     * @param repository instance of {@link Repository}
      * @return release output
      */
-    public String makeRelease(final Repository branch) throws ReleaseException;
+    public String makeRelease(final Repository repository) throws ReleaseException;
 }

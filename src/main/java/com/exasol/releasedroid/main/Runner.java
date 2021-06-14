@@ -80,7 +80,7 @@ public class Runner {
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));
         final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getPropertyReader());
         releaseMakers.put(PlatformName.COMMUNITY, new CommunityPortalReleaseMaker(communityPortalGateway));
-        releaseMakers.put(PlatformName.JIRA, new JiraReleaseMaker(new JiraAPIAdapter()));
+        releaseMakers.put(PlatformName.JIRA, new JiraReleaseMaker(new JiraAPIAdapter(getPropertyReader())));
         return releaseMakers;
     }
 }
