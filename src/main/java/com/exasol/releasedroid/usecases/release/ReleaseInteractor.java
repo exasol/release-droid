@@ -91,7 +91,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     private Set<PlatformName> getAlreadyReleasedPlatforms(final String repositoryName, final String releaseVersion) {
-        return this.releaseState.getProgress(repositoryName, releaseVersion);
+        return this.releaseState.getProgress(repositoryName, releaseVersion).keySet();
     }
 
     private boolean areUnreleasedPlatformsPresent(final List<PlatformName> platforms,
@@ -125,8 +125,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
         final var report = ReleaseReport.create(platformName);
         try {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
-            getReleaseMaker(platformName).makeRelease(repository);
-            saveProgress(platformName, repository);
+            final String releaseOutput = getReleaseMaker(platformName).makeRelease(repository);
+            saveProgress(platformName, repository, releaseOutput);
             report.addSuccessfulResult("Release finished.");
         } catch (final Exception exception) {
             report.addFailedResult(ExceptionUtils.getStackTrace(exception));
@@ -134,8 +134,9 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return report;
     }
 
-    private void saveProgress(final PlatformName platformName, final Repository repository) {
-        this.releaseState.saveProgress(repository.getName(), repository.getVersion(), platformName);
+    private void saveProgress(final PlatformName platformName, final Repository repository,
+            final String releaseOutput) {
+        this.releaseState.saveProgress(repository.getName(), repository.getVersion(), platformName, releaseOutput);
     }
 
     private void prepareRepositoryForRelease(final Repository repository) {

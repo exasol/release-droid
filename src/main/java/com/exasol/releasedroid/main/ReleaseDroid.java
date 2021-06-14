@@ -1,5 +1,8 @@
 package com.exasol.releasedroid.main;
 
+import static com.exasol.releasedroid.usecases.request.PlatformName.COMMUNITY;
+import static com.exasol.releasedroid.usecases.request.PlatformName.JIRA;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +102,11 @@ public class ReleaseDroid {
     private void validatePlatformNames(final List<PlatformName> platformNames) {
         if (platformNames == null || platformNames.isEmpty()) {
             throwExceptionForMissingParameter("platforms");
+        }
+        if (platformNames.contains(JIRA) && !platformNames.contains(COMMUNITY)) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-3")
+                    .message("The JIRA platform release is only supported if you make COMMUNITY release.") //
+                    .toString());
         }
     }
 

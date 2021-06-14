@@ -11,6 +11,7 @@ public interface ReleaseMaker {
      * Make a release.
      *
      * @param branch instance of {@link Repository}
+     * @return release output
      */
-    public void makeRelease(final Repository branch) throws ReleaseException;
+    public String makeRelease(final Repository branch) throws ReleaseException;
 }
