@@ -31,14 +31,14 @@ public class JiraPlatformValidator implements ReleasePlatformValidator {
     @Override
     public Report validate() {
         final var report = ValidationReport.create();
-        report.merge(validateCommunityRelease());
+        final Map<PlatformName, String> progress = this.releaseState.getProgress(this.repository.getName(),
+                this.repository.getVersion());
+        report.merge(validateCommunityRelease(progress));
         return report;
     }
 
-    private Report validateCommunityRelease() {
+    protected Report validateCommunityRelease(final Map<PlatformName, String> progress) {
         final var report = ValidationReport.create();
-        final Map<PlatformName, String> progress = this.releaseState.getProgress(this.repository.getName(),
-                this.repository.getVersion());
         final Report communityReleaseReport = validateCommunityReleaseExists(progress);
         report.merge(communityReleaseReport);
         if (!communityReleaseReport.hasFailures()) {
