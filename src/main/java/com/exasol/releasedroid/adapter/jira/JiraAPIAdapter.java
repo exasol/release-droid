@@ -19,7 +19,7 @@ import com.exasol.releasedroid.usecases.PropertyReader;
  * An adapter to communicate with Jira via API.
  */
 public class JiraAPIAdapter implements JiraGateway {
-    private static final String JIRA_URL = "http://www.exasol.com/support";
+    private static final String JIRA_URL = "https://www.exasol.com/support";
     private static final String JIRA_USERNAME_KEY = "jira_username";
     private static final String JIRA_PASSWORD_KEY = "jira_password";
     private final PropertyReader propertyReader;
@@ -49,7 +49,8 @@ public class JiraAPIAdapter implements JiraGateway {
             return JIRA_URL + "/browse/" + issue.getKey();
         } catch (final IOException exception) {
             throw new JiraException(
-                    ExaError.messageBuilder("E-RD-JIRA-4").message("Cannot create a Jira ticket.").toString(),
+                    ExaError.messageBuilder("E-RD-JIRA-4").message("Cannot create a Jira ticket.")
+                            .mitigation("Please make sure you provided valid credentials.").toString(),
                     exception);
         }
     }

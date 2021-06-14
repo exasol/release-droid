@@ -29,19 +29,15 @@
                     <artifactId>jackson-mapper-asl</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.fugue</groupId>
+            <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
-            <version>2.7.0</version>
+            <version>4.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
@@ -86,14 +82,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.28</version>
-        </dependency>
-        <!-- Rewriting transitive dependency to fix CVE-2020-25649.
-        This dependency can be removed after it's updated inside of org.kohsuke:github-api-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.3</version>
+            <version>1.29</version>
         </dependency>
         <!--Unit test dependencies-->
         <dependency>
@@ -251,6 +240,8 @@
                     <excludeVulnerabilityIds>
                         <!--Excluded https://ossindex.sonatype.org/vulnerability/8e973be2-4220-410d-a4cb-2de7a755bdbe -->
                         <exclude>8e973be2-4220-410d-a4cb-2de7a755bdbe</exclude>
+                        <!--Excluded https://ossindex.sonatype.org/vulnerability/c0ed9602-d5c5-4c45-af48-c757161879ee -->
+                        <exclude>c0ed9602-d5c5-4c45-af48-c757161879ee</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
