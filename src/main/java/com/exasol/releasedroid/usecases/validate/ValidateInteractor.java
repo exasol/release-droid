@@ -2,6 +2,7 @@ package com.exasol.releasedroid.usecases.validate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -18,11 +19,14 @@ public class ValidateInteractor implements ValidateUseCase {
 
     @Override
     // [impl->dsn~rd-runs-validate-goal~1]
-    public Report validate(final Repository repository, final List<PlatformName> platforms) {
+    public Report validate(final Repository repository, final List<PlatformName> platforms,
+                           final Set<PlatformName> skipValidationOn) {
         LOGGER.info(() -> "Validation started.");
         final var report = ValidationReport.create();
         for (final PlatformName platformName : platforms) {
-            report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
+            if (!skipValidationOn.contains(platformName)) {
+                report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
+            }
         }
         return report;
     }

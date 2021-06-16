@@ -35,7 +35,7 @@ public class JiraReleaseMaker implements ReleaseMaker {
         final String linkToReleaseAnnouncement = getLinkToReleaseAnnouncement(repository);
         final var projectName = "MARCOMMS";
         final var issueTypeName = "New Content";
-        final var summary = repository.getName() + " " + repository.getVersion() + "released";
+        final var summary = repository.getName() + " " + repository.getVersion() + " released";
         final var description = "The integration team has prepared a release announcement: " //
                 + linkToReleaseAnnouncement + LINE_SEPARATOR //
                 + "Please, review and publish the announcement.";

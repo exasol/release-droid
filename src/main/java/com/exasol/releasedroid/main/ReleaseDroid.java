@@ -1,8 +1,6 @@
 package com.exasol.releasedroid.main;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -62,7 +60,7 @@ public class ReleaseDroid {
         if (userInput.getGoal() == Goal.RELEASE) {
             reports.addAll(this.releaseUseCase.release(repository, platformNames));
         } else {
-            reports.add(this.validateUseCase.validate(repository, platformNames));
+            reports.add(this.validateUseCase.validate(repository, platformNames, Set.of(PlatformName.JIRA)));
         }
         processResponse(createResponse(reports, userInput, platformNames));
     }
