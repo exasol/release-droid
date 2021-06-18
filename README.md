@@ -1,6 +1,6 @@
 # Exasol Release Droid
 
-[![Build Status](https://travis-ci.com/exasol/release-droid.svg?branch=maimain)](https://travis-ci.org/exasol/release-droid)
+[![Build Status](https://travis-ci.com/exasol/release-droid.svg?branch=main)](https://travis-ci.com/exasol/release-droid)
 
 SonarCloud results:
 
