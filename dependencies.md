@@ -67,7 +67,6 @@
 [43]: https://github.com/itsallcode/openfasttrace-maven-plugin
 [51]: https://maven.apache.org/plugins/maven-clean-plugin/
 [36]: https://www.eclipse.org/legal/epl-2.0/
-[0]: https://www.atlassian.com/public-pom/jira-rest-java-client-parent/jira-rest-java-client-core/
 [13]: https://maven.apache.org/ref/3.8.1/maven-model/
 [24]: https://github.com/mockito/mockito/blob/main/LICENSE
 [45]: http://zlika.github.io/reproducible-build-maven-plugin
@@ -76,17 +75,18 @@
 [8]: http://www.opensource.org/licenses/mit-license.php
 [10]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [41]: https://maven.apache.org/enforcer/maven-enforcer-plugin/
-[2]: https://www.atlassian.com/central-pom/fugue-parent/fugue/
 [22]: https://www.eclipse.org/legal/epl-v20.html
 [57]: http://maven.apache.org/plugins/maven-install-plugin/
 [9]: http://commons.apache.org/proper/commons-cli/
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
+[2]: https://bitbucket.org/atlassian/fugue/src/master/
 [6]: https://www.eclipse.org/jgit/
 [27]: http://hamcrest.org/JavaHamcrest/
 [7]: http://www.slf4j.org
 [59]: http://maven.apache.org/plugins/maven-deploy-plugin/
 [4]: https://github-api.kohsuke.org/
+[0]: https://bitbucket.org/atlassian/jira-rest-java-client/src/master/
 [11]: https://github.com/douglascrockford/JSON-java
 [49]: https://github.com/exasol/error-code-crawler-maven-plugin
 [55]: https://maven.apache.org/plugins/maven-jar-plugin/

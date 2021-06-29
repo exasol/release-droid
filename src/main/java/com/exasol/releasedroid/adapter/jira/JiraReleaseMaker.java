@@ -32,6 +32,16 @@ public class JiraReleaseMaker implements ReleaseMaker {
     @Override
     public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Creating a Jira ticket.");
+        try {
+            final String linkToTicket = createTicketRequest(repository);
+            LOGGER.info(() -> "A Jira ticket was created at: " + linkToTicket);
+            return linkToTicket;
+        } catch (final JiraException exception) {
+            throw new ReleaseException(exception);
+        }
+    }
+
+    private String createTicketRequest(final Repository repository) throws JiraException {
         final String linkToReleaseAnnouncement = getLinkToReleaseAnnouncement(repository);
         final var projectName = "MARCOMMS";
         final var issueTypeName = "New Content";
@@ -39,13 +49,7 @@ public class JiraReleaseMaker implements ReleaseMaker {
         final var description = "The integration team has prepared a release announcement: " //
                 + linkToReleaseAnnouncement + LINE_SEPARATOR //
                 + "Please, review and publish the announcement.";
-        try {
-            final String linkToTicket = this.jiraGateway.createTicket(projectName, issueTypeName, summary, description);
-            LOGGER.info(() -> "A Jira ticket was created at: " + linkToTicket);
-            return linkToTicket;
-        } catch (final JiraException exception) {
-            throw new ReleaseException(exception);
-        }
+        return this.jiraGateway.createTicket(projectName, issueTypeName, summary, description);
     }
 
     private String getLinkToReleaseAnnouncement(final Repository repository) {

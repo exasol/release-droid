@@ -58,7 +58,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
             return releaseOnPlatforms(repository, unreleasedPlatforms);
         } else {
             LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
-            return List.of();
+            return Collections.emptyList();
         }
     }
 
@@ -67,7 +67,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
         final var validationReport = ValidationReport.create();
         final var releaseReport = ReleaseReport.create();
         for (final PlatformName platform : platforms) {
-            final var platformValidationReport = this.validateUseCase.validate(repository, List.of(platform), Set.of());
+            final var platformValidationReport = this.validateUseCase.validate(repository, List.of(platform),
+                    Collections.emptySet());
             validationReport.merge(platformValidationReport);
             if (!platformValidationReport.hasFailures()) {
                 final var releaseReportForPlatform = releaseOnPlatform(repository, platform);

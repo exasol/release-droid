@@ -20,11 +20,11 @@ public class ValidateInteractor implements ValidateUseCase {
     @Override
     // [impl->dsn~rd-runs-validate-goal~1]
     public Report validate(final Repository repository, final List<PlatformName> platforms,
-                           final Set<PlatformName> skipValidationOn) {
+            final Set<PlatformName> skippedPlatforms) {
         LOGGER.info(() -> "Validation started.");
         final var report = ValidationReport.create();
         for (final PlatformName platformName : platforms) {
-            if (!skipValidationOn.contains(platformName)) {
+            if (!skippedPlatforms.contains(platformName)) {
                 report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
             }
         }

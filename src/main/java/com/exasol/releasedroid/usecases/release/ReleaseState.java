@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import com.exasol.errorreporting.ExaError;
@@ -103,7 +101,7 @@ public class ReleaseState {
         if (Files.exists(pathToProgressFile)) {
             return extractProgress(pathToProgressFile);
         } else {
-            return Map.of();
+            return Collections.emptyMap();
         }
     }
 
