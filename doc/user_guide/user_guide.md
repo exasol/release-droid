@@ -14,6 +14,7 @@ The following list contains the platforms on which the Release Droid can perform
 * [GitHub](https://github.com)
 * [Maven Central Repository](https://mvnrepository.com/repos/central)
 * [Exasol Community Portal](https://community.exasol.com/)
+* [Exasol Jira](https://www.exasol.com/support)
 
 ## Pre-requirements and Release Rules
 
@@ -132,6 +133,11 @@ community-project-description: |
     ```
 If you miss this step Release Droid will ask you to input the credentials directly through terminal.
 
+### Rules for Release on Exasol Jira
+
+* The release on the Community portal is a pre-requisite for the Jira release. 
+Please, be aware that the Community and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
+
 ## How to Use Release Droid
 
 ### Run from Terminal
@@ -174,7 +180,7 @@ If you miss this step Release Droid will ask you to input the credentials direct
 | --language   | -lg          | No        | Specify repository language if not auto-detected   | `java`, `scala`                        |
 | --local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
 | --name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
-| --platforms  | -p           | No        | Comma-separated list of release platforms.*         | `github`, `maven`, `community`        |
+| --platforms  | -p           | No        | Comma-separated list of release platforms.*        | `github`, `maven`, `community`, `jira` |
 
 Notice:
 
@@ -188,6 +194,7 @@ release-platforms:
   - GitHub
   - Maven
   - Community
+  - Jira  
 ```
 
 * There are two ways to specify multiple platforms via CLI:

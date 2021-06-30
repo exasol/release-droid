@@ -10,13 +10,39 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <mockito.version>3.9.0</mockito.version>
+        <mockito.version>3.11.1</mockito.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>atlassian-public</id>
+            <url>https://packages.atlassian.com/maven/repository/public</url>
+        </repository>
+    </repositories>
     <dependencies>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client-core</artifactId>
+            <version>5.2.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>4.7.2</version>
+        </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.128</version>
+            <version>1.130</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -51,19 +77,12 @@
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.17.1</version>
+            <version>0.17.2</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.28</version>
-        </dependency>
-        <!-- Rewriting transitive dependency to fix CVE-2020-25649.
-        This dependency can be removed after it's updated inside of org.kohsuke:github-api-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.3</version>
+            <version>1.29</version>
         </dependency>
         <!--Unit test dependencies-->
         <dependency>
@@ -147,22 +166,44 @@
                 <version>0.8.6</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>merge-results</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/</directory>
+                                    <includes>
+                                        <include>jacoco*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/aggregate.exec</dataFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -195,6 +236,14 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludeVulnerabilityIds>
+                        <!--Excluded https://ossindex.sonatype.org/vulnerability/8e973be2-4220-410d-a4cb-2de7a755bdbe -->
+                        <exclude>8e973be2-4220-410d-a4cb-2de7a755bdbe</exclude>
+                        <!--Excluded https://ossindex.sonatype.org/vulnerability/c0ed9602-d5c5-4c45-af48-c757161879ee -->
+                        <exclude>c0ed9602-d5c5-4c45-af48-c757161879ee</exclude>
+                    </excludeVulnerabilityIds>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -249,7 +298,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.7.0</version>
+                <version>0.7.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -262,13 +311,19 @@
                         <linkReplacement>
                             https://github.com/commonmark/commonmark-java/commonmark|https://github.com/commonmark/commonmark-java
                         </linkReplacement>
+                        <linkReplacement>
+                            https://www.atlassian.com/public-pom/jira-rest-java-client-parent/jira-rest-java-client-core/|https://bitbucket.org/atlassian/jira-rest-java-client/src/master/
+                        </linkReplacement>
+                        <linkReplacement>
+                            https://www.atlassian.com/central-pom/fugue-parent/fugue/|https://bitbucket.org/atlassian/fugue/src/master/
+                        </linkReplacement>
                     </linkReplacements>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.3.0</version>
+                <version>0.4.0</version>
                 <executions>
                     <execution>
                         <goals>

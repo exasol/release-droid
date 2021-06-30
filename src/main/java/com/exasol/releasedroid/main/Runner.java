@@ -17,6 +17,8 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
 import com.exasol.releasedroid.adapter.github.*;
+import com.exasol.releasedroid.adapter.jira.JiraAPIAdapter;
+import com.exasol.releasedroid.adapter.jira.JiraReleaseMaker;
 import com.exasol.releasedroid.adapter.maven.MavenReleaseMaker;
 import com.exasol.releasedroid.formatting.*;
 import com.exasol.releasedroid.output.ResponseDiskWriter;
@@ -78,6 +80,7 @@ public class Runner {
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));
         final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getPropertyReader());
         releaseMakers.put(PlatformName.COMMUNITY, new CommunityPortalReleaseMaker(communityPortalGateway));
+        releaseMakers.put(PlatformName.JIRA, new JiraReleaseMaker(new JiraAPIAdapter(getPropertyReader())));
         return releaseMakers;
     }
 }

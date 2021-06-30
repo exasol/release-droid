@@ -25,7 +25,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     @Override
     // [impl->dsn~create-new-github-release~1]
-    public void makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
         final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
@@ -35,6 +35,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
                 .header(header).releaseLetter(body).build();
         try {
             this.githubGateway.createGithubRelease(release);
+            return "";
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

@@ -25,12 +25,13 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     @Override
-    public void makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Creating a draft of the release announcement on the Exasol Community Portal.");
         try {
             final var communityPost = getCommunityPost(repository);
             final String draftPostUrl = this.communityPortalGateway.sendDraftPost(communityPost);
             LOGGER.info(() -> "A community draft post was created at: " + draftPostUrl);
+            return draftPostUrl;
         } catch (final CommunityPortalException exception) {
             throw new ReleaseException(exception);
         }

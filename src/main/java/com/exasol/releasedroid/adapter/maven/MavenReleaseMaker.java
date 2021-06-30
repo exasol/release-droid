@@ -27,10 +27,11 @@ public class MavenReleaseMaker implements ReleaseMaker {
 
     @Override
     // [impl->dsn~create-new-maven-release~1]
-    public void makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on Maven.");
         try {
             this.githubGateway.executeWorkflow(repository.getName(), RELEASE_ON_MAVEN_CENTRAL_WORKFLOW);
+            return "";
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

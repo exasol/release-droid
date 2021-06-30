@@ -26,3 +26,7 @@ error-tags:
     packages:
       - com.exasol.releasedroid.adapter.communityportal
     highest-index: 8
+  RD-JIRA:
+    packages:
+      - com.exasol.releasedroid.adapter.jira
+    highest-index: 4

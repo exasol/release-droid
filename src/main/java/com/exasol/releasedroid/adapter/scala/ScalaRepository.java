@@ -9,6 +9,7 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidato
 import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.adapter.jira.JiraPlatformValidator;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
@@ -30,7 +31,8 @@ public class ScalaRepository extends BaseRepository {
         super(repositoryGate);
         this.platformValidators = Map.of( //
                 PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), //
-                PlatformName.COMMUNITY, new CommunityPlatformValidator(this) //
+                PlatformName.COMMUNITY, new CommunityPlatformValidator(this), //
+                PlatformName.JIRA, new JiraPlatformValidator(this) //
         );
     }
 

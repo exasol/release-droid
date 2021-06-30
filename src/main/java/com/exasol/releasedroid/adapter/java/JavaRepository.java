@@ -9,6 +9,7 @@ import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidato
 import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
+import com.exasol.releasedroid.adapter.jira.JiraPlatformValidator;
 import com.exasol.releasedroid.adapter.maven.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
@@ -32,7 +33,8 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
         this.platformValidators = Map.of( //
                 PlatformName.GITHUB, new GitHubPlatformValidator(this, githubGateway), //
                 PlatformName.MAVEN, new MavenPlatformValidator(this), //
-                PlatformName.COMMUNITY, new CommunityPlatformValidator(this) //
+                PlatformName.COMMUNITY, new CommunityPlatformValidator(this), //
+                PlatformName.JIRA, new JiraPlatformValidator(this) //
         );
     }
 

@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import com.exasol.errorreporting.ExaError;
@@ -36,9 +34,10 @@ public class ReleaseState {
      * @param repositoryName repository name
      * @param releaseVersion release version
      * @param platformName   platform name
+     * @param releaseOutput  output to save
      */
-    public void saveProgress(final String repositoryName, final String releaseVersion,
-            final PlatformName platformName) {
+    public void saveProgress(final String repositoryName, final String releaseVersion, final PlatformName platformName,
+            final String releaseOutput) {
         final Path pathToDirectory = Path.of(this.directory);
         if (!Files.exists(pathToDirectory)) {
             createDirectory(pathToDirectory);
@@ -47,7 +46,7 @@ public class ReleaseState {
         if (!Files.exists(pathToProgressFile)) {
             createProgressFile(pathToProgressFile);
         }
-        writeProgress(pathToProgressFile, platformName.toString());
+        writeProgress(pathToProgressFile, platformName.toString(), releaseOutput);
     }
 
     private void createDirectory(final Path directory) {
@@ -73,9 +72,10 @@ public class ReleaseState {
         }
     }
 
-    private void writeProgress(final Path pathToProgressFile, final String text) {
+    private void writeProgress(final Path pathToProgressFile, final String platformName, final String releaseOutput) {
         try {
-            Files.write(pathToProgressFile, (text + LINE_SEPARATOR).getBytes(), StandardOpenOption.APPEND);
+            Files.write(pathToProgressFile, renderWriteString(platformName, releaseOutput).getBytes(),
+                    StandardOpenOption.APPEND);
         } catch (final IOException exception) {
             throw new ReleaseException(ExaError.messageBuilder("E-RD-14")
                     .message("Unable to save the release progress to the file {{pathToProgressFile}}",
@@ -85,19 +85,23 @@ public class ReleaseState {
         }
     }
 
+    private String renderWriteString(final String platformName, final String releaseOutput) {
+        return platformName + "::" + releaseOutput + LINE_SEPARATOR;
+    }
+
     /**
      * Get the release progress.
      *
      * @param repositoryName repository name
      * @param releaseVersion release version
-     * @return set of platforms where release succeeded
+     * @return map of platforms where release succeeded with platform output
      */
-    public Set<PlatformName> getProgress(final String repositoryName, final String releaseVersion) {
+    public Map<PlatformName, String> getProgress(final String repositoryName, final String releaseVersion) {
         final Path pathToProgressFile = getPathToProgressFile(repositoryName, releaseVersion);
         if (Files.exists(pathToProgressFile)) {
             return extractProgress(pathToProgressFile);
         } else {
-            return Set.of();
+            return Collections.emptyMap();
         }
     }
 
@@ -106,13 +110,24 @@ public class ReleaseState {
         return Path.of(this.directory, fileName);
     }
 
-    private Set<PlatformName> extractProgress(final Path path) {
+    private Map<PlatformName, String> extractProgress(final Path path) {
         try (final Stream<String> lines = Files.lines(path)) {
-            final Set<PlatformName> set = new HashSet<>();
-            lines.forEach(platform -> set.add(PlatformName.valueOf(platform.toUpperCase(Locale.ROOT))));
-            return set;
+            final Map<PlatformName, String> map = new HashMap<>();
+            lines.forEach(platform -> {
+                final String[] split = platform.split("::");
+                map.put(getPlatformName(split), getOutput(split));
+            });
+            return map;
         } catch (final IOException exception) {
-            return Set.of();
+            return Map.of();
         }
+    }
+
+    private String getOutput(final String[] releaseStateSplitLine) {
+        return releaseStateSplitLine.length > 1 ? releaseStateSplitLine[1] : "";
+    }
+
+    private PlatformName getPlatformName(final String[] releaseStateSplitLine) {
+        return PlatformName.valueOf(releaseStateSplitLine[0].toUpperCase(Locale.ROOT));
     }
 }

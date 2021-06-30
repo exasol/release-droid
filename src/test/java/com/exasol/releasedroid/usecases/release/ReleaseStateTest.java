@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,16 +17,22 @@ class ReleaseStateTest {
     @Test
     void saveProgressCreateFile() throws IOException {
         final ReleaseState state = getReleaseState();
-        state.saveProgress("exasol/release-droid", "0.5.0", GITHUB);
-        state.saveProgress("exasol/release-droid", "0.5.0", MAVEN);
-        state.saveProgress("exasol/release-droid", "0.5.0", COMMUNITY);
-        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Set.of(GITHUB, MAVEN, COMMUNITY)));
+        final String linkToGitHub = "https://github.com/exasol/release-droid/releases/tag/0.5.0";
+        final String linkToMaven = "";
+        final String linkToCommunity = "https://community.exasol.com/some-link/150?prePageCrumb=BlogDashboardPage";
+        state.saveProgress("exasol/release-droid", "0.5.0", GITHUB, linkToGitHub);
+        state.saveProgress("exasol/release-droid", "0.5.0", MAVEN, linkToMaven);
+        state.saveProgress("exasol/release-droid", "0.5.0", COMMUNITY, linkToCommunity);
+        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Map.of( //
+                GITHUB, linkToGitHub, //
+                MAVEN, linkToMaven, //
+                COMMUNITY, linkToCommunity)));
     }
 
     @Test
     void testGetProgressMissingFile() throws IOException {
         final ReleaseState state = getReleaseState();
-        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Set.of()));
+        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Map.of()));
     }
 
     private ReleaseState getReleaseState() throws IOException {
@@ -39,9 +45,10 @@ class ReleaseStateTest {
         final Path tempDirectory = Files.createTempDirectory("temp-release-droid");
         final Path tempFile = Files.createFile(Path.of(tempDirectory.toString(), "exasol_release-droid_0.5.0"));
         try (final BufferedWriter out = new BufferedWriter(new FileWriter(tempFile.toFile()))) {
-            out.write("GITHUB\nMaven\ncoMMunitY");
+            out.write("GITHUB::\nMaven::\ncoMMunitY::some text here");
         }
         final ReleaseState state = new ReleaseState(tempDirectory.toString());
-        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Set.of(GITHUB, MAVEN, COMMUNITY)));
+        assertThat(state.getProgress("exasol/release-droid", "0.5.0"), equalTo(Map.of( //
+                GITHUB, "", MAVEN, "", COMMUNITY, "some text here")));
     }
 }
