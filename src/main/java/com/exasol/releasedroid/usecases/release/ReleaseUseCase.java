@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.usecases.release;
 
 import java.util.List;
+import java.util.Set;
 
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -13,9 +14,10 @@ public interface ReleaseUseCase {
     /**
      * Make a new release.
      *
-     * @param repository repository to validate
-     * @param platforms  list of platforms to validate
+     * @param repository       repository to validate
+     * @param platforms        list of platforms to validate
+     * @param skipValidationOn set of platforms to skp validation on
      * @return list of reports
      */
-    List<Report> release(Repository repository, List<PlatformName> platforms);
+    List<Report> release(Repository repository, List<PlatformName> platforms, Set<PlatformName> skipValidationOn);
 }

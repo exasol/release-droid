@@ -15,9 +15,9 @@ class UserInputParserTest {
     @Test
     void testParseUserInput() {
         final UserInput expected = UserInput.builder().repositoryName("testing-release-droid").branch("some_branch")
-                .goal("validate").platforms("github", "maven").build();
-        final String[] args = new String[] { "-name", "testing-release-droid", "-goal", "validate", "-platforms",
-                "github,maven", "-branch", "some_branch" };
+                .goal("validate").platforms("github", "maven").skipValidation(true).build();
+        final String[] args = new String[] { "--name", "testing-release-droid", "--goal", "validate", "--platforms",
+                "github,maven", "--branch", "some_branch", "--skipvalidation" };
         assertThat(this.userInputParser.parseUserInput(args), equalTo(expected));
     }
 

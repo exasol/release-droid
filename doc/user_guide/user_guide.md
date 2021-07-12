@@ -172,15 +172,16 @@ Please, be aware that the Community and Jira releases must be made on the same m
 
 #### Command Line Arguments
 
-| Long Option  | Short Option | Mandatory | Description                                        | Possible values                        |
-|--------------|--------------|-----------|----------------------------------------------------|----------------------------------------|
-| --branch     | -b           | No        | Git branch to work with (only for `validate` goal) | A valid git branch name                |
-| --goal       | -g           | No        | Goal to execute. `validate` is a default goal.     | `validate`, `release`                  |
-| --help       | -h           | No        | Prints help                                        |                                        |
-| --language   | -lg          | No        | Specify repository language if not auto-detected   | `java`, `scala`                        |
-| --local      | -l           | No        | Path to the repository root directory              | A valid repository root directory path |
-| --name       | -n           | Yes       | GitHub project name                                | A valid GitHub project name            |
-| --platforms  | -p           | No        | Comma-separated list of release platforms.*        | `github`, `maven`, `community`, `jira` |
+| Long Option      | Short Option | Mandatory | Description                                             | Possible values                        |
+|------------------|--------------|-----------|---------------------------------------------------------|----------------------------------------|
+| --branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                |
+| --goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                  |
+| --help           | -h           | No        | Prints help                                             |                                        |
+| --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`                        |
+| --local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
+| --name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
+| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `community`, `jira` |
+| --skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
 
 Notice:
 

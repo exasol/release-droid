@@ -27,13 +27,14 @@ different machine, the release will be started from a scratch.
 
 ## Features
 
-* # 158: Added Jira support.
-* # 159: Saved the release state.
-* # 161: Made VALIDATE a default goal.
+* #158: Added Jira support.
+* #159: Saved the release state.
+* #161: Made VALIDATE a default goal.
+* #166: Added flag for skipping validations during RELEASE.
 
 ## Refactoring
 
-* # 162: Refactored reports.
+* #162: Refactored reports.
 
 ## Dependency Updates
 

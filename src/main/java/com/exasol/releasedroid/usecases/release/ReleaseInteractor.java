@@ -42,33 +42,36 @@ public class ReleaseInteractor implements ReleaseUseCase {
     @Override
     // [impl->dsn~rd-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rd-runs-release-goal~1]
-    public List<Report> release(final Repository repository, final List<PlatformName> platforms) {
+    public List<Report> release(final Repository repository, final List<PlatformName> platforms,
+            final Set<PlatformName> skipValidationOn) {
         try {
-            return makeRelease(repository, platforms);
+            return makeRelease(repository, platforms, skipValidationOn);
         } catch (final Exception exception) {
             throw new ReleaseException(exception);
         }
     }
 
-    private List<Report> makeRelease(final Repository repository, final List<PlatformName> platforms) {
+    private List<Report> makeRelease(final Repository repository, final List<PlatformName> platforms,
+            final Set<PlatformName> skipValidationOn) {
         final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
                 repository.getVersion());
         if (areUnreleasedPlatformsPresent(platforms, releasedPlatforms)) {
             final List<PlatformName> unreleasedPlatforms = getUnreleasedPlatforms(platforms, releasedPlatforms);
-            return releaseOnPlatforms(repository, unreleasedPlatforms);
+            return releaseOnPlatforms(repository, unreleasedPlatforms, skipValidationOn);
         } else {
             LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
             return Collections.emptyList();
         }
     }
 
-    private List<Report> releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms) {
+    private List<Report> releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms,
+            final Set<PlatformName> skipValidationOn) {
         prepareRepositoryForRelease(repository);
         final var validationReport = ValidationReport.create();
         final var releaseReport = ReleaseReport.create();
         for (final PlatformName platform : platforms) {
             final var platformValidationReport = this.validateUseCase.validate(repository, List.of(platform),
-                    Collections.emptySet());
+                    skipValidationOn);
             validationReport.merge(platformValidationReport);
             if (!platformValidationReport.hasFailures()) {
                 final var releaseReportForPlatform = releaseOnPlatform(repository, platform);

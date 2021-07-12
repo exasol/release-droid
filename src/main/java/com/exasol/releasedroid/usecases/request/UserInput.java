@@ -14,6 +14,7 @@ public class UserInput {
     private final String repositoryName;
     private final String localPath;
     private final Language language;
+    private final boolean skipValidation;
 
     /**
      * Get a branch name.
@@ -31,6 +32,15 @@ public class UserInput {
      */
     public boolean hasBranch() {
         return (this.branch != null) && !this.branch.isEmpty();
+    }
+
+    /**
+     * Check if user wants to skip validation.
+     *
+     * @return true to skip validation
+     */
+    public boolean skipValidation() {
+        return this.skipValidation;
     }
 
     /**
@@ -176,6 +186,7 @@ public class UserInput {
         this.repositoryName = builder.repositoryName;
         this.localPath = builder.localPath;
         this.language = builder.language;
+        this.skipValidation = builder.skipValidation;
     }
 
     /**
@@ -196,8 +207,9 @@ public class UserInput {
             return false;
         }
         final UserInput userInput = (UserInput) o;
-        return Objects.equals(this.owner, userInput.owner) && Objects.equals(this.branch, userInput.branch)
-                && this.goal == userInput.goal && Objects.equals(this.platformNames, userInput.platformNames)
+        return this.skipValidation == userInput.skipValidation && Objects.equals(this.owner, userInput.owner)
+                && Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
+                && Objects.equals(this.platformNames, userInput.platformNames)
                 && Objects.equals(this.repositoryName, userInput.repositoryName)
                 && Objects.equals(this.localPath, userInput.localPath) && this.language == userInput.language;
     }
@@ -205,14 +217,15 @@ public class UserInput {
     @Override
     public int hashCode() {
         return Objects.hash(this.owner, this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath,
-                this.language);
+                this.language, this.skipValidation);
     }
 
     @Override
     public String toString() {
-        return "UserInput{" + "branch='" + this.branch + '\'' + ", goal=" + this.goal + ", platformNames="
-                + this.platformNames + ", repositoryName='" + this.repositoryName + '\'' + ", localPath='"
-                + this.localPath + '\'' + ", language=" + this.language + '}';
+        return "UserInput{" + "owner='" + this.owner + '\'' + ", branch='" + this.branch + '\'' + ", goal=" + this.goal
+                + ", platformNames=" + this.platformNames + ", repositoryName='" + this.repositoryName + '\''
+                + ", localPath='" + this.localPath + '\'' + ", language=" + this.language + ", skipValidation="
+                + this.skipValidation + '}';
     }
 
     /**
@@ -226,6 +239,7 @@ public class UserInput {
         private String localPath;
         private Language language;
         private String owner;
+        private boolean skipValidation;
 
         /**
          * Add a branch.
@@ -321,6 +335,17 @@ public class UserInput {
          */
         public UserInput build() {
             return new UserInput(this);
+        }
+
+        /**
+         * Add a skip validation option.
+         *
+         * @param skipValidation skip validation
+         * @return builder instance for fluent programming
+         */
+        public Builder skipValidation(final boolean skipValidation) {
+            this.skipValidation = skipValidation;
+            return this;
         }
     }
 }
