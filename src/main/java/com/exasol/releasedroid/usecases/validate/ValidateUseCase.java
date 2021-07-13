@@ -14,9 +14,9 @@ public interface ValidateUseCase {
     /**
      * Validate project.
      *
-     * @param repository repository to validate
-     * @param platforms  list of platforms to validate
-     * @skipValidationOn platforms set of platforms to skp validation on
+     * @param repository       repository to validate
+     * @param platforms        list of platforms to validate
+     * @param skipValidationOn set of platforms to skp validation on
      * @return new {@link Report}
      */
     Report validate(Repository repository, List<PlatformName> platforms, Set<PlatformName> skipValidationOn);

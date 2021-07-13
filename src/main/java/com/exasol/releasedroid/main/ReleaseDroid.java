@@ -2,6 +2,7 @@ package com.exasol.releasedroid.main;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
@@ -58,11 +59,20 @@ public class ReleaseDroid {
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
         if (userInput.getGoal() == Goal.RELEASE) {
-            reports.addAll(this.releaseUseCase.release(repository, platformNames));
+            final Set<PlatformName> skipValidationOn = getPlatformsToSkipValidationOn(userInput);
+            reports.addAll(this.releaseUseCase.release(repository, platformNames, skipValidationOn));
         } else {
             reports.add(this.validateUseCase.validate(repository, platformNames, Set.of(PlatformName.JIRA)));
         }
         processResponse(createResponse(reports, userInput, platformNames));
+    }
+
+    private Set<PlatformName> getPlatformsToSkipValidationOn(final UserInput userInput) {
+        if (userInput.skipValidation()) {
+            return Arrays.stream(PlatformName.values()).collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
     }
 
     private void processResponse(final ReleaseDroidResponse response) {
@@ -106,6 +116,7 @@ public class ReleaseDroid {
         validateRepositoryName(userInput);
         validateGoalAndBranch(userInput);
         validateLocalPath(userInput);
+        validateSkipValidationParameter(userInput);
     }
 
     private void checkOwner(final UserInput userInput) {
@@ -138,6 +149,13 @@ public class ReleaseDroid {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-6")
                     .message("The 'local' argument can't be used together with 'branch' or RELEASE 'goal'.")
                     .toString());
+        }
+    }
+
+    private void validateSkipValidationParameter(final UserInput userInput) {
+        if (userInput.skipValidation() && userInput.getGoal() != Goal.RELEASE) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-15")
+                    .message("The 'skipvalidation' argument can be only used with RELEASE goal.").toString());
         }
     }
 

@@ -103,4 +103,13 @@ class ReleaseDroidTest {
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
         assertThrows(NullPointerException.class, () -> this.releaseDroid.run(userInput));
     }
+
+    @Test
+    void testUserInputWithSkippingValidation() {
+        final UserInput userInput = builder().repositoryName("name").platforms("github").skipValidation(true)
+                .goal("validate").build();
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> this.releaseDroid.run(userInput));
+        assertThat(exception.getMessage(), containsString("E-RD-15"));
+    }
 }

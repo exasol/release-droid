@@ -16,6 +16,7 @@ public class UserInputParser {
     private static final String LOCAL_SHORT_OPTION = "l";
     private static final String LANGUAGE_SHORT_OPTION = "lg";
     private static final String HELP_SHORT_OPTION = "h";
+    private static final String SKIP_VALIDATION_OPTION = "skipvalidation";
 
     /**
      * Parse user input.
@@ -33,7 +34,8 @@ public class UserInputParser {
                 .platforms(cmd.getOptionValues(PLATFORM_SHORT_OPTION)) //
                 .branch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
                 .localPath(cmd.getOptionValue(LOCAL_SHORT_OPTION)) //
-                .language(cmd.getOptionValue(LANGUAGE_SHORT_OPTION)).build();
+                .language(cmd.getOptionValue(LANGUAGE_SHORT_OPTION)) //
+                .skipValidation(cmd.hasOption(SKIP_VALIDATION_OPTION)).build();
     }
 
     private void printHelpIfNeeded(final Options options, final CommandLine cmd) {
@@ -55,8 +57,10 @@ public class UserInputParser {
         final Option language = new Option(LANGUAGE_SHORT_OPTION, "language", true,
                 "programming language of the repository");
         final Option help = new Option(HELP_SHORT_OPTION, "help", false, "Help command");
+        final Option skipValidation = new Option(SKIP_VALIDATION_OPTION, SKIP_VALIDATION_OPTION, false,
+                "Release without validation.");
         return new Options().addOption(name).addOption(goal).addOption(platforms).addOption(branch).addOption(local)
-                .addOption(language).addOption(help);
+                .addOption(language).addOption(help).addOption(skipValidation);
     }
 
     private static CommandLine getCommandLine(final String[] args, final Options options) {
