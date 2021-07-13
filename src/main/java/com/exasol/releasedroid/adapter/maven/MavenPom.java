@@ -11,12 +11,16 @@ public class MavenPom {
     private final String version;
     private final Map<String, String> properties;
     private final Map<String, MavenPlugin> plugins;
+    private final String projectDescription;
+    private final String projectURL;
 
     private MavenPom(final Builder builder) {
         this.artifactId = builder.artifactId;
         this.version = builder.version;
         this.properties = builder.properties;
         this.plugins = builder.plugins;
+        this.projectDescription = builder.projectDescription;
+        this.projectURL = builder.projectURL;
     }
 
     /**
@@ -92,6 +96,24 @@ public class MavenPom {
     }
 
     /**
+     * Check if project description presents.
+     *
+     * @return true if project description presents
+     */
+    public boolean hasProjectDescription() {
+        return this.projectDescription != null && !this.projectDescription.isEmpty();
+    }
+
+    /**
+     * Check if project URL presents.
+     *
+     * @return true if project URL presents
+     */
+    public boolean hasProjectURL() {
+        return this.projectURL != null && !this.projectURL.isEmpty();
+    }
+
+    /**
      * Get a {@link MavenPom} builder.
      *
      * @return builder instance
@@ -108,6 +130,8 @@ public class MavenPom {
         private String version;
         private Map<String, String> properties = new HashMap<>();
         private Map<String, MavenPlugin> plugins = new HashMap<>();
+        private String projectDescription;
+        private String projectURL;
 
         /**
          * Add version.
@@ -159,6 +183,28 @@ public class MavenPom {
          */
         public Builder plugins(final Map<String, MavenPlugin> plugins) {
             this.plugins = plugins;
+            return this;
+        }
+
+        /**
+         * Add a project description.
+         *
+         * @param projectDescription the project description
+         * @return builder instance for fluent programming
+         */
+        public Builder projectDescription(final String projectDescription) {
+            this.projectDescription = projectDescription;
+            return this;
+        }
+
+        /**
+         * Add a project URL.
+         *
+         * @param projectURL project url
+         * @return builder instance for fluent programming
+         */
+        public Builder projectURL(final String projectURL) {
+            this.projectURL = projectURL;
             return this;
         }
     }

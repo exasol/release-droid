@@ -3,6 +3,7 @@ package com.exasol.releasedroid.adapter.maven;
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateRepositories;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
@@ -29,6 +30,25 @@ public class MavenPlatformValidator implements ReleasePlatformValidator {
         final var report = ValidationReport.create();
         report.merge(validateRepositories(this.repository.getRepositoryValidators()));
         report.merge(validateFileExists(this.repository, MAVEN_WORKFLOW_PATH, "Workflow for a Maven release."));
+        report.merge(validatePom(this.repository.getMavenPom()));
+        return report;
+    }
+
+    private Report validatePom(final MavenPom mavenPom) {
+        final var report = ValidationReport.create();
+        report.merge(validateMavenPomPart(mavenPom.hasProjectDescription(), "Project description"));
+        report.merge(validateMavenPomPart(mavenPom.hasProjectURL(), "Project URL"));
+        return report;
+    }
+
+    private Report validateMavenPomPart(final boolean present, final String name) {
+        final var report = ValidationReport.create();
+        if (present) {
+            report.addSuccessfulResult(name + " presents in pom.xml file.");
+        } else {
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-20")
+                    .message("{{name|uq}} is missing in the pom.xml file.", name).toString());
+        }
         return report;
     }
 }
