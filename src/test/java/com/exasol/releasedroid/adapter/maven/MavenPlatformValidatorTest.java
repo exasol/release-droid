@@ -31,6 +31,8 @@ class MavenPlatformValidatorTest {
     // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateSuccessful() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
+        when(this.repositoryMock.getMavenPom())
+                .thenReturn(MavenPom.builder().projectDescription("Description").projectURL("URL").build());
         final Report report = this.platformValidator.validate();
         assertFalse(report.hasFailures());
     }
@@ -40,8 +42,11 @@ class MavenPlatformValidatorTest {
     void testValidateFailed() {
         when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
                 .thenThrow(RepositoryException.class);
+        when(this.repositoryMock.getMavenPom()).thenReturn(MavenPom.builder().build());
         final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RD-REP-20: Project description")),
+                () -> assertThat(report.toString(), containsString("E-RD-REP-20: Project URL")),
                 () -> assertThat(report.toString(), containsString("E-RD-REP-19")));
     }
 }

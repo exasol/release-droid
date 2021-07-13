@@ -48,8 +48,24 @@ public class MavenPomParser {
         final String version = this.model.getVersion();
         final Map<String, String> properties = parseProperties();
         final Map<String, MavenPlugin> plugins = parsePlugins(properties);
-        return MavenPom.builder().version(version).artifactId(artifactId).properties(properties).plugins(plugins)
+        final String projectDescription = parseProjectDescription();
+        final String projectURL = parseProjectURL();
+        return MavenPom.builder() //
+                .version(version) //
+                .artifactId(artifactId) //
+                .properties(properties) //
+                .plugins(plugins) //
+                .projectDescription(projectDescription) //
+                .projectURL(projectURL) //
                 .build();
+    }
+
+    private String parseProjectDescription() {
+        return this.model.getDescription();
+    }
+
+    private String parseProjectURL() {
+        return this.model.getUrl();
     }
 
     private Map<String, String> parseProperties() {
