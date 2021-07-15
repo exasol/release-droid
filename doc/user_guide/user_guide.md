@@ -14,7 +14,7 @@ A repository with any other language should be marked as `Generic` (`--language 
 The following list contains the platforms on which the Release Droid can perform a release:
 
 * [GitHub](https://github.com)
-* [Maven Central Repository](https://mvnrepository.com/repos/central) (Java only)
+* [Maven Central Repository](https://mvnrepository.com) (Java only)
 * [Exasol Community Portal](https://community.exasol.com/)
 * [Exasol Jira](https://www.exasol.com/support)
 
