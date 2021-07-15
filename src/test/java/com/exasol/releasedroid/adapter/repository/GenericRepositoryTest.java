@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,14 +34,16 @@ class GenericRepositoryTest {
         assertThat(genericRepository.getVersion(), equalTo("0.3.0"));
     }
 
-    @Test
-    void testGetVersionWithException() {
-        when(this.repositoryGateMock.getSingleFileContentAsString(CHANGELOG_FILE_PATH)).thenReturn( //
-                "# Changelog\n");
+    @ParameterizedTest
+    @ValueSource(strings = { //
+            "# Changelog\n", //
+            "# Changelog\n ][0.1.0](link)", //
+    })
+    void testGetVersionInvalidChangelog(final String changelog) {
+        when(this.repositoryGateMock.getSingleFileContentAsString(CHANGELOG_FILE_PATH)).thenReturn(changelog);
         final GenericRepository genericRepository = new GenericRepository(this.repositoryGateMock, null);
         final RepositoryException exception = assertThrows(RepositoryException.class, genericRepository::getVersion);
         assertThat(exception.getMessage(), containsString("E-RD-REP-21"));
-
     }
 
     @Test

@@ -43,7 +43,7 @@ public class GenericRepository extends BaseRepository {
         final String changelogFile = super.getChangelogFile();
         final int from = changelogFile.indexOf('[');
         final int to = changelogFile.indexOf(']');
-        if (from == -1 || to == -1) {
+        if (from == -1 || to == -1 || to < from) {
             throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-21")
                     .message("Cannot detect the version of the project.")
                     .mitigation("Please make sure you specified the version in the changelog.md file").toString());
