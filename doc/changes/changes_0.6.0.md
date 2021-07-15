@@ -32,6 +32,7 @@ different machine, the release will be started from a scratch.
 * #161: Made VALIDATE a default goal.
 * #166: Added flag for skipping validations during RELEASE.
 * #164: Added additional validations for Maven platform.
+* #167: Added generic dialect.
 
 ## Refactoring
 

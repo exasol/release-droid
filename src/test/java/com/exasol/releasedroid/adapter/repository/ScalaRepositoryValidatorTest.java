@@ -1,6 +1,6 @@
-package com.exasol.releasedroid.adapter.scala;
+package com.exasol.releasedroid.adapter.repository;
 
-import static com.exasol.releasedroid.adapter.scala.ScalaRepositoryValidator.BUILD_SBT;
+import static com.exasol.releasedroid.adapter.repository.ScalaRepositoryValidator.BUILD_SBT;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;

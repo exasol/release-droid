@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.scala;
+package com.exasol.releasedroid.adapter.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
-import com.exasol.releasedroid.adapter.github.CommonRepositoryValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.adapter.jira.JiraPlatformValidator;

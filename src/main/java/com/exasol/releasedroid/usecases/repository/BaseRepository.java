@@ -12,7 +12,7 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
  * Base implementation of repository.
  */
 public abstract class BaseRepository implements Repository {
-    private static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
+    public static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
 
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
     private final RepositoryGate repositoryGate;

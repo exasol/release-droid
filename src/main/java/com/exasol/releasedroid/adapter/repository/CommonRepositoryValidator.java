@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.github;
+package com.exasol.releasedroid.adapter.repository;
 
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;

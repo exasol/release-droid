@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.usecases.repository;
+package com.exasol.releasedroid.adapter.repository;
 
 import static com.exasol.releasedroid.usecases.request.UserInput.builder;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,11 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.adapter.RepositoryFactory;
 import com.exasol.releasedroid.adapter.github.GitHubException;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
-import com.exasol.releasedroid.adapter.java.JavaRepository;
-import com.exasol.releasedroid.adapter.scala.ScalaRepository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 @ExtendWith(MockitoExtension.class)

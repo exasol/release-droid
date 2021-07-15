@@ -10,7 +10,7 @@ import com.exasol.errorreporting.ExaError;
  * List of programming languages supported by release droid.
  */
 public enum Language {
-    JAVA, SCALA;
+    JAVA, SCALA, GENERIC;
 
     /**
      * Get a {@link Language} from a string.

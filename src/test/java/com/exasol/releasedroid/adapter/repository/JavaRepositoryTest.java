@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.java;
+package com.exasol.releasedroid.adapter.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
