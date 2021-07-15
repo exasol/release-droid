@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.scala;
+package com.exasol.releasedroid.adapter.repository;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.report.Report;

@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.github;
+package com.exasol.releasedroid.adapter.repository;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
@@ -65,7 +65,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getChangelogFile()).thenReturn("");
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-17: The file "
+                () -> assertThat(report.toString(), containsString("E-RD-REP-24: The file "
                         + "'changelog.md' doesn't contain the following link. Please add '[2.1.0](changes_2.1.0.md)' to the file")));
     }
 
@@ -105,7 +105,7 @@ class CommonRepositoryValidatorTest {
         when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-18")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-26")));
     }
 
     @Test
@@ -118,7 +118,7 @@ class CommonRepositoryValidatorTest {
         when(this.releaseLetterMock.getBody()).thenReturn(Optional.empty());
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-20")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-27")));
     }
 
     @ParameterizedTest
@@ -128,7 +128,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getVersion()).thenReturn(version);
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-15")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-22")));
     }
 
     @ParameterizedTest
@@ -161,7 +161,7 @@ class CommonRepositoryValidatorTest {
         assertAll(() -> assertTrue(report.hasFailures()),
                 () -> assertThat(report.toString(),
                         containsString(
-                                "E-RD-GH-16: The new version '" + version + "' does not fit the versioning rules. "
+                                "E-RD-REP-23: The new version '" + version + "' does not fit the versioning rules. "
                                         + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
     }
 

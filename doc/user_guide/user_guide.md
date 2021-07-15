@@ -2,17 +2,19 @@
 
 ## Supported Programming Languages
 
-Here you can find a list of supported programming languages. Note that 'a programming language' here means 'the main programming language which determines the project's structure'.
+We provide an advanced support for the following languages:
 
 * Java
 * Scala
+  
+A repository with any other language should be marked as `Generic` (`--language generic` CLI parameter is mandatory in this case).
 
 ## Supported Release Platforms
 
 The following list contains the platforms on which the Release Droid can perform a release:
 
 * [GitHub](https://github.com)
-* [Maven Central Repository](https://mvnrepository.com/repos/central)
+* [Maven Central Repository](https://search.maven.org/) (Java only)
 * [Exasol Community Portal](https://community.exasol.com/)
 * [Exasol Jira](https://www.exasol.com/support)
 
@@ -27,8 +29,6 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 * The project must contain a `/.github/workflows/release_droid_prepare_original_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/prepare_original_checksum_template.md).
 
 * The project must contain a `/.github/workflows/release_droid_print_quick_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/print_quick_checksum_template.md).
-
-* The main programming language of the project must be in the list of [supported programming languages](#supported-programming-languages).
 
 * The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. The version must contain only digits and dots.
 
@@ -177,7 +177,7 @@ Please, be aware that the Community and Jira releases must be made on the same m
 | --branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                |
 | --goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                  |
 | --help           | -h           | No        | Prints help                                             |                                        |
-| --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`                        |
+| --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
 | --local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
 | --name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
 | --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `community`, `jira` |

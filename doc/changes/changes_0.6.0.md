@@ -32,6 +32,7 @@ different machine, the release will be started from a scratch.
 * #161: Made VALIDATE a default goal.
 * #166: Added flag for skipping validations during RELEASE.
 * #164: Added additional validations for Maven platform.
+* #167: Added generic dialect.
 
 ## Refactoring
 
@@ -55,5 +56,5 @@ different machine, the release will be started from a scratch.
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:error-code-crawler-maven-plugin:0.3.0` to `0.4.0`
-* Updated `com.exasol:project-keeper-maven-plugin:0.7.0` to `0.7.3`
+* Updated `com.exasol:error-code-crawler-maven-plugin:0.3.0` to `0.5.0`
+* Updated `com.exasol:project-keeper-maven-plugin:0.7.0` to `0.10.0`

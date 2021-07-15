@@ -1,6 +1,6 @@
-package com.exasol.releasedroid.adapter.scala;
+package com.exasol.releasedroid.adapter.repository;
 
-import static com.exasol.releasedroid.adapter.scala.ScalaRepository.BUILD_SBT;
+import static com.exasol.releasedroid.adapter.repository.ScalaRepository.BUILD_SBT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;

@@ -1,6 +1,7 @@
 # Templates of `release_droid_prepare_original_checksum.yml`
 
-Copy the content into a file `/.github/workflows/release_droid_prepare_original_checksum.yml` in your project.
+If the programming language of your project doesn't have an advanced support (default language), it's your responsibility to prepare a build compatible with your language.
+Please refer to the existing examples and use the similar steps: Checkout -> Setup environment -> Assembly -> Running tests -> Prepare checksum -> Upload checksum to the artifactory
 
 ## For Java Maven Project
 

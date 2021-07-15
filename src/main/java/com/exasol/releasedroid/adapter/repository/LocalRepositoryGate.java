@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter;
+package com.exasol.releasedroid.adapter.repository;
 
 import static org.eclipse.jgit.lib.Constants.R_TAGS;
 
