@@ -74,7 +74,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         if (version != null && version.matches(VERSION_REGEX)) {
             report.addSuccessfulResult("Version format is correct.");
         } else {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-15")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-22")
                     .message("A version or tag found in this repository has invalid format: {{version|uq}}. "
                             + "The valid format is: <major>.<minor>.<fix>.", version)
                     .toString());
@@ -101,7 +101,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         if (possibleVersions.contains(newTag)) {
             report.addSuccessfulResult("A new tag.");
         } else {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-16")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-23")
                     .message(
                             "The new version {{newTag}} does not fit the versioning rules. "
                                     + "Possible versions for the release are: {{possibleVersions|uq}}",
@@ -129,7 +129,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         final var report = ValidationReport.create();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
         if (changelog == null || !changelog.contains(changelogContent)) {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-17")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-24")
                     .message("The file 'changelog.md' doesn't contain the following link.")
                     .mitigation("Please add {{changelogContent}} to the file.", changelogContent) //
                     .toString());
@@ -150,7 +150,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
             report.merge(validateHasBody(releaseLetter));
         } else {
             report.addFailedResult(
-                    ExaError.messageBuilder("E-RD-GH-26").message("The release letter does not exist.").toString());
+                    ExaError.messageBuilder("E-RD-REP-25").message("The release letter does not exist.").toString());
         }
         return report;
     }
@@ -160,7 +160,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         final var report = ValidationReport.create();
         final Optional<String> versionNumber = changes.getVersionNumber();
         if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-18")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-26")
                     .message("The file {{fileName}} does not mention the current version.", changes.getFileName())
                     .mitigation("Please, follow the changes file's format rules.").toString());
         } else {
@@ -197,7 +197,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     private Report validateHasBody(final ReleaseLetter changes) {
         final var report = ValidationReport.create();
         if (changes.getBody().isEmpty()) {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-20")
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-27")
                     .message("Cannot find the {{fileName}} body.", changes.getFileName()) //
                     .mitigation("Please, make sure you added the changes you made to the file.").toString());
         } else {
