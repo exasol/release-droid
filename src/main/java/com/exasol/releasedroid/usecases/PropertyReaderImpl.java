@@ -3,6 +3,7 @@ package com.exasol.releasedroid.usecases;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -24,14 +25,14 @@ public final class PropertyReaderImpl implements PropertyReader {
     }
 
     @Override
-    public String readProperty(final String key) {
+    public String readProperty(final String key, final boolean hide) {
         final Optional<String> property = readFromFile(key);
         if (property.isPresent()) {
             LOGGER.fine(() -> "Using property '" + key + "' from the file '" + this.pathToPropertyFile + "'.");
             return property.get();
         } else {
             LOGGER.fine(() -> "Property '" + key + "' is not found in the file '" + this.pathToPropertyFile + "'.");
-            return getCredentialsFromConsole(key);
+            return getCredentialsFromConsole(key, hide);
         }
     }
 
@@ -50,7 +51,12 @@ public final class PropertyReaderImpl implements PropertyReader {
         }
     }
 
-    private String getCredentialsFromConsole(final String key) {
-        return System.console().readLine("Enter " + key.replace("_", " ") + ": ");
+    private String getCredentialsFromConsole(final String key, final boolean hide) {
+        final String description = "Enter " + key.replace("_", " ") + ": ";
+        if (hide) {
+            return Arrays.toString(System.console().readPassword(description));
+        } else {
+            return System.console().readLine(description);
+        }
     }
 }

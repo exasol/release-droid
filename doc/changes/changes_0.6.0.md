@@ -25,6 +25,10 @@ arguments will be used.
 Be aware that the release state is saved on the machine the RD running on. It means if you re-run the release from a
 different machine, the release will be started from a scratch.
 
+## Bugs
+
+* #174: Hid password on console.
+
 ## Features
 
 * #158: Added Jira support.

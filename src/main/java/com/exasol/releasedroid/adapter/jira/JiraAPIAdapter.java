@@ -56,8 +56,8 @@ public class JiraAPIAdapter implements JiraGateway {
     }
 
     private JiraRestClient createJiraClient() throws JiraException {
-        final String username = this.propertyReader.readProperty(JIRA_USERNAME_KEY);
-        final String password = this.propertyReader.readProperty(JIRA_PASSWORD_KEY);
+        final String username = this.propertyReader.readProperty(JIRA_USERNAME_KEY, false);
+        final String password = this.propertyReader.readProperty(JIRA_PASSWORD_KEY, true);
         final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
         try {
             return factory.createWithBasicHttpAuthentication(new URI(JIRA_URL), username, password);

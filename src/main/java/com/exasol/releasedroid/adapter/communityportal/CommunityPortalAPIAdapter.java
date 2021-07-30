@@ -105,8 +105,8 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
     }
 
     private HttpRequest.BodyPublisher credentialsFormData() {
-        final String username = this.propertyReader.readProperty(COMMUNITY_USERNAME_KEY);
-        final String password = this.propertyReader.readProperty(COMMUNITY_PASSWORD_KEY);
+        final String username = this.propertyReader.readProperty(COMMUNITY_USERNAME_KEY, false);
+        final String password = this.propertyReader.readProperty(COMMUNITY_PASSWORD_KEY, true);
         final String formData = encode("user.login") + "=" + encode(username) //
                 + "&" + encode("user.password") + "=" + encode(password);
         return HttpRequest.BodyPublishers.ofString(formData);

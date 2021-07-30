@@ -25,8 +25,8 @@ public class GitHubConnectorImpl implements GitHubConnector {
     @Override
     public GitHub connectToGitHub() throws IOException {
         if (this.gitHub == null) {
-            final String username = this.propertyReader.readProperty(GitHubConstants.GITHUB_USERNAME_KEY);
-            final String token = this.propertyReader.readProperty(GitHubConstants.GITHUB_TOKEN_KEY);
+            final String username = this.propertyReader.readProperty(GitHubConstants.GITHUB_USERNAME_KEY, false);
+            final String token = this.propertyReader.readProperty(GitHubConstants.GITHUB_TOKEN_KEY, true);
             this.gitHub = GitHub.connect(username, token);
         }
         return this.gitHub;
