@@ -3,7 +3,6 @@ package com.exasol.releasedroid.usecases;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -54,7 +53,7 @@ public final class PropertyReaderImpl implements PropertyReader {
     private String getCredentialsFromConsole(final String key, final boolean hide) {
         final String description = "Enter " + key.replace("_", " ") + ": ";
         if (hide) {
-            return Arrays.toString(System.console().readPassword(description));
+            return String.valueOf(System.console().readPassword(description));
         } else {
             return System.console().readLine(description);
         }
