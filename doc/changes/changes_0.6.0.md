@@ -28,6 +28,7 @@ different machine, the release will be started from a scratch.
 ## Bugs
 
 * #174: Hid password on console.
+* #176: Fixed console input.
 
 ## Features
 
