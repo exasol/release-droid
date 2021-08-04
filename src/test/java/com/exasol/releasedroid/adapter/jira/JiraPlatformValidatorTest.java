@@ -15,21 +15,21 @@ class JiraPlatformValidatorTest {
     @Test
     void validationSucceeded() {
         final JiraPlatformValidator validator = new JiraPlatformValidator(null);
-        final Report report = validator.validateCommunityRelease(Map.of(PlatformName.COMMUNITY, "link"));
+        final Report report = validator.validateGitHubRelease(Map.of(PlatformName.GITHUB, "link"));
         assertFalse(report.hasFailures());
     }
 
     @Test
     void validationFailed() {
         final JiraPlatformValidator validator = new JiraPlatformValidator(null);
-        final Report report = validator.validateCommunityRelease(Map.of());
+        final Report report = validator.validateGitHubRelease(Map.of());
         assertThat(report.toString(), containsString("E-RD-JIRA-1"));
     }
 
     @Test
     void validationFailedNoLink() {
         final JiraPlatformValidator validator = new JiraPlatformValidator(null);
-        final Report report = validator.validateCommunityRelease(Map.of(PlatformName.COMMUNITY, ""));
+        final Report report = validator.validateGitHubRelease(Map.of(PlatformName.GITHUB, ""));
         assertThat(report.toString(), containsString("E-RD-JIRA-2"));
     }
 }

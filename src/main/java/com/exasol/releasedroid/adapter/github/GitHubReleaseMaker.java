@@ -35,7 +35,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
                 .header(header).releaseLetter(body).build();
         try {
             this.githubGateway.createGithubRelease(release);
-            return "";
+            return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

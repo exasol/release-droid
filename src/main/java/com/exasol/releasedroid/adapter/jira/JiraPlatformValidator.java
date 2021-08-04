@@ -33,40 +33,40 @@ public class JiraPlatformValidator implements ReleasePlatformValidator {
         final var report = ValidationReport.create();
         final Map<PlatformName, String> progress = this.releaseState.getProgress(this.repository.getName(),
                 this.repository.getVersion());
-        report.merge(validateCommunityRelease(progress));
+        report.merge(validateGitHubRelease(progress));
         return report;
     }
 
-    protected Report validateCommunityRelease(final Map<PlatformName, String> progress) {
+    protected Report validateGitHubRelease(final Map<PlatformName, String> progress) {
         final var report = ValidationReport.create();
-        final Report communityReleaseReport = validateCommunityReleaseExists(progress);
-        report.merge(communityReleaseReport);
-        if (!communityReleaseReport.hasFailures()) {
-            report.merge(validateCommunityReleaseHasOutput(progress));
+        final Report githubReleaseReport = validateGitHubReleaseExists(progress);
+        report.merge(githubReleaseReport);
+        if (!githubReleaseReport.hasFailures()) {
+            report.merge(validateGitHubReleaseHasOutput(progress));
         }
         return report;
 
     }
 
-    private Report validateCommunityReleaseExists(final Map<PlatformName, String> progress) {
+    private Report validateGitHubReleaseExists(final Map<PlatformName, String> progress) {
         final var report = ValidationReport.create();
-        if (progress.containsKey(PlatformName.COMMUNITY)) {
-            report.addSuccessfulResult("Community release was made.");
+        if (progress.containsKey(PlatformName.GITHUB)) {
+            report.addSuccessfulResult("GitHub release was made.");
         } else {
             report.addFailedResult(
-                    ExaError.messageBuilder("E-RD-JIRA-1").message("Community release is missing.").toString());
+                    ExaError.messageBuilder("E-RD-JIRA-1").message("GitHub release is missing.").toString());
         }
         return report;
     }
 
-    private Report validateCommunityReleaseHasOutput(final Map<PlatformName, String> progress) {
+    private Report validateGitHubReleaseHasOutput(final Map<PlatformName, String> progress) {
         final var report = ValidationReport.create();
-        final String output = progress.get(PlatformName.COMMUNITY);
+        final String output = progress.get(PlatformName.GITHUB);
         if (output == null || output.isEmpty()) {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-JIRA-2")
-                    .message("Community release output is not found.").toString());
+            report.addFailedResult(
+                    ExaError.messageBuilder("E-RD-JIRA-2").message("GitHub release output is not found.").toString());
         } else {
-            report.addSuccessfulResult("Community release output is found.");
+            report.addSuccessfulResult("GitHub release output is found.");
         }
         return report;
     }

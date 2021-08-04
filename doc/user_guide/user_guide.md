@@ -15,7 +15,6 @@ The following list contains the platforms on which the Release Droid can perform
 
 * [GitHub](https://github.com)
 * [Maven Central Repository](https://search.maven.org/) (Java only)
-* [Exasol Community Portal](https://community.exasol.com/)
 * [Exasol Jira](https://www.exasol.com/support)
 
 ## Pre-requirements and Release Rules
@@ -101,42 +100,10 @@ Rules:
 
 * The Maven file must contain all necessary plugins and settings. Please check a [template](templates/maven_central_release_pom_file_template.md).
 
-### Rules for Release on Exasol Community Portal
-
-* The project must contain a `release_config.yml` file in the root directory. This file has a few required objects:
-
-1. Array of strings `community-tags`: one or more tag of the project to be added to the community post;
-1. String `community-project-name`: this is how the project name will be displayed in the post header;
-1. String `community-project-description`: a short description of the project. Please, use markdown in the description;
-
-An example of the file:
-
-```yaml
-community-tags:
-  - Release Droid Testing
-  - Java Tools
-  - Open Source
-  - GitHub
-community-project-name: Testing Release Droid
-community-project-description: |
-  This is an `open-source tool` that helps integration us testing
-  the [Release Droid](https://github.com/exasol/release-droid).
-```
-
-* A `changes_<version>.md` file must contain a `## Summary` section. Please describe the changes nicely as we copy the section directly into the releaese announcement. 
-
-* (Optional) In the`~/.release-droid/credentials` file you can add your Exasol Community Portal credentials:
-
-    ```properties
-    community_username=<username>
-    community_password=<password>
-    ```
-If you miss this step Release Droid will ask you to input the credentials directly through terminal.
-
 ### Rules for Release on Exasol Jira
 
-* The release on the Community portal is a pre-requisite for the Jira release. 
-Please, be aware that the Community and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
+* The release on the GitHub is a pre-requisite for the Jira release. 
+Please, be aware that the GitHub and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
 
 ## How to Use Release Droid
 
@@ -180,7 +147,7 @@ Please, be aware that the Community and Jira releases must be made on the same m
 | --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
 | --local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
 | --name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
-| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `community`, `jira` |
+| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `jira` |
 | --skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
 
 Notice:
@@ -194,7 +161,6 @@ Example:
 release-platforms:
   - GitHub
   - Maven
-  - Community
   - Jira  
 ```
 
