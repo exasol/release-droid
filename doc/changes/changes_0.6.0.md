@@ -13,7 +13,6 @@ Example:
 release-platforms:
   - GitHub
   - Maven
-  - Community
   - Jira  
 ```
 
@@ -42,6 +41,7 @@ different machine, the release will be started from a scratch.
 ## Refactoring
 
 * #162: Refactored reports.
+* #178: Deprecated and switched off community release.
 
 ## Dependency Updates
 

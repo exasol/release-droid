@@ -42,19 +42,18 @@ public class JiraReleaseMaker implements ReleaseMaker {
     }
 
     private String createTicketRequest(final Repository repository) throws JiraException {
-        final String linkToReleaseAnnouncement = getLinkToReleaseAnnouncement(repository);
+        final String linkToGitHubRelease = getLinkToGitHubRelease(repository);
         final var projectName = "MARCOMMS";
         final var issueTypeName = "New Content";
         final var summary = repository.getName() + " " + repository.getVersion() + " released";
-        final var description = "The integration team has prepared a release announcement: " //
-                + linkToReleaseAnnouncement + LINE_SEPARATOR //
-                + "Please, review and publish the announcement.";
+        final var description = "Link to the GitHub release: " //
+                + linkToGitHubRelease + LINE_SEPARATOR;
         return this.jiraGateway.createTicket(projectName, issueTypeName, summary, description);
     }
 
-    private String getLinkToReleaseAnnouncement(final Repository repository) {
+    private String getLinkToGitHubRelease(final Repository repository) {
         final Map<PlatformName, String> progress = this.releaseState.getProgress(repository.getName(),
                 repository.getVersion());
-        return progress.get(PlatformName.COMMUNITY);
+        return progress.get(PlatformName.GITHUB);
     }
 }

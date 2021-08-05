@@ -54,7 +54,7 @@ public class ReleaseDroid {
         validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);
         final List<PlatformName> platformNames = getPlatformNames(userInput, repository);
-        validatePlatformNames(platformNames);
+        validatePlatforms(platformNames);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
@@ -104,9 +104,22 @@ public class ReleaseDroid {
         }
     }
 
+    private void validatePlatforms(final List<PlatformName> platformNames) {
+        validatePlatformNames(platformNames);
+        checkOutdatedPlatform(platformNames);
+    }
+
     private void validatePlatformNames(final List<PlatformName> platformNames) {
         if (platformNames == null || platformNames.isEmpty()) {
             throwExceptionForMissingParameter("platforms");
+        }
+    }
+
+    private void checkOutdatedPlatform(final List<PlatformName> platformNames) {
+        if (platformNames.contains(PlatformName.COMMUNITY)) {
+            LOGGER.info(
+                    "Release for COMMUNITY platform is deprecated and will be removed in future. Skipping the release for the COMMUNITY platform.");
+            platformNames.remove(PlatformName.COMMUNITY);
         }
     }
 
