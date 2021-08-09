@@ -34,7 +34,6 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     }
 
     @Override
-    // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate() {
         final var report = ValidationReport.create();
         report.merge(validateRepositories(this.repository.getRepositoryValidators()));

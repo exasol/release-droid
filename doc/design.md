@@ -312,17 +312,6 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate `release_droid_upload_github_release_assets.yml` Workflow Exists
-`dsn~validate-github-workflow-exists~1`
-
-RD validates that a workflow that helps us to release on GitHub exists.
-
-Covers:
-
-* `req~attaching-deliverables-to-a-github-release~1`
-
-Needs: impl, utest
-
 ### Maven Platform Validation
 
 Validations listed here are necessary for a release on the Maven CEntral.
