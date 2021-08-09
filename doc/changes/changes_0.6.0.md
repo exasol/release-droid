@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.6.0, released 2021-??-??
+# Exasol Release Droid 0.6.0, released 2021-08-06
 
 Code name: Save release state, Jira support
 

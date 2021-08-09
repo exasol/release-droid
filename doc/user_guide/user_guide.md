@@ -82,11 +82,11 @@ Also, you need to enable the plugin in the [`build.sbt` file](templates/sbt_file
 
 * If the GitHub repository's releases page is not empty, the new release version must follow the versioning rules. It is not allowed to skip a version, to release the same version twice or to release a version that comes before the latest release.
 
-* The project must contain a `/.github/workflows/release_droid_upload_github_release_assets.yml` file in the root directory to upload release assets. Please check [templates](templates/upload_github_release_assets_template.md).
-
 * A `changes_<version>.md` file must contain a line starting with `Code name:` followed by a GitHub release header. This line should appear between the file's header and the first section describing the changes.
 
 * A `changes_<version>.md` file must contain one or more GitHub ticket numbers in the following format: '#1:<comment>'. All the mentioned on the file tickets must have a closed status on the GitHub.
+
+* (Optional) For uploading assets to the release, the project must contain a `/.github/workflows/release_droid_upload_github_release_assets.yml` file. Please check [templates](templates/upload_github_release_assets_template.md).
 
 ### Rules for Release on Maven Central (Java repositories)
 
@@ -147,7 +147,7 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
 | --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
 | --local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
 | --name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
-| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `jira` |
+| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `jira`              |
 | --skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
 
 Notice:
