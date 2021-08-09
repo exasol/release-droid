@@ -78,7 +78,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     .body(gitHubRelease.getReleaseLetter()) //
                     .name(gitHubRelease.getHeader()) //
                     .create();
-            if (gitHubRelease.uploadAssets()) {
+            if (gitHubRelease.hasUploadAssets()) {
                 final String uploadUrl = ghRelease.getUploadUrl();
                 executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
             }

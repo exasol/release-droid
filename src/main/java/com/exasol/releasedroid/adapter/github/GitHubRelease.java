@@ -70,7 +70,7 @@ public class GitHubRelease {
      *
      * @return true if upload assets required
      */
-    public boolean uploadAssets() {
+    public boolean hasUploadAssets() {
         return this.uploadAssets;
     }
 
