@@ -2,7 +2,7 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateRepositories;
-import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_RELEASE_WORKFLOW_PATH;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -34,7 +34,6 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     }
 
     @Override
-    // [impl->dsn~validate-github-workflow-exists~1]
     public Report validate() {
         final var report = ValidationReport.create();
         report.merge(validateRepositories(this.repository.getRepositoryValidators()));
@@ -42,9 +41,19 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
         final String version = this.repository.getVersion();
         final var releaseLetter = this.repository.getReleaseLetter(version);
         report.merge(validateChangesFile(releaseLetter));
-        report.merge(
-                validateFileExists(this.repository, GITHUB_RELEASE_WORKFLOW_PATH, "Workflow for a GitHub release."));
+        validateIfUploadAssetsWorkflowExists();
         return report;
+    }
+
+    private void validateIfUploadAssetsWorkflowExists() {
+        final var report = validateFileExists(this.repository, GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH,
+                "Workflow for a GitHub release.");
+        if (report.hasFailures()) {
+            LOGGER.warning(
+                    "Attention! This repository doesn't have a workflow for uploading assets to the GitHub release: "
+                            + GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH
+                            + ". It means the release will not have any uploaded assets!");
+        }
     }
 
     // [impl->dsn~validate-release-letter~1]

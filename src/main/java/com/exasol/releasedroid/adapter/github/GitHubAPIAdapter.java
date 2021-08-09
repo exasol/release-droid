@@ -78,8 +78,10 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     .body(gitHubRelease.getReleaseLetter()) //
                     .name(gitHubRelease.getHeader()) //
                     .create();
-            final String uploadUrl = ghRelease.getUploadUrl();
-            executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
+            if (gitHubRelease.hasUploadAssets()) {
+                final String uploadUrl = ghRelease.getUploadUrl();
+                executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
+            }
         } catch (final IOException exception) {
             throw new GitHubException(
                     ExaError.messageBuilder("F-RD-GH-11")
@@ -92,7 +94,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl)
             throws GitHubException {
-        executeWorkflow(repositoryName, GITHUB_RELEASE_WORKFLOW, Map.of("upload_url", uploadUrl));
+        executeWorkflow(repositoryName, GITHUB_UPLOAD_ASSETS_WORKFLOW, Map.of("upload_url", uploadUrl));
     }
 
     @Override

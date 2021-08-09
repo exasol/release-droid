@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.github;
 
-import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_RELEASE_WORKFLOW_PATH;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,7 +45,8 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidationSuccessful() throws GitHubException {
         when(this.repositoryMock.getRepositoryValidators()).thenReturn(List.of());
-        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_RELEASE_WORKFLOW_PATH)).thenReturn("");
+        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH))
+                .thenThrow(RepositoryException.class);
         when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
         when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2));
@@ -100,19 +101,7 @@ class GitHubPlatformValidatorTest {
     void testValidateGitHubTicketsCannotRetrieveTickets() throws GitHubException {
         when(this.githubGatewayMock.getClosedTickets(any())).thenThrow(GitHubException.class);
         final Report report = this.validator.validate();
-        System.out.println(report.toString());
-
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-GH-22")));
-    }
-
-    @Test
-    // [utest->dsn~validate-github-workflow-exists~1]
-    void testValidateWorkflowFileFails() {
-        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_RELEASE_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
-        final Report report = this.validator.validate();
-        assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-REP-19")));
     }
 }

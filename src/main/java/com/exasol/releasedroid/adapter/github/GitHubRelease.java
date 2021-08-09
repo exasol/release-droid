@@ -10,12 +10,14 @@ public class GitHubRelease {
     private final String version;
     private final String header;
     private final String releaseLetter;
+    private final boolean uploadAssets;
 
     private GitHubRelease(final Builder builder) {
         this.repositoryName = builder.repositoryName;
         this.version = builder.version;
         this.header = builder.header;
         this.releaseLetter = builder.releaseLetter;
+        this.uploadAssets = builder.uploadAssets;
     }
 
     /**
@@ -64,6 +66,15 @@ public class GitHubRelease {
     }
 
     /**
+     * Check if upload assets required.
+     *
+     * @return true if upload assets required
+     */
+    public boolean hasUploadAssets() {
+        return this.uploadAssets;
+    }
+
+    /**
      * A builder for {@link GitHubRelease}.
      */
     public static class Builder {
@@ -71,6 +82,7 @@ public class GitHubRelease {
         private String version;
         private String header;
         private String releaseLetter = "";
+        private boolean uploadAssets = false;
 
         /**
          * Set a repository name.
@@ -113,6 +125,17 @@ public class GitHubRelease {
          */
         public Builder releaseLetter(final String releaseLetter) {
             this.releaseLetter = releaseLetter;
+            return this;
+        }
+
+        /**
+         * Set upload assets flag.
+         *
+         * @param uploadAssets upload assets flag
+         * @return builder instance for fluent programming
+         */
+        public Builder uploadAssets(final boolean uploadAssets) {
+            this.uploadAssets = uploadAssets;
             return this;
         }
 

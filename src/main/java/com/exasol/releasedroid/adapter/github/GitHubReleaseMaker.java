@@ -1,8 +1,11 @@
 package com.exasol.releasedroid.adapter.github;
 
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
+
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
+import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -31,13 +34,23 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         final String body = releaseLetter.getBody().orElse("");
         final String header = releaseLetter.getHeader().orElse(version);
+        final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
         final GitHubRelease release = GitHubRelease.builder().repositoryName(repository.getName()).version(version)
-                .header(header).releaseLetter(body).build();
+                .header(header).releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
         try {
             this.githubGateway.createGithubRelease(release);
             return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
+        }
+    }
+
+    private boolean checkIfUploadAssetsWorkflowExists(final Repository repository) {
+        try {
+            repository.getSingleFileContentAsString(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH);
+            return true;
+        } catch (final RepositoryException exception) {
+            return false;
         }
     }
 }
