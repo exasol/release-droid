@@ -9,3 +9,5 @@ Uploading assets for a GitHub release now an optional step an only work if your 
 ## Features
 
 * #173: Change GitHub uploading assets to an optional step.
+
+## Dependency Updates
