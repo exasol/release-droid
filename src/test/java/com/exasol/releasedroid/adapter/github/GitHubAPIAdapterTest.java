@@ -57,14 +57,14 @@ class GitHubAPIAdapterTest {
     }
 
     @Test
-    void testDownloadChecksumFromArtifactory() throws IOException, GitHubException {
+    void testDownloadArtifactAsString() throws IOException, GitHubException {
         final long artifactId = 123;
         final GHArtifact artifactMock = Mockito.mock(GHArtifact.class);
         final GHRepository repositoryMock = Mockito.mock(GHRepository.class);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(repositoryMock);
         when(repositoryMock.getArtifact(artifactId)).thenReturn(artifactMock);
         when(artifactMock.download(any())).thenReturn("hashsum file.jar");
-        assertThat(this.apiAdapter.downloadChecksumFromArtifactory(REPOSITORY_NAME, artifactId),
-                equalTo(Map.of("file.jar", "hashsum")));
+        assertThat(this.apiAdapter.downloadArtifactAsString(REPOSITORY_NAME, artifactId), equalTo("hashsum file.jar" +
+                ""));
     }
 }

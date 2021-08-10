@@ -46,9 +46,19 @@ public class GitHubRepositoryGate implements RepositoryGate {
         }
     }
 
+    @Override
+    public boolean hasFile(final String filePath) {
+        try {
+            this.githubGateway.getFileContent(getName(), this.branchName, filePath);
+            return true;
+        } catch (final GitHubException exception) {
+            return false;
+        }
+    }
+
     private String getContent(final InputStream stream) throws IOException {
-        final StringBuilder result = new StringBuilder();
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+        final var result = new StringBuilder();
+        try (final var reader = new BufferedReader(new InputStreamReader(stream))) {
             String line = reader.readLine();
             while (line != null) {
                 result.append(line);

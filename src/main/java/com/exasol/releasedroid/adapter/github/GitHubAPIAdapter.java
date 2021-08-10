@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.adapter.github;
 
-import static com.exasol.releasedroid.adapter.github.GitHubConstants.*;
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.util.zip.ZipInputStream;
 import org.kohsuke.github.*;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.formatting.ChecksumFormatter;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 
 /**
@@ -140,6 +139,20 @@ public class GitHubAPIAdapter implements GitHubGateway {
     @Override
     public void executeWorkflow(final String repositoryName, final String workflowName) throws GitHubException {
         executeWorkflow(repositoryName, workflowName, Collections.emptyMap());
+    }
+
+    @Override
+    public String executeWorkflowWithLogs(final String repositoryName, final String workflowName)
+            throws GitHubException {
+        executeWorkflow(repositoryName, workflowName);
+        final GHRepository repository = getRepository(repositoryName);
+        try {
+            final long workflowId = repository.getWorkflow(workflowName).getId();
+            final long workflowRunId = findLastWorkflowRunId(repository, workflowId);
+            return repository.getWorkflowRun(workflowRunId).downloadLogs(this::getStringFromInputStream);
+        } catch (final IOException exception) {
+            throw new GitHubException(exception);
+        }
     }
 
     private void logMessage(final String workflowName) {
@@ -299,17 +312,10 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     @Override
-    public void createChecksumArtifact(final String repositoryName) throws GitHubException {
-        executeWorkflow(repositoryName, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW);
-    }
-
-    @Override
-    public Map<String, String> downloadChecksumFromArtifactory(final String repositoryName, final long artifactId)
-            throws GitHubException {
+    public String downloadArtifactAsString(final String repositoryName, final long artifactId) throws GitHubException {
         try {
             final GHArtifact artifact = getRepository(repositoryName).getArtifact(artifactId);
-            final var checksumAsString = artifact.download(this::getStringFromInputStream);
-            return ChecksumFormatter.createChecksumMap(checksumAsString);
+            return artifact.download(this::getStringFromInputStream);
         } catch (final IOException exception) {
             throw new GitHubException(exception);
         }
@@ -323,28 +329,6 @@ public class GitHubAPIAdapter implements GitHubGateway {
             }
             return byteArrayOutputStream.toString();
         }
-    }
-
-    @Override
-    public Map<String, String> createQuickCheckSum(final String repositoryName) throws GitHubException {
-        executeWorkflow(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW);
-        final GHRepository repository = getRepository(repositoryName);
-        try {
-            final long workflowId = repository.getWorkflow(PRINT_QUICK_CHECKSUM_WORKFLOW).getId();
-            final long workflowRunId = findLastWorkflowRunId(repository, workflowId);
-            final String logs = repository.getWorkflowRun(workflowRunId).downloadLogs(this::getStringFromInputStream);
-            return formatChecksumLogs(logs);
-        } catch (final IOException exception) {
-            throw new GitHubException(exception);
-        }
-    }
-
-    private Map<String, String> formatChecksumLogs(final String logs) {
-        final String[] splittedLogs = logs
-                .substring(logs.lastIndexOf("checksum_start=="), logs.lastIndexOf("==checksum_end")).replace("\n", " ")
-                .split(" ");
-        return ChecksumFormatter
-                .createChecksumMap(String.join(" ", Arrays.asList(splittedLogs).subList(2, splittedLogs.length - 1)));
     }
 
     @Override

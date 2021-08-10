@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.adapter.repository.JavaRepository;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 
 @ExtendWith({ MockitoExtension.class })
@@ -30,7 +29,7 @@ class MavenPlatformValidatorTest {
     @Test
     // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateSuccessful() {
-        when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH)).thenReturn("I exist");
+        when(this.repositoryMock.hasFile(MAVEN_WORKFLOW_PATH)).thenReturn(true);
         when(this.repositoryMock.getMavenPom())
                 .thenReturn(MavenPom.builder().projectDescription("Description").projectURL("URL").build());
         final Report report = this.platformValidator.validate();
@@ -40,8 +39,7 @@ class MavenPlatformValidatorTest {
     @Test
     // [utest->dsn~validate-maven-release-workflow-exists~1]
     void testValidateFailed() {
-        when(this.repositoryMock.getSingleFileContentAsString(MAVEN_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
+        when(this.repositoryMock.hasFile(MAVEN_WORKFLOW_PATH)).thenReturn(false);
         when(this.repositoryMock.getMavenPom()).thenReturn(MavenPom.builder().build());
         final Report report = this.platformValidator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //

@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -48,10 +47,8 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
-        when(this.repositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
-                .thenReturn("I exist");
-        when(this.repositoryMock.getSingleFileContentAsString(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH))
-                .thenReturn("I exist");
+        when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
+        when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
         when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
         when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
@@ -167,21 +164,32 @@ class CommonRepositoryValidatorTest {
 
     @Test
     void testValidateWorkflowFileCreateOriginalChecksumMissing() {
-        when(this.repositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
+        when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
+        when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);
         final Report report = this.validator.validate();
-        assertThat(report.toString(),
-                containsString("E-RD-REP-19: The file '" + PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH + "'"));
+        assertThat(report.toString(), containsString("E-RD-REP-28"));
     }
 
     @Test
     void testValidateWorkflowFilePrintQuickChecksumMissing() {
-        when(this.repositoryMock.getSingleFileContentAsString(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
-        when(this.repositoryMock.getSingleFileContentAsString(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
+        when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);
+        when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
         final Report report = this.validator.validate();
         assertThat(report.toString(),
-                containsString("E-RD-REP-19: The file '" + PRINT_QUICK_CHECKSUM_WORKFLOW_PATH + "'"));
+                containsString("E-RD-REP-28"));
+    }
+
+    @Test
+    void testValidateSuccessfulWithoutWorkflows() {
+        when(this.repositoryMock.getVersion()).thenReturn(VERSION);
+        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
+        when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
+        when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);
+        when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);
+        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
+        when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
+        assertThat(this.validator.validate().hasFailures(), equalTo(false));
     }
 }
