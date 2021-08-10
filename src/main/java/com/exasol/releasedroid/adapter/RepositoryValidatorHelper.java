@@ -3,7 +3,6 @@ package com.exasol.releasedroid.adapter;
 import java.util.List;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -27,10 +26,9 @@ public class RepositoryValidatorHelper {
     public static Report validateFileExists(final Repository repository, final String filePath,
             final String fileDescription) {
         final var report = ValidationReport.create();
-        try {
-            repository.getSingleFileContentAsString(filePath);
+        if (repository.hasFile(filePath)) {
             report.addSuccessfulResult(fileDescription);
-        } catch (final RepositoryException exception) {
+        } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-19")
                     .message("The file {{filePath}} does not exist in the project.") //
                     .parameter("filePath", filePath) //

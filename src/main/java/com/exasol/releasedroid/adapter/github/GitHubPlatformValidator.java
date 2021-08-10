@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.adapter.github;
 
-import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateRepositories;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
@@ -46,9 +45,7 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     }
 
     private void validateIfUploadAssetsWorkflowExists() {
-        final var report = validateFileExists(this.repository, GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH,
-                "Workflow for a GitHub release.");
-        if (report.hasFailures()) {
+        if (!this.repository.hasFile(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH)) {
             LOGGER.warning(
                     "Attention! This repository doesn't have a workflow for uploading assets to the GitHub release: "
                             + GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH

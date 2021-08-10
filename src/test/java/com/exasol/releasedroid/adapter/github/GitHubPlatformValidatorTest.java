@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -45,8 +44,7 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidationSuccessful() throws GitHubException {
         when(this.repositoryMock.getRepositoryValidators()).thenReturn(List.of());
-        when(this.repositoryMock.getSingleFileContentAsString(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH))
-                .thenThrow(RepositoryException.class);
+        when(this.repositoryMock.hasFile(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH)).thenReturn(false);
         when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
         when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2));

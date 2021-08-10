@@ -30,6 +30,16 @@ public interface GitHubGateway {
     public void executeWorkflow(String repositoryName, String workflowName) throws GitHubException;
 
     /**
+     * Executes a GitHub workflow by a workflow name on the default branch and return logs.
+     *
+     * @param repositoryName fully qualified name of the repository
+     * @param workflowName   name of a workflow
+     * @return logs as a string
+     * @throws GitHubException when some problems occur
+     */
+    public String executeWorkflowWithLogs(String repositoryName, String workflowName) throws GitHubException;
+
+    /**
      * Make a GitHub release on the head of default branch.
      * 
      * @param gitHubRelease instance of {@link GitHubRelease} with release information
@@ -107,32 +117,14 @@ public interface GitHubGateway {
     public List<Long> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
 
     /**
-     * Prepare a checksum on the repository.
-     *
-     * @param repositoryName fully qualified name of the repository
-     * @throws GitHubException when some problems occur
-     */
-    public void createChecksumArtifact(String repositoryName) throws GitHubException;
-
-    /**
-     * Get a map with pre-saved jar names and their checksums.
+     * Download a GitHub artifact as a String.
      * 
      * @param repositoryName fully qualified name of the repository
-     * @param artifactId     id of the artifact to download the checksum from
-     * @return map with jar names and their checksums
+     * @param artifactId     id of the artifact to download the artifact from
+     * @return artifact as a string
      * @throws GitHubException when some problems occur
      */
-    public Map<String, String> downloadChecksumFromArtifactory(String repositoryName, long artifactId)
-            throws GitHubException;
-
-    /**
-     * Get a map with fresh jar names and their checksums.
-     *
-     * @param repositoryName fully qualified name of the repository
-     * @return map with jar names and their checksums
-     * @throws GitHubException when some problems occur
-     */
-    public Map<String, String> createQuickCheckSum(String repositoryName) throws GitHubException;
+    public String downloadArtifactAsString(String repositoryName, long artifactId) throws GitHubException;
 
     /**
      * Delete all artifacts from the repository.

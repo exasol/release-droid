@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.adapter.repository;
 
-import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateFileExists;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
@@ -46,17 +45,35 @@ public class CommonRepositoryValidator implements RepositoryValidator {
             final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
             report.merge(validateChanges(releaseLetter, version, this.repository.isOnDefaultBranch()));
         }
-        report.merge(validateWorkflows());
+        report.merge(validateChecksumWorkflows());
         return report;
     }
 
-    private Report validateWorkflows() {
+    private Report validateChecksumWorkflows() {
         final var report = ValidationReport.create();
-        report.merge(validateFileExists(this.repository, PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH,
-                "Workflow for running test and creating checksum."));
-        report.merge(validateFileExists(this.repository, PRINT_QUICK_CHECKSUM_WORKFLOW_PATH,
-                "Workflow for printing a checksum."));
+        if (repositoryHasBothWorkflows()) {
+            report.addSuccessfulResult("Workflows for checksum generation exist.");
+        } else if (repositoryMissesBothWorkflows()) {
+            LOGGER.warning("Attention! This repository misses workflows for checksum generation. "
+                    + "Please make sure that it's intended.");
+            report.addSuccessfulResult("Workflows for checksum generation are missing.");
+        } else {
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-28")
+                    .message("Please whether add both `" + PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH + "` and `"
+                            + PRINT_QUICK_CHECKSUM_WORKFLOW_PATH + "` or remove them both.")
+                    .toString());
+        }
         return report;
+    }
+
+    private boolean repositoryMissesBothWorkflows() {
+        return !this.repository.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)
+                && !this.repository.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH);
+    }
+
+    private boolean repositoryHasBothWorkflows() {
+        return this.repository.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)
+                && this.repository.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH);
     }
 
     private Report validateVersion(final String version) {

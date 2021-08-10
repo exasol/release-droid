@@ -9,5 +9,6 @@ Uploading assets for a GitHub release now an optional step and only works if you
 ## Features
 
 * #173: Change GitHub uploading assets to an optional step.
+* #182: Allowed release without checksum generation workflows.
 
 ## Dependency Updates

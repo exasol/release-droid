@@ -1,11 +1,15 @@
 package com.exasol.releasedroid.adapter;
 
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.*;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.adapter.github.GitHubException;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
+import com.exasol.releasedroid.formatting.ChecksumFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseManager;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.repository.RepositoryModifier;
@@ -22,6 +26,19 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     @Override
     public void prepareForRelease(final Repository repository) {
+        if (hasChecksumBuilds(repository)) {
+            runChecksumBuildWorkflows(repository);
+        } else {
+            this.repositoryModifier.writeReleaseDate(repository);
+        }
+    }
+
+    private boolean hasChecksumBuilds(final Repository repository) {
+        return repository.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)
+                && repository.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW);
+    }
+
+    private void runChecksumBuildWorkflows(final Repository repository) {
         try {
             final List<Long> artifactIds = getArtifactIds(repository.getName());
             if (artifactIds.isEmpty()) {
@@ -51,7 +68,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
         }
     }
 
-    private void updateOutdatedArtifactory(final Repository repository) throws GitHubException {
+    private void updateOutdatedArtifactory(final Repository repository) {
         LOGGER.info("There are more than one artifact on the '" + repository.getName() + "' repository.");
         updateRepository(repository);
     }
@@ -63,13 +80,31 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     // [impl->dsn~compare-checksum~1]
     private boolean validateChecksum(final long artifactId, final String repositoryName) throws GitHubException {
-        final Map<String, String> originalChecksum = this.githubGateway.downloadChecksumFromArtifactory(repositoryName,
-                artifactId);
-        final Map<String, String> quickChecksum = this.githubGateway.createQuickCheckSum(repositoryName);
+        final Map<String, String> originalChecksum = getOriginalChecksum(artifactId, repositoryName);
+        final Map<String, String> quickChecksum = getQuickChecksum(repositoryName);
         if (originalChecksum.size() != quickChecksum.size()) {
             return false;
         }
         return validateChecksumForEachJar(originalChecksum, quickChecksum);
+    }
+
+    private Map<String, String> getOriginalChecksum(final long artifactId, final String repositoryName)
+            throws GitHubException {
+        final String artifact = this.githubGateway.downloadArtifactAsString(repositoryName, artifactId);
+        return ChecksumFormatter.createChecksumMap(artifact);
+    }
+
+    private Map<String, String> getQuickChecksum(final String repositoryName) throws GitHubException {
+        final String logs = this.githubGateway.executeWorkflowWithLogs(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW);
+        return formatChecksumLogs(logs);
+    }
+
+    private Map<String, String> formatChecksumLogs(final String logs) {
+        final String[] splittedLogs = logs
+                .substring(logs.lastIndexOf("checksum_start=="), logs.lastIndexOf("==checksum_end")).replace("\n", " ")
+                .split(" ");
+        return ChecksumFormatter
+                .createChecksumMap(String.join(" ", Arrays.asList(splittedLogs).subList(2, splittedLogs.length - 1)));
     }
 
     private boolean validateChecksumForEachJar(final Map<String, String> originalChecksum,
@@ -112,6 +147,6 @@ public class ReleaseManagerImpl implements ReleaseManager {
     // [impl->dsn~prepare-checksum~1]
     private void prepareChecksumArtifact(final Repository repository) throws GitHubException {
         LOGGER.info("Preparing a new artifact with a checksum.");
-        this.githubGateway.createChecksumArtifact(repository.getName());
+        this.githubGateway.executeWorkflow(repository.getName(), PREPARE_ORIGINAL_CHECKSUM_WORKFLOW);
     }
 }

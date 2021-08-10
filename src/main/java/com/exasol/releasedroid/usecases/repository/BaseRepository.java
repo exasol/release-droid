@@ -67,6 +67,11 @@ public abstract class BaseRepository implements Repository {
     }
 
     @Override
+    public boolean hasFile(final String filePath) {
+        return this.repositoryGate.hasFile(filePath);
+    }
+
+    @Override
     public void updateFileContent(final String filePath, final String newContent, final String commitMessage) {
         this.repositoryGate.updateFileContent(filePath, newContent, commitMessage);
     }

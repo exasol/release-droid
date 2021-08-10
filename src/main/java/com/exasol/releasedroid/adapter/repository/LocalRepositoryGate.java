@@ -50,6 +50,11 @@ public class LocalRepositoryGate implements RepositoryGate {
     }
 
     @Override
+    public boolean hasFile(final String filePath) {
+        return Files.exists(Paths.get(this.localPath, filePath));
+    }
+
+    @Override
     public void updateFileContent(final String filePath, final String newContent, final String commitMessage) {
         throw new UnsupportedOperationException(ExaError.messageBuilder("E-RD-REP-8")
                 .message("File updates are not currently supported on a local repository.").toString());

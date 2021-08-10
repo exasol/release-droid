@@ -15,6 +15,14 @@ public interface RepositoryGate {
     public String getSingleFileContentAsString(final String filePath);
 
     /**
+     * Check if a file exists.
+     *
+     * @param filePath file path
+     * @return true if a file exists
+     */
+    public boolean hasFile(final String filePath);
+
+    /**
      * Update a single file with a single commit.
      *
      * @param filePath      path to the file
