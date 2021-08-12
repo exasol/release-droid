@@ -318,6 +318,9 @@
                             https://www.atlassian.com/central-pom/fugue-parent/fugue/|https://bitbucket.org/atlassian/fugue/src/master/
                         </linkReplacement>
                     </linkReplacements>
+                    <excludedFiles>
+                        <excludedFile>.github/workflows/release_droid_upload_github_release_assets.yml</excludedFile>
+                    </excludedFiles>
                 </configuration>
             </plugin>
             <plugin>
