@@ -8,6 +8,7 @@ Uploading assets for a GitHub release now an optional step and only works if you
 
 ## Features
 
+* #30: Adjusted `release_droid_upload_github_release_assets.yml` template to release with sha256sum.
 * #173: Change GitHub uploading assets to an optional step.
 * #182: Allowed release without checksum generation workflows.
 
