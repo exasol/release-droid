@@ -35,7 +35,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     private boolean hasChecksumBuilds(final Repository repository) {
         return repository.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)
-                && repository.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW);
+                && repository.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH);
     }
 
     private void runChecksumBuildWorkflows(final Repository repository) {
