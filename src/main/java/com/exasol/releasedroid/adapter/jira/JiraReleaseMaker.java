@@ -3,6 +3,8 @@ package com.exasol.releasedroid.adapter.jira;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -43,12 +45,23 @@ public class JiraReleaseMaker implements ReleaseMaker {
 
     private String createTicketRequest(final Repository repository) throws JiraException {
         final String linkToGitHubRelease = getLinkToGitHubRelease(repository);
-        final var projectName = "MARCOMMS";
-        final var issueTypeName = "New Content";
-        final var summary = repository.getName() + " " + repository.getVersion() + " released";
+        final var projectName = "EXACOMM";
+        final var issueTypeName = "Task";
+        final var summary = getHumanReadableName(repository.getName()) + " " + repository.getVersion() + " released";
         final var description = "Link to the GitHub release: " //
                 + linkToGitHubRelease + LINE_SEPARATOR;
         return this.jiraGateway.createTicket(projectName, issueTypeName, summary, description);
+    }
+
+    protected String getHumanReadableName(final String repositoryName) {
+        final String[] fullName = repositoryName.split("/");
+        final String repositoryNameWithoutOwner = fullName.length == 2 ? fullName[1] : repositoryName;
+        final String[] words = repositoryNameWithoutOwner.split("-");
+        final List<String> capitalizedWords = new ArrayList<>();
+        for (final String word : words) {
+            capitalizedWords.add(word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase());
+        }
+        return String.join(" ", capitalizedWords);
     }
 
     private String getLinkToGitHubRelease(final Repository repository) {

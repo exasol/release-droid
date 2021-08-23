@@ -12,4 +12,8 @@ Uploading assets for a GitHub release now an optional step and only works if you
 * #173: Change GitHub uploading assets to an optional step.
 * #182: Allowed release without checksum generation workflows.
 
+## Refactoring
+
+* #185: Changed Jira tickets project to EXACOMM.
+
 ## Dependency Updates
