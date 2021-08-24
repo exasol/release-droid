@@ -10,12 +10,13 @@ class JiraReleaseMakerTest {
 
     @Test
     void testGetHumanReadableNameWithRepositoryOwner() {
-        assertThat(this.jiraReleaseMaker.getHumanReadableName("exasol/test-repository-name"),
+        assertThat(this.jiraReleaseMaker.getDefaultProjectName("exasol/test-repository-name"),
                 equalTo("Test Repository Name"));
     }
 
     @Test
     void testGetHumanReadableNameWithoutRepositoryOwner() {
-        assertThat(this.jiraReleaseMaker.getHumanReadableName("test-repository-name"), equalTo("Test Repository Name"));
+        assertThat(this.jiraReleaseMaker.getDefaultProjectName("test-repository-name"),
+                equalTo("Test Repository Name"));
     }
 }

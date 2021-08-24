@@ -19,6 +19,7 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
  */
 public class JiraReleaseMaker implements ReleaseMaker {
     private static final Logger LOGGER = Logger.getLogger(JiraReleaseMaker.class.getName());
+    private static final String JIRA_CONFIG_PATH = "release_config.yml";
     private final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
     private final JiraGateway jiraGateway;
 
@@ -47,13 +48,26 @@ public class JiraReleaseMaker implements ReleaseMaker {
         final String linkToGitHubRelease = getLinkToGitHubRelease(repository);
         final var projectName = "EXACOMM";
         final var issueTypeName = "Task";
-        final var summary = getHumanReadableName(repository.getName()) + " " + repository.getVersion() + " released";
+        final var summary = getHumanReadableName(repository) + " " + repository.getVersion() + " released";
         final var description = "Link to the GitHub release: " //
                 + linkToGitHubRelease + LINE_SEPARATOR;
         return this.jiraGateway.createTicket(projectName, issueTypeName, summary, description);
     }
 
-    protected String getHumanReadableName(final String repositoryName) {
+    private String getHumanReadableName(final Repository repository) {
+        final String projectNameFromConfig = getProjectNameFromConfig(repository);
+        if (projectNameFromConfig != null) {
+            return projectNameFromConfig;
+        } else {
+            return getDefaultProjectName(repository.getName());
+        }
+    }
+
+    private String getProjectNameFromConfig(final Repository repository) {
+        return JiraConfigParser.parse(repository.getSingleFileContentAsString(JIRA_CONFIG_PATH));
+    }
+
+    protected String getDefaultProjectName(final String repositoryName) {
         final String[] fullName = repositoryName.split("/");
         final String repositoryNameWithoutOwner = fullName.length == 2 ? fullName[1] : repositoryName;
         final String[] words = repositoryNameWithoutOwner.split("-");
