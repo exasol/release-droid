@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.7.0, released 2021-08-24
+# Exasol Release Droid 0.7.0, released 2021-08-25
 
 Code name: Updated Jira release process, allowed skipping workflows
 
