@@ -12,10 +12,10 @@ public class LogFormatter extends Formatter {
     private final Formatter formatter = new SimpleFormatter();
 
     @Override
-    public String format(final LogRecord record) {
-        if (record.getLevel() == Level.SEVERE || record.getLevel() == Level.WARNING) {
-            record.setMessage(ANSI_RED + record.getMessage() + ANSI_RESET);
+    public String format(final LogRecord logRecord) {
+        if (logRecord.getLevel() == Level.SEVERE || logRecord.getLevel() == Level.WARNING) {
+            logRecord.setMessage(ANSI_RED + logRecord.getMessage() + ANSI_RESET);
         }
-        return this.formatter.format(record);
+        return this.formatter.format(logRecord);
     }
 }

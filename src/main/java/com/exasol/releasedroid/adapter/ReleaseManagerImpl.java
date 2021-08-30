@@ -14,6 +14,7 @@ import com.exasol.releasedroid.usecases.release.ReleaseManager;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.repository.RepositoryModifier;
 
+// Removing string duplicates here will decrease readability.
 public class ReleaseManagerImpl implements ReleaseManager {
     private static final Logger LOGGER = Logger.getLogger(ReleaseManagerImpl.class.getName());
     private final RepositoryModifier repositoryModifier;

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
@@ -75,7 +75,7 @@ public class Runner {
     }
 
     private static Map<PlatformName, ReleaseMaker> createReleaseMakers(final GitHubGateway githubGateway) {
-        final Map<PlatformName, ReleaseMaker> releaseMakers = new HashMap<>();
+        final Map<PlatformName, ReleaseMaker> releaseMakers = new EnumMap<>(PlatformName.class);
         releaseMakers.put(PlatformName.GITHUB, new GitHubReleaseMaker(githubGateway));
         releaseMakers.put(PlatformName.MAVEN, new MavenReleaseMaker(githubGateway));
         final CommunityPortalGateway communityPortalGateway = new CommunityPortalAPIAdapter(getPropertyReader());
