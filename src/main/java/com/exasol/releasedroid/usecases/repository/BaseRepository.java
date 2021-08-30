@@ -42,12 +42,12 @@ public abstract class BaseRepository implements Repository {
 
     @Override
     public ReleaseLetter getReleaseLetter(final String version) {
-        if (!this.releaseLetters.containsKey(version)) {
+        this.releaseLetters.computeIfAbsent(version, releaseLetter -> {
             final String fileName = "changes_" + version + ".md";
             final String filePath = "doc/changes/" + fileName;
             final String fileContent = getSingleFileContentAsString(filePath);
-            this.releaseLetters.put(version, new ReleaseLetterParser(fileName, fileContent).parse());
-        }
+            return new ReleaseLetterParser(fileName, fileContent).parse();
+        });
         return this.releaseLetters.get(version);
     }
 

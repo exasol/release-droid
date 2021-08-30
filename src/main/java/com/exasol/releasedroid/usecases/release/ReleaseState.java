@@ -112,7 +112,7 @@ public class ReleaseState {
 
     private Map<PlatformName, String> extractProgress(final Path path) {
         try (final Stream<String> lines = Files.lines(path)) {
-            final Map<PlatformName, String> map = new HashMap<>();
+            final Map<PlatformName, String> map = new EnumMap<>(PlatformName.class);
             lines.forEach(platform -> {
                 final String[] split = platform.split("::");
                 map.put(getPlatformName(split), getOutput(split));
