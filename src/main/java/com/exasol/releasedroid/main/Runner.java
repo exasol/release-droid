@@ -60,8 +60,8 @@ public class Runner {
 
     private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
         return List.of( //
-                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH), //
-                new ResponseLogger(new ReportLogFormatter()));
+                new ResponseLogger(new ReportLogFormatter()),
+                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH));
     }
 
     private static PropertyReaderImpl getPropertyReader() {
