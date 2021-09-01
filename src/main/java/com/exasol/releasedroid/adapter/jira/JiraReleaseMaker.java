@@ -3,9 +3,7 @@ package com.exasol.releasedroid.adapter.jira;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
@@ -55,16 +53,14 @@ public class JiraReleaseMaker implements ReleaseMaker {
     }
 
     private String getHumanReadableName(final Repository repository) {
-        final String projectNameFromConfig = getProjectNameFromConfig(repository);
-        if (projectNameFromConfig != null) {
-            return projectNameFromConfig;
-        } else {
-            return getDefaultProjectName(repository.getName());
-        }
+        final Optional<String> projectNameFromConfig = getProjectNameFromConfig(repository);
+        return projectNameFromConfig.orElseGet(() -> getDefaultProjectName(repository.getName()));
     }
 
-    private String getProjectNameFromConfig(final Repository repository) {
-        return JiraConfigParser.parse(repository.getSingleFileContentAsString(JIRA_CONFIG_PATH));
+    private Optional<String> getProjectNameFromConfig(final Repository repository) {
+        return repository.hasFile(JIRA_CONFIG_PATH)
+                ? Optional.ofNullable(JiraConfigParser.parse(repository.getSingleFileContentAsString(JIRA_CONFIG_PATH)))
+                : Optional.empty();
     }
 
     protected String getDefaultProjectName(final String repositoryName) {

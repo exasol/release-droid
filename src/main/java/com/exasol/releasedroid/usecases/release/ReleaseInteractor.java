@@ -118,6 +118,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
             report.addSuccessfulResult("Release finished.");
             LOGGER.info(() -> "Release on platform " + platformName + " is finished!");
         } catch (final Exception exception) {
+            LOGGER.info(() -> "Release on platform " + platformName + " has failed!");
             report.addFailedResult(ExceptionUtils.getStackTrace(exception));
         }
         return report;
