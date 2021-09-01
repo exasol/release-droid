@@ -20,25 +20,29 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
     private static final Logger LOGGER = Logger.getLogger(ResponseDiskWriter.class.getName());
     private final HeaderFormatter headerFormatter;
     private final ReportFormatter reportFormatter;
-    private final Path pathToWrite;
+    private final String pathToWrite;
+    private final String fileName;
 
     /**
      * Create a new instance of {@link ResponseDiskWriter}.
      *
-     * @param reportFormatter formatter
-     * @param pathToWrite     path to the file to write to
+     * @param reportFormatter formatter for report body
+     * @param headerFormatter formatter for report header
+     * @param pathToWrite     path to the directory to write the response to
+     * @param fileName        name of the file to write to
      */
     public ResponseDiskWriter(final ReportFormatter reportFormatter, final HeaderFormatter headerFormatter,
-            final Path pathToWrite) {
+            final String pathToWrite, final String fileName) {
         this.reportFormatter = reportFormatter;
         this.headerFormatter = headerFormatter;
         this.pathToWrite = pathToWrite;
+        this.fileName = fileName;
     }
 
     @Override
     // [impl->dsn~rd-writes-report-to-file~1]
     public void consumeResponse(final ReleaseDroidResponse response) {
-        final File fileForSummary = prepareFile(this.pathToWrite);
+        final File fileForSummary = prepareFile(this.pathToWrite, this.fileName);
         final String summary = prepareSummary(response);
         try (final var writer = new FileWriter(fileForSummary.getAbsoluteFile())) {
             writer.write(summary);
@@ -46,7 +50,7 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
             throw new IllegalStateException(
                     ExaError.messageBuilder("E-RD-10").message("Unable to write a report.").toString(), exception);
         }
-        LOGGER.info(() -> "A full report is available: " + this.pathToWrite);
+        LOGGER.info(() -> "A full report is available: " + fileForSummary.getAbsolutePath());
     }
 
     private String prepareSummary(final ReleaseDroidResponse response) {
@@ -58,8 +62,9 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
         return stringBuilder.toString();
     }
 
-    private File prepareFile(final Path reportPath) {
-        final File reportFile = reportPath.toFile();
+    private File prepareFile(final String reportPath, final String reportName) {
+        createDirectoryIfNotExists(reportPath);
+        final File reportFile = Path.of(reportPath, reportName).toFile();
         try {
             final boolean createdNewFile = reportFile.createNewFile();
             logFilePreparation(createdNewFile);
@@ -69,6 +74,17 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
                     exception);
         }
         return reportFile;
+    }
+
+    private void createDirectoryIfNotExists(final String reportPath) {
+        final File directory = new File(reportPath);
+        if (!directory.exists()) {
+            final boolean directoryWasCreated = directory.mkdir();
+            if (!directoryWasCreated) {
+                throw new IllegalStateException(ExaError.messageBuilder("E-RD-16")
+                        .message("Unable to create a directory: {{directory}}", reportPath).toString());
+            }
+        }
     }
 
     private void logFilePreparation(final boolean createdNewFile) {
