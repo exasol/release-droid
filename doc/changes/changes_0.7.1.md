@@ -7,7 +7,7 @@ Code name:
 ## Bug Fixes
 
 * #192: Made the config file optional for Jira release.
-* #194: Create a report directory if missing.
+* #194: Enabled creating a report directory if missing.
 
 ## Refactoring
 

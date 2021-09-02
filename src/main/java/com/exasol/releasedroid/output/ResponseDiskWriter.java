@@ -79,8 +79,8 @@ public class ResponseDiskWriter implements ReleaseDroidResponseConsumer {
     private void createDirectoryIfNotExists(final String reportPath) {
         final File directory = new File(reportPath);
         if (!directory.exists()) {
-            final boolean directoryWasCreated = directory.mkdir();
-            if (!directoryWasCreated) {
+            final boolean isDirectoryCreated = directory.mkdir();
+            if (!isDirectoryCreated) {
                 throw new IllegalStateException(ExaError.messageBuilder("E-RD-16")
                         .message("Unable to create a directory: {{directory}}", reportPath).toString());
             }
