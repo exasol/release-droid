@@ -39,11 +39,28 @@ class ResponseDiskWriterTest {
         when(this.headerFormatter.formatHeader(any())).thenReturn("Mock header" + LINE_SEPARATOR);
         final ReleaseDroidResponse response = ReleaseDroidResponse.builder().reports(List.of(ValidationReport.create()))
                 .build();
-        final Path reportPath = Path.of(this.tempDir.toString(), "test-report.txt");
         final ResponseDiskWriter writer = new ResponseDiskWriter(this.reportFormatter, this.headerFormatter,
-                reportPath);
+                this.tempDir.toString(), "test-report.txt");
         writer.consumeResponse(response);
-        final List<String> report = Files.readAllLines(reportPath);
+        final List<String> report = Files.readAllLines(Path.of(this.tempDir.toString(), "test-report.txt"));
+        assertAll(() -> assertThat(report.size(), equalTo(2)), //
+                () -> assertThat(report.get(0), equalTo("Mock header")), //
+                () -> assertThat(report.get(1), equalTo("Mock report")) //
+        );
+    }
+
+    @Test
+    // [utest->dsn~rd-writes-report-to-file~1]
+    void testWriteValidationReportToFileMissingDirectory() throws IOException {
+        when(this.reportFormatter.formatReport(any())).thenReturn("Mock report" + LINE_SEPARATOR);
+        when(this.headerFormatter.formatHeader(any())).thenReturn("Mock header" + LINE_SEPARATOR);
+        final ReleaseDroidResponse response = ReleaseDroidResponse.builder().reports(List.of(ValidationReport.create()))
+                .build();
+        final String reportPath = this.tempDir.toString() + "/.release-droid";
+        final ResponseDiskWriter writer = new ResponseDiskWriter(this.reportFormatter, this.headerFormatter, reportPath,
+                "test-report.txt");
+        writer.consumeResponse(response);
+        final List<String> report = Files.readAllLines(Path.of(reportPath.toString(), "test-report.txt"));
         assertAll(() -> assertThat(report.size(), equalTo(2)), //
                 () -> assertThat(report.get(0), equalTo("Mock header")), //
                 () -> assertThat(report.get(1), equalTo("Mock report")) //
