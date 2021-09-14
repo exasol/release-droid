@@ -105,6 +105,8 @@ Rules:
 * The release on the GitHub is a pre-requisite for the Jira release. 
 Please, be aware that the GitHub and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
 
+* You need to provide Jira credentials. You can do it either via a console input or adding `jira_username` and `jira_password` to the `~/.release-droid/credentials` file.
+
 ## How to Use Release Droid
 
 ### Run from Terminal
