@@ -24,7 +24,7 @@ class ScalaRepositoryTest {
     @Test
     void testGetVersion() {
         final Repository repository = getRepository();
-        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
+        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-droid\")"
                 + ".settings(version := \"0.2.0\").settings(orgSettings)";
         when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
         assertThat(repository.getVersion(), equalTo("0.2.0"));
@@ -33,7 +33,7 @@ class ScalaRepositoryTest {
     @Test
     void testGetVersionThrowsException() {
         final Repository repository = getRepository();
-        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-robot\")"
+        final String buildFile = "lazy val root = project.in(file(\".\")).settings(moduleName := \"testing-release-droid\")"
                 + ".settings(orgSettings)";
         when(this.repositoryGateMock.getSingleFileContentAsString(BUILD_SBT)).thenReturn(buildFile);
         final RepositoryException exception = assertThrows(RepositoryException.class, repository::getVersion);

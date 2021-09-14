@@ -1,6 +1,6 @@
 # Exasol Release Droid 0.7.1, released 2021-09-14
 
-Code name: Made the config file optional for a Jira release
+Code name: Fixed problems with Jira release
 
 ## Summary
 
@@ -16,5 +16,6 @@ Code name: Made the config file optional for a Jira release
 ## Refactoring
 
 * #189: Fixed code smells.
+* #197: Replaced 'robot' with 'droid' in tests.
 
 ## Dependency Updates
