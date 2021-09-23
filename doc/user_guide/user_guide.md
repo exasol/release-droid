@@ -29,7 +29,7 @@ Your project must fulfil the criteria listed in this section &mdash; depending o
 
 * The project must contain a `/.github/workflows/release_droid_print_quick_checksum.yml` file to run project tests and prepare a checksum. Please check [templates](templates/print_quick_checksum_template.md).
 
-* The project must have a valid version number consisting of three parts: `<major version>.<minor version>.<bug fix version>`. The version must contain only digits and dots.
+* The project must have a valid version number consisting of three parts: `[v]<major version>.<minor version>.<bug fix version>`. The version can contain a leading `v`.
 
 * You need a GitHub account.
 
