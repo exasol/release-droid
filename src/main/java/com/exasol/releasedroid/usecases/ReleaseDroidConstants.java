@@ -4,7 +4,7 @@ package com.exasol.releasedroid.usecases;
  * Contains common project's constants.
  */
 public final class ReleaseDroidConstants {
-    public static final String VERSION_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
+    public static final String VERSION_REGEX = "[v]?(\\d+)\\.(\\d+)\\.(\\d+)";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String HOME_DIRECTORY = System.getProperty("user.home");

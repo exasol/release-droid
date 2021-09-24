@@ -119,7 +119,7 @@ class CommonRepositoryValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "{${product.version}}", "v1.4.0", "2.0.0-1", "1.2", " " })
+    @ValueSource(strings = { "{${product.version}}", "v 1.4.0", "2.0.0-1", "1.2", " " })
     // [utest->dsn~validate-release-version-format~1]
     void testValidateInvalidVersionFormat(final String version) {
         when(this.repositoryMock.getVersion()).thenReturn(version);
@@ -129,7 +129,7 @@ class CommonRepositoryValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "1.0.0", "0.1.0", "0.0.1" })
+    @ValueSource(strings = { "1.0.0", "0.1.0", "0.0.1", "v0.1.0", "v2.0.0" })
     // [utest->dsn~validate-release-version-format~1]
     void testValidateVersionWithoutPreviousTag(final String version) {
         when(this.repositoryMock.getVersion()).thenReturn(version);
