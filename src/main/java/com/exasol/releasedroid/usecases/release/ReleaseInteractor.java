@@ -79,6 +79,10 @@ public class ReleaseInteractor implements ReleaseUseCase {
                 if (releaseReportForPlatform.hasFailures()) {
                     break;
                 }
+            } else {
+                LOGGER.warning(
+                        () -> "Validation for a platform " + platform.name() + " failed. Release is interrupted.");
+                break;
             }
         }
         if (!releaseReport.hasFailures()) {

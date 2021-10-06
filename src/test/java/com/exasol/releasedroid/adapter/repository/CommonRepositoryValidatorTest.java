@@ -49,7 +49,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
         when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
-        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of("2.1.0"));
+        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of("v2.1.0"));
         when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
         assertThat(this.validator.validate().hasFailures(), equalTo(false));

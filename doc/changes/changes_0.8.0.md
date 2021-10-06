@@ -2,6 +2,10 @@
 
 Code name: Allowed `v` in version's format 
 
+## Bugs
+
+* #205: Fixed validation for the version starting with `v`.
+
 ## Features
 
 * #202: Allowed `v` in version's format.

@@ -177,7 +177,8 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final var report = ValidationReport.create();
         final Optional<String> versionNumber = changes.getVersionNumber();
-        if ((versionNumber.isEmpty()) || !(versionNumber.get().equals(version))) {
+        if ((versionNumber.isEmpty())
+                || (!(versionNumber.get().equals(version)) && !(versionNumber.get().equals("v" + version)))) {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-26")
                     .message("The file {{fileName}} does not mention the current version.", changes.getFileName())
                     .mitigation("Please, follow the changes file's format rules.").toString());
