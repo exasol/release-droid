@@ -64,7 +64,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
         }
     }
 
-    // There is no a good workaround to avoid the second break here
+    @java.lang.SuppressWarnings("java:S135") // There is no a good workaround to avoid the second break here
     private List<Report> releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms,
             final Set<PlatformName> skipValidationOn) {
         prepareRepositoryForRelease(repository);
