@@ -1,11 +1,12 @@
 package com.exasol.releasedroid.usecases.release;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
@@ -19,6 +20,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -52,6 +54,10 @@ class ReleaseInteractorTest {
     void setup() {
         when(this.repositoryMock.getName()).thenReturn(REPOSITORY_NAME);
         when(this.repositoryMock.getVersion()).thenReturn(REPOSITORY_VERSION);
+    }
+
+    private List<Report> release(final PlatformName... platforms) {
+        return release(asList(platforms), emptySet());
     }
 
     private List<Report> release(final List<PlatformName> platforms, final Set<PlatformName> skipValidationOn) {
@@ -168,5 +174,27 @@ class ReleaseInteractorTest {
     private void simulateValidationReport(final PlatformName platform, final Report report) {
         when(this.validateUseCaseMock.validate(same(this.repositoryMock), eq(List.of(platform)), eq(emptySet())))
                 .thenReturn(report);
+    }
+
+    @Test
+    void testReleasePlatformSkippedWhenAlreadyReleased() {
+        simulateStatusAlreadyReleased(PlatformName.GITHUB);
+        final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
+        assertThat(reports, emptyCollectionOf(Report.class));
+        verifyNoInteractions(this.githubReleaseMakerMock);
+    }
+
+    @Test
+    void testReleaseFails() {
+        when(this.releaseStateMock.getProgress(REPOSITORY_NAME, REPOSITORY_VERSION))
+                .thenThrow(new RuntimeException("expected"));
+        final ReleaseException exception = assertThrows(ReleaseException.class, () -> release(PlatformName.GITHUB));
+        assertThat(exception.getMessage(), equalTo("E-RD-18: Error creating release"));
+        assertThat(exception.getCause().getMessage(), equalTo("expected"));
+    }
+
+    private void simulateStatusAlreadyReleased(final PlatformName platform) {
+        when(this.releaseStateMock.getProgress(REPOSITORY_NAME, REPOSITORY_VERSION))
+                .thenReturn(Map.of(platform, "already released"));
     }
 }

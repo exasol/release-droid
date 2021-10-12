@@ -58,6 +58,22 @@ class CommonRepositoryValidatorTest {
         assertThat("Report " + report, report.hasFailures(), equalTo(false));
     }
 
+    @ParameterizedTest
+    @CsvSource(value = { "x2.1.0", "2.1.1", "''", "null" }, nullValues = { "null" })
+    void testValidateVersionNumberFails(final String releaseLetterVersion) {
+        when(this.repositoryMock.getVersion()).thenReturn(VERSION);
+        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
+        when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
+        when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
+        when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
+        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.ofNullable(releaseLetterVersion));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
+        when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
+        final Report report = this.validator.validate();
+        assertThat("Report " + report, report.hasFailures(), equalTo(true));
+    }
+
     @Test
     // [utest->dsn~validate-changelog~1]
     void testValidateChangelogEmpty() {
