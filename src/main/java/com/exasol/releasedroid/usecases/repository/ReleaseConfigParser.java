@@ -1,8 +1,11 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
+
+import com.exasol.releasedroid.adapter.ListExtractor;
 
 /**
  * A parser for {@link ReleaseConfig}.
@@ -30,14 +33,6 @@ public class ReleaseConfigParser {
     }
 
     private static List<String> getReleasePlatforms(final Map<String, Object> parsedConfig) {
-        return extractListOfStrings(parsedConfig, RELEASE_PLATFORMS_KEY);
-    }
-
-    private static List<String> extractListOfStrings(final Map<String, Object> parsedConfig, final String key) {
-        final List<String> tags = new ArrayList<>();
-        if (parsedConfig.containsKey(key) && parsedConfig.get(key) instanceof Collection) {
-            tags.addAll((Collection) parsedConfig.get(key));
-        }
-        return tags;
+        return ListExtractor.extractListOfStrings(parsedConfig, RELEASE_PLATFORMS_KEY);
     }
 }

@@ -48,11 +48,11 @@
 | [Apache Maven Deploy Plugin][59]                        | [Apache License, Version 2.0][20]     |
 | [Apache Maven Site Plugin][61]                          | [Apache License, Version 2.0][10]     |
 
-[35]: https://www.eclemma.org/jacoco/index.html
 [47]: https://github.com/exasol/project-keeper-maven-plugin
 [1]: http://www.apache.org/licenses/LICENSE-2.0
 [15]: https://github.com/exasol/error-reporting-java
 [5]: https://www.opensource.org/licenses/mit-license.php
+[13]: https://maven.apache.org/ref/3.8.3/maven-model/
 [17]: https://github.com/commonmark/commonmark-java
 [20]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [31]: https://maven.apache.org/surefire/maven-surefire-plugin/
@@ -66,7 +66,7 @@
 [43]: https://github.com/itsallcode/openfasttrace-maven-plugin
 [51]: https://maven.apache.org/plugins/maven-clean-plugin/
 [36]: https://www.eclipse.org/legal/epl-2.0/
-[13]: https://maven.apache.org/ref/3.8.1/maven-model/
+[35]: https://www.jacoco.org/jacoco/trunk/doc/maven.html
 [24]: https://github.com/mockito/mockito/blob/main/LICENSE
 [45]: http://zlika.github.io/reproducible-build-maven-plugin
 [61]: https://maven.apache.org/plugins/maven-site-plugin/

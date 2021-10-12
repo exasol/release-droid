@@ -2,6 +2,7 @@
 
 # Eclipse and Maven
 .classpath
+.project
 
 # .settings : we need Eclipse settings for code formatter and clean-up rules
 target
@@ -11,3 +12,20 @@ dependency-reduced-pom.xml
 # Intellij
 .idea
 *.iml
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.apt.core.prefs
+
+.DS_Store
+*.swp
+local
+.dbeaver*
+**/*.log
+.directory
+venv/
+pom.xml.versionsBackup
+~*
+*.lock
+*.bak
+*.orig
+*.old
+*.md.html
