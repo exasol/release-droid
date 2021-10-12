@@ -14,6 +14,7 @@ import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * Implements the Release use case.
@@ -81,8 +82,10 @@ public class ReleaseInteractor implements ReleaseUseCase {
                     break;
                 }
             } else {
-                LOGGER.warning(
-                        () -> "Validation for a platform " + platform.name() + " failed. Release is interrupted.");
+                LOGGER.warning(() -> ExaError.messageBuilder("W-RD-17")
+                        .message("Validation for a platform {{platform name}} failed. Release is interrupted.",
+                                platform.name())
+                        .toString());
                 break;
             }
         }
