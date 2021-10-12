@@ -1,8 +1,11 @@
 package com.exasol.releasedroid.adapter.communityportal;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
+
+import com.exasol.releasedroid.adapter.ListExtractor;
 
 /**
  * A parser for {@link CommunityConfig}.
@@ -47,16 +50,6 @@ public class CommunityConfigParser {
     }
 
     private static List<String> getTags(final Map<String, Object> parsedConfig) {
-        return extractListOfStrings(parsedConfig, TAGS_KEY);
-    }
-
-    private static List<String> extractListOfStrings(final Map<String, Object> parsedConfig, final String key) {
-        final List<String> tags = new ArrayList<>();
-        if (parsedConfig.containsKey(key) && (parsedConfig.get(key) instanceof Collection)) {
-            @SuppressWarnings("unchecked")
-            final Collection<String> configTags = (Collection<String>) parsedConfig.get(key);
-            tags.addAll(configTags);
-        }
-        return tags;
+        return ListExtractor.extractListOfStrings(parsedConfig, TAGS_KEY);
     }
 }
