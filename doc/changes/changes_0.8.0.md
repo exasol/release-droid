@@ -1,4 +1,4 @@
-# Exasol Release Droid 0.8.0, released 2021-??-??
+# Exasol Release Droid 0.8.0, released 2021-10-12
 
 Code name: Allowed `v` in version's format 
 
