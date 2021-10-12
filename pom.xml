@@ -329,7 +329,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.6.0</version>
+                <version>0.7.1</version>
                 <executions>
                     <execution>
                         <goals>

@@ -28,7 +28,7 @@ Code name: Allowed `v` in version's format
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:error-code-crawler-maven-plugin:0.5.0` to `0.6.0`
+* Updated `com.exasol:error-code-crawler-maven-plugin:0.5.0` to `0.7.1`
 * Updated `com.exasol:project-keeper-maven-plugin:0.10.0` to `1.3.0`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.0.0-M3` to `3.0.0`
 * Updated `org.jacoco:jacoco-maven-plugin:0.8.6` to `0.8.7`
