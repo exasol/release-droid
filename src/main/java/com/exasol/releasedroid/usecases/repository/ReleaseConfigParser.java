@@ -35,8 +35,10 @@ public class ReleaseConfigParser {
 
     private static List<String> extractListOfStrings(final Map<String, Object> parsedConfig, final String key) {
         final List<String> tags = new ArrayList<>();
-        if (parsedConfig.containsKey(key) && parsedConfig.get(key) instanceof Collection) {
-            tags.addAll((Collection) parsedConfig.get(key));
+        if (parsedConfig.containsKey(key) && (parsedConfig.get(key) instanceof Collection)) {
+            @SuppressWarnings("unchecked")
+            final Collection<String> configTags = (Collection<String>) parsedConfig.get(key);
+            tags.addAll(configTags);
         }
         return tags;
     }
