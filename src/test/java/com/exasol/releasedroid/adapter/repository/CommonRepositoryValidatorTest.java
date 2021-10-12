@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,21 +39,23 @@ class CommonRepositoryValidatorTest {
         this.validator = new CommonRepositoryValidator(this.repositoryMock);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({ "2.1.0", "v2.1.0" })
     // [utest->dsn~validate-changelog~1]
     // [utest->dsn~validate-changes-file-contains-release-version~1]
     // [utest->dsn~validate-changes-file-contains-release-letter-body~1]
-    void testValidateSuccessful() {
+    void testValidateSuccessful(final String releaseLetterVersion) {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
         when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
         when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
-        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of("v2.1.0"));
+        when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of(releaseLetterVersion));
         when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(LocalDate.now()));
         when(this.releaseLetterMock.getBody()).thenReturn(Optional.of("## Features"));
-        assertThat(this.validator.validate().hasFailures(), equalTo(false));
+        final Report report = this.validator.validate();
+        assertThat("Report " + report, report.hasFailures(), equalTo(false));
     }
 
     @Test
@@ -175,8 +178,7 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.hasFile(PRINT_QUICK_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
         final Report report = this.validator.validate();
-        assertThat(report.toString(),
-                containsString("E-RD-REP-28"));
+        assertThat(report.toString(), containsString("E-RD-REP-28"));
     }
 
     @Test
