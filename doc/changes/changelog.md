@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 * [0.8.0](changes_0.8.0.md)
 * [0.7.1](changes_0.7.1.md)
