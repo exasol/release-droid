@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.usecases.release;
 
+import static com.exasol.errorreporting.ExaError.messageBuilder;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
 import java.util.*;
@@ -8,13 +9,10 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
-import com.exasol.releasedroid.usecases.report.ReleaseReport;
-import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationReport;
+import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
-import com.exasol.errorreporting.ExaError;
 
 /**
  * Implements the Release use case.
@@ -23,7 +21,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final ValidateUseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
-    private final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
+    private final ReleaseState releaseState;
     private final ReleaseManager releaseManager;
 
     /**
@@ -35,9 +33,15 @@ public class ReleaseInteractor implements ReleaseUseCase {
      */
     public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final ReleaseManager releaseManager) {
+        this(validateUseCase, releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
+    }
+
+    ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+            final ReleaseManager releaseManager, final ReleaseState releaseState) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
         this.releaseManager = releaseManager;
+        this.releaseState = releaseState;
     }
 
     @Override
@@ -48,7 +52,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
         try {
             return makeRelease(repository, platforms, skipValidationOn);
         } catch (final Exception exception) {
-            throw new ReleaseException(exception);
+            throw new ReleaseException(messageBuilder("E-RD-18").message("Error creating release").toString(),
+                    exception);
         }
     }
 
@@ -82,7 +87,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
                     break;
                 }
             } else {
-                LOGGER.warning(() -> ExaError.messageBuilder("W-RD-17")
+                LOGGER.warning(() -> messageBuilder("W-RD-17")
                         .message("Validation for a platform {{platform name}} failed. Release is interrupted.",
                                 platform.name())
                         .toString());
