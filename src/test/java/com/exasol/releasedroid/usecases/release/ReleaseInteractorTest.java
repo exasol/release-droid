@@ -189,8 +189,9 @@ class ReleaseInteractorTest {
         when(this.releaseStateMock.getProgress(REPOSITORY_NAME, REPOSITORY_VERSION))
                 .thenThrow(new RuntimeException("expected"));
         final ReleaseException exception = assertThrows(ReleaseException.class, () -> release(PlatformName.GITHUB));
-        assertThat(exception.getMessage(), equalTo("E-RD-18: Error creating release"));
-        assertThat(exception.getCause().getMessage(), equalTo("expected"));
+        assertAll( //
+                () -> assertThat(exception.getMessage(), equalTo("E-RD-18: Error creating release")),
+                () -> assertThat(exception.getCause().getMessage(), equalTo("expected")));
     }
 
     private void simulateStatusAlreadyReleased(final PlatformName platform) {

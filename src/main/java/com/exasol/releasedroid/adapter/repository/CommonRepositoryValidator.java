@@ -5,9 +5,7 @@ import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -89,7 +87,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
 
     private Report validateVersionFormat(final String version) {
         final var report = ValidationReport.create();
-        if (version != null && version.matches(VERSION_REGEX)) {
+        if ((version != null) && version.matches(VERSION_REGEX)) {
             report.addSuccessfulResult("Version format is correct.");
         } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-22")
@@ -146,7 +144,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         LOGGER.fine("Validating 'changelog.md' file.");
         final var report = ValidationReport.create();
         final String changelogContent = "[" + version + "](changes_" + version + ".md)";
-        if (changelog == null || !changelog.contains(changelogContent)) {
+        if ((changelog == null) || !changelog.contains(changelogContent)) {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-24")
                     .message("The file 'changelog.md' doesn't contain the following link.")
                     .mitigation("Please add {{changelogContent}} to the file.", changelogContent) //
@@ -176,16 +174,23 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     // [impl->dsn~validate-changes-file-contains-release-version~1]
     private Report validateVersionInChanges(final ReleaseLetter changes, final String version) {
         final var report = ValidationReport.create();
-        final Optional<String> versionNumber = changes.getVersionNumber();
-        if ((versionNumber.isEmpty())
-                || (!(versionNumber.get().equals(version)) && !(versionNumber.get().equals("v" + version)))) {
+        final Optional<String> releaseLetterVersion = changes.getVersionNumber();
+        if (versionNumbersMatch(version, releaseLetterVersion)) {
+            report.addSuccessfulResult("'" + changes.getFileName() + "' file.");
+        } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-26")
                     .message("The file {{fileName}} does not mention the current version.", changes.getFileName())
                     .mitigation("Please, follow the changes file's format rules.").toString());
-        } else {
-            report.addSuccessfulResult("'" + changes.getFileName() + "' file.");
         }
         return report;
+    }
+
+    private boolean versionNumbersMatch(final String version, final Optional<String> releaseLetterVersion) {
+        if (releaseLetterVersion.isEmpty()) {
+            return false;
+        }
+        final String releaseLetterVersionValue = releaseLetterVersion.get();
+        return releaseLetterVersionValue.equals(version) || releaseLetterVersionValue.equals("v" + version);
     }
 
     private Report validateDateInChanges(final ReleaseLetter changes, final boolean isDefaultBranch) {
