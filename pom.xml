@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <name>Exasol Release Droid</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
