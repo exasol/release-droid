@@ -56,7 +56,6 @@
 [17]: https://github.com/commonmark/commonmark-java
 [20]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [31]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[2]: https://mvnrepository.com/artifact/com.atlassian.fugue/fugue
 [16]: https://opensource.org/licenses/MIT
 [23]: https://github.com/mockito/mockito
 [37]: http://www.mojohaus.org/versions-maven-plugin/
@@ -82,6 +81,7 @@
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [6]: https://www.eclipse.org/jgit/
+[2]: https://docs.atlassian.com/fugue-parent/4.1.0/apidocs/io/atlassian/fugue/package-summary.html
 [27]: http://hamcrest.org/JavaHamcrest/
 [7]: http://www.slf4j.org
 [59]: http://maven.apache.org/plugins/maven-deploy-plugin/
