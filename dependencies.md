@@ -80,14 +80,14 @@
 [9]: http://commons.apache.org/proper/commons-cli/
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
-[2]: https://bitbucket.org/atlassian/fugue/src/master/
 [6]: https://www.eclipse.org/jgit/
+[2]: https://docs.atlassian.com/fugue-parent/4.1.0/apidocs/io/atlassian/fugue/package-summary.html
 [27]: http://hamcrest.org/JavaHamcrest/
 [7]: http://www.slf4j.org
 [59]: http://maven.apache.org/plugins/maven-deploy-plugin/
 [4]: https://github-api.kohsuke.org/
-[0]: https://bitbucket.org/atlassian/jira-rest-java-client/src/master/
 [11]: https://github.com/douglascrockford/JSON-java
+[0]: https://ecosystem.atlassian.net/wiki/spaces/JRJC/overview
 [49]: https://github.com/exasol/error-code-crawler-maven-plugin
 [55]: https://maven.apache.org/plugins/maven-jar-plugin/
 [12]: http://json.org/license.html
