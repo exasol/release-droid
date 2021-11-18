@@ -56,6 +56,7 @@
 [17]: https://github.com/commonmark/commonmark-java
 [20]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [31]: https://maven.apache.org/surefire/maven-surefire-plugin/
+[2]: https://mvnrepository.com/artifact/com.atlassian.fugue/fugue
 [16]: https://opensource.org/licenses/MIT
 [23]: https://github.com/mockito/mockito
 [37]: http://www.mojohaus.org/versions-maven-plugin/
@@ -80,14 +81,13 @@
 [9]: http://commons.apache.org/proper/commons-cli/
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
-[2]: https://bitbucket.org/atlassian/fugue/src/master/
 [6]: https://www.eclipse.org/jgit/
 [27]: http://hamcrest.org/JavaHamcrest/
 [7]: http://www.slf4j.org
 [59]: http://maven.apache.org/plugins/maven-deploy-plugin/
 [4]: https://github-api.kohsuke.org/
-[0]: https://bitbucket.org/atlassian/jira-rest-java-client/src/master/
 [11]: https://github.com/douglascrockford/JSON-java
+[0]: https://ecosystem.atlassian.net/wiki/spaces/JRJC/overview
 [49]: https://github.com/exasol/error-code-crawler-maven-plugin
 [55]: https://maven.apache.org/plugins/maven-jar-plugin/
 [12]: http://json.org/license.html
