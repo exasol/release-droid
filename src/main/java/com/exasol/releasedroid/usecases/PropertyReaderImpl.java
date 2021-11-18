@@ -21,8 +21,7 @@ public final class PropertyReaderImpl implements PropertyReader {
      * @param pathToPropertyFile path to a property file
      */
     public PropertyReaderImpl(final String pathToPropertyFile) {
-        this.pathToPropertyFile = pathToPropertyFile;
-        this.consoleReader = new ConsoleReaderImpl();
+        this(pathToPropertyFile, new ConsoleReaderImpl());
     }
 
     /**
