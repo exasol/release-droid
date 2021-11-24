@@ -53,15 +53,6 @@ public class MavenPom {
     }
 
     /**
-     * Check if group id present.
-     *
-     * @return {@code true} if artifactId present
-     */
-    public boolean hasGroupId() {
-        return (this.groupId != null) && !this.groupId.isEmpty();
-    }
-
-    /**
      * Get version.
      *
      * @return version
