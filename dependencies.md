@@ -52,10 +52,11 @@
 [1]: http://www.apache.org/licenses/LICENSE-2.0
 [15]: https://github.com/exasol/error-reporting-java
 [5]: https://www.opensource.org/licenses/mit-license.php
-[13]: https://maven.apache.org/ref/3.8.3/maven-model/
+[13]: https://maven.apache.org/ref/3.8.4/maven-model/
 [17]: https://github.com/commonmark/commonmark-java
 [20]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [31]: https://maven.apache.org/surefire/maven-surefire-plugin/
+[9]: https://commons.apache.org/proper/commons-cli/
 [16]: https://opensource.org/licenses/MIT
 [23]: https://github.com/mockito/mockito
 [37]: http://www.mojohaus.org/versions-maven-plugin/
@@ -77,7 +78,6 @@
 [19]: https://bitbucket.org/asomov/snakeyaml/src/master/
 [22]: https://www.eclipse.org/legal/epl-v20.html
 [57]: http://maven.apache.org/plugins/maven-install-plugin/
-[9]: http://commons.apache.org/proper/commons-cli/
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [6]: https://www.eclipse.org/jgit/
