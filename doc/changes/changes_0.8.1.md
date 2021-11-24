@@ -2,12 +2,13 @@
 
 Code name: Print release URLs
 
-This release prints the URL of the GitHub release and the new version's Maven Central repository location.
+This release prints the URL of the GitHub release and the new version's Maven Central repository location and validates the release date.
 
 ## Features
 
 * #201: Added validation for credentials from a file.
 * #208: Print URLs of all released artifacts
+* #200: Added validation for release date
 
 ## Dependency Updates
 
