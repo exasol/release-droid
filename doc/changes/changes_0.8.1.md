@@ -1,6 +1,8 @@
 # Exasol Release Droid 0.8.1, released 2021-??-??
 
-Code name:
+Code name: Print release URLs
+
+This release prints the URL of the GitHub release and the new version's Maven Central repository location.
 
 ## Features
 
