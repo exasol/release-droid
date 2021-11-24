@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.*;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +23,7 @@ import com.exasol.releasedroid.usecases.repository.Repository;
 @ExtendWith(MockitoExtension.class)
 class GitHubPlatformValidatorTest {
     private static final String VERSION = "1.0.1";
+    private static final LocalDate TODAY = LocalDate.of(2021, 11, 23);
     @Mock
     private Repository repositoryMock;
     @Mock
@@ -36,7 +36,14 @@ class GitHubPlatformValidatorTest {
     void beforeEach() {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
-        this.validator = new GitHubPlatformValidator(this.repositoryMock, this.githubGatewayMock);
+        final Clock fixedClock = createFixedClock(TODAY);
+        this.validator = new GitHubPlatformValidator(this.repositoryMock, this.githubGatewayMock, fixedClock);
+    }
+
+    private static Clock createFixedClock(final LocalDate day) {
+        final ZoneId timeZone = ZoneId.of("UTC");
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(day, LocalTime.of(10, 30), timeZone);
+        return Clock.fixed(Instant.from(zonedDateTime), timeZone);
     }
 
     @Test
@@ -46,6 +53,7 @@ class GitHubPlatformValidatorTest {
         when(this.repositoryMock.getRepositoryValidators()).thenReturn(List.of());
         when(this.repositoryMock.hasFile(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH)).thenReturn(false);
         when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY));
         when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2));
         assertFalse(this.validator.validate().hasFailures());
@@ -70,6 +78,36 @@ class GitHubPlatformValidatorTest {
     }
 
     @Test
+    // [utest->dsn~validating-release-date~1]
+    void testValidateReleaseDateMissing() {
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.empty());
+        final Report report = this.validator.validate();
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RD-GH-26")));
+    }
+
+    @Test
+    // [utest->dsn~validating-release-date~1]
+    void testValidateReleaseDateOutdated() {
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY.minusDays(1)));
+        final Report report = this.validator.validate();
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RD-GH-26")));
+    }
+
+    @Test
+    // [utest->dsn~validating-release-date~1]
+    void testValidateReleaseDatePredated() {
+        when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY.plusDays(1)));
+        final Report report = this.validator.validate();
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(), containsString("E-RD-GH-26")));
+    }
+
+    @Test
     // [utest->dsn~validate-github-issues-exists~1]
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsInvalidTicketsOnDefaultBranch() throws GitHubException {
@@ -87,6 +125,7 @@ class GitHubPlatformValidatorTest {
     // [utest->dsn~validate-github-issues-are-closed~1]
     void testValidateGitHubTicketsOnUserSpecifiedBranch() throws GitHubException {
         when(this.releaseLetterMock.getHeader()).thenReturn(Optional.of("header"));
+        when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY));
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(false);
         when(this.githubGatewayMock.getClosedTickets(any())).thenReturn(Set.of(1, 2, 3, 4));
         when(this.releaseLetterMock.getTicketNumbers()).thenReturn(List.of(1, 2, 5, 6));

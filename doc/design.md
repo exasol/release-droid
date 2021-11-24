@@ -371,6 +371,17 @@ Covers:
 
 Needs: impl
 
+#### Validating the Release Date
+`dsn~validating-release-date~1`
+
+During validation RD checks if the release date is up-to-date. If it is not equal to today's date, RD prints a warning message and fails the validation.
+
+Covers:
+
+* `req~validating-release-date~1`
+
+Needs: impl, utest
+
 #### Automatically Modifying Release Date
 `dsn~automatically-modifying-release-date~1`
 

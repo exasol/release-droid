@@ -332,6 +332,13 @@ Covers:
 
 Needs: dsn
 
+##### Validating the Release Date
+`req~validating-release-date~1`
+
+RD validates the release date during validation.
+
+Needs: dsn
+
 ##### Automatically Modifying Release Date
 `req~automatically-modifying-release-date~1`
 

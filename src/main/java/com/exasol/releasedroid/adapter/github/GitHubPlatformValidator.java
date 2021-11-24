@@ -3,6 +3,8 @@ package com.exasol.releasedroid.adapter.github;
 import static com.exasol.releasedroid.adapter.RepositoryValidatorHelper.validateRepositories;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -20,6 +22,7 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     private static final Logger LOGGER = Logger.getLogger(GitHubPlatformValidator.class.getName());
     private final GitHubGateway githubGateway;
     private final Repository repository;
+    private final Clock clock;
 
     /**
      * Create a new instance of {@link GitHubPlatformValidator}.
@@ -28,8 +31,13 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
      * @param githubGateway instance of {@link GitHubGateway}
      */
     public GitHubPlatformValidator(final Repository repository, final GitHubGateway githubGateway) {
+        this(repository, githubGateway, Clock.systemDefaultZone());
+    }
+
+    GitHubPlatformValidator(final Repository repository, final GitHubGateway githubGateway, final Clock clock) {
         this.repository = repository;
         this.githubGateway = githubGateway;
+        this.clock = clock;
     }
 
     @Override
@@ -54,10 +62,28 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
     }
 
     // [impl->dsn~validate-release-letter~1]
+    // [impl->dsn~validating-release-date~1]
     private Report validateChangesFile(final ReleaseLetter releaseLetter) {
         final var report = ValidationReport.create();
         report.merge(validateContainsHeader(releaseLetter));
         report.merge(validateGitHubTickets(releaseLetter));
+        report.merge(validateReleaseDate(releaseLetter));
+        return report;
+    }
+
+    private Report validateReleaseDate(final ReleaseLetter releaseLetter) {
+        final var report = ValidationReport.create();
+        final Optional<LocalDate> releaseDate = releaseLetter.getReleaseDate();
+        final LocalDate today = LocalDate.ofInstant(this.clock.instant(), this.clock.getZone());
+        if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(today))) {
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-26")
+                    .message("The file {{fileName}} has a missing or outdated release date."
+                            + " Please update the file header to match '# <Project> <Version>, released <Date>'",
+                            releaseLetter.getFileName()) //
+                    .toString());
+        } else {
+            report.addSuccessfulResult("Release date.");
+        }
         return report;
     }
 
