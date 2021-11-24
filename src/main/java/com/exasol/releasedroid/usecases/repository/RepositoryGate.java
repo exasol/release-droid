@@ -53,7 +53,7 @@ public interface RepositoryGate {
     public Optional<String> getLatestTag();
 
     /**
-     * Fet repository's full name.
+     * Get repository's full name.
      *
      * @return full name as a String
      */

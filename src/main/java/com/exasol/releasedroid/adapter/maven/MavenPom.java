@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public class MavenPom {
     private final String artifactId;
+    private final String groupId;
     private final String version;
     private final Map<String, String> properties;
     private final Map<String, MavenPlugin> plugins;
@@ -16,6 +17,7 @@ public class MavenPom {
 
     private MavenPom(final Builder builder) {
         this.artifactId = builder.artifactId;
+        this.groupId = builder.groupId;
         this.version = builder.version;
         this.properties = builder.properties;
         this.plugins = builder.plugins;
@@ -25,7 +27,7 @@ public class MavenPom {
 
     /**
      * Get project's artifact id.
-     * 
+     *
      * @return artifact id
      */
     public String getArtifactId() {
@@ -33,17 +35,35 @@ public class MavenPom {
     }
 
     /**
-     * Check if artifact id presents.
-     * 
-     * @return true if artifactId presents
+     * Check if artifact id present.
+     *
+     * @return {@code true} if artifactId present
      */
     public boolean hasArtifactId() {
-        return this.artifactId != null && !this.artifactId.isEmpty();
+        return (this.artifactId != null) && !this.artifactId.isEmpty();
+    }
+
+    /**
+     * Get project's group id.
+     *
+     * @return group id
+     */
+    public String getGroupId() {
+        return this.groupId;
+    }
+
+    /**
+     * Check if group id present.
+     *
+     * @return {@code true} if artifactId present
+     */
+    public boolean hasGroupId() {
+        return (this.groupId != null) && !this.groupId.isEmpty();
     }
 
     /**
      * Get version.
-     * 
+     *
      * @return version
      */
     public String getVersion() {
@@ -51,17 +71,17 @@ public class MavenPom {
     }
 
     /**
-     * Check if version presents.
+     * Check if version present.
      *
-     * @return true if version presents
+     * @return {@code true} if version present
      */
     public boolean hasVersion() {
-        return this.version != null && !this.version.isEmpty();
+        return (this.version != null) && !this.version.isEmpty();
     }
 
     /**
      * Get properties map.
-     * 
+     *
      * @return properties map
      */
     public Map<String, String> getProperties() {
@@ -71,7 +91,7 @@ public class MavenPom {
     /**
      * Check if properties present.
      *
-     * @return true if properties present
+     * @return {@code true} if properties present
      */
     public boolean hasProperties() {
         return !this.properties.isEmpty();
@@ -79,7 +99,7 @@ public class MavenPom {
 
     /**
      * Get a map of maven plugins.
-     * 
+     *
      * @return map with plugins' names and {@link MavenPlugin}
      */
     public Map<String, MavenPlugin> getPlugins() {
@@ -89,28 +109,28 @@ public class MavenPom {
     /**
      * Check if plugins present.
      *
-     * @return true if plugins present
+     * @return {@code true} if plugins present
      */
     public boolean hasPlugins() {
         return !this.plugins.isEmpty();
     }
 
     /**
-     * Check if project description presents.
+     * Check if project description present.
      *
-     * @return true if project description presents
+     * @return {@code true} if project description present
      */
     public boolean hasProjectDescription() {
-        return this.projectDescription != null && !this.projectDescription.isEmpty();
+        return (this.projectDescription != null) && !this.projectDescription.isEmpty();
     }
 
     /**
-     * Check if project URL presents.
+     * Check if project URL present.
      *
-     * @return true if project URL presents
+     * @return true if project URL present
      */
     public boolean hasProjectURL() {
-        return this.projectURL != null && !this.projectURL.isEmpty();
+        return (this.projectURL != null) && !this.projectURL.isEmpty();
     }
 
     /**
@@ -127,6 +147,7 @@ public class MavenPom {
      */
     public static class Builder {
         private String artifactId;
+        private String groupId;
         private String version;
         private Map<String, String> properties = new HashMap<>();
         private Map<String, MavenPlugin> plugins = new HashMap<>();
@@ -135,7 +156,7 @@ public class MavenPom {
 
         /**
          * Add version.
-         * 
+         *
          * @param version version
          * @return builder instance for fluent programming
          */
@@ -156,6 +177,17 @@ public class MavenPom {
         }
 
         /**
+         * Add group id.
+         *
+         * @param groupId group id
+         * @return builder instance for fluent programming
+         */
+        public Builder groupId(final String groupId) {
+            this.groupId = groupId;
+            return this;
+        }
+
+        /**
          * Add properties map.
          *
          * @param properties properties as a map
@@ -168,7 +200,7 @@ public class MavenPom {
 
         /**
          * Create a new instance of {@link MavenPom}.
-         * 
+         *
          * @return new instance of {@link MavenPom}
          */
         public MavenPom build() {
