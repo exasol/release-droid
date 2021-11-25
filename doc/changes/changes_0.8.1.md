@@ -2,6 +2,8 @@
 
 Code name: Print release URLs
 
+## Summary
+
 This release prints the URL of the GitHub release and the new version's Maven Central repository location and validates the release date.
 
 ## Features
