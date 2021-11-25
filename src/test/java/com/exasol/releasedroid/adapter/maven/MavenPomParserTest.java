@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.adapter.maven;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.*;
@@ -118,8 +118,26 @@ class MavenPomParserTest {
                 + "    <version></version>" //
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
-        assertAll(() -> assertThat(mavenPom.getGroupId(), equalTo("")),
+        assertAll(() -> assertThat(mavenPom.getGroupId(), emptyString()),
+                () -> assertThat(mavenPom.hasGroupId(), equalTo(false)),
+                () -> assertThat(mavenPom.getVersion(), emptyString()),
                 () -> assertThat(mavenPom.hasVersion(), equalTo(false)),
+                () -> assertThat(mavenPom.getArtifactId(), emptyString()),
+                () -> assertThat(mavenPom.hasArtifactId(), equalTo(false)),
+                () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
+                () -> assertThat(mavenPom.hasProperties(), equalTo(false)));
+    }
+
+    @Test
+    void testParseMavenPomMissingFields() throws IOException {
+        final String pom = "<project>" //
+                + "</project>";
+        final MavenPom mavenPom = getMavenPom(pom);
+        assertAll(() -> assertThat(mavenPom.getGroupId(), nullValue()),
+                () -> assertThat(mavenPom.hasGroupId(), equalTo(false)),
+                () -> assertThat(mavenPom.getVersion(), nullValue()),
+                () -> assertThat(mavenPom.hasVersion(), equalTo(false)),
+                () -> assertThat(mavenPom.getArtifactId(), nullValue()),
                 () -> assertThat(mavenPom.hasArtifactId(), equalTo(false)),
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
                 () -> assertThat(mavenPom.hasProperties(), equalTo(false)));

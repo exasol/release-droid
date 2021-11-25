@@ -44,6 +44,15 @@ public class MavenPom {
     }
 
     /**
+     * Check if group id present.
+     *
+     * @return {@code true} if group id present
+     */
+    public boolean hasGroupId() {
+        return (this.groupId != null) && !this.groupId.isEmpty();
+    }
+
+    /**
      * Get project's group id.
      *
      * @return group id
