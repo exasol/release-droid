@@ -7,7 +7,7 @@ This release prints the URL of the GitHub release and the new version's Maven Ce
 ## Features
 
 * #201: Added validation for credentials from a file.
-* #208: Added feature to print URLs of all released artifacts
+* #208: Added feature to print URLs of all released artifacts and validate that groupId is available in pom.xml
 
 ## Dependency Updates
 
