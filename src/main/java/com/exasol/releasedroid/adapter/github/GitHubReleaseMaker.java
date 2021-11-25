@@ -30,19 +30,29 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
+        final String releaseUrl = createGitHubRelease(repository);
+        LOGGER.info(() -> "A GitHub release was created at: " + releaseUrl);
+        return releaseUrl;
+    }
+
+    private String createGitHubRelease(final Repository repository) {
         final String version = repository.getVersion();
-        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
-        final String body = releaseLetter.getBody().orElse("");
-        final String header = releaseLetter.getHeader().orElse(version);
-        final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
-        final GitHubRelease release = GitHubRelease.builder().repositoryName(repository.getName()).version(version)
-                .header(header).releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
+        final GitHubRelease release = createReleaseModel(repository, version);
         try {
             this.githubGateway.createGithubRelease(release);
             return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }
+    }
+
+    private GitHubRelease createReleaseModel(final Repository repository, final String version) {
+        final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
+        final String body = releaseLetter.getBody().orElse("");
+        final String header = releaseLetter.getHeader().orElse(version);
+        final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
+        return GitHubRelease.builder().repositoryName(repository.getName()).version(version).header(header)
+                .releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
     }
 
     private boolean checkIfUploadAssetsWorkflowExists(final Repository repository) {

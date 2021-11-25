@@ -2,6 +2,7 @@ package com.exasol.releasedroid.adapter.maven;
 
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.github.GitHubException;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
@@ -28,10 +29,28 @@ public class MavenReleaseMaker implements ReleaseMaker {
     @Override
     // [impl->dsn~create-new-maven-release~1]
     public String makeRelease(final Repository repository) throws ReleaseException {
+        if (!(repository instanceof MavenRepository)) {
+            throw new ReleaseException(ExaError.messageBuilder("E-RD-REP-29")
+                    .message("Cannot make a Maven release for repository of type {{repositoryType}}")
+                    .parameter("repositoryType", repository.getClass().getName()).toString());
+        }
         LOGGER.fine("Releasing on Maven.");
+        final String mavenRepoUrl = makeMavenRelease((MavenRepository) repository);
+        LOGGER.info(() -> "A MavenCentral release was published at: " + mavenRepoUrl);
+        return mavenRepoUrl;
+    }
+
+    private String makeMavenRelease(final MavenRepository repository) {
+        final MavenPom mavenPom = repository.getMavenPom();
+        if (mavenPom == null) {
+            throw new ReleaseException(ExaError.messageBuilder("E-RD-REP-30")
+                    .message("Repository {{repositoryName}} does not have Maven POM file")
+                    .parameter("repositoryName", repository.getName()).toString());
+        }
         try {
             this.githubGateway.executeWorkflow(repository.getName(), RELEASE_ON_MAVEN_CENTRAL_WORKFLOW);
-            return "";
+            return String.format("https://repo1.maven.org/maven2/%s/%s/%s/", mavenPom.getGroupId().replace('.', '/'),
+                    mavenPom.getArtifactId(), mavenPom.getVersion());
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }
