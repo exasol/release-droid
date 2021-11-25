@@ -25,4 +25,6 @@ This release prints the URL of the GitHub release and the new version's Maven Ce
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:project-keeper-maven-plugin:1.3.0` to `1.3.2`
+* Updated `com.exasol:project-keeper-maven-plugin:1.3.0` to `1.3.3`
+* Updated `io.github.zlika:reproducible-build-maven-plugin:0.13` to `0.14`
+* Updated `org.itsallcode:openfasttrace-maven-plugin:1.0.0` to `1.2.0`
