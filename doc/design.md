@@ -371,14 +371,14 @@ Covers:
 
 Needs: impl
 
-#### Automatically Modifying Release Date
-`dsn~automatically-modifying-release-date~1`
+#### Validating the Release Date
+`dsn~validating-release-date~1`
 
-RD commits a release date before starting the release process if it's possible to detect a place where release date is written. We assume that the ReleaseLetter contains `, released (xxxx-xx-xx)` entry in the header.
+During validation RD checks if the release date is up-to-date. If it is not equal to today's date, RD prints a warning message and fails the validation.
 
 Covers:
 
-* `req~automatically-modifying-release-date~1`
+* `req~validating-release-date~1`
 
 Needs: impl, utest
 

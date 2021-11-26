@@ -1,12 +1,19 @@
-# Exasol Release Droid 0.8.1, released 2021-11-25
+# Exasol Release Droid 0.8.1, released 2021-11-26
 
-Code name: Print release URLs
+Code name: Print release URLs and validate release date
 
-This release prints the URL of the GitHub release and the new version's Maven Central repository location.
+## Summary
+
+This release prints the URL of the GitHub release and the new version's Maven Central repository location and validates the release date.
+
+We removed the automatic update of the release date because this does not work any more with branch protection.
 
 ## Features
 
 * #201: Added validation for credentials from a file.
+* #208: Print URLs of all released artifacts
+* #200: Added validation for release date
+* #213: Removed automatic update of release date
 * #208: Added feature to print URLs of all released artifacts and validate that groupId is available in pom.xml
 
 ## Dependency Updates
@@ -25,6 +32,6 @@ This release prints the URL of the GitHub release and the new version's Maven Ce
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:project-keeper-maven-plugin:1.3.0` to `1.3.3`
+* Updated `com.exasol:project-keeper-maven-plugin:1.3.0` to `1.3.4`
 * Updated `io.github.zlika:reproducible-build-maven-plugin:0.13` to `0.14`
 * Updated `org.itsallcode:openfasttrace-maven-plugin:1.0.0` to `1.2.0`
