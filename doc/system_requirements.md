@@ -340,15 +340,11 @@ RD validates the release date during validation.
 Needs: dsn
 
 ##### Automatically Modifying Release Date
-`req~automatically-modifying-release-date~1`
+`req~automatically-modifying-release-date~2`
+
+**Removed** We removed this feature because with branch protection it's not possible any more to update files directly on the `main` branch. This feature is replaced by `req~validating-release-date~1`.
 
 RD can automatically commit a release date before starting the release process.
-
-Covers:
-
-* [feat~github-support~1](#github-support)
-
-Needs: dsn
 
 ##### GitHub Release Description From Release Letter
 `req~gitub-release-description-from-release-letter~1`

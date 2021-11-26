@@ -12,16 +12,13 @@ import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.formatting.ChecksumFormatter;
 import com.exasol.releasedroid.usecases.release.ReleaseManager;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.repository.RepositoryModifier;
 
 // Removing string duplicates here will decrease readability.
 public class ReleaseManagerImpl implements ReleaseManager {
     private static final Logger LOGGER = Logger.getLogger(ReleaseManagerImpl.class.getName());
-    private final RepositoryModifier repositoryModifier;
     private final GitHubGateway githubGateway;
 
-    public ReleaseManagerImpl(final RepositoryModifier repositoryModifier, final GitHubGateway githubGateway) {
-        this.repositoryModifier = repositoryModifier;
+    public ReleaseManagerImpl(final GitHubGateway githubGateway) {
         this.githubGateway = githubGateway;
     }
 
@@ -29,8 +26,6 @@ public class ReleaseManagerImpl implements ReleaseManager {
     public void prepareForRelease(final Repository repository) {
         if (hasChecksumBuilds(repository)) {
             runChecksumBuildWorkflows(repository);
-        } else {
-            this.repositoryModifier.writeReleaseDate(repository);
         }
     }
 
@@ -56,7 +51,6 @@ public class ReleaseManagerImpl implements ReleaseManager {
 
     private void createOriginalChecksum(final Repository repository) throws GitHubException {
         LOGGER.info("There are no artifacts on the '" + repository.getName() + "' repository.");
-        this.repositoryModifier.writeReleaseDate(repository);
         prepareChecksumArtifact(repository);
     }
 

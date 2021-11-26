@@ -50,7 +50,7 @@ public class Runner {
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
-        final ReleaseManager releaseManager = new ReleaseManagerImpl(new GitHubRepositoryModifier(), githubGateway);
+        final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
         final ValidateUseCase validateUseCase = new ValidateInteractor();
         final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
         final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
