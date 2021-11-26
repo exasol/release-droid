@@ -2,6 +2,7 @@ name: CI Build next Java
 
 on:
   - push
+  - pull_request
 
 jobs:
   java-17-compatibility:
@@ -24,9 +25,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Run tests and build with Maven
-        run: mvn --batch-mode --update-snapshots clean package -DtrimStackTrace=false
+        run: |
+          mvn --batch-mode --update-snapshots clean package -DtrimStackTrace=false \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Publish Test Report
         uses: scacap/action-surefire-report@v1
-        if: ${{ always() }}
+        if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -33,6 +33,7 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         final MavenPom mavenPom = this.repository.getMavenPom();
         final var report = ValidationReport.create();
         report.merge(validateVersion(mavenPom));
+        report.merge(validateGroupId(mavenPom));
         report.merge(validateArtifactId(mavenPom));
         report.merge(validateProjectKeeperPlugin(mavenPom));
         return report;
@@ -45,6 +46,17 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-12")
                     .message("Cannot detect a 'version' in the pom file.").toString());
+        }
+        return report;
+    }
+
+    private Report validateGroupId(final MavenPom mavenPom) {
+        final var report = ValidationReport.create();
+        if (mavenPom.hasGroupId()) {
+            report.addSuccessfulResult("'groupId' in the pom file exists.");
+        } else {
+            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-31")
+                    .message("Cannot detect a 'groupId' in the pom file.").toString());
         }
         return report;
     }

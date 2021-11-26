@@ -26,7 +26,8 @@ class JavaRepositoryValidatorTest {
 
     @Test
     void testValidate() {
-        final MavenPom mavenPom = MavenPom.builder().artifactId("my-test-project").version("1.2.3")
+        final MavenPom mavenPom = MavenPom.builder().groupId("my.group.id").artifactId("my-test-project")
+                .version("1.2.3")
                 .plugins(Map.of("project-keeper-maven-plugin", MavenPlugin.builder().version("0.6.0").build())).build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
@@ -47,15 +48,16 @@ class JavaRepositoryValidatorTest {
                 () -> assertThat(report.toString(), containsString("E-RD-REP-12")), //
                 () -> assertThat(report.toString(), containsString("E-RD-REP-13")), //
                 () -> assertThat(report.toString(), containsString("project-keeper-maven-plugin")),
-                () -> assertThat(report.toString(), containsString("E-RD-REP-15")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-15")),
+                () -> assertThat(report.toString(), containsString("E-RD-REP-31")));
     }
 
     @ParameterizedTest
     @ValueSource(strings = { "0.6.0", "0.6.13", "1.0.0", "1.4.0" })
     // [utest->dsn~validate-pom-contains-required-plugins-for-maven-release~1]
     void testValidateProjectKeeperVersion(final String keeperVersion) {
-        final MavenPom mavenPom = MavenPom.builder().artifactId("my-test-project").version("1.2.3")
-                .plugins(Map.of("reproducible-build-maven-plugin", MavenPlugin.builder().build(), //
+        final MavenPom mavenPom = MavenPom.builder().groupId("my.group.id").artifactId("my-test-project")
+                .version("1.2.3").plugins(Map.of("reproducible-build-maven-plugin", MavenPlugin.builder().build(), //
                         "project-keeper-maven-plugin", MavenPlugin.builder().version(keeperVersion).build()))
                 .build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
@@ -77,9 +79,20 @@ class JavaRepositoryValidatorTest {
     }
 
     @Test
-    void testValidateProjectKeeperMissingVersion() {
+    void testValidateProjectKeeperMissingGroupId() {
         final MavenPom mavenPom = MavenPom.builder().artifactId("my-test-project").version("1.2.3")
                 .plugins(Map.of("project-keeper-maven-plugin", MavenPlugin.builder().build())).build();
+        when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
+        final Report report = getReport();
+        assertAll(() -> assertTrue(report.hasFailures()), //
+                () -> assertThat(report.toString(),
+                        CoreMatchers.containsString("E-RD-REP-31: Cannot detect a 'groupId' in the pom file.")));
+    }
+
+    @Test
+    void testValidateProjectKeeperMissingVersion() {
+        final MavenPom mavenPom = MavenPom.builder().groupId("my.group.id").artifactId("my-test-project")
+                .version("1.2.3").plugins(Map.of("project-keeper-maven-plugin", MavenPlugin.builder().build())).build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
         final Report report = getReport();
         assertAll(() -> assertTrue(report.hasFailures()), //
@@ -88,7 +101,8 @@ class JavaRepositoryValidatorTest {
 
     @Test
     void testValidateProjectKeeperRepository() {
-        final MavenPom mavenPom = MavenPom.builder().artifactId("project-keeper-maven-plugin").version("0.6.0")
+        final MavenPom mavenPom = MavenPom.builder().groupId("my.group.id").artifactId("project-keeper-maven-plugin")
+                .version("0.6.0")
                 .plugins(Map.of("project-keeper-maven-plugin", MavenPlugin.builder().version("${version}").build()))
                 .build();
         when(this.repositoryMock.getMavenPom()).thenReturn(mavenPom);
