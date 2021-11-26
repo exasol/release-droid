@@ -3,9 +3,7 @@ package com.exasol.releasedroid.adapter.maven;
 import java.io.*;
 import java.util.*;
 
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
+import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -44,6 +42,7 @@ public class MavenPomParser {
      * @return new instance of {@link MavenPom}
      */
     public MavenPom parse() {
+        final String groupId = this.model.getGroupId();
         final String artifactId = this.model.getArtifactId();
         final String version = this.model.getVersion();
         final Map<String, String> properties = parseProperties();
@@ -51,6 +50,7 @@ public class MavenPomParser {
         final String projectDescription = parseProjectDescription();
         final String projectURL = parseProjectURL();
         return MavenPom.builder() //
+                .groupId(groupId) //
                 .version(version) //
                 .artifactId(artifactId) //
                 .properties(properties) //
@@ -94,7 +94,7 @@ public class MavenPomParser {
 
     private String getString(final Plugin plugin, final Map<String, String> properties) {
         final String version = plugin.getVersion();
-        if (version != null && version.contains("$")) {
+        if ((version != null) && version.contains("$")) {
             return findProperty(version.substring(2, version.length() - 1), properties);
         } else {
             return version;
