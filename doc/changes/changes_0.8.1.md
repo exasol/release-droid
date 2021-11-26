@@ -1,6 +1,6 @@
-# Exasol Release Droid 0.8.1, released 2021-11-25
+# Exasol Release Droid 0.8.1, released 2021-11-26
 
-Code name: Print release URLs
+Code name: Print release URLs and validate release date
 
 ## Summary
 
