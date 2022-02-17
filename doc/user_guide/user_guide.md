@@ -131,6 +131,8 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
     ```
    If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
 
+   Windows: You can place the `credentials` file in `C:\Users\<username>\.release-droid` ( full path: `C:\Users\<username>\.release-droid\credentials`).
+
 1. Run Release Droid from a terminal:
 
    `java -jar release-droid-<version>.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
@@ -138,6 +140,10 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
    For example:
 
    `java -jar release-droid-0.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
+
+   Windows (Optional): You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-0.8.1.jar %*`. 
+   Make sure you use the full path for the .jar file and don't forget to include the location of your new batch file in your PATH so you can always access it from your CLI.
+   You can just use the name of the .bat file you created from then on e.g: `release-droid -name virtual-schema-common-java -goal validate ...`
 
 #### Command Line Arguments
 
