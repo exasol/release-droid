@@ -62,7 +62,6 @@
 [37]: http://www.mojohaus.org/versions-maven-plugin/
 [28]: http://opensource.org/licenses/BSD-3-Clause
 [29]: https://maven.apache.org/plugins/maven-compiler-plugin/
-[18]: http://opensource.org/licenses/BSD-2-Clause
 [53]: https://maven.apache.org/plugins/maven-resources-plugin/
 [43]: https://github.com/itsallcode/openfasttrace-maven-plugin
 [51]: https://maven.apache.org/plugins/maven-clean-plugin/
@@ -72,12 +71,13 @@
 [45]: http://zlika.github.io/reproducible-build-maven-plugin
 [61]: https://maven.apache.org/plugins/maven-site-plugin/
 [44]: https://www.gnu.org/licenses/gpl-3.0.html
+[18]: https://opensource.org/licenses/BSD-2-Clause
 [8]: http://www.opensource.org/licenses/mit-license.php
 [10]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [41]: https://maven.apache.org/enforcer/maven-enforcer-plugin/
-[19]: https://bitbucket.org/asomov/snakeyaml/src/master/
 [22]: https://www.eclipse.org/legal/epl-v20.html
 [57]: http://maven.apache.org/plugins/maven-install-plugin/
+[19]: https://bitbucket.org/snakeyaml/snakeyaml
 [21]: https://junit.org/junit5/
 [39]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [6]: https://www.eclipse.org/jgit/
