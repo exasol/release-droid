@@ -10,7 +10,6 @@ import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.adapter.jira.JiraPlatformValidator;
 import com.exasol.releasedroid.adapter.maven.*;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -74,12 +73,12 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
 
     @Override
     public String getVersion() {
-        if (getMavenPom().hasVersion()) {
-            return getMavenPom().getVersion();
-        } else {
-            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-5")
-                    .message("Cannot find the current version in the repository.").toString());
-        }
+        /*
+         * Getting the version from changelog is safe since project-keeper validates it RD validates that the project
+         * uses project-keeper. In contrast to getting the version from the pom this approach also works with
+         * multimodule projects.
+         */
+        return getVersionFromChangelogFile();
     }
 
     @Override

@@ -44,14 +44,12 @@ public class MavenPomParser {
     public MavenPom parse() {
         final String groupId = this.model.getGroupId();
         final String artifactId = this.model.getArtifactId();
-        final String version = this.model.getVersion();
         final Map<String, String> properties = parseProperties();
         final Map<String, MavenPlugin> plugins = parsePlugins(properties);
         final String projectDescription = parseProjectDescription();
         final String projectURL = parseProjectURL();
         return MavenPom.builder() //
                 .groupId(groupId) //
-                .version(version) //
                 .artifactId(artifactId) //
                 .properties(properties) //
                 .plugins(plugins) //

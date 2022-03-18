@@ -24,6 +24,7 @@ class GenericRepositoryTest {
     private RepositoryGate repositoryGateMock;
 
     @Test
+    // [utest->dsn~repository-provides-current-version~1]
     void testGetVersion() {
         when(this.repositoryGateMock.getSingleFileContentAsString(CHANGELOG_FILE_PATH)).thenReturn( //
                 "# Changelog\n" //

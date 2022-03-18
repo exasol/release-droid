@@ -49,8 +49,7 @@ public class MavenReleaseMaker implements ReleaseMaker {
         }
         try {
             this.githubGateway.executeWorkflow(repository.getName(), RELEASE_ON_MAVEN_CENTRAL_WORKFLOW);
-            return String.format("https://repo1.maven.org/maven2/%s/%s/%s/", mavenPom.getGroupId().replace('.', '/'),
-                    mavenPom.getArtifactId(), mavenPom.getVersion());
+            return "maven-central";
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }

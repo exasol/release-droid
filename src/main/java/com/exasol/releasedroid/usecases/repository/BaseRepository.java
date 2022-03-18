@@ -2,10 +2,9 @@ package com.exasol.releasedroid.usecases.repository;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 
 /**
@@ -84,5 +83,17 @@ public abstract class BaseRepository implements Repository {
     @Override
     public String getBranchName() {
         return this.repositoryGate.getBranchName();
+    }
+
+    protected String getVersionFromChangelogFile() {
+        final String changelogFile = getChangelogFile();
+        final int from = changelogFile.indexOf('[');
+        final int to = changelogFile.indexOf(']');
+        if (from == -1 || to == -1 || to < from) {
+            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-21")
+                    .message("Cannot detect the version of the project.")
+                    .mitigation("Please make sure you specified the version in the changelog.md file").toString());
+        }
+        return changelogFile.substring(from + 1, to);
     }
 }

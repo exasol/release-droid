@@ -11,8 +11,6 @@ import org.hamcrest.Matcher;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,8 +39,7 @@ class MavenReleaseMakerTest {
     void beforeEach() {
         lenient().when(this.repositoryMock.getName()).thenReturn(REPOSITORY_NAME);
         this.releaseMaker = new MavenReleaseMaker(this.githubGatewayMock);
-        this.mavenPomBuilder = MavenPom.builder().artifactId(MAVEN_ARTIFACT_ID).groupId(MAVEN_GROUP_ID)
-                .version(MAVEN_VERSION);
+        this.mavenPomBuilder = MavenPom.builder().artifactId(MAVEN_ARTIFACT_ID).groupId(MAVEN_GROUP_ID);
     }
 
     @Test
@@ -90,22 +87,6 @@ class MavenReleaseMakerTest {
                         () -> this.releaseMaker.makeRelease(this.repositoryMock)),
                 () -> verify(this.githubGatewayMock, times(1)).executeWorkflow(REPOSITORY_NAME,
                         "release_droid_release_on_maven_central.yml"));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ //
-            "artifact-id, com.exasol, version,        https://repo1.maven.org/maven2/com/exasol/artifact-id/version/",
-            "art,         com.exasol, version,        https://repo1.maven.org/maven2/com/exasol/art/version/",
-            "artifact-id, comexasol,  version,        https://repo1.maven.org/maven2/comexasol/artifact-id/version/",
-            "artifact-id, a.b.c.d.e,  version,        https://repo1.maven.org/maven2/a/b/c/d/e/artifact-id/version/",
-            "artifact-id, com.exasol, 1.2.3,          https://repo1.maven.org/maven2/com/exasol/artifact-id/1.2.3/",
-            "artifact-id, com.exasol, 1.2.3-SNAPSHOT, https://repo1.maven.org/maven2/com/exasol/artifact-id/1.2.3-SNAPSHOT/" })
-    void testReleaseUrl(final String artifactId, final String groupId, final String version,
-            final String expectedReleaseUrl) {
-        this.mavenPomBuilder.artifactId(artifactId).groupId(groupId).version(version);
-        simulateMavenPom();
-        final String releaseUrl = this.releaseMaker.makeRelease(this.repositoryMock);
-        assertThat(releaseUrl, equalTo(expectedReleaseUrl));
     }
 
     private void simulateMavenPom() {

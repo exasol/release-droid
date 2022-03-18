@@ -9,7 +9,6 @@ import java.util.Map;
 public class MavenPom {
     private final String artifactId;
     private final String groupId;
-    private final String version;
     private final Map<String, String> properties;
     private final Map<String, MavenPlugin> plugins;
     private final String projectDescription;
@@ -18,7 +17,6 @@ public class MavenPom {
     private MavenPom(final Builder builder) {
         this.artifactId = builder.artifactId;
         this.groupId = builder.groupId;
-        this.version = builder.version;
         this.properties = builder.properties;
         this.plugins = builder.plugins;
         this.projectDescription = builder.projectDescription;
@@ -59,24 +57,6 @@ public class MavenPom {
      */
     public String getGroupId() {
         return this.groupId;
-    }
-
-    /**
-     * Get version.
-     *
-     * @return version
-     */
-    public String getVersion() {
-        return this.version;
-    }
-
-    /**
-     * Check if version present.
-     *
-     * @return {@code true} if version present
-     */
-    public boolean hasVersion() {
-        return (this.version != null) && !this.version.isEmpty();
     }
 
     /**
@@ -148,22 +128,10 @@ public class MavenPom {
     public static class Builder {
         private String artifactId;
         private String groupId;
-        private String version;
         private Map<String, String> properties = new HashMap<>();
         private Map<String, MavenPlugin> plugins = new HashMap<>();
         private String projectDescription;
         private String projectURL;
-
-        /**
-         * Add version.
-         *
-         * @param version version
-         * @return builder instance for fluent programming
-         */
-        public Builder version(final String version) {
-            this.version = version;
-            return this;
-        }
 
         /**
          * Add artifact id.

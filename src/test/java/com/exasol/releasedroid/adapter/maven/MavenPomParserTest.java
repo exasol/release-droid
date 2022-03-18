@@ -19,11 +19,9 @@ class MavenPomParserTest {
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
         assertAll(() -> assertThat(mavenPom.hasArtifactId(), equalTo(true)),
-                () -> assertThat(mavenPom.hasVersion(), equalTo(true)),
                 () -> assertThat(mavenPom.hasProperties(), equalTo(false)),
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
                 () -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")),
-                () -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")),
                 () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")));
     }
 
@@ -71,8 +69,7 @@ class MavenPomParserTest {
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
         final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
-        assertAll(() -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")), //
-                () -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")), //
+        assertAll(() -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")), //
                 () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")), //
                 () -> assertThat(mavenPom.hasProperties(), equalTo(true)), //
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(true)), //
@@ -101,8 +98,7 @@ class MavenPomParserTest {
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
         final Map<String, String> properties = mavenPom.getProperties();
-        assertAll(() -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")),
-                () -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")),
+        assertAll(() -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")),
                 () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")),
                 () -> assertThat(mavenPom.hasProperties(), equalTo(true)),
                 () -> assertThat(properties.size(), equalTo(1)),
@@ -120,8 +116,6 @@ class MavenPomParserTest {
         final MavenPom mavenPom = getMavenPom(pom);
         assertAll(() -> assertThat(mavenPom.getGroupId(), emptyString()),
                 () -> assertThat(mavenPom.hasGroupId(), equalTo(false)),
-                () -> assertThat(mavenPom.getVersion(), emptyString()),
-                () -> assertThat(mavenPom.hasVersion(), equalTo(false)),
                 () -> assertThat(mavenPom.getArtifactId(), emptyString()),
                 () -> assertThat(mavenPom.hasArtifactId(), equalTo(false)),
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
@@ -135,8 +129,6 @@ class MavenPomParserTest {
         final MavenPom mavenPom = getMavenPom(pom);
         assertAll(() -> assertThat(mavenPom.getGroupId(), nullValue()),
                 () -> assertThat(mavenPom.hasGroupId(), equalTo(false)),
-                () -> assertThat(mavenPom.getVersion(), nullValue()),
-                () -> assertThat(mavenPom.hasVersion(), equalTo(false)),
                 () -> assertThat(mavenPom.getArtifactId(), nullValue()),
                 () -> assertThat(mavenPom.hasArtifactId(), equalTo(false)),
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(false)),
@@ -159,8 +151,7 @@ class MavenPomParserTest {
                 + "</project>";
         final MavenPom mavenPom = getMavenPom(pom);
         final Map<String, MavenPlugin> plugins = mavenPom.getPlugins();
-        assertAll(() -> assertThat(mavenPom.getVersion(), equalTo("1.2.3")), //
-                () -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")), //
+        assertAll(() -> assertThat(mavenPom.getGroupId(), equalTo("my.group.id")), //
                 () -> assertThat(mavenPom.getArtifactId(), equalTo("my-test-project")), //
                 () -> assertThat(mavenPom.hasProperties(), equalTo(false)), //
                 () -> assertThat(mavenPom.hasPlugins(), equalTo(true)), //
