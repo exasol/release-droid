@@ -22,3 +22,11 @@ Code name: Support for multi maven module projects
 * Updated `org.junit.jupiter:junit-jupiter:5.8.1` to `5.8.2`
 * Updated `org.mockito:mockito-core:4.1.0` to `4.3.1`
 * Updated `org.mockito:mockito-junit-jupiter:4.1.0` to `4.3.1`
+
+### Plugin Dependency Updates
+
+* Added `com.exasol:artifact-reference-checker-maven-plugin:0.4.0`
+* Updated `com.exasol:project-keeper-maven-plugin:1.3.4` to `2.0.0`
+* Updated `io.github.zlika:reproducible-build-maven-plugin:0.14` to `0.15`
+* Added `org.apache.maven.plugins:maven-failsafe-plugin:3.0.0-M5`
+* Added `org.codehaus.mojo:flatten-maven-plugin:1.2.7`
