@@ -1,0 +1,12 @@
+sources:
+  - type: maven
+    path: pom.xml
+    modules:
+      - integration_tests
+      - jar_artifact
+linkReplacements:
+  - "https://github:com/commonmark/commonmark-java/commonmark|https://github:com/commonmark/commonmark-java"
+  - "https://www.atlassian.com/public-pom/jira-rest-java-client-parent/jira-rest-java-client-core/|https://ecosystem.atlassian.net/wiki/spaces/JRJC/overview"
+  - "https://www.atlassian.com/central-pom/fugue-parent/fugue/|https://docs.atlassian.com/fugue-parent/4.1.0/apidocs/io/atlassian/fugue/package-summary.html"
+  - "http://www.snakeyaml.org|https://bitbucket.org/asomov/snakeyaml/src/master/"
+

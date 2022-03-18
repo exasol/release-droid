@@ -13,6 +13,7 @@ error-tags:
     highest-index: 21
   RD-REP:
     packages:
+      - com.exasol.releasedroid.usecases.repository
       - com.exasol.releasedroid.adapter.repository
       - com.exasol.releasedroid.adapter
     highest-index: 31

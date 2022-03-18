@@ -3,12 +3,10 @@ package com.exasol.releasedroid.adapter.repository;
 import java.util.List;
 import java.util.Map;
 
-import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.communityportal.CommunityPlatformValidator;
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.adapter.github.GitHubPlatformValidator;
 import com.exasol.releasedroid.adapter.jira.JiraPlatformValidator;
-import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -40,15 +38,7 @@ public class GenericRepository extends BaseRepository {
 
     @Override
     public String getVersion() {
-        final String changelogFile = super.getChangelogFile();
-        final int from = changelogFile.indexOf('[');
-        final int to = changelogFile.indexOf(']');
-        if (from == -1 || to == -1 || to < from) {
-            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-21")
-                    .message("Cannot detect the version of the project.")
-                    .mitigation("Please make sure you specified the version in the changelog.md file").toString());
-        }
-        return changelogFile.substring(from + 1, to);
+        return getVersionFromChangelogFile();
     }
 
     @Override

@@ -32,21 +32,9 @@ public class JavaRepositoryValidator implements RepositoryValidator {
         LOGGER.fine("Validating pom file content.");
         final MavenPom mavenPom = this.repository.getMavenPom();
         final var report = ValidationReport.create();
-        report.merge(validateVersion(mavenPom));
         report.merge(validateGroupId(mavenPom));
         report.merge(validateArtifactId(mavenPom));
         report.merge(validateProjectKeeperPlugin(mavenPom));
-        return report;
-    }
-
-    private Report validateVersion(final MavenPom mavenPom) {
-        final var report = ValidationReport.create();
-        if (mavenPom.hasVersion()) {
-            report.addSuccessfulResult("'version' in the pom file exists.");
-        } else {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-12")
-                    .message("Cannot detect a 'version' in the pom file.").toString());
-        }
         return report;
     }
 
