@@ -9,6 +9,4 @@ linkReplacements:
   - "https://www.atlassian.com/public-pom/jira-rest-java-client-parent/jira-rest-java-client-core/|https://ecosystem.atlassian.net/wiki/spaces/JRJC/overview"
   - "https://www.atlassian.com/central-pom/fugue-parent/fugue/|https://docs.atlassian.com/fugue-parent/4.1.0/apidocs/io/atlassian/fugue/package-summary.html"
   - "http://www.snakeyaml.org|https://bitbucket.org/asomov/snakeyaml/src/master/"
-excludes:
-  - ".github/workflows/release_droid_upload_github_release_assets.yml"
 
