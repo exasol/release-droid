@@ -121,7 +121,7 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
 
 1. (Optional) Place a file with credentials in your home directory: `~/.release-droid/credentials`. We recommend restricting access to this file for security purposes:
     ```bash
-    chmod u-wx,g-rwx,o-rwx "$HOME"/.release-droid/credentials
+    chmod u-x,g-rwx,o-rwx "$HOME"/.release-droid/credentials
     ````
    The file must contain the following two properties:
 
