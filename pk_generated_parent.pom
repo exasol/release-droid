@@ -9,10 +9,45 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
+        <test.excludeTags/>
     </properties>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/exasol/release-droid/blob/main/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Exasol</name>
+            <email>opensource@exasol.com</email>
+            <organization>Exasol AG</organization>
+            <organizationUrl>https://www.exasol.com/</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/exasol/release-droid.git</connection>
+        <developerConnection>scm:git:https://github.com/exasol/release-droid.git</developerConnection>
+        <url>https://github.com/exasol/release-droid/</url>
+    </scm>
     <dependencies/>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -64,6 +99,7 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>audit</id>
                         <phase>package</phase>
                         <goals>
                             <goal>audit</goal>
@@ -93,9 +129,7 @@
                     <!-- Set the highest log level for coverage testing, so that we
           have a chance to reach branches in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
-                    <excludes>
-                        <exclude>**IT.java</exclude>
-                    </excludes>
+                    <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -104,6 +138,7 @@
                 <version>2.8.1</version>
                 <executions>
                     <execution>
+                        <id>display-updates</id>
                         <phase>package</phase>
                         <goals>
                             <goal>display-plugin-updates</goal>
@@ -153,6 +188,7 @@
                 <version>0.4.0</version>
                 <executions>
                     <execution>
+                        <id>verify</id>
                         <goals>
                             <goal>verify</goal>
                         </goals>
@@ -167,13 +203,12 @@
                     <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
           <property>	                      in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
-                    <includes>
-                        <include>**IT.java</include>
-                    </includes>
                     <systemPropertyVariables/>
+                    <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>verify</id>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
@@ -225,9 +260,10 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.7.1</version>
+                <version>1.1.0</version>
                 <executions>
                     <execution>
+                        <id>verify</id>
                         <goals>
                             <goal>verify</goal>
                         </goals>

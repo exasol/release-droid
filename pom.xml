@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
     <version>1.0.0</version>
     <name>Exasol Release Droid</name>
+    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <mockito.version>4.3.1</mockito.version>
+        <mockito.version>4.5.0</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
-            <version>5.2.2</version>
+            <version>5.2.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.jackson</groupId>
@@ -46,12 +46,12 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.301</version>
+            <version>1.305</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.0.0.202111291000-r</version>
+            <version>6.1.0.202203080745-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -66,12 +66,12 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20211205</version>
+            <version>20220320</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>3.8.4</version>
+            <version>3.8.5</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -113,13 +113,19 @@
             <version>2.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>maven-project-version-getter</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -136,6 +142,12 @@
                 <version>3.3.0</version>
                 <configuration>
                     <finalName>release-droid-${version}</finalName>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.exasol.releasedroid.main.Runner</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -153,7 +165,7 @@
             <plugin>
                 <groupId>org.itsallcode</groupId>
                 <artifactId>openfasttrace-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <version>1.5.0</version>
                 <executions>
                     <execution>
                         <id>trace-requirements</id>
@@ -169,7 +181,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.0.0</version>
+                <version>2.3.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -185,6 +197,7 @@
                     <excludes>
                         <exclude>doc/changes/*</exclude>
                         <exclude>src/test/java/com/exasol/releasedroid/formatting/ChecksumFormatterTest.java</exclude>
+                        <exclude>src/test/java/com/exasol/releasedroid/main/RunnerIT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -193,7 +206,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -205,7 +218,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.2.2</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -213,7 +226,17 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.1</version>
+                    <version>3.11.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.exasol</groupId>
+                    <artifactId>artifact-reference-checker-maven-plugin</artifactId>
+                    <version>0.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.ossindex.maven</groupId>
+                    <artifactId>ossindex-maven-plugin</artifactId>
+                    <version>3.2.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -224,4 +247,5 @@
         <version>1.0.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
+    <url>https://github.com/exasol/release-droid/</url>
 </project>
