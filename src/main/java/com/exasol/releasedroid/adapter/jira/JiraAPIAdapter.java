@@ -6,9 +6,7 @@ import java.net.URISyntaxException;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.api.domain.BasicIssue;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.Project;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
@@ -55,7 +53,7 @@ public class JiraAPIAdapter implements JiraGateway {
         }
     }
 
-    private JiraRestClient createJiraClient() throws JiraException {
+    JiraRestClient createJiraClient() throws JiraException {
         final String username = this.propertyReader.readProperty(JIRA_USERNAME_KEY, false);
         final String password = this.propertyReader.readProperty(JIRA_PASSWORD_KEY, true);
         final JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
