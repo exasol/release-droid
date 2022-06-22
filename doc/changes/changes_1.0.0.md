@@ -11,6 +11,7 @@ Code name: Support for multi maven module projects
 * #223: Removed Spring Beans dependency with CVE-2022-22965
 * #222: Fixed executing the JAR by adding a manifest
 * #226: Fixed error when running Jira release
+* #233: Updated dependencies to fix vulnerability ID CVE-2022-22970. Excluded vulnerability ID sonatype-2020-0926 (= CVE-2020-8908) for ossindex-maven-plugin as release-droid does not use guava directly but only via jira-rest-java-client-core and currently there is no newer release of guava available, a potential later fix is tracked in ticket https://github.com/exasol/release-droid/issues/234.
 
 ## Dependency Updates
 
@@ -28,7 +29,7 @@ Code name: Support for multi maven module projects
 
 ### Runtime Dependency Updates
 
-* Added `org.springframework:spring-beans:5.3.19`
+* Added `org.springframework:spring-beans:5.3.21`
 
 ### Test Dependency Updates
 
@@ -40,14 +41,18 @@ Code name: Support for multi maven module projects
 ### Plugin Dependency Updates
 
 * Added `com.exasol:artifact-reference-checker-maven-plugin:0.4.0`
-* Updated `com.exasol:error-code-crawler-maven-plugin:0.7.1` to `1.1.0`
-* Updated `com.exasol:project-keeper-maven-plugin:1.3.4` to `2.3.1`
+* Updated `com.exasol:error-code-crawler-maven-plugin:0.7.1` to `1.1.1`
+* Updated `com.exasol:project-keeper-maven-plugin:1.3.4` to `2.4.6`
 * Updated `io.github.zlika:reproducible-build-maven-plugin:0.14` to `0.15`
 * Updated `org.apache.maven.plugins:maven-clean-plugin:3.1.0` to `3.2.0`
 * Updated `org.apache.maven.plugins:maven-compiler-plugin:3.8.1` to `3.10.1`
 * Added `org.apache.maven.plugins:maven-failsafe-plugin:3.0.0-M6`
+* Updated `org.apache.maven.plugins:maven-jar-plugin:3.2.0` to `3.2.2`
 * Updated `org.apache.maven.plugins:maven-site-plugin:3.9.1` to `3.12.0`
 * Updated `org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M4` to `3.0.0-M6`
 * Added `org.codehaus.mojo:flatten-maven-plugin:1.2.7`
+* Updated `org.codehaus.mojo:versions-maven-plugin:2.8.1` to `2.10.0`
 * Updated `org.itsallcode:openfasttrace-maven-plugin:1.2.0` to `1.5.0`
+* Updated `org.jacoco:jacoco-maven-plugin:0.8.7` to `0.8.8`
 * Added `org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184`
+* Updated `org.sonatype.ossindex.maven:ossindex-maven-plugin:3.1.0` to `3.2.0`

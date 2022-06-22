@@ -83,7 +83,6 @@
 [33]: http://sonarsource.github.io/sonar-scanner-maven/
 [19]: https://bitbucket.org/snakeyaml/snakeyaml
 [21]: https://junit.org/junit5/
-[39]: https://www.mojohaus.org/flatten-maven-plugin/flatten-maven-plugin
 [2]: https://docs.atlassian.com/fugue-parent/4.1.0/apidocs/io/atlassian/fugue/package-summary.html
 [27]: http://hamcrest.org/JavaHamcrest/
 [7]: http://www.slf4j.org
@@ -92,7 +91,7 @@
 [51]: https://maven.apache.org/plugins/maven-jar-plugin/
 [13]: https://maven.apache.org/ref/3.8.5/maven-model/
 [3]: http://www.apache.org/licenses/LICENSE-2.0
-[17]: https://github.com/commonmark/commonmark-java/commonmark
+[17]: https://github.com/commonmark/commonmark-java
 [9]: https://commons.apache.org/proper/commons-cli/
 [59]: https://maven.apache.org/surefire/maven-failsafe-plugin/
 [56]: https://github.com/exasol/project-keeper/blob/main/LICENSE
@@ -103,6 +102,7 @@
 [37]: https://maven.apache.org/enforcer/maven-enforcer-plugin/
 [22]: https://www.eclipse.org/legal/epl-v20.html
 [31]: https://github.com/spring-projects/spring-framework
+[39]: https://www.mojohaus.org/flatten-maven-plugin
 [69]: http://maven.apache.org/plugins/maven-install-plugin/
 [41]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [6]: https://www.eclipse.org/jgit/
