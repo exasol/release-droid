@@ -158,8 +158,9 @@
                 <configuration>
                     <excludeVulnerabilityIds>
                         <!--Excluded https://ossindex.sonatype.org/vulnerability/sonatype-2020-0926
-                            as release-droid does not use guava directly but only via jira-rest-java-client-core and
-                              currently there is no newer release of guava available. -->
+                            [CVE-2020-8908] as release-droid does not use guava directly but only via
+                            jira-rest-java-client-core and currently there is no newer release of guava available.
+                            See https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>sonatype-2020-0926</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>

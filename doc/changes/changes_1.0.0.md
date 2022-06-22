@@ -11,7 +11,7 @@ Code name: Support for multi maven module projects
 * #223: Removed Spring Beans dependency with CVE-2022-22965
 * #222: Fixed executing the JAR by adding a manifest
 * #226: Fixed error when running Jira release
-* #233: Updated dependencies to fix vulnerability reported by ossindex  
+* #233: Updated dependencies to fix vulnerability ID CVE-2022-22970. Excluded vulnerability ID sonatype-2020-0926 (= CVE-2020-8908) for ossindex-maven-plugin as release-droid does not use guava directly but only via jira-rest-java-client-core and currently there is no newer release of guava available, a potential later fix is tracked in ticket https://github.com/exasol/release-droid/issues/234.
 
 ## Dependency Updates
 
