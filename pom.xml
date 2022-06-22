@@ -26,12 +26,12 @@
         </dependency>
         <!-- Update spring-beans version required by jira client to fix security issues
              CVE-2022-22965, CVE-2016-1000027, CVE-2021-22118, CVE-2021-22096, CVE-2022-22950, CVE-2022-22965 -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>5.3.19</version>
-                <scope>runtime</scope>
-            </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.3.21</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
@@ -157,10 +157,10 @@
                 <artifactId>ossindex-maven-plugin</artifactId>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!--Excluded https://ossindex.sonatype.org/vulnerability/8e973be2-4220-410d-a4cb-2de7a755bdbe -->
-                        <exclude>8e973be2-4220-410d-a4cb-2de7a755bdbe</exclude>
-                        <!--Excluded https://ossindex.sonatype.org/vulnerability/c0ed9602-d5c5-4c45-af48-c757161879ee -->
-                        <exclude>c0ed9602-d5c5-4c45-af48-c757161879ee</exclude>
+                        <!--Excluded https://ossindex.sonatype.org/vulnerability/sonatype-2020-0926
+                            as release-droid does not use guava directly but only via jira-rest-java-client-core and
+                              currently there is no newer release of guava available. -->
+                        <exclude>sonatype-2020-0926</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>

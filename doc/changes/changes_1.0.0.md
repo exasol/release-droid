@@ -11,6 +11,7 @@ Code name: Support for multi maven module projects
 * #223: Removed Spring Beans dependency with CVE-2022-22965
 * #222: Fixed executing the JAR by adding a manifest
 * #226: Fixed error when running Jira release
+* #233: Updated dependencies to fix vulnerability reported by ossindex  
 
 ## Dependency Updates
 
@@ -28,7 +29,7 @@ Code name: Support for multi maven module projects
 
 ### Runtime Dependency Updates
 
-* Added `org.springframework:spring-beans:5.3.19`
+* Added `org.springframework:spring-beans:5.3.21`
 
 ### Test Dependency Updates
 
