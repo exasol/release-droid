@@ -5,6 +5,7 @@ import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLO
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
@@ -51,7 +52,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         Optional<String> header = releaseLetter.getHeader();
         if (header.isEmpty()) {
-            throw new IllegalStateException("Release header must not be empty.");
+            throw new IllegalStateException(ExaError.messageBuilder("E-RD-GH-28") //
+                    .message("Release header must not be empty. ").toString());
         }
         final String body = releaseLetter.getBody().orElse("");
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
