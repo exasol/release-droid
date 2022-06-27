@@ -2,9 +2,7 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -67,7 +65,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     @Override
-    // [impl->dsn~retrieve-github-release-header-from-release-letter~1]
+    // [impl->dsn~retrieve-github-release-header-from-release-letter~2]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
     public void createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
         try {
