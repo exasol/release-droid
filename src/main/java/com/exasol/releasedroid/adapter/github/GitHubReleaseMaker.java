@@ -2,6 +2,7 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
@@ -48,11 +49,19 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     private GitHubRelease createReleaseModel(final Repository repository, final String version) {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
-        final String header = version + releaseLetter.getHeader().map(h -> ": " + h).orElse("");
+        Optional<String> header = releaseLetter.getHeader();
+        if (header.isEmpty()) {
+            throw new IllegalStateException("");
+        }
         final String body = releaseLetter.getBody().orElse("");
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
-        return GitHubRelease.builder().repositoryName(repository.getName()).version(version).header(header)
-                .releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
+        return GitHubRelease.builder() //
+                .repositoryName(repository.getName()) //
+                .version(version) //
+                .header(version + ": " + header.get()) //
+                .releaseLetter(body) //
+                .uploadAssets(uploadReleaseAssets) //
+                .build();
     }
 
     private boolean checkIfUploadAssetsWorkflowExists(final Repository repository) {

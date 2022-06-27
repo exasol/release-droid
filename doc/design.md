@@ -398,7 +398,7 @@ Needs: impl
 #### Retrieve GitHub Release Header from Release Letter
 `dsn~retrieve-github-release-header-from-release-letter~1`
 
-RD extracts the GitHub release's title from the release letter.
+RD builds the GitHub release's title by concatenating the version and the header of the release letter.
 
 Covers:
 
