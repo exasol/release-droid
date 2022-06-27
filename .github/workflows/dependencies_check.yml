@@ -17,4 +17,4 @@ jobs:
           java-version: 11
           cache: 'maven'
       - name: Checking dependencies for vulnerabilities
-        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit -f pom.xml
+        run: mvn --batch-mode org.sonatype.ossindex.maven:ossindex-maven-plugin:audit -f pom.xml

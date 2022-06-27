@@ -47,7 +47,7 @@ class GitHubReleaseMakerTest {
         final GitHubRelease actualRelease = arg.getValue();
         assertThat(actualRelease.getReleaseLetter(), equalTo(RELEASE_LETTER_BODY));
         assertThat(actualRelease.getVersion(), equalTo(VERSION));
-        assertThat(actualRelease.getHeader(), equalTo(RELEASE_LETTER_HEADER));
+        assertThat(actualRelease.getHeader(), equalTo(VERSION + ": " + RELEASE_LETTER_HEADER));
         assertThat(actualRelease.getRepositoryName(), equalTo(REPO_NAME));
         assertThat(actualRelease.hasUploadAssets(), is(true));
     }
@@ -65,7 +65,7 @@ class GitHubReleaseMakerTest {
     }
 
     @Test
-    void makeReleaseReturnsReleaseUrl() throws GitHubException {
+    void makeReleaseReturnsReleaseUrl() {
         final String releaseUrl = this.releaseMaker.makeRelease(this.repoMock);
         assertThat(releaseUrl, equalTo("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION));
     }

@@ -48,8 +48,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     private GitHubRelease createReleaseModel(final Repository repository, final String version) {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
+        final String header = version + releaseLetter.getHeader().map(h -> ": " + h).orElse("");
         final String body = releaseLetter.getBody().orElse("");
-        final String header = releaseLetter.getHeader().orElse(version);
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
         return GitHubRelease.builder().repositoryName(repository.getName()).version(version).header(header)
                 .releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
