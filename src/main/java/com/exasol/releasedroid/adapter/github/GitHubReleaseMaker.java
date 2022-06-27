@@ -51,7 +51,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         Optional<String> header = releaseLetter.getHeader();
         if (header.isEmpty()) {
-            throw new IllegalStateException("");
+            throw new IllegalStateException("Release header must not be empty.");
         }
         final String body = releaseLetter.getBody().orElse("");
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
