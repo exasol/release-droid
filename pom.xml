@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
     <version>1.0.0</version>
     <name>Exasol Release Droid</name>
-    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
+    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven
+    </description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -156,9 +158,9 @@
                 <configuration>
                     <excludeVulnerabilityIds>
                         <!--Excluded https://ossindex.sonatype.org/vulnerability/sonatype-2020-0926
-                             [CVE-2020-8908] as release-droid does not use guava directly but only via
-                             jira-rest-java-client-core and currently there is no newer release of guava available.
-                             See https://github.com/exasol/release-droid/issues/234 -->
+                            [CVE-2020-8908] as release-droid does not use guava directly but only via
+                            jira-rest-java-client-core and currently there is no newer release of guava available.
+                            See https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>sonatype-2020-0926</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>

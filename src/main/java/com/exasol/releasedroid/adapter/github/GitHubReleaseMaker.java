@@ -2,7 +2,6 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -50,17 +49,19 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     private GitHubRelease createReleaseModel(final Repository repository, final String version) {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
-        Optional<String> header = releaseLetter.getHeader();
+        String header = releaseLetter.getHeader().orElse("");
         if (header.isEmpty()) {
             throw new IllegalStateException(ExaError.messageBuilder("E-RD-GH-28") //
-                    .message("Release header must not be empty. ").toString());
+                    .message("Release header must not be empty.") //
+                    .mitigation("Please provide release letter with non-empty header.") //
+                    .toString());
         }
         final String body = releaseLetter.getBody().orElse("");
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
         return GitHubRelease.builder() //
                 .repositoryName(repository.getName()) //
                 .version(version) //
-                .header(version + ": " + header.get()) //
+                .header(version + ": " + header) //
                 .releaseLetter(body) //
                 .uploadAssets(uploadReleaseAssets) //
                 .build();
