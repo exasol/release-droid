@@ -74,7 +74,7 @@ class GitHubReleaseMakerTest {
 
     @Test
     void makeReleaseWithoutAssets() throws GitHubException {
-        Repository repoMock = mock(Repository.class);
+        Repository repoMock = repoMock(RELEASE_LETTER_HEADER);
         when(repoMock.getSingleFileContentAsString(".github/workflows/release_droid_upload_github_release_assets.yml"))
                 .thenThrow(new RepositoryException("expected"));
         this.releaseMaker.makeRelease(repoMock);
