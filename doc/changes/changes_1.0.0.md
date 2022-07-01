@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.0.0, released 2022-06-29
+# Exasol Release Droid 1.0.0, released 2022-07-04
 
 Code name: Support for multi maven module projects
 
