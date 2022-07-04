@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
     <version>1.0.0</version>
     <name>Exasol Release Droid</name>
-    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
+    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven
+    </description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -24,8 +26,6 @@
             <artifactId>jira-rest-java-client-core</artifactId>
             <version>5.2.4</version>
         </dependency>
-        <!-- Update spring-beans version required by jira client to fix security issues
-             CVE-2022-22965, CVE-2016-1000027, CVE-2021-22118, CVE-2021-22096, CVE-2022-22950, CVE-2022-22965 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -40,12 +40,12 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.306</version>
+            <version>1.307</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.1.0.202203080745-r</version>
+            <version>6.2.0.202206071550-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

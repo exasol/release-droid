@@ -4,6 +4,7 @@ import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLO
 
 import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
@@ -48,11 +49,22 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     private GitHubRelease createReleaseModel(final Repository repository, final String version) {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
+        String header = releaseLetter.getHeader().orElse("");
+        if (header.isEmpty()) {
+            throw new IllegalStateException(ExaError.messageBuilder("E-RD-GH-28") //
+                    .message("Release header must not be empty.") //
+                    .mitigation("Please provide release letter with non-empty header.") //
+                    .toString());
+        }
         final String body = releaseLetter.getBody().orElse("");
-        final String header = releaseLetter.getHeader().orElse(version);
         final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
-        return GitHubRelease.builder().repositoryName(repository.getName()).version(version).header(header)
-                .releaseLetter(body).uploadAssets(uploadReleaseAssets).build();
+        return GitHubRelease.builder() //
+                .repositoryName(repository.getName()) //
+                .version(version) //
+                .header(version + ": " + header) //
+                .releaseLetter(body) //
+                .uploadAssets(uploadReleaseAssets) //
+                .build();
     }
 
     private boolean checkIfUploadAssetsWorkflowExists(final Repository repository) {

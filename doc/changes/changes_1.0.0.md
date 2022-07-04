@@ -1,10 +1,15 @@
-# Exasol Release Droid 1.0.0, released 2022-04-??
+# Exasol Release Droid 1.0.0, released 2022-07-04
 
 Code name: Support for multi maven module projects
+
+## Summary
+
+This release adds support for multi maven module projects, prepends version (tag) to Github release title, fixes some bugs.
 
 ## Features
 
 * #218: Added support for multi maven module projects
+* #229: Prepended version (tag) to Github release title
 
 ## Bug Fixes
 
@@ -21,9 +26,9 @@ Code name: Support for multi maven module projects
 * Updated `io.atlassian.fugue:fugue:4.7.2` to `5.0.0`
 * Updated `org.apache.maven:maven-model:3.8.4` to `3.8.5`
 * Updated `org.commonmark:commonmark:0.18.0` to `0.18.2`
-* Updated `org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r` to `6.1.0.202203080745-r`
+* Updated `org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r` to `6.2.0.202206071550-r`
 * Updated `org.json:json:20210307` to `20220320`
-* Updated `org.kohsuke:github-api:1.301` to `1.306`
+* Updated `org.kohsuke:github-api:1.301` to `1.307`
 * Updated `org.slf4j:slf4j-simple:1.7.32` to `1.7.36`
 * Updated `org.yaml:snakeyaml:1.29` to `1.30`
 
