@@ -6,7 +6,7 @@ We provide an advanced support for the following languages:
 
 * Java
 * Scala
-  
+
 A repository with any other language should be marked as `Generic` (`--language generic` CLI parameter is mandatory in this case).
 
 ## Supported Release Platforms
@@ -48,9 +48,9 @@ project root/
 ```
 
 * The user must create a new [`changes_<version>.md` file](templates/changes_file_template.md) for each new release. The `changes_<version>.md` must contain:
-    
+
     1. Header in the following format: `# <Project name> <version>, released yyyy-mm-dd`
-    
+
     2. Description of the release changes.
 
 * The `changelog.md` must contain a link to the `changes_<version>.md` file.
@@ -102,10 +102,14 @@ Rules:
 
 ### Rules for Release on Exasol Jira
 
-* The release on the GitHub is a pre-requisite for the Jira release. 
+* The release on the GitHub is a pre-requisite for the Jira release.
 Please, be aware that the GitHub and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
 
 * You need to provide Jira credentials. You can do it either via a console input or adding `jira_username` and `jira_password` to the `~/.release-droid/credentials` file.
+
+In case RD reports access "forbidden" when accessing Jira you might need to change your Jira password:
+* Try to avoid special characters
+* Use short password, i.e. not longer than 12 characters
 
 ## How to Use Release Droid
 
@@ -131,7 +135,7 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
     ```
    If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
 
-   Windows: You can place the `credentials` file in `C:\Users\<username>\.release-droid`  
+   Windows: You can place the `credentials` file in `C:\Users\<username>\.release-droid`
    (Full path: `C:\Users\<username>\.release-droid\credentials`).
 
 1. Run Release Droid from a terminal:
@@ -142,27 +146,27 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
 
    `java -jar release-droid-1.1.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
-   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.1.0.jar %*`.  
-   Make sure you use the full path for the .jar file and don't forget to include the location of your new batch file in your PATH so you can always access it from your CLI.  
-   You can just use the name of the .bat file you created from then on e.g.:  
+   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.1.0.jar %*`.
+   Make sure you use the full path for the .jar file and don't forget to include the location of your new batch file in your PATH so you can always access it from your CLI.
+   You can just use the name of the .bat file you created from then on e.g.:
    `release-droid -name virtual-schema-common-java -goal validate ...`
 
 #### Command Line Arguments
 
-| Long Option      | Short Option | Mandatory | Description                                             | Possible values                        |
-|------------------|--------------|-----------|---------------------------------------------------------|----------------------------------------|
-| --branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                |
-| --goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                  |
-| --help           | -h           | No        | Prints help                                             |                                        |
-| --language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
-| --local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
-| --name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
-| --platforms      | -p           | No        | Comma-separated list of release platforms.*             | `github`, `maven`, `jira`              |
-| --skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
+| Long Option     | Short Option | Mandatory | Description                                             | Possible values                        |
+|-----------------|--------------|-----------|---------------------------------------------------------|----------------------------------------|
+| -branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                |
+| -goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                  |
+| -help           | -h           | No        | Prints help                                             |                                        |
+| -language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
+| -local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
+| -name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
+| -platforms      | -p           | No        | Comma-separated list of release platforms. (*)          | `github`, `maven`, `jira`              |
+| -skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
 
 Notice:
 
-* You can specify the release platforms on the project level once instead of providing them each time via CLI.
+* (*) You can specify the release platforms on the project level once instead of providing them each time via CLI.
   To specify the release platforms, add `release-platforms` list to the `release_config.yml` file.
 
 Example:
@@ -171,7 +175,7 @@ Example:
 release-platforms:
   - GitHub
   - Maven
-  - Jira  
+  - Jira
 ```
 
 * There are two ways to specify multiple platforms via CLI:
@@ -187,4 +191,4 @@ release-platforms:
 
 ## Debugging
 
-If you need to debug RD, you can adjust Java's log level. The default level for this project is `INFO`. To do that you need to change a logging level in a `logging.properties` file in the `src/main/resources/logging.properties` directory. 
+If you need to debug RD, you can adjust Java's log level. The default level for this project is `INFO`. To do that you need to change a logging level in a `logging.properties` file in the `src/main/resources/logging.properties` directory.
