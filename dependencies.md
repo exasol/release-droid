@@ -72,7 +72,7 @@
 [10]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [11]: https://github.com/douglascrockford/JSON-java
 [12]: http://json.org/license.html
-[13]: https://maven.apache.org/ref/3.8.5/maven-model/
+[13]: https://maven.apache.org/ref/3.8.6/maven-model/
 [14]: https://github.com/exasol/error-reporting-java
 [15]: https://opensource.org/licenses/MIT
 [16]: https://github.com/commonmark/commonmark-java
