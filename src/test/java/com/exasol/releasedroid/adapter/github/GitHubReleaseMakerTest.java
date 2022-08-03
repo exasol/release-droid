@@ -3,7 +3,11 @@ package com.exasol.releasedroid.adapter.github;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,15 +36,29 @@ class GitHubReleaseMakerTest {
         this.releaseMaker = new GitHubReleaseMaker(this.githubGatewayMock);
     }
 
-    private ReleaseLetter releaseLetter(String releaseLetterHeader) {
+    private void mockReleaseInfo(final GitHubGateway githubGatewayMock) {
+        try {
+            final GitHubReleaseInfo rInfo = GitHubReleaseInfo.builder() //
+                    .repositoryName(REPO_NAME) //
+                    .version(VERSION) //
+                    .draft(true) //
+                    .htmlUrl(new URL("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION)) //
+                    .build();
+            when(githubGatewayMock.createGithubRelease(any())).thenReturn(rInfo);
+        } catch (MalformedURLException | GitHubException exception) {
+            throw new IllegalStateException(exception);
+        }
+    }
+
+    private ReleaseLetter releaseLetter(final String releaseLetterHeader) {
         return ReleaseLetter.builder("filename") //
                 .header(releaseLetterHeader) //
                 .body(RELEASE_LETTER_BODY) //
                 .build();
     }
 
-    private Repository repoMock(String releaseLetterHeader) {
-        Repository repoMock = mock(Repository.class);
+    private Repository repoMock(final String releaseLetterHeader) {
+        final Repository repoMock = mock(Repository.class);
         when(repoMock.getName()).thenReturn(REPO_NAME);
         when(repoMock.getVersion()).thenReturn(VERSION);
         when(repoMock.getReleaseLetter(VERSION)).thenReturn(releaseLetter(releaseLetterHeader));
@@ -51,16 +69,17 @@ class GitHubReleaseMakerTest {
     // release letter.
     @Test
     void emptyHeader_ThrowsException() {
-        Repository repoMock = mock(Repository.class);
+        final Repository repoMock = mock(Repository.class);
         when(repoMock.getVersion()).thenReturn(VERSION);
         when(repoMock.getReleaseLetter(VERSION)).thenReturn(releaseLetter(""));
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> this.releaseMaker.makeRelease(repoMock));
         assertThat(exception.getMessage(), containsString("E-RD-GH-28: Release header must not be empty."));
     }
 
     @Test
     void makeRelease() throws GitHubException {
+        mockReleaseInfo(this.githubGatewayMock);
         this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
         final ArgumentCaptor<GitHubRelease> arg = ArgumentCaptor.forClass(GitHubRelease.class);
         verify(this.githubGatewayMock).createGithubRelease(arg.capture());
@@ -74,7 +93,8 @@ class GitHubReleaseMakerTest {
 
     @Test
     void makeReleaseWithoutAssets() throws GitHubException {
-        Repository repoMock = repoMock(RELEASE_LETTER_HEADER);
+        mockReleaseInfo(this.githubGatewayMock);
+        final Repository repoMock = repoMock(RELEASE_LETTER_HEADER);
         when(repoMock.getSingleFileContentAsString(".github/workflows/release_droid_upload_github_release_assets.yml"))
                 .thenThrow(new RepositoryException("expected"));
         this.releaseMaker.makeRelease(repoMock);
@@ -86,6 +106,7 @@ class GitHubReleaseMakerTest {
 
     @Test
     void makeReleaseReturnsReleaseUrl() {
+        mockReleaseInfo(this.githubGatewayMock);
         final String releaseUrl = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
         assertThat(releaseUrl, equalTo("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION));
     }

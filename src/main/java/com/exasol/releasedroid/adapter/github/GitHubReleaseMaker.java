@@ -31,17 +31,20 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     // [impl->dsn~create-new-github-release~1]
     public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
-        final String releaseUrl = createGitHubRelease(repository);
+        final GitHubReleaseInfo info = createGitHubRelease(repository);
+        final String releaseUrl = info.getTagUrl();
         LOGGER.info(() -> "A GitHub release was created at: " + releaseUrl);
+        if (info.isDraft()) {
+            LOGGER.info(() -> "Please do not forget to finalize the draft at: " + info.getHtmlUrl());
+        }
         return releaseUrl;
     }
 
-    private String createGitHubRelease(final Repository repository) {
+    private GitHubReleaseInfo createGitHubRelease(final Repository repository) {
         final String version = repository.getVersion();
         final GitHubRelease release = createReleaseModel(repository, version);
         try {
-            this.githubGateway.createGithubRelease(release);
-            return "https://github.com/" + repository.getName() + "/releases/tag/" + version;
+            return this.githubGateway.createGithubRelease(release);
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }
@@ -49,7 +52,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     private GitHubRelease createReleaseModel(final Repository repository, final String version) {
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
-        String header = releaseLetter.getHeader().orElse("");
+        final String header = releaseLetter.getHeader().orElse("");
         if (header.isEmpty()) {
             throw new IllegalStateException(ExaError.messageBuilder("E-RD-GH-28") //
                     .message("Release header must not be empty.") //
