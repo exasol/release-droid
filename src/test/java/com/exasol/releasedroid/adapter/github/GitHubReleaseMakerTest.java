@@ -36,20 +36,6 @@ class GitHubReleaseMakerTest {
         this.releaseMaker = new GitHubReleaseMaker(this.githubGatewayMock);
     }
 
-    private void mockReleaseInfo(final GitHubGateway githubGatewayMock) {
-        try {
-            final GitHubReleaseInfo rInfo = GitHubReleaseInfo.builder() //
-                    .repositoryName(REPO_NAME) //
-                    .version(VERSION) //
-                    .draft(true) //
-                    .htmlUrl(new URL("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION)) //
-                    .build();
-            when(githubGatewayMock.createGithubRelease(any())).thenReturn(rInfo);
-        } catch (MalformedURLException | GitHubException exception) {
-            throw new IllegalStateException(exception);
-        }
-    }
-
     private ReleaseLetter releaseLetter(final String releaseLetterHeader) {
         return ReleaseLetter.builder("filename") //
                 .header(releaseLetterHeader) //
@@ -109,5 +95,19 @@ class GitHubReleaseMakerTest {
         mockReleaseInfo(this.githubGatewayMock);
         final String releaseUrl = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
         assertThat(releaseUrl, equalTo("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION));
+    }
+
+    private void mockReleaseInfo(final GitHubGateway githubGatewayMock) {
+        try {
+            final GitHubReleaseInfo rInfo = GitHubReleaseInfo.builder() //
+                    .repositoryName(REPO_NAME) //
+                    .version(VERSION) //
+                    .draft(true) //
+                    .htmlUrl(new URL("https://github.com/" + REPO_NAME + "/releases/releases/edit/untagged-123")) //
+                    .build();
+            when(githubGatewayMock.createGithubRelease(any())).thenReturn(rInfo);
+        } catch (MalformedURLException | GitHubException exception) {
+            throw new IllegalStateException(exception);
+        }
     }
 }

@@ -32,12 +32,12 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     public String makeRelease(final Repository repository) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
         final GitHubReleaseInfo info = createGitHubRelease(repository);
-        final String releaseUrl = info.getTagUrl();
-        LOGGER.info(() -> "A GitHub release was created at: " + releaseUrl);
+        final String tagUrl = info.getTagUrl();
+        LOGGER.info(() -> "A GitHub release was created at: " + tagUrl);
         if (info.isDraft()) {
             LOGGER.info(() -> "Please do not forget to finalize the draft at: " + info.getHtmlUrl());
         }
-        return releaseUrl;
+        return tagUrl;
     }
 
     private GitHubReleaseInfo createGitHubRelease(final Repository repository) {

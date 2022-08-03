@@ -15,7 +15,6 @@ public class GitHubReleaseInfo {
     private String repositoryName;
     private String version;
     private boolean isDraft;
-
     private URL htmlUrl;
 
     public String getTagUrl() {

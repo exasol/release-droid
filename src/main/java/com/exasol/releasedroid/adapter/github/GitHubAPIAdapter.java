@@ -93,21 +93,6 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    private GitHubReleaseInfo getGitHubReleaseInfo(final GitHubRelease release) throws IOException, GitHubException {
-        final GitHubReleaseInfo.Builder builder = GitHubReleaseInfo.builder() //
-                .repositoryName(release.getRepositoryName()) //
-                .version(release.getVersion()); //
-        final PagedIterator<GHRelease> it = this.getRepository(release.getRepositoryName()) //
-                .listReleases().iterator();
-        if (it.hasNext()) {
-            final GHRelease other = it.next();
-            builder //
-                    .draft(other.isDraft()) //
-                    .htmlUrl(other.getHtmlUrl());
-        }
-        return builder.build();
-    }
-
     // [impl->dsn~upload-github-release-assets~1]
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
     private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl)
