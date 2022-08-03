@@ -36,6 +36,7 @@ public class Runner {
     private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
     private static final String REPORT_PATH = HOME_DIRECTORY + "/.release-droid";
     private static final String REPORT_NAME = "last_report.txt";
+    private static final String USER_GUIDE_URL = "https://github.com/exasol/release-droid/blob/main/doc/user_guide/user_guide.md";
 
     /**
      * Run the Release Droid.
@@ -68,9 +69,8 @@ public class Runner {
     private static void checkCredentialsFile() {
         final Path file = Paths.get(RELEASE_DROID_CREDENTIALS).toAbsolutePath();
         if (!Files.exists(file)) {
-            LOGGER.warning(ExaError
-                    .messageBuilder("W-RD-19").message("No file {{credentials file}}."
-                            + " Please consider to store your credentials there." + " See user_guide.md.")
+            LOGGER.warning(ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
+                    .mitigation("Please consider to store your credentials there, see " + USER_GUIDE_URL + ".")
                     .parameter("credentials file", file).toString());
         }
     }
