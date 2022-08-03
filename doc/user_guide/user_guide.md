@@ -7,7 +7,9 @@ Release Droid provides advanced support for the following languages:
 * Java
 * Scala
 
-A repository with any other language should be marked as `Generic` (CLI parameter `--language generic` is mandatory in this case).
+A repository with any other language should be marked as `Generic`, see
+* CLI parameter `--language generic` or
+* entry `language: Generic` in configuration file [`release_config.yml`](#file-release_configyml)
 
 ## Supported Release Platforms
 
@@ -99,7 +101,52 @@ Rules:
 
 * The release on the GitHub is a pre-requisite for the Jira release.
 Please, be aware that the GitHub and Jira releases must be made on the same machine because RD will search for the release state stored on the machine.
-* You need to provide Jira credentials. You can do it either via a console input or adding `jira_username` and `jira_password` to file `~/.release-droid/credentials`, see [Run Steps](#run-steps).
+* You need to provide Jira credentials either by manual input or in configuration file [`~/.release-droid/credentials`](#file-release-droidcredentials).
+
+## Configuration Files
+
+If you want to reduce the number of keystrokes required to run release droid you can provide credentials and some of the command line options in some configuration files.
+
+### File `~/.release-droid/credentials`
+
+If you create this file in your home directory then release droid will read credentials for GitHub and Jira from this file. This way you no longer need to manually enter the credentials into the terminal each time you want to run release droid.
+
+On Windows you can place the `credentials` file in `C:\Users\<username>\.release-droid` (Full path: `C:\Users\<username>\.release-droid\credentials`).
+
+Sample content
+
+```properties
+github_username=<your github username>
+github_oauth_access_token=<github access token>
+jira_username=<your jira user name>
+jira_password=<jira password>
+```
+
+The last to lines are only relevant if releasing to platform Jira.<br />
+If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.<br />
+
+We recommend restricting access to this file for security purposes:
+
+```bash
+chmod u-x,g-rwx,o-rwx "$HOME"/.release-droid/credentials
+```
+
+In case RD reports access "forbidden" when accessing Jira you might need to change your Jira password:
+* Try to avoid special characters
+* Use short password, i.e. not longer than 12 characters
+
+### File `release_config.yml`
+
+If you create this file in the directory of your project then release droid
+will read platforms and programming language from it.
+
+```yaml
+release-platforms:
+  - GitHub
+  - Maven
+  - Jira
+language: Java
+```
 
 ## How to Use Release Droid
 
@@ -113,27 +160,7 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
 
 1. Download the latest available [release](https://github.com/exasol/release-droid/releases) of Release Droid.
 
-1. (Optional) Place a file with credentials in your home directory: `~/.release-droid/credentials`. We recommend restricting access to this file for security purposes:
-    ```bash
-    chmod u-x,g-rwx,o-rwx "$HOME"/.release-droid/credentials
-    ````
-   The file must contain the following properties:
-
-   ```properties
-   github_username=<your github username>
-   github_oauth_access_token=<github access token>
-   jira_username=<your jira user name>
-   jira_password=<jira password>
-   ```
-
-   The last to lines are only relevant if releasing to platform Jira.<br />
-   If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.<br />
-   On Windows you can place the `credentials` file in `C:\Users\<username>\.release-droid`
-   (Full path: `C:\Users\<username>\.release-droid\credentials`).
-
-   In case RD reports access "forbidden" when accessing Jira you might need to change your Jira password:
-   * Try to avoid special characters
-   * Use short password, i.e. not longer than 12 characters
+1. Optionally create the [configuration files](#configuration-files) described above.
 
 1. Run Release Droid from a terminal:
 
@@ -161,24 +188,12 @@ Please, be aware that the GitHub and Jira releases must be made on the same mach
 | -platforms      | -p           | No        | Comma-separated list of release platforms. (*)          | `github`, `maven`, `jira`              |
 | -skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
 
-Notice:
-
-* (*) You can specify the release platforms on the project level once instead of providing them each time via CLI.
-  To specify the release platforms, add `release-platforms` list to the `release_config.yml` file.
-
-Example:
-
-```yaml
-release-platforms:
-  - GitHub
-  - Maven
-  - Jira
-```
-
-* There are two ways to specify multiple platforms via CLI:
+(*) There are two ways to specify multiple platforms via CLI:
 
 1. `-p github -p maven`
 1. `-p github,maven` (This is a deprecated way, which is going to be removed in future)
+
+Please also note the option to specify the platforms in the configuration file [`release_config.yml`](#file-release_configyml)
 
 #### Release Goals
 
@@ -187,4 +202,4 @@ release-platforms:
 
 ## Debugging
 
-If you need to debug RD, you can adjust Java's log level in file `src/main/resources/logging.properties`. The default level for this project is `INFO`. 
+If you need to debug RD, you can adjust the Java log level in file `src/main/resources/logging.properties`. The default level used by release droid is `INFO`.

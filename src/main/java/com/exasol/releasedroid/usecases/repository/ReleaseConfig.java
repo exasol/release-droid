@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
@@ -10,9 +9,11 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
  */
 public class ReleaseConfig {
     private final List<PlatformName> releasePlatforms;
+    private final Optional<String> language;
 
     private ReleaseConfig(final Builder builder) {
         this.releasePlatforms = builder.releasePlatforms;
+        this.language = Optional.ofNullable(builder.language);
     }
 
     /**
@@ -25,12 +26,21 @@ public class ReleaseConfig {
     }
 
     /**
+     * Get the main programming language.
+     *
+     * @return language
+     */
+    public Optional<String> getLanguage() {
+        return this.language;
+    }
+
+    /**
      * Check if release platforms present.
      *
      * @return true if release platforms present
      */
     public boolean hasReleasePlatforms() {
-        return this.releasePlatforms != null && !this.releasePlatforms.isEmpty();
+        return (this.releasePlatforms != null) && !this.releasePlatforms.isEmpty();
     }
 
     @Override
@@ -38,7 +48,7 @@ public class ReleaseConfig {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
         final ReleaseConfig that = (ReleaseConfig) o;
@@ -64,6 +74,7 @@ public class ReleaseConfig {
      */
     public static class Builder {
         private List<PlatformName> releasePlatforms;
+        private String language;
 
         /**
          * Add release platforms.
@@ -73,6 +84,17 @@ public class ReleaseConfig {
          */
         public Builder releasePlatforms(final List<String> releasePlatforms) {
             this.releasePlatforms = PlatformName.toList(releasePlatforms.toArray(new String[0]));
+            return this;
+        }
+
+        /**
+         * Add main programming language.
+         *
+         * @param value main programming language
+         * @return main programming language
+         */
+        public Builder language(final String value) {
+            this.language = value;
             return this;
         }
 
