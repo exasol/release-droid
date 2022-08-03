@@ -4,15 +4,14 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
-import com.exasol.releasedroid.adapter.communityportal.CommunityPortalAPIAdapter;
-import com.exasol.releasedroid.adapter.communityportal.CommunityPortalGateway;
-import com.exasol.releasedroid.adapter.communityportal.CommunityPortalReleaseMaker;
+import com.exasol.releasedroid.adapter.communityportal.*;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.adapter.jira.JiraAPIAdapter;
 import com.exasol.releasedroid.adapter.jira.JiraReleaseMaker;
@@ -32,6 +31,8 @@ import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
  * This class contains main method.
  */
 public class Runner {
+
+    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
     private static final String REPORT_PATH = HOME_DIRECTORY + "/.release-droid";
     private static final String REPORT_NAME = "last_report.txt";
@@ -47,6 +48,7 @@ public class Runner {
     }
 
     private static ReleaseDroid createReleaseDroid() {
+        checkCredentialsFile();
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
@@ -61,6 +63,16 @@ public class Runner {
         return List.of( //
                 new ResponseLogger(new ReportLogFormatter()),
                 new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH, REPORT_NAME));
+    }
+
+    private static void checkCredentialsFile() {
+        final Path file = Paths.get(RELEASE_DROID_CREDENTIALS).toAbsolutePath();
+        if (!Files.exists(file)) {
+            LOGGER.warning(ExaError
+                    .messageBuilder("W-RD-19").message("No file {{credentials file}}."
+                            + " Please consider to store your credentials there." + " See user_guide.md.")
+                    .parameter("credentials file", file).toString());
+        }
     }
 
     private static PropertyReaderImpl getPropertyReader() {

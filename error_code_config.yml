@@ -6,7 +6,7 @@ error-tags:
       - com.exasol.releasedroid.usecases.release
       - com.exasol.releasedroid.usecases.report
       - com.exasol.releasedroid.output
-    highest-index: 18
+    highest-index: 19
   RD-VAL:
     packages:
       - com.exasol.releasedroid.usecases.validate
