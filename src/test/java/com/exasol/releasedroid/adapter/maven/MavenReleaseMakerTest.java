@@ -26,7 +26,6 @@ class MavenReleaseMakerTest {
     private static final String REPOSITORY_NAME = "name";
     private static final String MAVEN_ARTIFACT_ID = "maven-artifact-id";
     private static final String MAVEN_GROUP_ID = "maven.group.id";
-    private static final String MAVEN_VERSION = "maven version";
 
     @Mock
     private GitHubGateway githubGatewayMock;

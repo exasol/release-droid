@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>Exasol Release Droid</name>
-    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven
-    </description>
+    <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -184,7 +182,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.4.6</version>
+                <version>2.5.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -247,7 +245,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
     <url>https://github.com/exasol/release-droid/</url>
