@@ -48,7 +48,7 @@ public class Runner {
         createReleaseDroid().run(new UserInputParser().parseUserInput(args));
     }
 
-    private static ReleaseDroid createReleaseDroid() {
+    static ReleaseDroid createReleaseDroid() {
         checkCredentialsFile();
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
