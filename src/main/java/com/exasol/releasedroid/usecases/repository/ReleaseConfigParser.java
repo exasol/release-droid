@@ -29,7 +29,13 @@ public class ReleaseConfigParser {
             return ReleaseConfig.builder().build();
         }
         final List<String> releasePlatforms = getReleasePlatforms(parsedConfig);
-        return ReleaseConfig.builder().releasePlatforms(releasePlatforms).build();
+
+        final ReleaseConfig.Builder builder = ReleaseConfig.builder().releasePlatforms(releasePlatforms);
+        final Object language = parsedConfig.get("language");
+        if (language != null) {
+            builder.language(language.toString());
+        }
+        return builder.build();
     }
 
     private static List<String> getReleasePlatforms(final Map<String, Object> parsedConfig) {

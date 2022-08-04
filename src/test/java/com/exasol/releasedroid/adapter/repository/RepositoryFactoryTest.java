@@ -5,7 +5,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,37 +34,51 @@ class RepositoryFactoryTest {
     }
 
     @Test
-    void getJavaRepository() {
-        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate")
-                .language("java").build();
-        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(JavaRepository.class));
+    void getJavaRepository() throws GitHubException {
+        verifyRepository("java", JavaRepository.class);
     }
 
     @Test
-    void getJavaRepositoryWithAutoDetectedLanguage() throws GitHubException {
-        when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("java");
+    void getScalaRepository() throws GitHubException {
+        verifyRepository("scala", ScalaRepository.class);
+    }
+
+    void verifyRepository(final String language, final Class<?> expectedClass) throws GitHubException {
+        verifyRepositoryFromUserInput(language, expectedClass);
+        verifyRepositoryFromReleaseConfig(language, expectedClass);
+        verifyRepositoryFromPrimaryLanguage(language, expectedClass);
+    }
+
+    void verifyRepositoryFromUserInput(final String language, final Class<?> expectedClass) {
+        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate")
+                .language(language).build();
+        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(expectedClass));
+    }
+
+    void verifyRepositoryFromReleaseConfig(final String language, final Class<?> expectedClass) throws GitHubException {
+        simulateReleaseConfig(this.githubGateway, "null/my-repo", "language: " + language);
+        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate").build();
+        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(expectedClass));
+    }
+
+    private void simulateReleaseConfig(final GitHubGateway gateway, final String repo, final String content)
+            throws GitHubException {
+        when(gateway.getFileContent(eq(repo), eq(null), any()))
+                .thenReturn(new ByteArrayInputStream(content.getBytes()));
+    }
+
+    void verifyRepositoryFromPrimaryLanguage(final String language, final Class<?> expectedClass)
+            throws GitHubException {
+        simulateReleaseConfig(this.githubGateway, "exasol/my-repo", "");
+        when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn(language);
         final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
                 .goal("validate").build();
-        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(JavaRepository.class));
-    }
-
-    @Test
-    void getScalaRepository() {
-        final UserInput userInput = builder().repositoryName("my-repo").platforms("GitHub").goal("validate")
-                .language("scala").build();
-        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(ScalaRepository.class));
-    }
-
-    @Test
-    void getScalaRepositoryWithAutoDetectedLanguage() throws GitHubException {
-        when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("scala");
-        final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
-                .goal("validate").build();
-        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(ScalaRepository.class));
+        assertThat(this.repositoryGateway.getRepository(userInput), instanceOf(expectedClass));
     }
 
     @Test
     void tryCreatingUnsupportedRepository() throws GitHubException {
+        when(this.githubGateway.getFileContent(any(), any(), any())).thenThrow(GitHubException.class);
         when(this.githubGateway.getRepositoryPrimaryLanguage("exasol/my-repo")).thenReturn("python");
         final UserInput userInput = builder().owner("exasol").repositoryName("my-repo").platforms("GitHub")
                 .goal("validate").build();

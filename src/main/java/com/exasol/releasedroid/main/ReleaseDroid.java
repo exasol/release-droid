@@ -7,12 +7,8 @@ import java.util.stream.Collectors;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
-import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
-import com.exasol.releasedroid.usecases.request.Goal;
-import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.request.UserInput;
+import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.request.*;
 import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
 import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
@@ -94,13 +90,12 @@ public class ReleaseDroid {
     }
 
     private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
-        final Optional<ReleaseConfig> releaseConfig = repository.getReleaseConfig();
         if (userInput.hasPlatforms()) {
             return userInput.getPlatformNames();
-        } else if (releaseConfig.isPresent() && releaseConfig.get().hasReleasePlatforms()) {
-            return releaseConfig.get().getReleasePlatforms();
         } else {
-            return List.of();
+            return repository.getReleaseConfig() //
+                    .map(ReleaseConfig::getReleasePlatforms) //
+                    .orElse(Collections.emptyList());
         }
     }
 
@@ -110,7 +105,7 @@ public class ReleaseDroid {
     }
 
     private void validatePlatformNames(final List<PlatformName> platformNames) {
-        if (platformNames == null || platformNames.isEmpty()) {
+        if ((platformNames == null) || platformNames.isEmpty()) {
             throwExceptionForMissingParameter("platforms");
         }
     }
@@ -166,7 +161,7 @@ public class ReleaseDroid {
     }
 
     private void validateSkipValidationParameter(final UserInput userInput) {
-        if (userInput.skipValidation() && userInput.getGoal() != Goal.RELEASE) {
+        if (userInput.skipValidation() && (userInput.getGoal() != Goal.RELEASE)) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-15")
                     .message("The 'skipvalidation' argument can be only used with RELEASE goal.").toString());
         }

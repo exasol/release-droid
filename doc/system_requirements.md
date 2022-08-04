@@ -1,5 +1,3 @@
-<head><link href="oft_spec.css" rel="stylesheet"></head>
-
 # System Requirement Specification Exasol Release Droid
 
 ## Introduction
@@ -195,7 +193,7 @@ Teams usually agree on rules that each member follows in order to have complete 
 
 Typical examples of these rules are directory layout, naming conventions, versioning rules and so forth.
 
-Often parts of these rules are enforced by the build system. This is especially true if the rules are centered around standards set by either the language in which the project is realized or the used build framework itself. 
+Often parts of these rules are enforced by the build system. This is especially true if the rules are centered around standards set by either the language in which the project is realized or the used build framework itself.
 The [Apache Maven](https://maven.apache.org/) framework for example is well known for its convention over configuration approach, intentionally chosen so that anyone familiar with the framework will be able to navigate and understand foreign projects built with the same tool chain.
 
 Other parts however are more team-specific or company-specific like the decision about contents and layout of a release letter or versioning schemes.
@@ -258,8 +256,8 @@ Needs: dsn
 
 Release step validation serves two purposes. The first one is obvious: you want to validate that a step in your release process was executed successfully and that all the expected results exist and are valid.
 
-Additionally, step validation helps to recover from a release that was interrupted midway. 
-Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time. 
+Additionally, step validation helps to recover from a release that was interrupted midway.
+Imagine a situation where you built and signed your delivery packages but somewhere along the way a server that you wanted to deploy the delivery on was not reachable because it underwent maintenance at that time.
 Depending on how many steps your release process has and how complicated they are, starting over can be terribly annoying and costly.
 
 What you really want is to find out, how far you got and restart from that point.

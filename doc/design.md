@@ -354,18 +354,6 @@ Covers:
 
 Needs: impl, utest
 
-#### Validate Pom File Contains Required Plugins for Maven Release
-
-`dsn~validate-pom-contains-required-plugins-for-maven-release~1`
-
-RD validates that all plugins required for a Maven release exist.
-
-Covers:
-
-* `req~releasing-on-maven~1`
-
-Needs: impl, utest
-
 ## Release
 
 ### Release Preparations
