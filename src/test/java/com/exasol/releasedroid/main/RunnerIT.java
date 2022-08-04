@@ -1,7 +1,8 @@
 package com.exasol.releasedroid.main;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -24,11 +25,6 @@ class RunnerIT {
         }
         final String output = startCommand("java", "-jar", jar.toString(), "--help");
         assertThat(output, startsWith("usage: Release Droid"));
-    }
-
-    @Test
-    void runMain() throws IOException {
-        assertThat(Runner.createReleaseDroid(), notNullValue());
     }
 
     private String startCommand(final String... command) throws IOException, InterruptedException {

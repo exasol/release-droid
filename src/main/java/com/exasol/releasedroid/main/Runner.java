@@ -49,7 +49,7 @@ public class Runner {
     }
 
     static ReleaseDroid createReleaseDroid() {
-        checkCredentialsFile();
+        checkCredentialsFile(Paths.get(RELEASE_DROID_CREDENTIALS));
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
@@ -66,14 +66,16 @@ public class Runner {
                 new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH, REPORT_NAME));
     }
 
-    private static void checkCredentialsFile() {
-        final Path file = Paths.get(RELEASE_DROID_CREDENTIALS).toAbsolutePath();
-        if (!Files.exists(file)) {
-            final String message = ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
-                    .mitigation("Please consider to store your credentials there, see " + USER_GUIDE_URL + ".")
-                    .parameter("credentials file", file).toString();
-            LOGGER.warning(message);
+    static boolean checkCredentialsFile(final Path path) {
+        final Path file = path.toAbsolutePath();
+        if (Files.exists(file)) {
+            return true;
         }
+        final String message = ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
+                .mitigation("Please consider to store your credentials there, see " + USER_GUIDE_URL + ".")
+                .parameter("credentials file", file).toString();
+        LOGGER.warning(message);
+        return false;
     }
 
     private static PropertyReaderImpl getPropertyReader() {
