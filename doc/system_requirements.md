@@ -1,5 +1,3 @@
-/* <head><link href="oft_spec.css" rel="stylesheet"></head> */
-
 # System Requirement Specification Exasol Release Droid
 
 ## Introduction
