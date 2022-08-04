@@ -47,7 +47,7 @@ class RepositoryFactoryTest {
     void verifyRepository(final String language, final Class<?> expectedClass) throws GitHubException {
         verifyRepositoryFromUserInput(language, expectedClass);
         verifyRepositoryFromReleaseConfig(language, expectedClass);
-        verifyRepositoryFromUserInput(language, expectedClass);
+        verifyRepositoryFromPrimaryLanguage(language, expectedClass);
     }
 
     void verifyRepositoryFromUserInput(final String language, final Class<?> expectedClass) {

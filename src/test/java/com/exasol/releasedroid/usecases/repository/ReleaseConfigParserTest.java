@@ -14,17 +14,13 @@ class ReleaseConfigParserTest {
     @Test
     void testParseConfig() {
         final ReleaseConfig config = ReleaseConfigParser.parse(getCommunityPortalTemplate());
-        assertAll(() -> assertThat(config.getReleasePlatforms(), containsInRelativeOrder(MAVEN, GITHUB, COMMUNITY)),
-                () -> assertThat(config.hasReleasePlatforms(), equalTo(true)) //
-        );
+        assertAll(() -> assertThat(config.getReleasePlatforms(), containsInRelativeOrder(MAVEN, GITHUB, COMMUNITY)));
     }
 
     @Test
     void testParseEmptyFile() {
         final ReleaseConfig config = ReleaseConfigParser.parse("");
-        assertAll(() -> assertThat(config.getReleasePlatforms(), equalTo(null)),
-                () -> assertThat(config.hasReleasePlatforms(), equalTo(false)) //
-        );
+        assertAll(() -> assertThat(config.getReleasePlatforms(), empty()));
     }
 
     @Test

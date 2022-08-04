@@ -27,6 +27,11 @@ class RunnerIT {
         assertThat(output, startsWith("usage: Release Droid"));
     }
 
+    @Test
+    void runMain() throws IOException {
+        Runner.main("--help");
+    }
+
     private String startCommand(final String... command) throws IOException, InterruptedException {
         final Process process = new ProcessBuilder(command).start();
         final int exitCode = process.waitFor();

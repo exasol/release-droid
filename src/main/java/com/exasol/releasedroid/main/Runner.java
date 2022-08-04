@@ -43,7 +43,7 @@ public class Runner {
      *
      * @param args arguments
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         setUpLogging();
         createReleaseDroid().run(new UserInputParser().parseUserInput(args));
     }
@@ -69,9 +69,10 @@ public class Runner {
     private static void checkCredentialsFile() {
         final Path file = Paths.get(RELEASE_DROID_CREDENTIALS).toAbsolutePath();
         if (!Files.exists(file)) {
-            LOGGER.warning(ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
+            final String message = ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
                     .mitigation("Please consider to store your credentials there, see " + USER_GUIDE_URL + ".")
-                    .parameter("credentials file", file).toString());
+                    .parameter("credentials file", file).toString();
+            LOGGER.warning(message);
         }
     }
 
