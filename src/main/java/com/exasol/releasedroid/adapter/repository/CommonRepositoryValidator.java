@@ -5,7 +5,8 @@ import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -113,30 +114,19 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     // [impl->dsn~validate-release-version-increased-correctly~1]
     private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
         final var report = ValidationReport.create();
-        final Set<String> possibleVersions = getPossibleVersions(latestTag);
-        if (possibleVersions.contains(newTag)) {
+        final Version candidate = Version.parse(newTag);
+        final Set<Version> legalSuccessors = Version.parse(latestTag).potentialSuccessors();
+        if (legalSuccessors.contains(candidate)) {
             report.addSuccessfulResult("A new tag.");
         } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-23")
                     .message(
                             "The new version {{newTag}} does not fit the versioning rules. "
                                     + "Possible versions for the release are: {{possibleVersions|uq}}",
-                            newTag, possibleVersions.toString())
+                            candidate.toString(), legalSuccessors.toString())
                     .toString());
         }
         return report;
-    }
-
-    private Set<String> getPossibleVersions(final String previousVersion) {
-        final Set<String> versions = new HashSet<>();
-        final String[] versionParts = previousVersion.split("\\.");
-        final int major = Integer.parseInt(versionParts[0]);
-        final int minor = Integer.parseInt(versionParts[1]);
-        final int fix = Integer.parseInt(versionParts[2]);
-        versions.add((major + 1) + ".0.0");
-        versions.add(major + "." + (minor + 1) + ".0");
-        versions.add(major + "." + minor + "." + (fix + 1));
-        return versions;
     }
 
     // [impl->dsn~validate-changelog~1]
