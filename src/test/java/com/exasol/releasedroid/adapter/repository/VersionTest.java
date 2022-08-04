@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class VersionTest {
+class VersionTest {
 
     @ParameterizedTest(name = "{0}")
     @CsvSource(value = { "a1.2.3", "1.a.2", "1.2", "1.", "1.2.3.4" })
