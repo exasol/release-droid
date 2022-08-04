@@ -36,19 +36,20 @@ public class Runner {
     private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
     private static final String REPORT_PATH = HOME_DIRECTORY + "/.release-droid";
     private static final String REPORT_NAME = "last_report.txt";
+    private static final String USER_GUIDE_URL = "https://github.com/exasol/release-droid/blob/main/doc/user_guide/user_guide.md";
 
     /**
      * Run the Release Droid.
      *
      * @param args arguments
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String... args) throws IOException {
         setUpLogging();
         createReleaseDroid().run(new UserInputParser().parseUserInput(args));
     }
 
-    private static ReleaseDroid createReleaseDroid() {
-        checkCredentialsFile();
+    static ReleaseDroid createReleaseDroid() {
+        checkCredentialsFile(Paths.get(RELEASE_DROID_CREDENTIALS));
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
@@ -65,14 +66,16 @@ public class Runner {
                 new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH, REPORT_NAME));
     }
 
-    private static void checkCredentialsFile() {
-        final Path file = Paths.get(RELEASE_DROID_CREDENTIALS).toAbsolutePath();
-        if (!Files.exists(file)) {
-            LOGGER.warning(ExaError
-                    .messageBuilder("W-RD-19").message("No file {{credentials file}}."
-                            + " Please consider to store your credentials there." + " See user_guide.md.")
-                    .parameter("credentials file", file).toString());
+    static boolean checkCredentialsFile(final Path path) {
+        final Path file = path.toAbsolutePath();
+        if (Files.exists(file)) {
+            return true;
         }
+        final String message = ExaError.messageBuilder("W-RD-19").message("No file {{credentials file}}.") //
+                .mitigation("Please consider to store your credentials there, see " + USER_GUIDE_URL + ".")
+                .parameter("credentials file", file).toString();
+        LOGGER.warning(message);
+        return false;
     }
 
     private static PropertyReaderImpl getPropertyReader() {

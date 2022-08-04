@@ -10,6 +10,15 @@ Support releases of project-keeper again, after PK has been turned into a multi-
 
 * #228: Support multi-maven projects
 Actually only the check for project-keeper-maven-plugin in the pom file has been removed.
+* #228: Enabled to release multi-maven projects.
+Actually only the check for project-keeper-maven-plugin in the pom file has been removed.
+* #238: Added a warning in case file `~/.release-droid/credentials` has not been found.
+Saving credentials in this file is expected to be the preferred use case.
+* #231: Enabled to configure project language in file `release_config.yml`.
+
+## Documentation
+
+* #230: Updated [user_guide.md](../user_guide/user_guide.md) regarding command line syntax and Jira credentials
 
 ## Dependency Updates
 
