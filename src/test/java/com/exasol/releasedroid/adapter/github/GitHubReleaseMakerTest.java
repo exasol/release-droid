@@ -2,12 +2,10 @@ package com.exasol.releasedroid.adapter.github;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +27,8 @@ class GitHubReleaseMakerTest {
     private static final String VERSION = "version";
     @Mock
     private GitHubGateway githubGatewayMock;
+    @Mock
+    private GitHubReleaseInfo githubReleaseInfo;
     private GitHubReleaseMaker releaseMaker;
 
     @BeforeEach
@@ -70,11 +70,11 @@ class GitHubReleaseMakerTest {
         final ArgumentCaptor<GitHubRelease> arg = ArgumentCaptor.forClass(GitHubRelease.class);
         verify(this.githubGatewayMock).createGithubRelease(arg.capture());
         final GitHubRelease actualRelease = arg.getValue();
-        assertThat(actualRelease.getReleaseLetter(), equalTo(RELEASE_LETTER_BODY));
-        assertThat(actualRelease.getVersion(), equalTo(VERSION));
-        assertThat(actualRelease.getHeader(), equalTo(VERSION + ": " + RELEASE_LETTER_HEADER));
-        assertThat(actualRelease.getRepositoryName(), equalTo(REPO_NAME));
-        assertThat(actualRelease.hasUploadAssets(), is(true));
+        assertAll(() -> assertThat(actualRelease.getReleaseLetter(), equalTo(RELEASE_LETTER_BODY)),
+                () -> assertThat(actualRelease.getVersion(), equalTo(VERSION)),
+                () -> assertThat(actualRelease.getHeader(), equalTo(VERSION + ": " + RELEASE_LETTER_HEADER)),
+                () -> assertThat(actualRelease.getRepositoryName(), equalTo(REPO_NAME)),
+                () -> assertThat(actualRelease.hasUploadAssets(), is(true)));
     }
 
     @Test
@@ -91,23 +91,15 @@ class GitHubReleaseMakerTest {
     }
 
     @Test
-    void makeReleaseReturnsReleaseUrl() {
+    void makeReleaseReturnsReleaseUrl() throws GitHubException {
         mockReleaseInfo(this.githubGatewayMock);
-        final String releaseUrl = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
-        assertThat(releaseUrl, equalTo("https://github.com/" + REPO_NAME + "/releases/tag/" + VERSION));
+        final String expected = GitHubReleaseInfo.getTagUrl(REPO_NAME, VERSION);
+        when(this.githubReleaseInfo.getTagUrl()).thenReturn(expected);
+        final String actual = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
+        assertThat(actual, equalTo(expected));
     }
 
-    private void mockReleaseInfo(final GitHubGateway githubGatewayMock) {
-        try {
-            final GitHubReleaseInfo rInfo = GitHubReleaseInfo.builder() //
-                    .repositoryName(REPO_NAME) //
-                    .version(VERSION) //
-                    .draft(true) //
-                    .htmlUrl(new URL("https://github.com/" + REPO_NAME + "/releases/releases/edit/untagged-123")) //
-                    .build();
-            when(githubGatewayMock.createGithubRelease(any())).thenReturn(rInfo);
-        } catch (MalformedURLException | GitHubException exception) {
-            throw new IllegalStateException(exception);
-        }
+    private void mockReleaseInfo(final GitHubGateway githubGatewayMock) throws GitHubException {
+        when(githubGatewayMock.createGithubRelease(any())).thenReturn(this.githubReleaseInfo);
     }
 }

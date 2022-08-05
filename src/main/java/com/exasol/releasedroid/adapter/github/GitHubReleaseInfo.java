@@ -8,6 +8,10 @@ public class GitHubReleaseInfo {
         return new Builder();
     }
 
+    public static String getTagUrl(final String repo, final String version) {
+        return "https://github.com/" + repo + "/releases/tag/" + version;
+    }
+
     private GitHubReleaseInfo() {
         // use builder
     }
@@ -18,7 +22,7 @@ public class GitHubReleaseInfo {
     private URL htmlUrl;
 
     public String getTagUrl() {
-        return "https://github.com/" + this.repositoryName + "/releases/tag/" + this.version;
+        return getTagUrl(this.repositoryName, this.version);
     }
 
     public boolean isDraft() {

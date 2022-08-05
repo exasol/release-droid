@@ -4,9 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +67,49 @@ class GitHubAPIAdapterTest {
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(repositoryMock);
         when(repositoryMock.getArtifact(artifactId)).thenReturn(artifactMock);
         when(artifactMock.download(any())).thenReturn("hashsum file.jar");
-        assertThat(this.apiAdapter.downloadArtifactAsString(REPOSITORY_NAME, artifactId), equalTo("hashsum file.jar" +
-                ""));
+        assertThat(this.apiAdapter.downloadArtifactAsString(REPOSITORY_NAME, artifactId), equalTo("hashsum file.jar"));
     }
+
+    @Test
+    void releaseCreateRelease() throws GitHubException, IOException {
+        final String version = "4.5.6";
+        final GitHubRelease release = GitHubRelease.builder() //
+                .repositoryName(REPOSITORY_NAME) //
+                .version(version).header("title") //
+                .releaseLetter("release letter") //
+                .build();
+
+        final URL expectedHtmlUrl = mockGHRepository(this.gitHubMock, REPOSITORY_NAME);
+        final String expectedTagUrl = GitHubReleaseInfo.getTagUrl(REPOSITORY_NAME, version);
+
+        final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release);
+        assertAll(() -> assertThat(info.getHtmlUrl(), equalTo(expectedHtmlUrl)), //
+                () -> assertThat(info.isDraft(), equalTo(true)), //
+                () -> assertThat(info.getTagUrl(), equalTo(expectedTagUrl)));
+
+    }
+
+    private URL mockGHRepository(final GitHub gitHub, final String REPOSITORY_NAME) throws IOException {
+        final URL htmlUrl = new URL("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123");
+        final GHRelease releaseMock = mock(GHRelease.class);
+        when(releaseMock.getHtmlUrl()).thenReturn(htmlUrl);
+        when(releaseMock.isDraft()).thenReturn(true);
+
+        final GHRepository repoMock = Mockito.mock(GHRepository.class);
+        final GHReleaseBuilder builder = releaseBuilderMock(releaseMock);
+        when(repoMock.createRelease(any())).thenReturn(builder);
+
+        when(gitHub.getRepository(REPOSITORY_NAME)).thenReturn(repoMock);
+        return htmlUrl;
+    }
+
+    private GHReleaseBuilder releaseBuilderMock(final GHRelease release) throws IOException {
+        final GHReleaseBuilder builder = Mockito.mock(GHReleaseBuilder.class);
+        when(builder.draft(anyBoolean())).thenReturn(builder);
+        when(builder.body(any())).thenReturn(builder);
+        when(builder.name(any())).thenReturn(builder);
+        when(builder.create()).thenReturn(release);
+        return builder;
+    }
+
 }
