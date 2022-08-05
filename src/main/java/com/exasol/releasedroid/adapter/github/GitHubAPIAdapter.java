@@ -67,7 +67,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     @Override
     // [impl->dsn~retrieve-github-release-header-from-release-letter~2]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public void createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
+    public GitHubReleaseInfo createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
         try {
             final GHRelease ghRelease = this.getRepository(gitHubRelease.getRepositoryName())//
                     .createRelease(gitHubRelease.getVersion()) //
@@ -79,6 +79,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
                 final String uploadUrl = ghRelease.getUploadUrl();
                 executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
             }
+            return GitHubReleaseInfo.builder() //
+                    .repositoryName(gitHubRelease.getRepositoryName()) //
+                    .version(gitHubRelease.getVersion()) //
+                    .draft(ghRelease.isDraft()) //
+                    .htmlUrl(ghRelease.getHtmlUrl()) //
+                    .build();
         } catch (final IOException exception) {
             throw new GitHubException(
                     ExaError.messageBuilder("F-RD-GH-11")
@@ -196,8 +202,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
             throws IOException, GitHubException {
         GHWorkflowRun lastRun = null;
         for (final GHWorkflowRun ghWorkflowRun : repository.queryWorkflowRuns().list()) {
-            if (ghWorkflowRun.getWorkflowId() == workflowId
-                    && (lastRun == null || ghWorkflowRun.getCreatedAt().after(lastRun.getCreatedAt()))) {
+            if ((ghWorkflowRun.getWorkflowId() == workflowId)
+                    && ((lastRun == null) || ghWorkflowRun.getCreatedAt().after(lastRun.getCreatedAt()))) {
                 lastRun = ghWorkflowRun;
             }
         }
