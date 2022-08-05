@@ -25,7 +25,7 @@ public class LocalRepositoryGate implements RepositoryGate {
         return refs.stream() //
                 .map(r -> r.getName().replace("refs/tags/", "")) //
                 .map(Version::parse) //
-                .sorted((a, b) -> -a.compareTo(b)) //
+                .sorted((a, b) -> b.compareTo(a)) //
                 .map(Version::toString) //
                 .findFirst();
     }

@@ -14,7 +14,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class LocalRepositoryGateTest {
+class LocalRepositoryGateTest {
 
     @Test
     void latestTagFromRefs() {
