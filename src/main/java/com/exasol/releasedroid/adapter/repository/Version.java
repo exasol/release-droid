@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Version implements Comparable<Version> {
+class Version implements Comparable<Version> {
 
     private static final Pattern PATTERN = Pattern.compile("(v?)([0-9]+(\\.[0-9]+)*+)");
     private static final int COMPONENTS = 3;
@@ -26,14 +26,14 @@ public class Version implements Comparable<Version> {
         return new Version(matcher.group(1), numbers);
     }
 
-    final String prefix;
-    final int[] numbers;
+    private final String prefix;
+    private final int[] numbers;
 
     /**
      * @param prefix  optional prefix "v"
      * @param numbers major, minor, fix
      */
-    public Version(final String prefix, final int... numbers) {
+    Version(final String prefix, final int... numbers) {
         this.prefix = prefix;
         this.numbers = numbers;
     }
@@ -45,7 +45,7 @@ public class Version implements Comparable<Version> {
                 .collect(Collectors.joining("."));
     }
 
-    public Set<Version> potentialSuccessors() {
+    Set<Version> potentialSuccessors() {
         final Set<Version> result = new HashSet<>();
         for (int level = 0; level < this.numbers.length; level++) {
             final int[] successor = successorNumber(level);
