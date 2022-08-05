@@ -162,6 +162,10 @@ language: Java
 
 1. Optionally create the [configuration files](#configuration-files) described above.
 
+   In case RD reports access "forbidden" when accessing Jira you might need to change your Jira password:
+   * Try to avoid special characters
+   * Use short password, i.e. not longer than 12 characters
+
 1. Run Release Droid from a terminal:
 
    `java -jar release-droid-1.1.0.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
