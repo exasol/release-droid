@@ -5,8 +5,7 @@ import static org.eclipse.jgit.lib.Constants.R_TAGS;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -22,10 +21,11 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 public class LocalRepositoryGate implements RepositoryGate {
 
     static Optional<String> latestTagFromRefs(final List<Ref> refs) {
+
         return refs.stream() //
                 .map(r -> r.getName().replace("refs/tags/", "")) //
                 .map(Version::parse) //
-                .sorted((a, b) -> b.compareTo(a)) //
+                .sorted(Comparator.reverseOrder()) //
                 .map(Version::toString) //
                 .findFirst();
     }
