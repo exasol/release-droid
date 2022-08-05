@@ -1,9 +1,7 @@
 package com.exasol.releasedroid.adapter.github;
 
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Gateway for interacting with Github.
@@ -41,11 +39,12 @@ public interface GitHubGateway {
 
     /**
      * Make a GitHub release on the head of default branch.
-     * 
+     *
      * @param gitHubRelease instance of {@link GitHubRelease} with release information
      * @throws GitHubException when some problems occur
+     * @return information about release, including its draft state and html url for editing the draft
      */
-    public void createGithubRelease(GitHubRelease gitHubRelease) throws GitHubException;
+    public GitHubReleaseInfo createGithubRelease(GitHubRelease gitHubRelease) throws GitHubException;
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
@@ -67,7 +66,7 @@ public interface GitHubGateway {
 
     /**
      * Get a default branch of the repository.
-     * 
+     *
      * @param repositoryName fully qualified name of the repository
      * @return default branch name
      * @throws GitHubException when some problems occur
@@ -100,7 +99,7 @@ public interface GitHubGateway {
 
     /**
      * Get a repository's primary programming language.
-     * 
+     *
      * @param repositoryName fully qualified name of the repository
      * @return repository primary language as a string
      * @throws GitHubException when some problems occur
@@ -118,7 +117,7 @@ public interface GitHubGateway {
 
     /**
      * Download a GitHub artifact as a String.
-     * 
+     *
      * @param repositoryName fully qualified name of the repository
      * @param artifactId     id of the artifact to download the artifact from
      * @return artifact as a string
