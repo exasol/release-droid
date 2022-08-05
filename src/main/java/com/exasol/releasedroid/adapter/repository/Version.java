@@ -4,19 +4,25 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class Version {
+public class Version implements Comparable<Version> {
 
-    private static final Pattern PATTERN = Pattern.compile("(v?)([0-9]+)\\.([0-9]+)\\.([0-9]+)");
+    private static final Pattern PATTERN = Pattern.compile("(v?)([0-9]+(\\.[0-9]+)*+)");
+    private static final int COMPONENTS = 3;
+    private static final int LESS = -1;
+    private static final int EQUAL = 0;
+    private static final int GREATER = 1;
 
     public static Version parse(final String string) {
         final Matcher matcher = PATTERN.matcher(string);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Illegal version format: '" + string + "'");
         }
-        final int[] numbers = Stream.of(matcher.group(2), matcher.group(3), matcher.group(4)) //
-                .mapToInt(Integer::parseInt).toArray();
+        final int[] numbers = Arrays.stream(matcher.group(2).split("\\.")).mapToInt(Integer::parseInt).toArray();
+        if (numbers.length != COMPONENTS) {
+            throw new IllegalArgumentException("Illegal version format: '" + string //
+                    + "'. Expected " + COMPONENTS + " components separated by dots.");
+        }
         return new Version(matcher.group(1), numbers);
     }
 
@@ -89,6 +95,39 @@ public class Version {
         }
         final Version other = (Version) obj;
         return Arrays.equals(this.numbers, other.numbers) && Objects.equals(this.prefix, other.prefix);
+    }
+
+    @Override
+    public int compareTo(final Version other) {
+        for (int i = 0; i < this.numbers.length; i++) {
+            final int result = compare(i, other);
+            if (differs(result)) {
+                return result;
+            }
+        }
+        if (this.numbers.length < other.numbers.length) {
+            return LESS;
+        }
+        return this.prefix.compareTo(other.prefix);
+    }
+
+    /**
+     * @param other other version to compare this version to
+     * @return {@code true} if this version is greater or equal than the other one
+     */
+    public boolean isGreaterOrEqualThan(final Version other) {
+        return compareTo(other) > LESS;
+    }
+
+    private int compare(final int i, final Version other) {
+        if (i >= other.numbers.length) {
+            return GREATER;
+        }
+        return Integer.compare(this.numbers[i], other.numbers[i]);
+    }
+
+    private boolean differs(final int result) {
+        return result != EQUAL;
     }
 
 }

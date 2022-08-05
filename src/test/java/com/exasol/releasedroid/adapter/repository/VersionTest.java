@@ -3,7 +3,12 @@ package com.exasol.releasedroid.adapter.repository;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,4 +51,39 @@ class VersionTest {
                         Version.parse("v1.2.4") //
                 ));
     }
+
+    @Test
+    void sort() {
+        final Stream<String> unsorted = Stream.of( //
+                "v1.2.4", //
+                "1.3.0", //
+                "2.0.0", //
+                "1.2.3", //
+                "v1.2.3", //
+                "v1.3.0", //
+                "v2.0.0", //
+                "1.2.3", //
+                "1.2.4", //
+                "v1.2.3");
+        final Stream<String> sorted = Stream.of( //
+                "1.2.3", //
+                "1.2.3", //
+                "v1.2.3", //
+                "v1.2.3", //
+                "1.2.4", //
+                "v1.2.4", //
+                "1.3.0", //
+                "v1.3.0", //
+                "2.0.0", //
+                "v2.0.0");
+        final List<Version> actual = unsorted //
+                .map(Version::parse) //
+                .sorted() //
+                .collect(Collectors.toList());
+        final List<Version> expected = sorted //
+                .map(Version::parse) //
+                .collect(Collectors.toList());
+        assertEquals(actual, expected);
+    }
+
 }
