@@ -6,18 +6,14 @@ import java.util.Optional;
 
 public class ProgressMonitor {
 
-    public static ProgressMonitor from(final Duration estimation, final Duration timeout) {
-        return new ProgressMonitor(Optional.ofNullable(estimation), Optional.ofNullable(timeout));
-    }
-
-    LocalDateTime start;
-    private final Optional<Duration> estimation;
-    private final Optional<Duration> timeout;
+    private LocalDateTime start;
+    private Optional<Duration> estimation;
+    private Optional<Duration> timeout;
     private LocalDateTime eta;
 
-    public ProgressMonitor(final Optional<Duration> estimation, final Optional<Duration> timeout) {
-        this.estimation = estimation;
-        this.timeout = timeout;
+    public ProgressMonitor() {
+        this.estimation = Optional.empty();
+        this.timeout = Optional.empty();
     }
 
     public ProgressMonitor start() {
@@ -48,11 +44,21 @@ public class ProgressMonitor {
         return this.start;
     }
 
-    public boolean timeout() {
+    public boolean isTimeout() {
         if (this.timeout.isEmpty()) {
             return false;
         }
         return elapsed().compareTo(this.timeout.get()) > 0;
+    }
+
+    public ProgressMonitor withEstimation(final Duration value) {
+        this.estimation = Optional.ofNullable(value);
+        return this;
+    }
+
+    public ProgressMonitor withTimeout(final Duration value) {
+        this.timeout = Optional.ofNullable(value);
+        return this;
     }
 
 }

@@ -2,9 +2,10 @@ package com.exasol.releasedroid.adapter.github.progress;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.ANSI_RESET;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Optional;
 
 public class ProgressFormatter {
 
@@ -16,26 +17,31 @@ public class ProgressFormatter {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_YELLOW = "\u001B[93m";
 
-    private final ProgressMonitor monitor;
-    private final DateTimeFormatter timeFormatter;
+    private final ProgressMonitor monitor = new ProgressMonitor();
+    private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private ZonedDateTime lastStart = null;
+    private ZonedDateTime lastEnd = null;
 
-//    public ProgressFormatter(final Optional<Duration> estimation, final Duration timeout, final String pattern) {
-//        this(new ProgressMonitor(estimation, timeout), pattern);
-//    }
-
-    public ProgressFormatter(final ProgressMonitor monitor, final String pattern) {
-        this.monitor = monitor;
-        this.timeFormatter = DateTimeFormatter.ofPattern(pattern);
+    private ProgressFormatter() {
+        // use builder
     }
-
-//    public ProgressFormatter start() {
-//        this.monitor = new ProgressMonitor(this.estimation, this.timeout)
-//        this.monitor.start();
-//        return this;
-//    }
 
     public String startTime() {
         return formatTime(this.monitor.getStart());
+    }
+
+    public String welcomeMessage(final String prefix) {
+        final Optional<Duration> estimation = this.monitor.getEstimation();
+        if ((this.lastStart == null) || estimation.isEmpty()) {
+            return prefix;
+        }
+        return String.format("%s\nLast release on %s took %s.\n" //
+                + "If all goes well then the current release will be finished at %s.", //
+                prefix, //
+                this.dateFormatter.format(this.lastStart), //
+                formatRemaining(this.monitor.getEstimation().get()), //
+                formatTime(this.monitor.eta()));
     }
 
     public String status() {
@@ -57,20 +63,6 @@ public class ProgressFormatter {
                 progressBar(isOverdue, progress));
     }
 
-    static String formatRemaining(final Duration duration) {
-        final long h = duration.abs().toHours();
-        if (h > 0) {
-            return String.format("~ %d:%02d hours", h, duration.toMinutesPart());
-        }
-        final long m = duration.abs().toMinutes();
-        if (m > 0) {
-            return String.format("~ %d minute%s", m, plural(m));
-        }
-
-        final long s = duration.abs().toSeconds();
-        return String.format("%d second%s", s, plural(s));
-    }
-
     private String progressBar(final boolean isOverdue, final double progress) {
         final int len = 20;
         if (progress >= 1) {
@@ -80,6 +72,14 @@ public class ProgressFormatter {
         return String.format("[%s] ETA: %s", //
                 green(makeString("=", elapsed) + (elapsed < len ? ">" + makeString(" ", len - elapsed - 1) : "")),
                 formatTime(this.monitor.eta()));
+    }
+
+    public ZonedDateTime getLastStart() {
+        return this.lastStart;
+    }
+
+    public ZonedDateTime getLastEnd() {
+        return this.lastEnd;
     }
 
     private String overdueBar(final int len, final double progress) {
@@ -96,6 +96,31 @@ public class ProgressFormatter {
 
     private String remainingColor(final boolean isOverdue, final String s) {
         return isOverdue ? red(s) : yellow(s);
+    }
+
+    public String formatElapsed() {
+        return formatElapsed(this.monitor.elapsed());
+    }
+
+    public Duration getEstimation() {
+        return this.monitor.getEstimation().get();
+    }
+
+    private String formatElapsed(final Duration elapsed) {
+        return String.format("%d:%02d:%02d", //
+                elapsed.toHours(), //
+                elapsed.toMinutesPart(), //
+                elapsed.toSecondsPart());
+    }
+
+    private String formatTime(final LocalDateTime time) {
+        return this.timeFormatter.format(time);
+    }
+
+    // ------------------------------------------------
+
+    private static String plural(final long x) {
+        return (x == 1 ? "" : "s");
     }
 
     static String green(final String s) {
@@ -118,53 +143,73 @@ public class ProgressFormatter {
         return builder.toString();
     }
 
-    public String formatElapsed() {
-        return formatElapsed(this.monitor.elapsed());
+    static String formatRemaining(final Duration duration) {
+        final long h = duration.abs().toHours();
+        if (h > 0) {
+            return String.format("~ %d:%02d hours", h, duration.toMinutesPart());
+        }
+        final long m = duration.abs().toMinutes();
+        if (m > 0) {
+            return String.format("~ %d minute%s", m, plural(m));
+        }
+
+        final long s = duration.abs().toSeconds();
+        return String.format("%d second%s", s, plural(s));
     }
 
-    private String formatElapsed(final Duration elapsed) {
-        return String.format("%d:%02d:%02d", //
-                elapsed.toHours(), //
-                elapsed.toMinutesPart(), //
-                elapsed.toSecondsPart());
-    }
-
-    private String formatTime(final LocalDateTime time) {
-        return this.timeFormatter.format(time);
-    }
-
-    private static String plural(final long x) {
-        return (x == 1 ? "" : "s");
-    }
+    // ------------------------------------------------
 
     public static class Builder {
 
-        private Duration estimation;
-        private Duration timeout;
-        private String pattern = "HH:mm:ss";
+        private final ProgressFormatter formatter = new ProgressFormatter();
+
+        public Builder() {
+        }
 
         public Builder estimation(final Duration value) {
-            this.estimation = value;
+            this.formatter.monitor.withEstimation(value);
             return this;
         }
 
         public Builder timeout(final Duration value) {
-            this.timeout = value;
+            this.formatter.monitor.withTimeout(value);
             return this;
         }
 
-        public Builder pattern(final String value) {
-            this.pattern = value;
+        public Builder lastStart(final Date value) {
+            this.formatter.lastStart = zonedDateTime(value);
+            return this;
+        }
+
+        private ZonedDateTime zonedDateTime(final Date date) {
+            return date.toInstant().atZone(ZoneOffset.UTC);
+        }
+
+        public Builder lastEnd(final Date value) {
+            this.formatter.lastEnd = zonedDateTime(value);
+            if ((this.formatter.lastStart != null) && (this.formatter.lastEnd != null)) {
+                estimation(Duration.between(this.formatter.lastStart, this.formatter.lastEnd));
+            }
+            return this;
+        }
+
+        public Builder timePattern(final String value) {
+            this.formatter.timeFormatter = DateTimeFormatter.ofPattern(value);
+            return this;
+        }
+
+        public Builder datePattern(final String value) {
+            this.formatter.dateFormatter = DateTimeFormatter.ofPattern(value);
             return this;
         }
 
         public ProgressFormatter start() {
-            final ProgressMonitor monitor = ProgressMonitor.from(this.estimation, this.timeout);
-            return new ProgressFormatter(monitor.start(), this.pattern);
+            this.formatter.monitor.start();
+            return this.formatter;
         }
     }
 
     public boolean timeout() {
-        return this.monitor.timeout();
+        return this.monitor.isTimeout();
     }
 }

@@ -3,7 +3,7 @@ package com.exasol.releasedroid.adapter.github;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 
 import java.io.*;
-import java.time.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -135,16 +135,22 @@ public class GitHubAPIAdapter implements GitHubGateway {
         try {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
+            final GHWorkflowRun lastRun = latestRun(workflow);
 
             final ProgressFormatter.Builder builder = ProgressFormatter.builder() //
-                    .estimation(getEstimation(workflow)) //
+                    .lastStart(lastRun == null ? null : lastRun.getCreatedAt()) //
+                    .lastEnd(lastRun == null ? null : lastRun.getUpdatedAt()) //
                     .timeout(Duration.ofMinutes(150));
 
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
             final ProgressFormatter progress = builder.start();
-            LOGGER.info(() -> progress.formatElapsed() + ": Started GitHub workflow '" + workflowName
-                    + "'. The Release Droid is monitoring its progress. "
-                    + "This can take from a few minutes to a couple of hours depending on the build.");
+            final GHWorkflowRun currentRun = latestRun(workflow);
+
+            final String prefix = progress.startTime() + ": Started GitHub workflow '" + workflowName + "': " //
+                    + currentRun.getHtmlUrl() + "\n" //
+                    + "The Release Droid is monitoring its progress.\n" //
+                    + "This can take from a few minutes to a couple of hours depending on the build.";
+            LOGGER.info(() -> progress.welcomeMessage(prefix));
 
             // logMessage(workflowName);
             // validateWorkflowConclusion(getWorkflowConclusion(repository, workflow.getId()));
@@ -220,27 +226,9 @@ public class GitHubAPIAdapter implements GitHubGateway {
 //        throw new GitHubException(getTimeoutExceptionMessage(minutesPassed));
 //    }
 
-    private Duration getEstimation(final GHWorkflow workflow) throws IOException {
-        final GHWorkflowRun run = latestRun(workflow);
-        if (run == null) {
-            return null;
-        }
-        return duration(run);
-    }
-
-    public Duration duration(final GHWorkflowRun run) throws IOException {
-        return Duration.between( //
-                zonedDateTime(run.getCreatedAt()), //
-                zonedDateTime(run.getUpdatedAt()));
-    }
-
     public GHWorkflowRun latestRun(final GHWorkflow workflow) throws IOException {
         final PagedIterator<GHWorkflowRun> it = workflow.listRuns().iterator();
         return it.hasNext() ? it.next() : null;
-    }
-
-    private ZonedDateTime zonedDateTime(final Date date) {
-        return date.toInstant().atZone(ZoneOffset.UTC);
     }
 
 //    private String getMessage(final int minutesPassed) {

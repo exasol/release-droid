@@ -10,11 +10,11 @@ import static org.hamcrest.Matchers.*;
 import java.io.IOException;
 import java.time.Duration;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHWorkflow;
+import org.kohsuke.github.*;
 
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
@@ -35,7 +35,7 @@ class ProgressMonitorTest {
     @Test
     void eta() throws InterruptedException {
         final Duration estimation = Duration.ofMinutes(1).plusSeconds(1);
-        final ProgressMonitor monitor = ProgressMonitor.from(estimation, null).start();
+        final ProgressMonitor monitor = new ProgressMonitor().withEstimation(estimation).start();
         assertThat(monitor.eta(), equalTo(monitor.getStart().plus(estimation)));
         assertThat(monitor.elapsed().toSeconds(), equalTo(0L));
         assertThat(secondsAsDouble(monitor.remaining()), closeTo(61, 0.5));
@@ -69,17 +69,28 @@ class ProgressMonitorTest {
         assertThat(formatter.timeout(), is(true));
     }
 
-    // @Test
+    @Tag("integration")
+    @Test
     void latest() throws IOException, GitHubException, InterruptedException {
         final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
         final PropertyReaderImpl reader = new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
         final GitHubConnectorImpl connector = new GitHubConnectorImpl(reader);
-        final Duration estimation = durationOfLastRun(connector, "exasol/release-droid", "ci-build.yml");
+        final GHWorkflowRun run = lastRun(connector, "exasol/release-droid", "ci-build.yml");
 
-        final ProgressFormatter testee = startFormatter(estimation);
+        final ProgressFormatter testee = ProgressFormatter.builder() //
+                .datePattern("dd.MM.YYYY") //
+                .lastStart(run.getCreatedAt()) //
+                .lastEnd(run.getUpdatedAt()) //
+                .start();
+        final Duration estimation = testee.getEstimation();
+
         final int n = 100;
-        System.out.println(testee.startTime());
-        for (int i = 0; i < n; i++) {
+        final String prefix = testee.startTime() + ": Started GitHub workflow '" + "ci-build.yml" + "': " //
+                + run.getHtmlUrl() + "\n" //
+                + "The Release Droid is monitoring its progress.\n" //
+                + "This can take from a few minutes to a couple of hours depending on the build.";
+        System.out.println(testee.welcomeMessage(prefix));
+        for (int i = 0; i < 2; i++) {
             Thread.sleep(estimation.dividedBy(n / 2).toMillis());
             fixEclipseConsole();
             System.out.print("\r" + testee.status());
@@ -87,16 +98,16 @@ class ProgressMonitorTest {
         }
     }
 
-    private Duration durationOfLastRun(final GitHubConnectorImpl connector, final String repo,
-            final String workflowName) throws IOException {
+    private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repo, final String workflowName)
+            throws IOException {
         final GHRepository repository = connector.connectToGitHub().getRepository(repo);
         final GHWorkflow workflow = repository.getWorkflow("ci-build.yml");
         final GitHubAPIAdapter adapter = new GitHubAPIAdapter(connector);
-        return adapter.duration(adapter.latestRun(workflow));
+        return adapter.latestRun(workflow);
     }
 
     private ProgressFormatter startFormatter(final Duration estimation) {
-        return ProgressFormatter.builder().estimation(estimation).pattern("HH:mm:ss").start();
+        return ProgressFormatter.builder().estimation(estimation).start();
     }
 
     @Test
