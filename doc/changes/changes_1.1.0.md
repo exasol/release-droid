@@ -5,6 +5,11 @@ Code name: Support Multi-module Maven Projects with Additional Minor Improvement
 ## Summary
 
 Support releases of project-keeper again, after PK has been turned into a multi-module maven project.
+And a list of minor improvements:
+* Warn if file `~/.release-droid/credentials` has not been found.
+* Optionally read project language from file `release_config.yml`.
+* Display link to draft release.
+* Support version numbers starting with letter "v".
 
 ## Features
 
@@ -14,6 +19,7 @@ Actually only the check for project-keeper-maven-plugin in the pom file has been
 Saving credentials in this file is expected to be the preferred use case.
 * #231: Enabled to configure project language in file `release_config.yml`.
 * #242: Display link to draft release, so users conveniently can review the github release and make it final.
+* #245: Added support for version numbers starting with letter "v".
 
 ## Documentation
 
@@ -32,6 +38,7 @@ Saving credentials in this file is expected to be the preferred use case.
 
 ### Test Dependency Updates
 
+* Added `nl.jqno.equalsverifier:equalsverifier:3.10.1`
 * Updated `org.junit.jupiter:junit-jupiter:5.8.2` to `5.9.0`
 * Updated `org.mockito:mockito-core:4.5.1` to `4.6.1`
 * Updated `org.mockito:mockito-junit-jupiter:4.5.1` to `4.6.1`

@@ -4,11 +4,8 @@ import static org.eclipse.jgit.lib.Constants.R_TAGS;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.*;
+import java.util.*;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -22,6 +19,17 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGate;
  */
 // [impl->dsn~local-repository~1]
 public class LocalRepositoryGate implements RepositoryGate {
+
+    static Optional<String> latestTagFromRefs(final List<Ref> refs) {
+
+        return refs.stream() //
+                .map(r -> r.getName().replace("refs/tags/", "")) //
+                .map(Version::parse) //
+                .sorted(Comparator.reverseOrder()) //
+                .map(Version::toString) //
+                .findFirst();
+    }
+
     private final String localPath;
     private final String fullName;
 
@@ -82,13 +90,7 @@ public class LocalRepositoryGate implements RepositoryGate {
     public Optional<String> getLatestTag() {
         final File rootDirectory = new File(this.localPath);
         try (final Git git = Git.open(rootDirectory)) {
-            final List<Ref> tags = git.getRepository().getRefDatabase().getRefsByPrefix(R_TAGS);
-            if (tags.isEmpty()) {
-                return Optional.empty();
-            } else {
-                final Ref ref = tags.get(tags.size() - 1);
-                return Optional.of(ref.getName().replace("refs/tags/", ""));
-            }
+            return latestTagFromRefs(git.getRepository().getRefDatabase().getRefsByPrefix(R_TAGS));
         } catch (final IOException exception) {
             throw new RepositoryException(
                     ExaError.messageBuilder("E-RD-REP-7")
