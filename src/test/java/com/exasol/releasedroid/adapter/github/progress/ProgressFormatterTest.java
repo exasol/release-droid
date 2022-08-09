@@ -8,7 +8,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,33 @@ import org.kohsuke.github.*;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 
-class ProgressMonitorTest {
+class ProgressFormatterTest {
+
+    @Test
+    void withoutStart() {
+        final ProgressFormatter testee = ProgressFormatter.builder().start();
+        assertThat(testee.formatElapsed(), equalTo("0:00:00"));
+        assertThat(testee.status(), equalTo("0:00:00 elapsed"));
+        assertThat(testee.welcomeMessage("prefix"), equalTo("prefix"));
+    }
+
+    @Test
+    void welcomeWithoutEstimation() {
+        final ProgressFormatter testee = ProgressFormatter.builder() //
+                .lastStart(java.util.Date.from(Instant.now())) //
+                .start();
+        assertThat(testee.welcomeMessage("prefix"), equalTo("prefix"));
+    }
+
+    @Test
+    void timePattern() {
+        final String pattern = "HH-mm-ss";
+        final ProgressFormatter testee = ProgressFormatter.builder() //
+                .timePattern(pattern) //
+                .start();
+        final String expected = DateTimeFormatter.ofPattern(pattern).format(LocalDateTime.now());
+        assertThat(testee.startTime(), equalTo(expected));
+    }
 
     @ParameterizedTest
     @CsvSource(value = { //

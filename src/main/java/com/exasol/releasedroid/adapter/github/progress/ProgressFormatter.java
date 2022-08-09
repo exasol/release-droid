@@ -74,14 +74,6 @@ public class ProgressFormatter {
                 formatTime(this.monitor.eta()));
     }
 
-    public ZonedDateTime getLastStart() {
-        return this.lastStart;
-    }
-
-    public ZonedDateTime getLastEnd() {
-        return this.lastEnd;
-    }
-
     private String overdueBar(final int len, final double progress) {
         final int elapsed = (int) (len / progress);
         final int overdue = (int) ((progress - 1) * elapsed);
