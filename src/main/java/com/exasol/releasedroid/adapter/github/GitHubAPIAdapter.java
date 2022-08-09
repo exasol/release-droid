@@ -151,7 +151,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     + "The Release Droid is monitoring its progress.\n" //
                     + "This can take from a few minutes to a couple of hours depending on the build.";
             LOGGER.info(() -> progress.welcomeMessage(prefix));
-            validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
+            validateWorkflowConclusion(getWorkflowConclusion(progress, currentRun));
         } catch (final IOException exception) {
             throw new GitHubException(exception);
         }
@@ -180,13 +180,13 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * The fastest release takes 1-2 minutes, the slowest 1 hour and more. We send a request every 15 seconds hoping to
      * not exceed the GitHub request limits.
      */
-    private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
+    private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflowRun workflowRun)
             throws GitHubException {
         while (!progress.timeout()) {
             System.out.print("\r" + progress.status()); // NOSONAR
             System.out.flush(); // NOSONAR
             waitSeconds(15);
-            final Conclusion conclusion = latestRun(workflow).getConclusion();
+            final Conclusion conclusion = workflowRun.getConclusion();
             if (conclusion != null) {
                 System.out.println(); // NOSONAR
                 return conclusion.toString();

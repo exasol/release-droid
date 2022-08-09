@@ -3,7 +3,6 @@ package com.exasol.releasedroid.adapter.github;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -11,10 +10,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHWorkflowRun.Conclusion;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,25 +37,28 @@ class GitHubAPIAdapterTest {
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
     }
 
+    @Tag("integration")
     @Test
-    void testExecuteWorkflow() throws IOException {
+    void testExecuteWorkflow() throws IOException, GitHubException {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
         final GHWorkflow workflowMock = mockWorkflow();
 
         when(this.repositoryMock.getDefaultBranch()).thenReturn(defaultBranch);
         when(this.repositoryMock.getWorkflow(anyString())).thenReturn(workflowMock);
-        doThrow(IOException.class).when(workflowMock).dispatch(defaultBranch, Map.of());
-        assertAll(
-                () -> assertThrows(GitHubException.class,
-                        () -> this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName)),
-                () -> verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of()));
+        this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName);
+        verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of());
     }
 
     @SuppressWarnings("unchecked")
     private GHWorkflow mockWorkflow() throws IOException {
+        final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
+        when(run.getHtmlUrl()).thenReturn(new URL("http://of-workflow-run"));
+        when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
+
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
-        when(ptor.hasNext()).thenReturn(false);
+        when(ptor.hasNext()).thenReturn(false).thenReturn(true);
+        when(ptor.next()).thenReturn(run);
 
         final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
         when(pable.iterator()).thenReturn(ptor);
