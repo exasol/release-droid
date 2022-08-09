@@ -9,9 +9,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class GitHubAPIAdapterTest {
+
     private static final String REPOSITORY_NAME = "test/my-repo";
     @Mock
     private GitHub gitHubMock;
@@ -45,6 +43,7 @@ class GitHubAPIAdapterTest {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
         final GHWorkflow workflowMock = mockWorkflow();
+
         when(this.repositoryMock.getDefaultBranch()).thenReturn(defaultBranch);
         when(this.repositoryMock.getWorkflow(anyString())).thenReturn(workflowMock);
         doThrow(IOException.class).when(workflowMock).dispatch(defaultBranch, Map.of());
@@ -56,18 +55,8 @@ class GitHubAPIAdapterTest {
 
     @SuppressWarnings("unchecked")
     private GHWorkflow mockWorkflow() throws IOException {
-        final Instant instant = Instant.parse("2022-01-01T13:00:10Z");
-        final Duration duration = Duration.ofMinutes(2).plusSeconds(3);
-
-        final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
-        final Date start = Date.from(instant);
-        final Date end = Date.from(instant.plus(duration));
-        when(run.getCreatedAt()).thenReturn(start);
-        when(run.getUpdatedAt()).thenReturn(end);
-
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
-        when(ptor.hasNext()).thenReturn(true);
-        when(ptor.next()).thenReturn(run);
+        when(ptor.hasNext()).thenReturn(false);
 
         final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
         when(pable.iterator()).thenReturn(ptor);
