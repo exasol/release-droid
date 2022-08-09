@@ -171,7 +171,6 @@ class ProgressFormatterTest {
         new Visualizer().estimation(estimation).iterations(5).run(testee, "");
     }
 
-    @Test
     void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
         final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
         final PropertyReaderImpl reader = new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
