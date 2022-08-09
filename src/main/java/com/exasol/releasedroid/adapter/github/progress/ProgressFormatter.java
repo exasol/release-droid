@@ -17,14 +17,14 @@ public class ProgressFormatter {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_YELLOW = "\u001B[93m";
 
-    private final ProgressMonitor monitor = new ProgressMonitor();
+    private final ProgressMonitor monitor;
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
     private ZonedDateTime lastStart = null;
     private ZonedDateTime lastEnd = null;
 
-    private ProgressFormatter() {
-        // use builder
+    private ProgressFormatter(final ProgressMonitor monitor) {
+        this.monitor = monitor;
     }
 
     public String startTime() {
@@ -60,10 +60,10 @@ public class ProgressFormatter {
                 elapsedColor(isOverdue, formatElapsed(elapsed) + " elapsed"), //
                 remainingColor(isOverdue, remainingText), //
                 elapsedColor(isOverdue, String.format("%3.0f%%", progress * 100)), //
-                progressBar(isOverdue, progress));
+                progressBar(progress));
     }
 
-    private String progressBar(final boolean isOverdue, final double progress) {
+    private String progressBar(final double progress) {
         final int len = 20;
         if (progress >= 1) {
             return overdueBar(len - 1, progress);
@@ -153,9 +153,14 @@ public class ProgressFormatter {
 
     public static class Builder {
 
-        private final ProgressFormatter formatter = new ProgressFormatter();
+        private final ProgressFormatter formatter;
 
-        public Builder() {
+        Builder() {
+            this(new ProgressMonitor());
+        }
+
+        Builder(final ProgressMonitor monitor) {
+            this.formatter = new ProgressFormatter(monitor);
         }
 
         public Builder timeout(final Duration value) {
