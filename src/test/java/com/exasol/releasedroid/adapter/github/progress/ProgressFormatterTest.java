@@ -235,7 +235,11 @@ class ProgressFormatterTest {
             return this;
         }
 
-        @java.lang.SuppressWarnings("squid:L73")
+        // class Visualizer is only used for manual exploration
+        // Sonar warnings are suppressed therefore:
+        // squid:L73 - replace System.out by a Logger
+        // squid:L244 - "Thread.sleep" should not be used in tests
+        @java.lang.SuppressWarnings({ "squid:L73", "squid:L244" })
         public void run(final ProgressFormatter testee, final String prefix) throws InterruptedException {
             System.out.println(testee.welcomeMessage(prefix));
             final int numerator = this.sleepNumerator > 0 ? this.sleepNumerator : this.iterations / 2;
