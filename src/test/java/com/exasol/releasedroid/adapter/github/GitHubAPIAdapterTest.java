@@ -9,6 +9,9 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,8 +55,13 @@ class GitHubAPIAdapterTest {
     }
 
     @SuppressWarnings("unchecked")
-    private GHWorkflow mockWorkflow() {
+    private GHWorkflow mockWorkflow() throws IOException {
+        final Instant INSTANT = Instant.parse("2022-01-01T13:00:10Z");
+        final Duration DURATION = Duration.ofMinutes(2).plusSeconds(3);
+
         final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
+        doReturn(Date.from(INSTANT)).when(run).getCreatedAt();
+        doReturn(Date.from(INSTANT.plus(DURATION))).when(run).getUpdatedAt();
 
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
         when(ptor.hasNext()).thenReturn(true);
