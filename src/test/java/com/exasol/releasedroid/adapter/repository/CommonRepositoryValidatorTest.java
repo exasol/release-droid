@@ -175,10 +175,9 @@ class CommonRepositoryValidatorTest {
         when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()),
-                () -> assertThat(report.toString(),
-                        containsString(
-                                "E-RD-REP-23: The new version '" + version + "' does not fit the versioning rules. "
-                                        + "Possible versions for the release are: [2.0.0, 1.4.0, 1.3.6]")));
+                () -> assertThat(report.toString(), containsString("E-RD-REP-23: The new version '" + version
+                        + "' does not fit the versioning rules. "
+                        + "Possible versions for the release are: [2.0.0, 1.3.6, v1.4.0, v2.0.0, 1.4.0, v1.3.6]")));
     }
 
     @Test

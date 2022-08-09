@@ -23,6 +23,7 @@ Improved display of status and progress.
 
 ### Test Dependency Updates
 
+* Added `nl.jqno.equalsverifier:equalsverifier:3.10.1`
 * Updated `org.junit.jupiter:junit-jupiter:5.8.2` to `5.9.0`
 * Updated `org.mockito:mockito-core:4.5.1` to `4.6.1`
 * Updated `org.mockito:mockito-junit-jupiter:4.5.1` to `4.6.1`
