@@ -163,9 +163,9 @@ class ProgressFormatterTest {
     }
 
     void manualIntegrationTestWithoutGithub() throws InterruptedException {
-        final Duration estimation = Duration.ofSeconds(1);
+        final Duration estimation = Duration.ofSeconds(4);
         final ProgressFormatter testee = startFormatter(new ProgressMonitor(), estimation);
-        new ManualExplorer().estimation(estimation).iterations(5).run(testee, "");
+        new ManualExplorer().estimation(estimation).iterations(5, 3).run(testee, "");
     }
 
     void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
@@ -187,7 +187,7 @@ class ProgressFormatterTest {
                 + run.getHtmlUrl() + "\n" //
                 + "The Release Droid is monitoring its progress.\n" //
                 + "This can take from a few minutes to a couple of hours depending on the build.";
-        new ManualExplorer().estimation(estimation).iterations(3).sleepNumerator(50).run(testee, prefix);
+        new ManualExplorer().estimation(estimation).iterations(3, 50).run(testee, prefix);
     }
 
     private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repo, final String workflowName)
@@ -213,36 +213,29 @@ class ProgressFormatterTest {
     }
 
     static class ManualExplorer {
-        private int iterations;
-        private Duration estimation;
-        private int sleepNumerator = -1;
-
-        public ManualExplorer iterations(final int value) {
-            this.iterations = value;
-            return this;
-        }
-
-        public ManualExplorer sleepNumerator(final int value) {
-            this.sleepNumerator = value;
-            return this;
-        }
+        private Duration estimation = Duration.ofSeconds(2);
+        private int iterations = 5;
+        private int intervals = 3;
 
         public ManualExplorer estimation(final Duration value) {
             this.estimation = value;
             return this;
         }
 
-        // class ManualExplorer is only used for manual exploration
+        public ManualExplorer iterations(final int iterations, final int intervals) {
+            this.iterations = iterations;
+            this.intervals = intervals;
+            return this;
+        }
+
+        // class is only used for manual exploration
         // Sonar warnings are suppressed therefore:
-        // squid:L73 - replace System.out by a Logger
         // java:S2925 - "Thread.sleep" should not be used in tests
-        @SuppressWarnings({ "java:S2925" })
+        @SuppressWarnings("java:S2925")
         public void run(final ProgressFormatter testee, final String prefix) throws InterruptedException {
             System.out.println(testee.welcomeMessage(prefix));
-            final int numerator = this.sleepNumerator > 0 ? this.sleepNumerator : this.iterations / 2;
-            final long sleep = this.estimation.dividedBy(numerator).toMillis();
             for (int i = 0; i < this.iterations; i++) {
-                Thread.sleep(sleep);
+                Thread.sleep(this.estimation.dividedBy(this.intervals).toMillis());
                 fixEclipseConsole();
                 System.out.print("\r" + testee.status());
                 System.out.flush();
