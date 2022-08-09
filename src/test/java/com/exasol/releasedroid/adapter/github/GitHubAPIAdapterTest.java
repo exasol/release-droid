@@ -56,12 +56,14 @@ class GitHubAPIAdapterTest {
 
     @SuppressWarnings("unchecked")
     private GHWorkflow mockWorkflow() throws IOException {
-        final Instant INSTANT = Instant.parse("2022-01-01T13:00:10Z");
-        final Duration DURATION = Duration.ofMinutes(2).plusSeconds(3);
+        final Instant instant = Instant.parse("2022-01-01T13:00:10Z");
+        final Duration duration = Duration.ofMinutes(2).plusSeconds(3);
 
         final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
-        doReturn(Date.from(INSTANT)).when(run).getCreatedAt();
-        doReturn(Date.from(INSTANT.plus(DURATION))).when(run).getUpdatedAt();
+        final Date start = Date.from(instant);
+        final Date end = Date.from(instant.plus(duration));
+        when(run.getCreatedAt()).thenReturn(start);
+        when(run.getUpdatedAt()).thenReturn(end);
 
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
         when(ptor.hasNext()).thenReturn(true);
