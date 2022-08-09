@@ -152,11 +152,8 @@ class ProgressFormatterTest {
                 { "0:00:01 elapsed", "0 seconds remaining", "100%", "[===================", "|>" },
                 { "0:00:02 elapsed", "1 second overdue", "200%", "[=========", "|=========>" } };
         for (int i = 0; i < 3; i++) {
-            final String status = testee.status();
-            System.out.print("\n" + status);
-            verifyContents(status, expected[i]);
+            verifyContents(testee.status(), expected[i]);
         }
-        System.out.println();
     }
 
     private void verifyContents(final String actual, final String... expected) {
@@ -168,7 +165,7 @@ class ProgressFormatterTest {
     void manualIntegrationTestWithoutGithub() throws InterruptedException {
         final Duration estimation = Duration.ofSeconds(1);
         final ProgressFormatter testee = startFormatter(new ProgressMonitor(), estimation);
-        new Visualizer().estimation(estimation).iterations(5).run(testee, "");
+        new ManualExplorer().estimation(estimation).iterations(5).run(testee, "");
     }
 
     void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
@@ -190,7 +187,7 @@ class ProgressFormatterTest {
                 + run.getHtmlUrl() + "\n" //
                 + "The Release Droid is monitoring its progress.\n" //
                 + "This can take from a few minutes to a couple of hours depending on the build.";
-        new Visualizer().estimation(estimation).iterations(3).sleepNumerator(50).run(testee, prefix);
+        new ManualExplorer().estimation(estimation).iterations(3).sleepNumerator(50).run(testee, prefix);
     }
 
     private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repo, final String workflowName)
@@ -215,22 +212,22 @@ class ProgressFormatterTest {
                 .start();
     }
 
-    static class Visualizer {
+    static class ManualExplorer {
         private int iterations;
         private Duration estimation;
         private int sleepNumerator = -1;
 
-        public Visualizer iterations(final int value) {
+        public ManualExplorer iterations(final int value) {
             this.iterations = value;
             return this;
         }
 
-        public Visualizer sleepNumerator(final int value) {
+        public ManualExplorer sleepNumerator(final int value) {
             this.sleepNumerator = value;
             return this;
         }
 
-        public Visualizer estimation(final Duration value) {
+        public ManualExplorer estimation(final Duration value) {
             this.estimation = value;
             return this;
         }
@@ -238,8 +235,8 @@ class ProgressFormatterTest {
         // class Visualizer is only used for manual exploration
         // Sonar warnings are suppressed therefore:
         // squid:L73 - replace System.out by a Logger
-        // squid:L244 - "Thread.sleep" should not be used in tests
-        @java.lang.SuppressWarnings({ "squid:L73", "squid:L244" })
+        // squid:L248 - "Thread.sleep" should not be used in tests
+        @java.lang.SuppressWarnings({ "squid:L73", "squid:L248" })
         public void run(final ProgressFormatter testee, final String prefix) throws InterruptedException {
             System.out.println(testee.welcomeMessage(prefix));
             final int numerator = this.sleepNumerator > 0 ? this.sleepNumerator : this.iterations / 2;

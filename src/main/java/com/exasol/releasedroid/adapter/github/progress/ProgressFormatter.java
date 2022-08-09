@@ -35,23 +35,33 @@ public class ProgressFormatter {
         final Optional<Duration> estimation = this.monitor.getEstimation();
         if ((this.lastStart == null) || estimation.isEmpty()) {
             return prefix;
+        } else {
+            return welcomeMessageWithEstimation(prefix, estimation.get());
         }
+    }
+
+    private String welcomeMessageWithEstimation(final String prefix, final Duration estimation) {
         return String.format("%s\nLast release on %s took %s.\n" //
                 + "If all goes well then the current release will be finished at %s.", //
                 prefix, //
                 this.dateFormatter.format(this.lastStart), //
-                formatRemaining(this.monitor.getEstimation().get()), //
+                formatRemaining(estimation), //
                 formatTime(this.monitor.eta()));
     }
 
     public String status() {
         final Duration elapsed = this.monitor.elapsed();
-        if (this.monitor.getEstimation().isEmpty()) {
+        final Optional<Duration> estimation = this.monitor.getEstimation();
+        if (estimation.isEmpty()) {
             return formatElapsed(elapsed) + " elapsed";
+        } else {
+            return statusWithEstimation(elapsed, estimation.get());
         }
+    }
 
+    private String statusWithEstimation(final Duration elapsed, final Duration estimation) {
         final Duration remaining = this.monitor.remaining();
-        final double progress = (double) elapsed.toSeconds() / this.monitor.getEstimation().get().toSeconds();
+        final double progress = (double) elapsed.toSeconds() / estimation.toSeconds();
         final boolean isOverdue = remaining.isNegative();
         final String remainingText = String.format("%s %s", formatRemaining(remaining), //
                 isOverdue ? "overdue" : "remaining");
