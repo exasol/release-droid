@@ -151,9 +151,6 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     + "The Release Droid is monitoring its progress.\n" //
                     + "This can take from a few minutes to a couple of hours depending on the build.";
             LOGGER.info(() -> progress.welcomeMessage(prefix));
-
-            // logMessage(workflowName);
-            // validateWorkflowConclusion(getWorkflowConclusion(repository, workflow.getId()));
             validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
         } catch (final IOException exception) {
             throw new GitHubException(exception);
@@ -184,14 +181,14 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * not exceed the GitHub request limits.
      */
     private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
-            throws GitHubException, IOException {
+            throws GitHubException {
         while (!progress.timeout()) {
-            System.out.print("\r" + progress.status());
-            System.out.flush();
+            System.out.print("\r" + progress.status()); // NOSONAR
+            System.out.flush(); // NOSONAR
             waitSeconds(15);
             final Conclusion conclusion = latestRun(workflow).getConclusion();
             if (conclusion != null) {
-                System.out.println();
+                System.out.println(); // NOSONAR
                 return conclusion.toString();
             }
         }

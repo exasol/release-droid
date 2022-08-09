@@ -64,22 +64,6 @@ class ProgressFormatterTest {
     }
 
     @Test
-    void eta() throws InterruptedException {
-        final Duration estimation = Duration.ofMinutes(1).plusSeconds(1);
-        final ProgressMonitor monitor = new ProgressMonitor().withEstimation(estimation).start();
-        assertThat(monitor.eta(), equalTo(monitor.getStart().plus(estimation)));
-        assertThat(monitor.elapsed().toSeconds(), equalTo(0L));
-        assertThat(secondsAsDouble(monitor.remaining()), closeTo(61, 0.5));
-        Thread.sleep(1 * 1000);
-        assertThat(monitor.elapsed().toSeconds(), equalTo(1L));
-        assertThat(secondsAsDouble(monitor.remaining()), closeTo(60, 0.5));
-    }
-
-    double secondsAsDouble(final Duration duration) {
-        return duration.toSeconds() + (duration.toMillisPart() / 1000.0);
-    }
-
-    @Test
     void welcomeMessage() throws InterruptedException {
         final Duration duration = Duration.ofHours(1).plusMinutes(2);
         final String timePattern = "HH mm ss";
@@ -121,7 +105,7 @@ class ProgressFormatterTest {
         final String status1 = testee.status();
         assertThat(status1, containsString(green("0:00:00 elapsed")));
         assertThat(status1, containsString(yellow("~ 1 minute remaining")));
-        // Thread.sleep(1 * 1000);
+        // sleep 1 s
         final String status2 = testee.status();
         assertThat(status2, containsString(green("0:00:01 elapsed")));
         assertThat(status2, containsString(yellow("59 seconds remaining")));
@@ -145,7 +129,7 @@ class ProgressFormatterTest {
                 .timeout(timeout) //
                 .start();
         assertThat(formatter.timeout(), is(false));
-        // Thread.sleep(200);
+        // sleep 200 ms
         assertThat(formatter.timeout(), is(true));
     }
 
@@ -184,19 +168,10 @@ class ProgressFormatterTest {
     void manualIntegrationTestWithoutGithub() throws InterruptedException {
         final Duration estimation = Duration.ofSeconds(1);
         final ProgressFormatter testee = startFormatter(new ProgressMonitor(), estimation);
-        final int n = 5;
-        System.out.println(testee.startTime());
-        for (int i = 0; i < 3; i++) {
-            Thread.sleep(estimation.dividedBy(n / 2).toMillis());
-            fixEclipseConsole();
-            System.out.print("\r" + testee.status());
-            System.out.flush();
-        }
-        System.out.println();
+        new Visualizer().estimation(estimation).iterations(5).run(testee, "");
     }
 
-//    @Tag("integration")
-//    @Test
+    @Test
     void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
         final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
         final PropertyReaderImpl reader = new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
@@ -212,18 +187,11 @@ class ProgressFormatterTest {
                 ProgressFormatter.zonedDateTime(run.getCreatedAt()), //
                 ProgressFormatter.zonedDateTime(run.getUpdatedAt()));
 
-        final int n = 100;
         final String prefix = testee.startTime() + ": Started GitHub workflow '" + "ci-build.yml" + "': " //
                 + run.getHtmlUrl() + "\n" //
                 + "The Release Droid is monitoring its progress.\n" //
                 + "This can take from a few minutes to a couple of hours depending on the build.";
-        System.out.println(testee.welcomeMessage(prefix));
-        for (int i = 0; i < 2; i++) {
-            Thread.sleep(estimation.dividedBy(n / 2).toMillis());
-            fixEclipseConsole();
-            System.out.print("\r" + testee.status());
-            System.out.flush();
-        }
+        new Visualizer().estimation(estimation).iterations(3).sleepNumerator(50).run(testee, prefix);
     }
 
     private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repo, final String workflowName)
@@ -232,12 +200,6 @@ class ProgressFormatterTest {
         final GHWorkflow workflow = repository.getWorkflow("ci-build.yml");
         final GitHubAPIAdapter adapter = new GitHubAPIAdapter(connector);
         return adapter.latestRun(workflow);
-    }
-
-    private void fixEclipseConsole() {
-        if (System.getProperty("sun.java.command").startsWith("org.eclipse")) {
-            System.out.println(new String(new char[70]).replace("\0", "\r\n"));
-        }
     }
 
     private ProgressFormatter startFormatter(final ProgressMonitor monitor, final Duration estimation) {
@@ -252,5 +214,46 @@ class ProgressFormatterTest {
                 .lastEnd(end) //
                 .datePattern("dd.MM.YYYY") //
                 .start();
+    }
+
+    static class Visualizer {
+        private int iterations;
+        private Duration estimation;
+        private int sleepNumerator = -1;
+
+        public Visualizer iterations(final int value) {
+            this.iterations = value;
+            return this;
+        }
+
+        public Visualizer sleepNumerator(final int value) {
+            this.sleepNumerator = value;
+            return this;
+        }
+
+        public Visualizer estimation(final Duration value) {
+            this.estimation = value;
+            return this;
+        }
+
+        @java.lang.SuppressWarnings("squid:L73")
+        public void run(final ProgressFormatter testee, final String prefix) throws InterruptedException {
+            System.out.println(testee.welcomeMessage(prefix));
+            final int numerator = this.sleepNumerator > 0 ? this.sleepNumerator : this.iterations / 2;
+            final long sleep = this.estimation.dividedBy(numerator).toMillis();
+            for (int i = 0; i < this.iterations; i++) {
+                Thread.sleep(sleep);
+                fixEclipseConsole();
+                System.out.print("\r" + testee.status());
+                System.out.flush();
+            }
+            System.out.println();
+        }
+
+        private void fixEclipseConsole() {
+            if (System.getProperty("sun.java.command").startsWith("org.eclipse")) {
+                System.out.println(new String(new char[70]).replace("\0", "\r\n"));
+            }
+        }
     }
 }
