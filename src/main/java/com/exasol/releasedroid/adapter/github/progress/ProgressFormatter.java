@@ -169,7 +169,9 @@ public class ProgressFormatter {
         }
 
         public Builder lastStart(final Date value) {
-            this.formatter.lastStart = zonedDateTime(value);
+            if (value != null) {
+                this.formatter.lastStart = zonedDateTime(value);
+            }
             return this;
         }
 
@@ -178,7 +180,9 @@ public class ProgressFormatter {
         }
 
         public Builder lastEnd(final Date value) {
-            this.formatter.lastEnd = zonedDateTime(value);
+            if (value != null) {
+                this.formatter.lastEnd = zonedDateTime(value);
+            }
             if ((this.formatter.lastStart != null) && (this.formatter.lastEnd != null)) {
                 estimation(Duration.between(this.formatter.lastStart, this.formatter.lastEnd));
             }

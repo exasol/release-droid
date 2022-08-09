@@ -4,8 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -42,14 +41,30 @@ class GitHubAPIAdapterTest {
     void testExecuteWorkflow() throws IOException {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
-        final GHWorkflow workflowMock = Mockito.mock(GHWorkflow.class);
-        when(this.repositoryMock.getWorkflow(workflowName)).thenReturn(workflowMock);
+        final GHWorkflow workflowMock = mockWorkflow();
         when(this.repositoryMock.getDefaultBranch()).thenReturn(defaultBranch);
+        when(this.repositoryMock.getWorkflow(anyString())).thenReturn(workflowMock);
         doThrow(IOException.class).when(workflowMock).dispatch(defaultBranch, Map.of());
         assertAll(
                 () -> assertThrows(GitHubException.class,
                         () -> this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName)),
                 () -> verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private GHWorkflow mockWorkflow() {
+        final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
+
+        final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
+        when(ptor.hasNext()).thenReturn(true);
+        when(ptor.next()).thenReturn(run);
+
+        final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
+        when(pable.iterator()).thenReturn(ptor);
+
+        final GHWorkflow workflow = Mockito.mock(GHWorkflow.class);
+        when(workflow.listRuns()).thenReturn(pable);
+        return workflow;
     }
 
     @Test
