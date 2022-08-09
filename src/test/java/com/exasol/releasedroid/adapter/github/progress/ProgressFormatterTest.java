@@ -10,8 +10,8 @@ import static org.hamcrest.Matchers.*;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,19 +33,9 @@ class ProgressFormatterTest {
     @Test
     void welcomeWithoutEstimation() {
         final ProgressFormatter testee = ProgressFormatter.builder() //
-                .lastStart(java.util.Date.from(Instant.now())) //
+                .lastStart(Date.from(Instant.now())) //
                 .start();
         assertThat(testee.welcomeMessage("prefix"), equalTo("prefix"));
-    }
-
-    @Test
-    void timePattern() {
-        final String pattern = "HH-mm-ss";
-        final ProgressFormatter testee = ProgressFormatter.builder() //
-                .timePattern(pattern) //
-                .start();
-        final String expected = DateTimeFormatter.ofPattern(pattern).format(LocalDateTime.now());
-        assertThat(testee.startTime(), equalTo(expected));
     }
 
     @ParameterizedTest
@@ -76,6 +66,30 @@ class ProgressFormatterTest {
     }
 
     @Test
+    void welcomeMessage() throws InterruptedException {
+        final Instant start = Instant.parse("2022-01-01T13:00:10Z");
+        final Duration duration = Duration.ofHours(1).plusMinutes(2);
+        final String timePattern = "HH mm ss";
+        final String datePattern = "dd MM YYYY";
+        final ProgressFormatter testee = ProgressFormatter.builder() //
+                .lastStart(Date.from(start)) //
+                .lastEnd(Date.from(start.plus(duration))) //
+                .datePattern(datePattern) //
+                .timePattern(timePattern) //
+                .start();
+        final String prefix = "Hello";
+        final String expected = String.format(prefix + "\n" //
+                + "Last release on %s took ~ 1:02 hours.\n"
+                + "If all goes well then the current release will be finished at %s.", format(start, datePattern),
+                format(Instant.now().plus(duration), timePattern));
+        assertThat(testee.welcomeMessage(prefix), equalTo(expected));
+    }
+
+    private String format(final Instant start, final String pattern) {
+        return DateTimeFormatter.ofPattern(pattern).format(start.atZone(ZoneId.systemDefault()));
+    }
+
+    @Test
     void status() throws InterruptedException {
         final Duration estimation = Duration.ofMinutes(1).plusSeconds(1);
         final ProgressFormatter testee = startFormatter(estimation);
@@ -88,7 +102,7 @@ class ProgressFormatterTest {
 
     @Test
     void timeout() throws InterruptedException {
-        final ProgressFormatter formatter = ProgressFormatter.builder().estimation(null) //
+        final ProgressFormatter formatter = ProgressFormatter.builder() //
                 .timeout(Duration.ofMillis(100)) //
                 .start();
         assertThat(formatter.timeout(), is(false));
@@ -96,8 +110,8 @@ class ProgressFormatterTest {
         assertThat(formatter.timeout(), is(true));
     }
 
-    @Tag("integration")
-    @Test
+//    @Tag("integration")
+//    @Test
     void latest() throws IOException, GitHubException, InterruptedException {
         final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
         final PropertyReaderImpl reader = new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
@@ -109,7 +123,9 @@ class ProgressFormatterTest {
                 .lastStart(run.getCreatedAt()) //
                 .lastEnd(run.getUpdatedAt()) //
                 .start();
-        final Duration estimation = testee.getEstimation();
+        final Duration estimation = Duration.between( //
+                ProgressFormatter.zonedDateTime(run.getCreatedAt()), //
+                ProgressFormatter.zonedDateTime(run.getUpdatedAt()));
 
         final int n = 100;
         final String prefix = testee.startTime() + ": Started GitHub workflow '" + "ci-build.yml" + "': " //
@@ -134,22 +150,43 @@ class ProgressFormatterTest {
     }
 
     private ProgressFormatter startFormatter(final Duration estimation) {
-        return ProgressFormatter.builder().estimation(estimation).start();
+        final Instant start = Instant.now();
+        return startFormatter(Date.from(start), Date.from(start.plus(estimation)));
+    }
+
+    private ProgressFormatter startFormatter(final Date start, final Date end) {
+        return ProgressFormatter.builder() //
+                .lastStart(start) //
+                .lastEnd(end) //
+                .datePattern("dd.MM.YYYY") //
+                .start();
     }
 
     @Test
     void progress() throws InterruptedException {
-        final Duration estimation = Duration.ofSeconds(3);
+        final Duration estimation = Duration.ofSeconds(1);
         final ProgressFormatter testee = startFormatter(estimation);
-        final int n = 10;
+        final int n = 5;
+        final String[][] expected = { { "0:00:00 elapsed", "0 seconds remaining", "0%", "[", ">" },
+                { "0:00:01 elapsed", "0 seconds overdue", "100%", "[===================", "|>" },
+                { "0:00:01 elapsed", "0 seconds overdue", "100%", "[===================", "|>" },
+                { "0:00:02 elapsed", "1 second overdue", "200%", "[=========", "|=========>" },
+                { "0:00:02 elapsed", "1 second overdue", "200%", "[=========", "|=========>" } };
         System.out.println(testee.startTime());
         for (int i = 0; i < n; i++) {
             Thread.sleep(estimation.dividedBy(n / 2).toMillis());
             fixEclipseConsole();
+            verifyContents(testee.status(), expected[i]);
             System.out.print("\r" + testee.status());
             System.out.flush();
         }
         System.out.println();
+    }
+
+    private void verifyContents(final String actual, final String... expected) {
+        for (final String e : expected) {
+            assertThat(actual, containsString(e));
+        }
     }
 
     private void fixEclipseConsole() {

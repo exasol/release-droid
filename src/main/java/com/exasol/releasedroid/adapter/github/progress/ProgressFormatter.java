@@ -94,10 +94,6 @@ public class ProgressFormatter {
         return formatElapsed(this.monitor.elapsed());
     }
 
-    public Duration getEstimation() {
-        return this.monitor.getEstimation().get();
-    }
-
     private String formatElapsed(final Duration elapsed) {
         return String.format("%d:%02d:%02d", //
                 elapsed.toHours(), //
@@ -149,6 +145,10 @@ public class ProgressFormatter {
         return String.format("%d second%s", s, plural(s));
     }
 
+    static ZonedDateTime zonedDateTime(final Date date) {
+        return date.toInstant().atZone(ZoneOffset.UTC);
+    }
+
     // ------------------------------------------------
 
     public static class Builder {
@@ -156,11 +156,6 @@ public class ProgressFormatter {
         private final ProgressFormatter formatter = new ProgressFormatter();
 
         public Builder() {
-        }
-
-        public Builder estimation(final Duration value) {
-            this.formatter.monitor.withEstimation(value);
-            return this;
         }
 
         public Builder timeout(final Duration value) {
@@ -175,16 +170,15 @@ public class ProgressFormatter {
             return this;
         }
 
-        private ZonedDateTime zonedDateTime(final Date date) {
-            return date.toInstant().atZone(ZoneOffset.UTC);
-        }
-
         public Builder lastEnd(final Date value) {
             if (value != null) {
                 this.formatter.lastEnd = zonedDateTime(value);
             }
             if ((this.formatter.lastStart != null) && (this.formatter.lastEnd != null)) {
-                estimation(Duration.between(this.formatter.lastStart, this.formatter.lastEnd));
+                this.formatter.monitor.withEstimation( //
+                        Duration.between( //
+                                this.formatter.lastStart, //
+                                this.formatter.lastEnd));
             }
             return this;
         }
