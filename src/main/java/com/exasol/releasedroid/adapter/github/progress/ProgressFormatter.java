@@ -21,7 +21,6 @@ public class ProgressFormatter {
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
     private ZonedDateTime lastStart = null;
-    private ZonedDateTime lastEnd = null;
 
     private ProgressFormatter(final ProgressMonitor monitor) {
         this.monitor = monitor;
@@ -178,23 +177,11 @@ public class ProgressFormatter {
             return this;
         }
 
-        public Builder lastStart(final Date value) {
-            if (value != null) {
-                this.formatter.lastStart = zonedDateTime(value);
-            }
-            return this;
-        }
-
-        public Builder lastEnd(final Date value) {
-            if (value != null) {
-                this.formatter.lastEnd = zonedDateTime(value);
-            }
-            if ((this.formatter.lastStart != null) && (this.formatter.lastEnd != null)) {
-                this.formatter.monitor.withEstimation( //
-                        Duration.between( //
-                                this.formatter.lastStart, //
-                                this.formatter.lastEnd));
-            }
+        public Builder lastRun(final Date start, final Date end) {
+            final ZonedDateTime zonedStart = zonedDateTime(start);
+            this.formatter.lastStart = zonedStart;
+            this.formatter.monitor.withEstimation( //
+                    Duration.between(zonedStart, zonedDateTime(end)));
             return this;
         }
 

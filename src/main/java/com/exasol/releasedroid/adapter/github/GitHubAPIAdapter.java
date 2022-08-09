@@ -135,12 +135,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
         try {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
-            final GHWorkflowRun lastRun = latestRun(workflow);
 
-            final ProgressFormatter.Builder builder = ProgressFormatter.builder() //
-                    .lastStart(lastRun == null ? null : lastRun.getCreatedAt()) //
-                    .lastEnd(lastRun == null ? null : lastRun.getUpdatedAt()) //
-                    .timeout(Duration.ofMinutes(150));
+            final ProgressFormatter.Builder builder = ProgressFormatter.builder().timeout(Duration.ofMinutes(150));
+            final GHWorkflowRun lastRun = latestRun(workflow);
+            if (lastRun != null) {
+                builder.lastRun(lastRun.getCreatedAt(), lastRun.getUpdatedAt());
+            }
 
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
             final ProgressFormatter progress = builder.start();

@@ -26,9 +26,10 @@ import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 class ProgressFormatterTest {
 
     private static final Instant INSTANT = Instant.parse("2022-01-01T13:00:10Z");
+    private static final Duration DURATION = Duration.ofMinutes(2).plusSeconds(3);
 
     @Test
-    void withoutStart() {
+    void withoutLastRun() {
         final ProgressFormatter testee = ProgressFormatter.builder().start();
         assertThat(testee.formatElapsed(), equalTo("0:00:00"));
         assertThat(testee.status(), equalTo("0:00:00 elapsed"));
@@ -36,18 +37,10 @@ class ProgressFormatterTest {
     }
 
     @Test
-    void welcomeWithoutEstimation() {
-        final ProgressFormatter testee = ProgressFormatter.builder() //
-                .lastStart(Date.from(Instant.now())) //
-                .start();
-        assertThat(testee.welcomeMessage("prefix"), equalTo("prefix"));
-    }
-
-    @Test
     void startTime() {
         final String pattern = "HH mm ss";
-        final ProgressFormatter testee = ProgressFormatter.builder() //
-                .timePattern(pattern).lastStart(Date.from(Instant.now())) //
+        final ProgressFormatter testee = formatterBuilder() //
+                .timePattern(pattern) //
                 .start();
         assertThat(testee.startTime(), equalTo(format(Instant.now(), pattern)));
     }
@@ -69,8 +62,7 @@ class ProgressFormatterTest {
         final String timePattern = "HH mm ss";
         final String datePattern = "dd MM YYYY";
         final ProgressFormatter testee = ProgressFormatter.builder() //
-                .lastStart(Date.from(INSTANT)) //
-                .lastEnd(Date.from(INSTANT.plus(duration))) //
+                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(duration))) //
                 .datePattern(datePattern) //
                 .timePattern(timePattern) //
                 .start();
@@ -176,8 +168,7 @@ class ProgressFormatterTest {
 
         final ProgressFormatter testee = ProgressFormatter.builder() //
                 .datePattern("dd.MM.YYYY") //
-                .lastStart(run.getCreatedAt()) //
-                .lastEnd(run.getUpdatedAt()) //
+                .lastRun(run.getCreatedAt(), run.getUpdatedAt()) //
                 .start();
         final Duration estimation = Duration.between( //
                 ProgressFormatter.zonedDateTime(run.getCreatedAt()), //
@@ -198,16 +189,15 @@ class ProgressFormatterTest {
         return adapter.latestRun(workflow);
     }
 
-    private ProgressFormatter startFormatter(final ProgressMonitor monitor, final Duration estimation) {
-        return startFormatter(new ProgressFormatter.Builder(monitor), //
-                Date.from(INSTANT), Date.from(INSTANT.plus(estimation)));
+    private ProgressFormatter.Builder formatterBuilder() {
+        return ProgressFormatter.builder() //
+                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(DURATION)));
     }
 
-    private ProgressFormatter startFormatter(final ProgressFormatter.Builder builder, final Date start,
-            final Date end) {
-        return builder //
-                .lastStart(start) //
-                .lastEnd(end) //
+    private ProgressFormatter startFormatter(final ProgressMonitor monitor, final Duration estimation) {
+        return new ProgressFormatter.Builder(monitor) //
+                .lastRun(Date.from(INSTANT), //
+                        Date.from(INSTANT.plus(estimation))) //
                 .datePattern("dd.MM.YYYY") //
                 .start();
     }
