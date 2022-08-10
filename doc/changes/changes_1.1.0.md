@@ -1,11 +1,13 @@
-# Exasol Release Droid 1.1.0, released 2022-??-??
+# Exasol Release Droid 1.1.0, released 2022-08-10
 
-Code name: Support Multi-module Maven Projects with Additional Minor Improvements
+Code name: Support Multi-module Maven Projects with Additional Improvements
 
 ## Summary
 
 Support releases of project-keeper again, after PK has been turned into a multi-module maven project.
-And a list of minor improvements:
+
+And a list of additional improvements:
+* Improved usability when displaying progress and status of current release.
 * Warn if file `~/.release-droid/credentials` has not been found.
 * Optionally read project language from file `release_config.yml`.
 * Display link to draft release.
@@ -20,6 +22,7 @@ Saving credentials in this file is expected to be the preferred use case.
 * #231: Enabled to configure project language in file `release_config.yml`.
 * #242: Display link to draft release, so users conveniently can review the github release and make it final.
 * #245: Added support for version numbers starting with letter "v".
+* #120: Improved display of status and progress.
 
 ## Documentation
 
@@ -45,4 +48,6 @@ Saving credentials in this file is expected to be the preferred use case.
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:project-keeper-maven-plugin:2.4.6` to `2.5.0`
+* Updated `com.exasol:error-code-crawler-maven-plugin:1.1.1` to `1.1.2`
+* Updated `com.exasol:project-keeper-maven-plugin:2.4.6` to `2.6.1`
+* Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.0.0` to `3.1.0`
