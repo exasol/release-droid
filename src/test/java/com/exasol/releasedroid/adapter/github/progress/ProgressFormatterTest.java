@@ -171,10 +171,10 @@ class ProgressFormatterTest {
                 .lastRun(run.getCreatedAt(), run.getUpdatedAt()) //
                 .start();
         final Duration estimation = Duration.between( //
-                ProgressFormatter.zonedDateTime(run.getCreatedAt()), //
-                ProgressFormatter.zonedDateTime(run.getUpdatedAt()));
+                ProgressFormatter.localDateTime(run.getCreatedAt()), //
+                ProgressFormatter.localDateTime(run.getUpdatedAt()));
 
-        final String prefix = testee.startTime() + ": Started GitHub workflow '" + "ci-build.yml" + "': " //
+        final String prefix = testee.startTime() + ": Started GitHub workflow 'ci-build.yml': " //
                 + run.getHtmlUrl() + "\n" //
                 + "The Release Droid is monitoring its progress.\n" //
                 + "This can take from a few minutes to a couple of hours depending on the build.";

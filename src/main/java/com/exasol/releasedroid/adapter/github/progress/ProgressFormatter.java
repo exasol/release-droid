@@ -20,7 +20,7 @@ public class ProgressFormatter {
     private final ProgressMonitor monitor;
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-    private ZonedDateTime lastStart = null;
+    private LocalDateTime lastStart = null;
 
     private ProgressFormatter(final ProgressMonitor monitor) {
         this.monitor = monitor;
@@ -43,9 +43,9 @@ public class ProgressFormatter {
         return String.format("%s\nLast release on %s took %s.\n" //
                 + "If all goes well then the current release will be finished at %s.", //
                 prefix, //
-                this.dateFormatter.format(this.lastStart), //
+                this.dateFormatter.format(this.lastStart), // zoned to local default
                 formatRemaining(estimation), //
-                formatTime(this.monitor.eta()));
+                formatTime(this.monitor.eta())); // zoned to local default
     }
 
     public String status() {
@@ -79,16 +79,16 @@ public class ProgressFormatter {
         }
         final int elapsed = (int) Math.round(progress * len);
         return String.format("[%s] ETA: %s", //
-                green(makeString("=", elapsed) + (elapsed < len ? ">" + makeString(" ", len - elapsed - 1) : "")),
+                green(repeat("=", elapsed) + (elapsed < len ? ">" + repeat(" ", len - elapsed - 1) : "")),
                 formatTime(this.monitor.eta()));
     }
 
     private String overdueBar(final int len, final double progress) {
         final int elapsed = (int) (len / progress);
         final int overdue = (int) ((progress - 1) * elapsed);
-        return "[" + makeString("=", elapsed) //
-                + red("|" + makeString("=", overdue) + ">") //
-                + makeString(" ", 20);
+        return "[" + repeat("=", elapsed) //
+                + red("|" + repeat("=", overdue) + ">") //
+                + repeat(" ", 20);
     }
 
     private String elapsedColor(final boolean isOverdue, final String s) {
@@ -132,7 +132,7 @@ public class ProgressFormatter {
         return ANSI_YELLOW + s + ANSI_RESET;
     }
 
-    static String makeString(final String s, final int repetitions) {
+    static String repeat(final String s, final int repetitions) {
         final StringBuilder builder = new StringBuilder(repetitions);
         for (int i = 0; i < repetitions; i++) {
             builder.append(s);
@@ -154,8 +154,12 @@ public class ProgressFormatter {
         return String.format("%d second%s", s, plural(s));
     }
 
-    static ZonedDateTime zonedDateTime(final Date date) {
-        return date.toInstant().atZone(ZoneOffset.UTC);
+    static LocalDateTime localDateTime(final Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+    }
+
+    static Duration duration(final Date start, final Date end) {
+        return Duration.between(start.toInstant(), end.toInstant());
     }
 
     // ------------------------------------------------
@@ -178,10 +182,8 @@ public class ProgressFormatter {
         }
 
         public Builder lastRun(final Date start, final Date end) {
-            final ZonedDateTime zonedStart = zonedDateTime(start);
-            this.formatter.lastStart = zonedStart;
-            this.formatter.monitor.withEstimation( //
-                    Duration.between(zonedStart, zonedDateTime(end)));
+            this.formatter.lastStart = localDateTime(start);
+            this.formatter.monitor.withEstimation(duration(start, end));
             return this;
         }
 
