@@ -1,15 +1,15 @@
 package com.exasol.releasedroid.adapter.github.progress;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 
 public class ProgressMonitor {
 
-    private LocalDateTime start;
+    private Instant start;
     private Optional<Duration> estimation;
     private Optional<Duration> timeout;
-    private LocalDateTime eta;
+    private Instant eta;
 
     public ProgressMonitor() {
         this.estimation = Optional.empty();
@@ -17,7 +17,7 @@ public class ProgressMonitor {
     }
 
     public ProgressMonitor start() {
-        this.start = LocalDateTime.now();
+        this.start = Instant.now();
         if (this.estimation.isPresent()) {
             this.eta = this.start.plus(this.estimation.get());
         }
@@ -25,14 +25,14 @@ public class ProgressMonitor {
     }
 
     public Duration elapsed() {
-        return Duration.between(this.start, LocalDateTime.now());
+        return Duration.between(this.start, Instant.now());
     }
 
     public Duration remaining() {
         return this.estimation.get().minus(elapsed());
     }
 
-    public LocalDateTime eta() {
+    public Instant eta() {
         return this.eta;
     }
 
@@ -40,7 +40,7 @@ public class ProgressMonitor {
         return this.estimation;
     }
 
-    public LocalDateTime getStart() {
+    public Instant getStart() {
         return this.start;
     }
 

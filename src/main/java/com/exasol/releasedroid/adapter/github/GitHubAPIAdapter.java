@@ -135,18 +135,14 @@ public class GitHubAPIAdapter implements GitHubGateway {
         try {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
-
-            final ProgressFormatter.Builder builder = ProgressFormatter.builder().timeout(Duration.ofMinutes(150));
-            final GHWorkflowRun lastRun = latestRun(workflow);
-            if (lastRun != null) {
-                builder.lastRun(lastRun.getCreatedAt(), lastRun.getUpdatedAt());
-            }
-
+            final ProgressFormatter.Builder builder = progressFormatterBuilder(workflow) //
+                    .timeout(Duration.ofMinutes(150));
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
             final ProgressFormatter progress = builder.start();
             final GHWorkflowRun currentRun = latestRun(workflow);
 
-            final String prefix = progress.startTime() + ": Started GitHub workflow '" + workflowName + "': " //
+            final String prefix = progress.startTime() //
+                    + ": Started GitHub workflow '" + workflowName + "': " //
                     + currentRun.getHtmlUrl() + "\n" //
                     + "The Release Droid is monitoring its progress.\n" //
                     + "This can take from a few minutes to a couple of hours depending on the build.";
@@ -155,6 +151,14 @@ public class GitHubAPIAdapter implements GitHubGateway {
         } catch (final IOException exception) {
             throw new GitHubException(exception);
         }
+    }
+
+    private ProgressFormatter.Builder progressFormatterBuilder(final GHWorkflow workflow) throws IOException {
+        final ProgressFormatter.Builder builder = ProgressFormatter.builder();
+        final GHWorkflowRun lastRun = latestRun(workflow);
+        return lastRun == null //
+                ? builder //
+                : builder.lastRun(lastRun.getCreatedAt(), lastRun.getUpdatedAt());
     }
 
     @Override

@@ -11,9 +11,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -26,7 +27,7 @@ import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 class ProgressFormatterTest {
 
     private static final Instant INSTANT = Instant.parse("2022-01-01T13:00:10Z");
-    private static final Duration DURATION = Duration.ofMinutes(2).plusSeconds(3);
+    private static final Duration DURATION = Duration.ofHours(1).plusMinutes(1).plusSeconds(1);
 
     @Test
     void withoutLastRun() {
@@ -58,20 +59,19 @@ class ProgressFormatterTest {
 
     @Test
     void welcomeMessage() throws InterruptedException {
-        final Duration duration = Duration.ofHours(1).plusMinutes(2);
         final String timePattern = "HH mm ss";
         final String datePattern = "dd MM YYYY";
         final ProgressFormatter testee = ProgressFormatter.builder() //
-                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(duration))) //
+                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(DURATION))) //
                 .datePattern(datePattern) //
                 .timePattern(timePattern) //
                 .start();
         final String prefix = "Hello";
         final String expected = String.format(prefix + "\n" //
-                + "Last release on %s took ~ 1:02 hours.\n"
+                + "Last release on %s took ~ 1:01 hours.\n"
                 + "If all goes well then the current release will be finished at %s.", //
                 format(INSTANT, datePattern), //
-                format(Instant.now().plus(duration), timePattern));
+                format(Instant.now().plus(DURATION), timePattern));
         assertThat(testee.welcomeMessage(prefix), equalTo(expected));
     }
 
@@ -79,34 +79,32 @@ class ProgressFormatterTest {
         return DateTimeFormatter.ofPattern(pattern).format(start.atZone(ZoneId.systemDefault()));
     }
 
-    private LocalDateTime toLocal(final Instant instant) {
-        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-    }
-
     @Test
     void status() throws InterruptedException {
-        final Duration estimation = Duration.ofMinutes(1).plusSeconds(1);
-        final ProgressMonitor monitor = mockProgressMonitor(estimation);
+        final ProgressMonitor monitor = mockProgressMonitor(DURATION);
+        final Duration delta = Duration.ofSeconds(3);
+
         when(monitor.elapsed()) //
                 .thenReturn(Duration.ofMillis(300)) //
-                .thenReturn(Duration.ofSeconds(1));
-        when(monitor.remaining()).thenReturn(estimation) //
-                .thenReturn(Duration.ofSeconds(59));
-        final ProgressFormatter testee = startFormatter(monitor, estimation);
+                .thenReturn(DURATION.minus(delta));
+        when(monitor.remaining()) //
+                .thenReturn(DURATION) //
+                .thenReturn(delta);
+        final ProgressFormatter testee = startFormatter(monitor, DURATION);
 
-        final String status1 = testee.status();
-        assertThat(status1, containsString(green("0:00:00 elapsed")));
-        assertThat(status1, containsString(yellow("~ 1 minute remaining")));
-        // sleep 1 s
-        final String status2 = testee.status();
-        assertThat(status2, containsString(green("0:00:01 elapsed")));
-        assertThat(status2, containsString(yellow("59 seconds remaining")));
+        assertThat(testee.status(), allOf( //
+                containsString(green("0:00:00 elapsed")), //
+                containsString(yellow("~ 1:01 hours remaining"))));
+        // simulate sleeping 1:0:58 hours
+        assertThat(testee.status(), allOf( //
+                containsString(green("1:00:58 elapsed")), //
+                containsString(yellow("3 seconds remaining"))));
     }
 
     private ProgressMonitor mockProgressMonitor(final Duration estimation) {
         final ProgressMonitor monitor = Mockito.mock(ProgressMonitor.class);
         when(monitor.getEstimation()).thenReturn(Optional.of(estimation));
-        when(monitor.eta()).thenReturn(toLocal(INSTANT));
+        when(monitor.eta()).thenReturn(INSTANT);
         return monitor;
     }
 
@@ -121,7 +119,7 @@ class ProgressFormatterTest {
                 .timeout(timeout) //
                 .start();
         assertThat(formatter.timeout(), is(false));
-        // sleep 200 ms
+        // simulate sleeping 200 ms, i.e. longer than timeout defined initially 1:58 minutes
         assertThat(formatter.timeout(), is(true));
     }
 
@@ -144,14 +142,13 @@ class ProgressFormatterTest {
                 { "0:00:01 elapsed", "0 seconds remaining", "100%", "[===================", "|>" },
                 { "0:00:02 elapsed", "1 second overdue", "200%", "[=========", "|=========>" } };
         for (int i = 0; i < 3; i++) {
-            verifyContents(testee.status(), expected[i]);
+            assertThat(testee.status(), matchers(expected[i]));
         }
     }
 
-    private void verifyContents(final String actual, final String... expected) {
-        for (final String e : expected) {
-            assertThat(actual, containsString(e));
-        }
+    @SuppressWarnings("unchecked")
+    private Matcher<String> matchers(final String... expected) {
+        return allOf(Arrays.stream(expected).map(Matchers::containsString).toArray(Matcher[]::new));
     }
 
     void manualIntegrationTestWithoutGithub() throws InterruptedException {
@@ -161,8 +158,8 @@ class ProgressFormatterTest {
     }
 
     void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
-        final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
-        final PropertyReaderImpl reader = new PropertyReaderImpl(RELEASE_DROID_CREDENTIALS);
+        final String credentials = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
+        final PropertyReaderImpl reader = new PropertyReaderImpl(credentials);
         final GitHubConnectorImpl connector = new GitHubConnectorImpl(reader);
         final GHWorkflowRun run = lastRun(connector, "exasol/release-droid", "ci-build.yml");
 
@@ -171,8 +168,8 @@ class ProgressFormatterTest {
                 .lastRun(run.getCreatedAt(), run.getUpdatedAt()) //
                 .start();
         final Duration estimation = Duration.between( //
-                ProgressFormatter.localDateTime(run.getCreatedAt()), //
-                ProgressFormatter.localDateTime(run.getUpdatedAt()));
+                run.getCreatedAt().toInstant(), //
+                run.getUpdatedAt().toInstant());
 
         final String prefix = testee.startTime() + ": Started GitHub workflow 'ci-build.yml': " //
                 + run.getHtmlUrl() + "\n" //

@@ -20,7 +20,7 @@ public class ProgressFormatter {
     private final ProgressMonitor monitor;
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-    private LocalDateTime lastStart = null;
+    private Instant lastStart = null;
 
     private ProgressFormatter(final ProgressMonitor monitor) {
         this.monitor = monitor;
@@ -32,20 +32,18 @@ public class ProgressFormatter {
 
     public String welcomeMessage(final String prefix) {
         final Optional<Duration> estimation = this.monitor.getEstimation();
-        if ((this.lastStart == null) || estimation.isEmpty()) {
-            return prefix;
-        } else {
-            return welcomeMessageWithEstimation(prefix, estimation.get());
-        }
+        return estimation.isEmpty() //
+                ? prefix //
+                : welcomeMessageWithEstimation(prefix, estimation.get());
     }
 
     private String welcomeMessageWithEstimation(final String prefix, final Duration estimation) {
         return String.format("%s\nLast release on %s took %s.\n" //
                 + "If all goes well then the current release will be finished at %s.", //
                 prefix, //
-                this.dateFormatter.format(this.lastStart), // zoned to local default
+                this.dateFormatter.format(localDateTime(this.lastStart)), //
                 formatRemaining(estimation), //
-                formatTime(this.monitor.eta())); // zoned to local default
+                formatTime(this.monitor.eta()));
     }
 
     public String status() {
@@ -110,8 +108,8 @@ public class ProgressFormatter {
                 elapsed.toSecondsPart());
     }
 
-    private String formatTime(final LocalDateTime time) {
-        return this.timeFormatter.format(time);
+    private String formatTime(final Instant time) {
+        return this.timeFormatter.format(localDateTime(time));
     }
 
     // ------------------------------------------------
@@ -154,8 +152,8 @@ public class ProgressFormatter {
         return String.format("%d second%s", s, plural(s));
     }
 
-    static LocalDateTime localDateTime(final Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+    static LocalDateTime localDateTime(final Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
     static Duration duration(final Date start, final Date end) {
@@ -182,7 +180,7 @@ public class ProgressFormatter {
         }
 
         public Builder lastRun(final Date start, final Date end) {
-            this.formatter.lastStart = localDateTime(start);
+            this.formatter.lastStart = start.toInstant();
             this.formatter.monitor.withEstimation(duration(start, end));
             return this;
         }
