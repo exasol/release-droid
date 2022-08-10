@@ -180,6 +180,10 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * The fastest release takes 1-2 minutes, the slowest 1 hour and more. We send a request every 15 seconds hoping to
      * not exceed the GitHub request limits.
      */
+    // suppressing warnings for java:S106 - Standard outputs should not be used directly to log anything
+    // since GitHubAPIAdapter is intended to print on standard out.
+    // Using a logger cannot overwrite the current line.
+    @SuppressWarnings("java:S106")
     private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
             throws GitHubException {
         while (!progress.timeout()) {
