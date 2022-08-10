@@ -3,14 +3,17 @@ package com.exasol.releasedroid.adapter.github;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 
 import java.io.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHWorkflowRun.Conclusion;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.adapter.github.progress.ProgressFormatter;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 
 /**
@@ -132,12 +135,30 @@ public class GitHubAPIAdapter implements GitHubGateway {
         try {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
+            final ProgressFormatter.Builder builder = progressFormatterBuilder(workflow) //
+                    .timeout(Duration.ofMinutes(150));
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
-            logMessage(workflowName);
-            validateWorkflowConclusion(getWorkflowConclusion(repository, workflow.getId()));
+            final ProgressFormatter progress = builder.start();
+            final GHWorkflowRun currentRun = latestRun(workflow);
+
+            final String prefix = progress.startTime() //
+                    + ": Started GitHub workflow '" + workflowName + "': " //
+                    + currentRun.getHtmlUrl() + "\n" //
+                    + "The Release Droid is monitoring its progress.\n" //
+                    + "This can take from a few minutes to a couple of hours depending on the build.";
+            LOGGER.info(() -> progress.welcomeMessage(prefix));
+            validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
         } catch (final IOException exception) {
             throw new GitHubException(exception);
         }
+    }
+
+    private ProgressFormatter.Builder progressFormatterBuilder(final GHWorkflow workflow) throws IOException {
+        final ProgressFormatter.Builder builder = ProgressFormatter.builder();
+        final GHWorkflowRun lastRun = latestRun(workflow);
+        return lastRun == null //
+                ? builder //
+                : builder.lastRun(lastRun.getCreatedAt(), lastRun.getUpdatedAt());
     }
 
     @Override
@@ -159,42 +180,38 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    private void logMessage(final String workflowName) {
-        LOGGER.info(() -> "A GitHub workflow '" + workflowName
-                + "' has started. The Release Droid is monitoring its progress. "
-                + "This can take from a few minutes to a couple of hours depending on the build.");
-    }
-
-    private String getWorkflowConclusion(final GHRepository repository, final long workflowId)
-            throws GitHubException, IOException {
-        final var workflowMonitoringTimeout = 150;
-        int minutesPassed = 0;
-        long lastWorkflowRunId = -1;
-        while (minutesPassed < workflowMonitoringTimeout) {
-            final int minutes = getNextResultCheckDelayInMinutes(minutesPassed);
-            minutesPassed += minutes;
-            waitMinutes(minutes);
-            LOGGER.info(getMessage(minutesPassed));
-            if (lastWorkflowRunId == -1) {
-                lastWorkflowRunId = findLastWorkflowRunId(repository, workflowId);
-            }
-            final var ghWorkflowRun = getWorkflowRunById(repository, lastWorkflowRunId);
-            final boolean actionCompleted = ghWorkflowRun.getConclusion() != null;
-            if (actionCompleted) {
-                return ghWorkflowRun.getConclusion().toString();
+    /*
+     * The fastest release takes 1-2 minutes, the slowest 1 hour and more. We send a request every 15 seconds hoping to
+     * not exceed the GitHub request limits.
+     */
+    // suppressing warnings for java:S106 - Standard outputs should not be used directly to log anything
+    // since GitHubAPIAdapter is intended to print on standard out.
+    // Using a logger cannot overwrite the current line.
+    @SuppressWarnings("java:S106")
+    private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
+            throws GitHubException {
+        while (!progress.timeout()) {
+            System.out.print("\r" + progress.status());
+            System.out.flush();
+            waitSeconds(15);
+            final Conclusion conclusion = latestRun(workflow).getConclusion();
+            if (conclusion != null) {
+                System.out.println();
+                return conclusion.toString();
             }
         }
-        throw new GitHubException(getTimeoutExceptionMessage(minutesPassed));
+        throw new GitHubException(getTimeoutExceptionMessage(progress.formatElapsed()));
     }
 
-    private String getMessage(final int minutesPassed) {
-        return "Workflow is running for about " + minutesPassed + " minutes.";
+    public GHWorkflowRun latestRun(final GHWorkflow workflow) {
+        final PagedIterator<GHWorkflowRun> it = workflow.listRuns().iterator();
+        return it.hasNext() ? it.next() : null;
     }
 
-    private String getTimeoutExceptionMessage(final int minutesPassed) {
+    private String getTimeoutExceptionMessage(final String elapsed) {
         return ExaError.messageBuilder("E-RD-GH-3")
-                .message("GitHub workflow runs too long. The timeout for monitoring is {{timeout}} minutes.")
-                .parameter("timeout", minutesPassed) //
+                .message("GitHub workflow runs too long. The timeout for monitoring is {{timeout}} hours.")
+                .parameter("timeout", elapsed) //
                 .toString();
     }
 
@@ -220,29 +237,9 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    private GHWorkflowRun getWorkflowRunById(final GHRepository repository, final long lastWorkflowRunId)
-            throws GitHubException {
-        for (final GHWorkflowRun ghWorkflowRun : repository.queryWorkflowRuns().list()) {
-            if (ghWorkflowRun.getId() == lastWorkflowRunId) {
-                return ghWorkflowRun;
-            }
-        }
-        throw new GitHubException(ExaError.messageBuilder("E-RD-GH-5") //
-                .message("GitHub workflow run with id {{id}} not found") //
-                .parameter("id", lastWorkflowRunId) //
-                .toString());
-    }
-
-    // The fastest release takes 1-2 minutes, the slowest 1 hour and more.
-    // We send 1 request per minute first 10 minutes and then 1 request per 5 minutes not to exceed the GitHub request
-    // limits.
-    private int getNextResultCheckDelayInMinutes(final int minutesPassed) {
-        return minutesPassed < 10 ? 1 : 5;
-    }
-
-    private void waitMinutes(final int minutes) {
+    private void waitSeconds(final int seconds) {
         try {
-            Thread.sleep(60000L * minutes);
+            Thread.sleep(1000L * seconds);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
         }
