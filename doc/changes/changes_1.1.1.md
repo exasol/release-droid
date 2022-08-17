@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.2.1, released 2022-08-18
+# Exasol Release Droid 1.1.1, released 2022-08-18
 
 Code name: Fixed and Improved Output
 
