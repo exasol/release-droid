@@ -197,7 +197,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
                 if (reportUrl) {
                     reportUrl = false;
                     System.out.print("\r");
-                    LOGGER.info("URL: " + formatLink(run.getHtmlUrl()));
+                    final String message = "URL: " + formatLink(run.getHtmlUrl());
+                    LOGGER.info(() -> message);
                 }
                 if (run.getConclusion() != null) {
                     System.out.println();
