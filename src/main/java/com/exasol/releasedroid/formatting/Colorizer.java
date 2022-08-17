@@ -8,6 +8,10 @@ import org.fusesource.jansi.Ansi.Attribute;
 
 public class Colorizer {
 
+    private Colorizer() {
+        // only static usage
+    }
+
     /**
      * @param text text to colorize
      * @return text with ansi color red
