@@ -97,6 +97,10 @@ public class ProgressFormatter {
         return formatElapsed(this.monitor.elapsed());
     }
 
+    public ProgressMonitor getMonitor() {
+        return this.monitor;
+    }
+
     private String formatElapsed(final Duration elapsed) {
         return String.format("%d:%02d:%02d", //
                 elapsed.toHours(), //
@@ -160,6 +164,11 @@ public class ProgressFormatter {
 
         public Builder timeout(final Duration value) {
             this.formatter.monitor.withTimeout(value);
+            return this;
+        }
+
+        public Builder callbackInterval(final Duration value) {
+            this.formatter.monitor.withCallbackInterval(value);
             return this;
         }
 
