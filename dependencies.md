@@ -77,7 +77,7 @@
 [13]: https://maven.apache.org/ref/3.8.6/maven-model/
 [14]: https://github.com/exasol/error-reporting-java
 [15]: https://opensource.org/licenses/MIT
-[16]: https://github.com/commonmark/commonmark-java/commonmark
+[16]: https://github.com/commonmark/commonmark-java
 [17]: https://opensource.org/licenses/BSD-2-Clause
 [18]: https://bitbucket.org/snakeyaml/snakeyaml
 [19]: http://www.apache.org/licenses/LICENSE-2.0.txt
