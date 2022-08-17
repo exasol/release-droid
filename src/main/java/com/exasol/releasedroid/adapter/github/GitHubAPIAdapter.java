@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
+import static com.exasol.releasedroid.formatting.Colorizer.formatLink;
 
 import java.io.*;
 import java.time.Duration;
@@ -142,10 +143,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHWorkflowRun currentRun = latestRun(workflow);
 
             final String prefix = progress.startTime() //
-                    + ": Started GitHub workflow '" + workflowName + "': " //
-                    + currentRun.getHtmlUrl() + "\n" //
-                    + "The Release Droid is monitoring its progress.\n" //
-                    + "This can take from a few minutes to a couple of hours depending on the build.";
+                    + ": Started GitHub workflow '" + workflowName + "'.\n" //
+                    + "URL: " + formatLink(currentRun.getHtmlUrl()) + "\n";
             LOGGER.info(() -> progress.welcomeMessage(prefix));
             validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
         } catch (final IOException exception) {

@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.adapter.github.progress;
 
-import static com.exasol.releasedroid.adapter.github.progress.ProgressFormatter.green;
-import static com.exasol.releasedroid.adapter.github.progress.ProgressFormatter.yellow;
+import static com.exasol.releasedroid.formatting.Colorizer.brightGreen;
+import static com.exasol.releasedroid.formatting.Colorizer.yellow;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARATOR;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -93,11 +93,11 @@ class ProgressFormatterTest {
         final ProgressFormatter testee = startFormatter(monitor, DURATION);
 
         assertThat(testee.status(), allOf( //
-                containsString(green("0:00:00 elapsed")), //
+                containsString(brightGreen("0:00:00 elapsed")), //
                 containsString(yellow("~ 1:01 hours remaining"))));
         // simulate sleeping 1:0:58 hours
         assertThat(testee.status(), allOf( //
-                containsString(green("1:00:58 elapsed")), //
+                containsString(brightGreen("1:00:58 elapsed")), //
                 containsString(yellow("3 seconds remaining"))));
     }
 

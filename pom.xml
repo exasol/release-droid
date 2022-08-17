@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>release-droid</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <properties>
@@ -79,6 +79,11 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>2.4.0</version>
         </dependency>
         <!--Unit test dependencies-->
         <dependency>
@@ -188,7 +193,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.6.0</version>
+                <version>2.6.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -251,7 +256,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
     <url>https://github.com/exasol/release-droid/</url>
