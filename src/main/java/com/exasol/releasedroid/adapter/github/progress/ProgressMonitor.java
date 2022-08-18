@@ -9,11 +9,14 @@ public class ProgressMonitor {
     private Instant start;
     private Optional<Duration> estimation;
     private Optional<Duration> timeout;
+    private Optional<Duration> snoozeInterval;
+    private Instant snoozeStart;
     private Instant eta;
 
     public ProgressMonitor() {
         this.estimation = Optional.empty();
         this.timeout = Optional.empty();
+        this.snoozeInterval = Optional.empty();
     }
 
     public ProgressMonitor start() {
@@ -51,6 +54,21 @@ public class ProgressMonitor {
         return elapsed().compareTo(this.timeout.get()) > 0;
     }
 
+    public boolean requestsInspection() {
+        if (this.snoozeInterval.isEmpty()) {
+            return false;
+        }
+        if (this.snoozeStart == null) {
+            return true;
+        }
+        return Instant.now().isAfter(this.snoozeStart.plus(this.snoozeInterval.get()));
+    }
+
+    public ProgressMonitor snooze() {
+        this.snoozeStart = Instant.now();
+        return this;
+    }
+
     public ProgressMonitor withEstimation(final Duration value) {
         this.estimation = Optional.ofNullable(value);
         return this;
@@ -61,4 +79,8 @@ public class ProgressMonitor {
         return this;
     }
 
+    public ProgressMonitor withSnoozeInterval(final Duration value) {
+        this.snoozeInterval = Optional.ofNullable(value);
+        return this;
+    }
 }

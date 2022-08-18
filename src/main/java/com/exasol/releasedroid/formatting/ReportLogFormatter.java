@@ -1,6 +1,6 @@
 package com.exasol.releasedroid.formatting;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.ANSI_RESET;
+import static com.exasol.releasedroid.formatting.Colorizer.green;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
 import java.util.Locale;
@@ -13,7 +13,6 @@ import com.exasol.releasedroid.usecases.report.Result;
  * Formatting report for the logger output.
  */
 public class ReportLogFormatter implements ReportFormatter {
-    protected static final String ANSI_GREEN = "\u001B[32m";
 
     @Override
     public String formatReport(final Report report) {
@@ -43,7 +42,7 @@ public class ReportLogFormatter implements ReportFormatter {
     }
 
     private String formatSuccessMessage(final Report report) {
-        return ANSI_GREEN + report.getReportName() + " was performed without any problems!" + ANSI_RESET;
+        return green(report.getReportName() + " was performed without any problems!");
     }
 
     private String formatFailedResult(final Result result) {

@@ -1,16 +1,13 @@
 package com.exasol.releasedroid.formatting;
 
-import static com.exasol.releasedroid.formatting.ReportLogFormatter.ANSI_GREEN;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.ANSI_RESET;
+import static com.exasol.releasedroid.formatting.Colorizer.green;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.releasedroid.usecases.report.ReleaseReport;
-import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationReport;
+import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
 class ReportLogFormatterTest {
@@ -26,7 +23,7 @@ class ReportLogFormatterTest {
         outer.merge(github);
         outer.merge(maven);
         final String formattedReport = this.formatter.formatReport(outer);
-        assertThat(formattedReport, equalTo(ANSI_GREEN + "Release was performed without any problems!" + ANSI_RESET));
+        assertThat(formattedReport, equalTo(green("Release was performed without any problems!")));
     }
 
     @Test
@@ -53,8 +50,7 @@ class ReportLogFormatterTest {
         outer.merge(github);
         outer.merge(maven);
         final String formattedReport = this.formatter.formatReport(outer);
-        assertThat(formattedReport,
-                equalTo(ANSI_GREEN + "Validation was performed without any problems!" + ANSI_RESET));
+        assertThat(formattedReport, equalTo(green("Validation was performed without any problems!")));
     }
 
     @Test

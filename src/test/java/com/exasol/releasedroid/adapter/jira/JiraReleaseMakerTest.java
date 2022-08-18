@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 
 class JiraReleaseMakerTest {
+
     final JiraReleaseMaker jiraReleaseMaker = new JiraReleaseMaker(null);
 
     @Test

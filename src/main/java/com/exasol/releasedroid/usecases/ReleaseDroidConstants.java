@@ -10,7 +10,6 @@ public final class ReleaseDroidConstants {
     public static final String HOME_DIRECTORY = System.getProperty("user.home");
     public static final String RELEASE_DROID_DIRECTORY = HOME_DIRECTORY + FILE_SEPARATOR + ".release-droid";
     public static final String RELEASE_CONFIG_PATH = "release_config.yml";
-    public static final String ANSI_RESET = "\u001B[0m";
     public static final String RELEASE_DROID_STATE_DIRECTORY = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "state";
 
     private ReleaseDroidConstants() {

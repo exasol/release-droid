@@ -35,6 +35,30 @@ class ProgressMonitorTest {
         assertThat(monitor.remaining(), lessThanOrEqualTo(remaining));
     }
 
+    @ParameterizedTest
+    @CsvSource(value = { ",false", "1,false", "-1,true" })
+    void callback(final Integer secondsBeforeNextCallback, final boolean expected) {
+        Duration callbackInterval = null;
+        if (secondsBeforeNextCallback != null) {
+            callbackInterval = Duration.ofMinutes(secondsBeforeNextCallback);
+        }
+        final ProgressMonitor monitor = new ProgressMonitor() //
+                .withSnoozeInterval(callbackInterval) //
+                .start() //
+                .snooze();
+        assertThat(monitor.requestsInspection(), is(expected));
+    }
+
+    @Test
+    void initialCallback() {
+        final ProgressMonitor monitor = new ProgressMonitor() //
+                .withSnoozeInterval(Duration.ofHours(1)) //
+                .start();
+        assertThat(monitor.requestsInspection(), is(true));
+        monitor.snooze();
+        assertThat(monitor.requestsInspection(), is(false));
+    }
+
     double secondsAsDouble(final Duration duration) {
         return duration.toSeconds() + (duration.toMillisPart() / 1000.0);
     }

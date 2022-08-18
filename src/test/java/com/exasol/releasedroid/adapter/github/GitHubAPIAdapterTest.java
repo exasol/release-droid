@@ -127,5 +127,4 @@ class GitHubAPIAdapterTest {
         when(builder.create()).thenReturn(release);
         return builder;
     }
-
 }

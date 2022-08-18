@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
+import static com.exasol.releasedroid.formatting.Colorizer.formatLink;
 
 import java.io.*;
 import java.time.Duration;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import org.kohsuke.github.*;
-import org.kohsuke.github.GHWorkflowRun.Conclusion;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.github.progress.ProgressFormatter;
@@ -136,16 +136,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
             final ProgressFormatter.Builder builder = progressFormatterBuilder(workflow) //
-                    .timeout(Duration.ofMinutes(150));
+                    .timeout(Duration.ofMinutes(150)) //
+                    .snoozeInterval(Duration.ofSeconds(15));
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
             final ProgressFormatter progress = builder.start();
-            final GHWorkflowRun currentRun = latestRun(workflow);
-
             final String prefix = progress.startTime() //
-                    + ": Started GitHub workflow '" + workflowName + "': " //
-                    + currentRun.getHtmlUrl() + "\n" //
-                    + "The Release Droid is monitoring its progress.\n" //
-                    + "This can take from a few minutes to a couple of hours depending on the build.";
+                    + ": Started GitHub workflow '" + workflowName + "'.\n";
             LOGGER.info(() -> progress.welcomeMessage(prefix));
             validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
         } catch (final IOException exception) {
@@ -189,15 +185,25 @@ public class GitHubAPIAdapter implements GitHubGateway {
     // Using a logger cannot overwrite the current line.
     @SuppressWarnings("java:S106")
     private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
-            throws GitHubException {
+            throws GitHubException, IOException {
+        boolean reportUrl = true;
         while (!progress.timeout()) {
             System.out.print("\r" + progress.status());
             System.out.flush();
-            waitSeconds(15);
-            final Conclusion conclusion = latestRun(workflow).getConclusion();
-            if (conclusion != null) {
-                System.out.println();
-                return conclusion.toString();
+            waitSeconds(1);
+            if (progress.getMonitor().requestsInspection()) {
+                progress.getMonitor().snooze();
+                final GHWorkflowRun run = latestRun(workflow);
+                if (reportUrl) {
+                    reportUrl = false;
+                    System.out.print("\r");
+                    final String message = "URL: " + formatLink(run.getHtmlUrl());
+                    LOGGER.info(() -> message);
+                }
+                if (run.getConclusion() != null) {
+                    System.out.println();
+                    return run.getConclusion().toString();
+                }
             }
         }
         throw new GitHubException(getTimeoutExceptionMessage(progress.formatElapsed()));
