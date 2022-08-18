@@ -137,7 +137,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
             final ProgressFormatter.Builder builder = progressFormatterBuilder(workflow) //
                     .timeout(Duration.ofMinutes(150)) //
-                    .callbackInterval(Duration.ofSeconds(15));
+                    .snoozeInterval(Duration.ofSeconds(15));
             workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
             final ProgressFormatter progress = builder.start();
             final String prefix = progress.startTime() //
@@ -191,8 +191,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
             System.out.print("\r" + progress.status());
             System.out.flush();
             waitSeconds(1);
-            if (progress.getMonitor().needsCallback()) {
-                progress.getMonitor().notifyCallback();
+            if (progress.getMonitor().requestsInspection()) {
+                progress.getMonitor().snooze();
                 final GHWorkflowRun run = latestRun(workflow);
                 if (reportUrl) {
                     reportUrl = false;

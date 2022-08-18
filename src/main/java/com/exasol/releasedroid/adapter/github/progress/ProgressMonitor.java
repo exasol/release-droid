@@ -9,14 +9,14 @@ public class ProgressMonitor {
     private Instant start;
     private Optional<Duration> estimation;
     private Optional<Duration> timeout;
-    private Optional<Duration> callbackInterval;
-    private Instant lastCallback;
+    private Optional<Duration> snoozeInterval;
+    private Instant snoozeStart;
     private Instant eta;
 
     public ProgressMonitor() {
         this.estimation = Optional.empty();
         this.timeout = Optional.empty();
-        this.callbackInterval = Optional.empty();
+        this.snoozeInterval = Optional.empty();
     }
 
     public ProgressMonitor start() {
@@ -54,18 +54,18 @@ public class ProgressMonitor {
         return elapsed().compareTo(this.timeout.get()) > 0;
     }
 
-    public boolean needsCallback() {
-        if (this.callbackInterval.isEmpty()) {
+    public boolean requestsInspection() {
+        if (this.snoozeInterval.isEmpty()) {
             return false;
         }
-        if (this.lastCallback == null) {
+        if (this.snoozeStart == null) {
             return true;
         }
-        return this.lastCallback.plus(this.callbackInterval.get()).isBefore(Instant.now());
+        return Instant.now().isAfter(this.snoozeStart.plus(this.snoozeInterval.get()));
     }
 
-    public ProgressMonitor notifyCallback() {
-        this.lastCallback = Instant.now();
+    public ProgressMonitor snooze() {
+        this.snoozeStart = Instant.now();
         return this;
     }
 
@@ -79,8 +79,8 @@ public class ProgressMonitor {
         return this;
     }
 
-    public ProgressMonitor withCallbackInterval(final Duration value) {
-        this.callbackInterval = Optional.ofNullable(value);
+    public ProgressMonitor withSnoozeInterval(final Duration value) {
+        this.snoozeInterval = Optional.ofNullable(value);
         return this;
     }
 }

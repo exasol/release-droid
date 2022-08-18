@@ -43,20 +43,20 @@ class ProgressMonitorTest {
             callbackInterval = Duration.ofMinutes(secondsBeforeNextCallback);
         }
         final ProgressMonitor monitor = new ProgressMonitor() //
-                .withCallbackInterval(callbackInterval) //
+                .withSnoozeInterval(callbackInterval) //
                 .start() //
-                .notifyCallback();
-        assertThat(monitor.needsCallback(), is(expected));
+                .snooze();
+        assertThat(monitor.requestsInspection(), is(expected));
     }
 
     @Test
     void initialCallback() {
         final ProgressMonitor monitor = new ProgressMonitor() //
-                .withCallbackInterval(Duration.ofHours(1)) //
+                .withSnoozeInterval(Duration.ofHours(1)) //
                 .start();
-        assertThat(monitor.needsCallback(), is(true));
-        monitor.notifyCallback();
-        assertThat(monitor.needsCallback(), is(false));
+        assertThat(monitor.requestsInspection(), is(true));
+        monitor.snooze();
+        assertThat(monitor.requestsInspection(), is(false));
     }
 
     double secondsAsDouble(final Duration duration) {

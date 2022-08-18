@@ -167,8 +167,8 @@ public class ProgressFormatter {
             return this;
         }
 
-        public Builder callbackInterval(final Duration value) {
-            this.formatter.monitor.withCallbackInterval(value);
+        public Builder snoozeInterval(final Duration value) {
+            this.formatter.monitor.withSnoozeInterval(value);
             return this;
         }
 
