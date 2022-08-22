@@ -204,6 +204,7 @@ public class Progress {
 
         @Override
         void stdoutFlush(final String s) {
+            // do not display anything
         }
     }
 
