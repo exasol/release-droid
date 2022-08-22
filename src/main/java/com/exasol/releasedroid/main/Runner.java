@@ -42,6 +42,7 @@ public class Runner {
      * Run the Release Droid.
      *
      * @param args arguments
+     * @throws IOException potential exception that could be thrown during execution
      */
     public static void main(final String... args) throws IOException {
         setUpLogging();

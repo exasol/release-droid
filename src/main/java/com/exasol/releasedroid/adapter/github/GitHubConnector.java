@@ -10,8 +10,9 @@ import org.kohsuke.github.GitHub;
 public interface GitHubConnector {
     /**
      * Connect to GitHub.
-     * 
+     *
      * @return instance of {@link GitHub}
+     * @throws IOException potential exception thrown when connecting to GitHub
      */
     GitHub connectToGitHub() throws IOException;
 }

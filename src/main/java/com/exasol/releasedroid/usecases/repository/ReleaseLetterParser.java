@@ -4,9 +4,7 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARA
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +30,8 @@ public final class ReleaseLetterParser {
 
     /**
      * Parse a new {@link ReleaseLetter} from a string.
+     *
+     * @return new instance of {@link ReleaseLetter}
      */
     public ReleaseLetter parse() {
         if ((this.content != null) && (this.content.length() > 1)) {

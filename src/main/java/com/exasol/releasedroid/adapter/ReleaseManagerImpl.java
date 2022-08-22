@@ -2,21 +2,24 @@ package com.exasol.releasedroid.adapter;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
-import com.exasol.releasedroid.adapter.github.GitHubException;
-import com.exasol.releasedroid.adapter.github.GitHubGateway;
+import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.formatting.ChecksumFormatter;
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.release.ReleaseManager;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
-// Removing string duplicates here will decrease readability.
+/**
+ * Implementation of ReleaseManager
+ */
+@SuppressWarnings("java:S1192") // Removing string duplicates here will decrease readability.
 public class ReleaseManagerImpl implements ReleaseManager {
     private static final Logger LOGGER = Logger.getLogger(ReleaseManagerImpl.class.getName());
     private final GitHubGateway githubGateway;
+    private Progress progress;
 
     public ReleaseManagerImpl(final GitHubGateway githubGateway) {
         this.githubGateway = githubGateway;
@@ -27,6 +30,18 @@ public class ReleaseManagerImpl implements ReleaseManager {
         if (hasChecksumBuilds(repository)) {
             runChecksumBuildWorkflows(repository);
         }
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    @Override
+    public Progress estimateDuration(final Repository repository, final Estimation platformEstimations) {
+        final Estimation estimation = this.githubGateway.estimateDuration(repository.getName(), //
+                PREPARE_ORIGINAL_CHECKSUM_WORKFLOW) //
+                .add(platformEstimations);
+        this.progress = Progress.builder().estimation(estimation).start();
+        final String prefix = this.progress.startTime() + ": Starting release process";
+        LOGGER.info(() -> this.progress.welcomeMessage(prefix));
+        return this.progress;
     }
 
     private boolean hasChecksumBuilds(final Repository repository) {
@@ -90,7 +105,9 @@ public class ReleaseManagerImpl implements ReleaseManager {
     }
 
     private Map<String, String> getQuickChecksum(final String repositoryName) throws GitHubException {
-        final String logs = this.githubGateway.executeWorkflowWithLogs(repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW);
+        final String logs = this.githubGateway.executeWorkflowWithLogs( //
+                repositoryName, PRINT_QUICK_CHECKSUM_WORKFLOW, //
+                new WorkflowOptions().withProgress(this.progress));
         return formatChecksumLogs(logs);
     }
 
@@ -142,6 +159,8 @@ public class ReleaseManagerImpl implements ReleaseManager {
     // [impl->dsn~prepare-checksum~1]
     private void prepareChecksumArtifact(final Repository repository) throws GitHubException {
         LOGGER.info("Preparing a new artifact with a checksum.");
-        this.githubGateway.executeWorkflow(repository.getName(), PREPARE_ORIGINAL_CHECKSUM_WORKFLOW);
+        this.githubGateway.executeWorkflow(repository.getName(), //
+                PREPARE_ORIGINAL_CHECKSUM_WORKFLOW, //
+                new WorkflowOptions().withProgress(this.progress));
     }
 }

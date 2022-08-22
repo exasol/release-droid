@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 class Version implements Comparable<Version> {
 
-    private static final Pattern PATTERN = Pattern.compile("(v?)([0-9]+(\\.[0-9]+)*+)");
+    private static final Pattern PATTERN = Pattern.compile("(v?)(\\d+(\\.\\d+)*+)");
     private static final int COMPONENTS = 3;
     private static final int LESS = -1;
     private static final int EQUAL = 0;

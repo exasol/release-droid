@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.exasol.releasedroid.progress.Progress;
+
 @ExtendWith(MockitoExtension.class)
 class GitHubAPIAdapterTest {
 
@@ -43,10 +45,9 @@ class GitHubAPIAdapterTest {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
         final GHWorkflow workflowMock = mockWorkflow();
-
         when(this.repositoryMock.getDefaultBranch()).thenReturn(defaultBranch);
         when(this.repositoryMock.getWorkflow(anyString())).thenReturn(workflowMock);
-        this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName);
+        this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName, new WorkflowOptions());
         verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of());
     }
 
@@ -57,7 +58,7 @@ class GitHubAPIAdapterTest {
         when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
 
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
-        when(ptor.hasNext()).thenReturn(false).thenReturn(true);
+        when(ptor.hasNext()).thenReturn(true);
         when(ptor.next()).thenReturn(run);
 
         final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
@@ -98,7 +99,8 @@ class GitHubAPIAdapterTest {
         final URL expectedHtmlUrl = mockGHRepository(this.gitHubMock, REPOSITORY_NAME);
         final String expectedTagUrl = GitHubReleaseInfo.getTagUrl(REPOSITORY_NAME, version);
 
-        final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release);
+        final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release,
+                Progress.builder().start());
         assertAll(() -> assertThat(info.getHtmlUrl(), equalTo(expectedHtmlUrl)), //
                 () -> assertThat(info.isDraft(), equalTo(true)), //
                 () -> assertThat(info.getTagUrl(), equalTo(expectedTagUrl)));

@@ -7,8 +7,7 @@ import com.exasol.releasedroid.usecases.report.Report;
  */
 public interface ReportFormatter {
     /**
-     * Get a formatted report as a string.
-     *
+     * @param report report to format
      * @return formatted report as a string
      */
     String formatReport(Report report);

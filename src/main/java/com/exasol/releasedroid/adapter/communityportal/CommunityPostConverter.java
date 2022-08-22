@@ -15,6 +15,7 @@ public class CommunityPostConverter {
     /**
      * Transform the community post to the JSON format.
      *
+     * @param communityPost post to be converted to Json
      * @return community post as a JSON string
      */
     public static String toJson(final CommunityPost communityPost) {
@@ -43,7 +44,7 @@ public class CommunityPostConverter {
 
     private static String getTeaser(final CommunityPost communityPost) {
         final String teaser = communityPost.getTeaser();
-        if (teaser == null || teaser.isEmpty()) {
+        if ((teaser == null) || teaser.isEmpty()) {
             final List<String> teasers = List.of("See what's new here.", "Learn more here.",
                     "Find out what's new here.", "Find out how it can help you.",
                     "Find out what's changed and where you can learn more.", "Read more here.", "Find out more here.",

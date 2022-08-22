@@ -59,16 +59,16 @@ class GitHubReleaseMakerTest {
         when(repoMock.getVersion()).thenReturn(VERSION);
         when(repoMock.getReleaseLetter(VERSION)).thenReturn(releaseLetter(""));
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> this.releaseMaker.makeRelease(repoMock));
+                () -> this.releaseMaker.makeRelease(repoMock, null));
         assertThat(exception.getMessage(), containsString("E-RD-GH-28: Release header must not be empty."));
     }
 
     @Test
     void makeRelease() throws GitHubException {
         mockReleaseInfo(this.githubGatewayMock);
-        this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
+        this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER), null);
         final ArgumentCaptor<GitHubRelease> arg = ArgumentCaptor.forClass(GitHubRelease.class);
-        verify(this.githubGatewayMock).createGithubRelease(arg.capture());
+        verify(this.githubGatewayMock).createGithubRelease(arg.capture(), any());
         final GitHubRelease actualRelease = arg.getValue();
         assertAll(() -> assertThat(actualRelease.getReleaseLetter(), equalTo(RELEASE_LETTER_BODY)),
                 () -> assertThat(actualRelease.getVersion(), equalTo(VERSION)),
@@ -83,9 +83,9 @@ class GitHubReleaseMakerTest {
         final Repository repoMock = repoMock(RELEASE_LETTER_HEADER);
         when(repoMock.getSingleFileContentAsString(".github/workflows/release_droid_upload_github_release_assets.yml"))
                 .thenThrow(new RepositoryException("expected"));
-        this.releaseMaker.makeRelease(repoMock);
+        this.releaseMaker.makeRelease(repoMock, null);
         final ArgumentCaptor<GitHubRelease> arg = ArgumentCaptor.forClass(GitHubRelease.class);
-        verify(this.githubGatewayMock).createGithubRelease(arg.capture());
+        verify(this.githubGatewayMock).createGithubRelease(arg.capture(), any());
         final GitHubRelease actualRelease = arg.getValue();
         assertThat(actualRelease.hasUploadAssets(), is(false));
     }
@@ -95,11 +95,11 @@ class GitHubReleaseMakerTest {
         mockReleaseInfo(this.githubGatewayMock);
         final String expected = GitHubReleaseInfo.getTagUrl(REPO_NAME, VERSION);
         when(this.githubReleaseInfo.getTagUrl()).thenReturn(expected);
-        final String actual = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER));
+        final String actual = this.releaseMaker.makeRelease(repoMock(RELEASE_LETTER_HEADER), null);
         assertThat(actual, equalTo(expected));
     }
 
     private void mockReleaseInfo(final GitHubGateway githubGatewayMock) throws GitHubException {
-        when(githubGatewayMock.createGithubRelease(any())).thenReturn(this.githubReleaseInfo);
+        when(githubGatewayMock.createGithubRelease(any(), any())).thenReturn(this.githubReleaseInfo);
     }
 }

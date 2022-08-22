@@ -17,7 +17,7 @@ public class Colorizer {
      * @return text with ansi color red
      */
     public static String red(final String text) {
-        return ansi().fgRed().a(text).reset().toString();
+        return ansi().fgBrightRed().a(text).reset().toString();
     }
 
     public static String green(final String text) {
@@ -35,5 +35,4 @@ public class Colorizer {
     public static String yellow(final String s) {
         return ansi().fgBrightYellow().a(s).reset().toString();
     }
-
 }

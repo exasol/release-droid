@@ -36,5 +36,4 @@ class LogFormatterTest {
     private static Stream<Level> normalLevels() {
         return Stream.of(Level.FINE, Level.FINER, Level.FINEST, Level.INFO);
     }
-
 }

@@ -1,4 +1,4 @@
-package com.exasol.releasedroid.adapter.github.progress;
+package com.exasol.releasedroid.progress;
 
 import static com.exasol.releasedroid.formatting.Colorizer.brightGreen;
 import static com.exasol.releasedroid.formatting.Colorizer.yellow;
@@ -11,7 +11,8 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -24,14 +25,15 @@ import org.mockito.Mockito;
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 
-class ProgressFormatterTest {
+class ProgressTest {
 
     private static final Instant INSTANT = Instant.parse("2022-01-01T13:00:10Z");
     private static final Duration DURATION = Duration.ofHours(1).plusMinutes(1).plusSeconds(1);
+    private static final Estimation ESTIMATION = new Estimation(INSTANT, DURATION);
 
     @Test
     void withoutLastRun() {
-        final ProgressFormatter testee = ProgressFormatter.builder().start();
+        final Progress testee = Progress.builder().start();
         assertThat(testee.formatElapsed(), equalTo("0:00:00"));
         assertThat(testee.status(), equalTo("0:00:00 elapsed"));
         assertThat(testee.welcomeMessage("prefix"), equalTo("prefix"));
@@ -40,7 +42,7 @@ class ProgressFormatterTest {
     @Test
     void startTime() {
         final String pattern = "HH mm ss";
-        final ProgressFormatter testee = formatterBuilder() //
+        final Progress testee = progressBuilder() //
                 .timePattern(pattern) //
                 .start();
         assertThat(testee.startTime(), equalTo(format(Instant.now(), pattern)));
@@ -54,15 +56,15 @@ class ProgressFormatterTest {
     })
     void formatRemaining(final String remaining, final String expected) {
         final Duration duration = Duration.parse(String.format("PT%sH%sM%sS", (Object[]) remaining.split(":")));
-        assertThat(ProgressFormatter.formatRemaining(duration), equalTo(expected));
+        assertThat(Progress.formatDuration(duration), equalTo(expected));
     }
 
     @Test
     void welcomeMessage() throws InterruptedException {
         final String timePattern = "HH mm ss";
         final String datePattern = "dd MM YYYY";
-        final ProgressFormatter testee = ProgressFormatter.builder() //
-                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(DURATION))) //
+        final Progress testee = Progress.builder() //
+                .estimation(ESTIMATION) //
                 .datePattern(datePattern) //
                 .timePattern(timePattern) //
                 .start();
@@ -81,7 +83,7 @@ class ProgressFormatterTest {
 
     @Test
     void status() throws InterruptedException {
-        final ProgressMonitor monitor = mockProgressMonitor(DURATION);
+        final ProgressMonitor monitor = mockProgressMonitor(ESTIMATION);
         final Duration delta = Duration.ofSeconds(3);
 
         when(monitor.elapsed()) //
@@ -90,7 +92,7 @@ class ProgressFormatterTest {
         when(monitor.remaining()) //
                 .thenReturn(DURATION) //
                 .thenReturn(delta);
-        final ProgressFormatter testee = startFormatter(monitor, DURATION);
+        final Progress testee = startProgress(monitor, DURATION);
 
         assertThat(testee.status(), allOf( //
                 containsString(brightGreen("0:00:00 elapsed")), //
@@ -101,32 +103,17 @@ class ProgressFormatterTest {
                 containsString(yellow("3 seconds remaining"))));
     }
 
-    private ProgressMonitor mockProgressMonitor(final Duration estimation) {
+    private ProgressMonitor mockProgressMonitor(final Estimation estimation) {
         final ProgressMonitor monitor = Mockito.mock(ProgressMonitor.class);
-        when(monitor.getEstimation()).thenReturn(Optional.of(estimation));
+        when(monitor.estimation()).thenReturn(estimation);
         when(monitor.eta()).thenReturn(INSTANT);
         return monitor;
     }
 
     @Test
-    void timeout() throws InterruptedException {
-        final Duration timeout = Duration.ofMillis(100);
-        final ProgressMonitor monitor = Mockito.mock(ProgressMonitor.class);
-        when(monitor.isTimeout())//
-                .thenReturn(false) //
-                .thenReturn(true);
-        final ProgressFormatter formatter = new ProgressFormatter.Builder(monitor) //
-                .timeout(timeout) //
-                .start();
-        assertThat(formatter.timeout(), is(false));
-        // simulate sleeping 200 ms, i.e. longer than timeout defined initially 1:58 minutes
-        assertThat(formatter.timeout(), is(true));
-    }
-
-    @Test
     void progress() throws InterruptedException {
         final Duration estimation = Duration.ofSeconds(1);
-        final ProgressMonitor monitor = mockProgressMonitor(estimation);
+        final ProgressMonitor monitor = mockProgressMonitor(new Estimation(INSTANT, estimation));
         when(monitor.elapsed()) //
                 .thenReturn(Duration.ofSeconds(0)) //
                 .thenReturn(Duration.ofSeconds(1)) //
@@ -136,7 +123,7 @@ class ProgressFormatterTest {
                 .thenReturn(Duration.ofSeconds(0)) //
                 .thenReturn(Duration.ofSeconds(-1));
 
-        final ProgressFormatter testee = startFormatter(monitor, estimation);
+        final Progress testee = startProgress(monitor, estimation);
         final String[][] expected = { //
                 { "0:00:00 elapsed", "1 second remaining", "0%", "[", ">" },
                 { "0:00:01 elapsed", "0 seconds remaining", "100%", "[===================", "|>" },
@@ -153,7 +140,7 @@ class ProgressFormatterTest {
 
     void manualIntegrationTestWithoutGithub() throws InterruptedException {
         final Duration estimation = Duration.ofSeconds(4);
-        final ProgressFormatter testee = startFormatter(new ProgressMonitor(), estimation);
+        final Progress testee = startProgress(new ProgressMonitor(), estimation);
         new ManualExplorer().estimation(estimation).iterations(5, 3).run(testee, "");
     }
 
@@ -163,9 +150,9 @@ class ProgressFormatterTest {
         final GitHubConnectorImpl connector = new GitHubConnectorImpl(reader);
         final GHWorkflowRun run = lastRun(connector, "exasol/release-droid", "ci-build.yml");
 
-        final ProgressFormatter testee = ProgressFormatter.builder() //
+        final Progress testee = Progress.builder() //
                 .datePattern("dd.MM.YYYY") //
-                .lastRun(run.getCreatedAt(), run.getUpdatedAt()) //
+                .estimation(Estimation.from(run.getCreatedAt(), run.getUpdatedAt())) //
                 .start();
         final Duration estimation = Duration.between( //
                 run.getCreatedAt().toInstant(), //
@@ -186,15 +173,15 @@ class ProgressFormatterTest {
         return adapter.latestRun(workflow);
     }
 
-    private ProgressFormatter.Builder formatterBuilder() {
-        return ProgressFormatter.builder() //
-                .lastRun(Date.from(INSTANT), Date.from(INSTANT.plus(DURATION)));
+    private Progress.Builder progressBuilder() {
+        return Progress.builder().estimation(ESTIMATION);
     }
 
-    private ProgressFormatter startFormatter(final ProgressMonitor monitor, final Duration estimation) {
-        return new ProgressFormatter.Builder(monitor) //
-                .lastRun(Date.from(INSTANT), //
-                        Date.from(INSTANT.plus(estimation))) //
+    private Progress startProgress(final ProgressMonitor monitor, final Duration estimation) {
+        return new Progress.Builder(monitor) //
+                .estimation(Estimation.from( //
+                        Date.from(INSTANT), //
+                        Date.from(INSTANT.plus(estimation)))) //
                 .datePattern("dd.MM.YYYY") //
                 .start();
     }
@@ -219,7 +206,7 @@ class ProgressFormatterTest {
         // Sonar warnings are suppressed therefore:
         // java:S2925 - "Thread.sleep" should not be used in tests
         @SuppressWarnings("java:S2925")
-        public void run(final ProgressFormatter testee, final String prefix) throws InterruptedException {
+        public void run(final Progress testee, final String prefix) throws InterruptedException {
             System.out.println(testee.welcomeMessage(prefix));
             for (int i = 0; i < this.iterations; i++) {
                 Thread.sleep(this.estimation.dividedBy(this.intervals).toMillis());
@@ -232,7 +219,8 @@ class ProgressFormatterTest {
 
         private void fixEclipseConsole() {
             if (System.getProperty("sun.java.command").startsWith("org.eclipse")) {
-                System.out.println(new String(new char[70]).replace("\0", "\r\n"));
+                System.out.println(Progress.repeat("\r\n", 70));
+                // System.out.println(new String(new char[70]).replace("\0", "\r\n"));
             }
         }
     }

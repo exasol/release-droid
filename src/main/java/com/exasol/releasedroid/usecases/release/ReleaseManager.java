@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.usecases.release;
 
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.repository.Repository;
 
 /**
@@ -11,12 +13,25 @@ public interface ReleaseManager {
      *
      * @param repository repository to prepare
      */
-    public void prepareForRelease(Repository repository);
+    void prepareForRelease(Repository repository);
+
+    // [impl->dsn~estimate-duration~1]
+    /**
+     * Estimate overall duration including the estimations for all platforms and potential additional overhead created
+     * by the release manager.
+     *
+     * @param repository          repository to estimate release duration for
+     * @param platformEstimations aggregated estimation for releasing to the configured platforms for the current
+     *                            release
+     * @return started instance of {@link Progress} including the {@code platformEstimations} plus the estimation for
+     *         the overhead activities of the {@link ReleaseManager} itself
+     */
+    Progress estimateDuration(final Repository repository, Estimation platformEstimations);
 
     /**
      * Do a post-release clean-up.
      *
      * @param repository repository to clean-up
      */
-    public void cleanUpAfterRelease(Repository repository);
+    void cleanUpAfterRelease(Repository repository);
 }

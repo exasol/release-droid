@@ -7,10 +7,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
+import java.time.Duration;
 import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
@@ -57,16 +60,27 @@ class ReleaseInteractorTest {
     }
 
     private List<Report> release(final PlatformName... platforms) {
-        return release(asList(platforms), emptySet());
+        return release(false, asList(platforms), emptySet());
     }
 
     private List<Report> release(final List<PlatformName> platforms, final Set<PlatformName> skipValidationOn) {
-        final Map<PlatformName, ReleaseMaker> releaseMarkers = Map.of( //
+        return release(true, platforms, skipValidationOn);
+    }
+
+    private List<Report> release(final boolean mockEstimation, final List<PlatformName> platforms,
+            final Set<PlatformName> skipValidationOn) {
+        final Map<PlatformName, ReleaseMaker> releaseMakers = Map.of( //
                 PlatformName.GITHUB, this.githubReleaseMakerMock, //
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //
                 PlatformName.MAVEN, this.mavenReleaseMakerMock, //
                 PlatformName.COMMUNITY, this.communityReleaseMakerMock);
-        final ReleaseInteractor releaseInteractor = new ReleaseInteractor(this.validateUseCaseMock, releaseMarkers,
+        if (mockEstimation) {
+            for (final PlatformName p : platforms) {
+                final ReleaseMaker maker = releaseMakers.get(p);
+                when(maker.estimateDuration(any())).thenReturn(Estimation.of(Duration.ofSeconds(1)));
+            }
+        }
+        final ReleaseInteractor releaseInteractor = new ReleaseInteractor(this.validateUseCaseMock, releaseMakers,
                 this.releaseManagerMock, this.releaseStateMock);
         return releaseInteractor.release(this.repositoryMock, platforms, skipValidationOn);
     }
@@ -80,7 +94,7 @@ class ReleaseInteractorTest {
     @Test
     void testReleaseSinglePlatformSuccess() {
         simulateSuccessValidationReport(PlatformName.GITHUB);
-        when(this.githubReleaseMakerMock.makeRelease(this.repositoryMock)).thenReturn(GITHUB_RELEASE_OUTPUT);
+        when(this.githubReleaseMakerMock.makeRelease(this.repositoryMock, null)).thenReturn(GITHUB_RELEASE_OUTPUT);
         final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.SUCCESS);
         verifyGithubReleaseAndCleanup();
@@ -107,8 +121,10 @@ class ReleaseInteractorTest {
 
     private void verifyGithubReleaseAndCleanup() {
         final InOrder inOrder = inOrder(this.releaseManagerMock, this.githubReleaseMakerMock);
+        inOrder.verify(this.githubReleaseMakerMock).estimateDuration(this.repositoryMock);
+        inOrder.verify(this.releaseManagerMock).estimateDuration(eq(this.repositoryMock), any());
         inOrder.verify(this.releaseManagerMock).prepareForRelease(this.repositoryMock);
-        inOrder.verify(this.githubReleaseMakerMock).makeRelease(this.repositoryMock);
+        inOrder.verify(this.githubReleaseMakerMock).makeRelease(this.repositoryMock, null);
         inOrder.verify(this.releaseManagerMock).cleanUpAfterRelease(this.repositoryMock);
         inOrder.verifyNoMoreInteractions();
     }
@@ -123,10 +139,12 @@ class ReleaseInteractorTest {
 
     private void verifyGithubReleaseSkipped() {
         final InOrder inOrder = inOrder(this.releaseManagerMock);
+        inOrder.verify(this.releaseManagerMock).estimateDuration(eq(this.repositoryMock), any());
         inOrder.verify(this.releaseManagerMock).prepareForRelease(this.repositoryMock);
         inOrder.verify(this.releaseManagerMock).cleanUpAfterRelease(this.repositoryMock);
         inOrder.verifyNoMoreInteractions();
-        verifyNoInteractions(this.githubReleaseMakerMock);
+        verify(this.githubReleaseMakerMock).estimateDuration(this.repositoryMock);
+        verifyNoMoreInteractions(this.githubReleaseMakerMock);
     }
 
     @Test
@@ -139,7 +157,7 @@ class ReleaseInteractorTest {
     }
 
     private void simulateReleaseFailure(final ReleaseMaker releaseMakerMock) {
-        when(releaseMakerMock.makeRelease(this.repositoryMock)).thenThrow(new RuntimeException("expected"));
+        when(releaseMakerMock.makeRelease(this.repositoryMock, null)).thenThrow(new RuntimeException("expected"));
     }
 
     @Test
@@ -147,7 +165,8 @@ class ReleaseInteractorTest {
         simulateFailureValidationReport(PlatformName.GITHUB);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
         assertReport(reports, ReportStatus.FAILURE, ReportStatus.SUCCESS);
-        verifyNoInteractions(this.jiraReleaseMakerMock);
+        verify(this.jiraReleaseMakerMock).estimateDuration(this.repositoryMock);
+        verifyNoMoreInteractions(this.jiraReleaseMakerMock);
     }
 
     @Test
@@ -156,7 +175,8 @@ class ReleaseInteractorTest {
         simulateReleaseFailure(this.githubReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.FAILURE);
-        verifyNoInteractions(this.jiraReleaseMakerMock);
+        verify(this.jiraReleaseMakerMock).estimateDuration(this.repositoryMock);
+        verifyNoMoreInteractions(this.jiraReleaseMakerMock);
     }
 
     private void simulateSuccessValidationReport(final PlatformName platform) {
@@ -179,7 +199,7 @@ class ReleaseInteractorTest {
     @Test
     void testReleasePlatformSkippedWhenAlreadyReleased() {
         simulateStatusAlreadyReleased(PlatformName.GITHUB);
-        final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
+        final List<Report> reports = release(false, List.of(PlatformName.GITHUB), emptySet());
         assertThat(reports, emptyCollectionOf(Report.class));
         verifyNoInteractions(this.githubReleaseMakerMock);
     }
