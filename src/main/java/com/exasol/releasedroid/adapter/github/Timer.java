@@ -29,7 +29,7 @@ public class Timer {
      */
     public Timer start() {
         this.start = Instant.now();
-        this.snoozeStart = null;
+        this.snoozeStart = this.start;
         return this;
     }
 

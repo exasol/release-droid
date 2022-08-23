@@ -42,8 +42,6 @@ class TimerTest {
         final Timer reminder = new Timer() //
                 .withSnoozeInterval(Duration.ofHours(1)) //
                 .start();
-        assertThat(reminder.alarm(), is(true));
-        reminder.snooze();
         assertThat(reminder.alarm(), is(false));
     }
 

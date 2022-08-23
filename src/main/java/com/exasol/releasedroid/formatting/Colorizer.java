@@ -21,7 +21,7 @@ public class Colorizer {
     }
 
     public static String green(final String text) {
-        return ansi().fgGreen().a(text).reset().toString();
+        return ansi().fgBrightGreen().a(text).reset().toString();
     }
 
     public static String formatLink(final URL url) {

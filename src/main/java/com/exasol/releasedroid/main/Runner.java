@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.ReleaseManagerImpl;
 import com.exasol.releasedroid.adapter.communityportal.*;
@@ -46,6 +48,7 @@ public class Runner {
      */
     public static void main(final String... args) throws IOException {
         setUpLogging();
+        AnsiConsole.systemInstall();
         createReleaseDroid().run(new UserInputParser().parseUserInput(args));
     }
 

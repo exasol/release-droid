@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.2.0, released 2022-08-23
+# Exasol Release Droid 1.2.0, released 2022-08-24
 
 Code name: Overall Estimation And Progress Display
 
