@@ -9,6 +9,8 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class EstimationTest {
 
     private static final Duration DURATION = Duration.ofMinutes(1).plusSeconds(2);
@@ -54,12 +56,17 @@ class EstimationTest {
         assertThat(ESTIMATION.toString(), equalTo("0:01:02 hours @ 2022-02-28 09:30:59 (UTC)"));
     }
 
+    @Test
+    void equalsContract() {
+        EqualsVerifier.simple().forClass(Estimation.class).verify();
+    }
+
     private void verifyAdd(final Estimation first, final Estimation second, final Estimation expected) {
-        final Estimation actual = instance(first).add(second);
+        final Estimation actual = instance(first).plus(second);
         assertThat(actual.isPresent(), equalTo(first.isPresent() || second.isPresent()));
         assertThat(actual, equalTo(expected));
         // assert add is commutative
-        assertThat(actual, equalTo(instance(second).add(first)));
+        assertThat(actual, equalTo(instance(second).plus(first)));
     }
 
     private Estimation instance(final Estimation other) {

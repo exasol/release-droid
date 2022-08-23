@@ -88,7 +88,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     public Estimation estimateDuration(final Repository repository) {
         final Estimation estimation = Estimation.of(Duration.ofSeconds(10));
         if (hasUploadAssetsWorkflow(repository)) {
-            estimation.add(this.githubGateway.estimateDuration( //
+            return estimation.plus(this.githubGateway.estimateDuration( //
                     repository.getName(), GITHUB_UPLOAD_ASSETS_WORKFLOW));
         }
         return estimation;

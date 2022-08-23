@@ -180,7 +180,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
             return run == null //
                     ? Estimation.empty()
                     : Estimation.from(run.getCreatedAt(), run.getUpdatedAt());
-        } catch (IOException | GitHubException e) {
+        } catch (IOException | GitHubException exception) {
+            LOGGER.warning(ExaError.messageBuilder("W-RD-GH-29")
+                    .message("Failed to retrieve duration of latest run of workflow {{workflow}}: {{cause|uq}}.", //
+                            workflowName, exception.getMessage()) //
+                    .mitigation("Executing workflow without estimation.") //
+                    .toString());
             return Estimation.empty();
         }
     }

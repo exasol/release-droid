@@ -15,7 +15,7 @@ public class Timer {
     private Instant snoozeStart;
 
     /**
-     * new instance of timer
+     * New instance of {@link Timer}.
      */
     public Timer() {
         this.timeout = Optional.empty();
@@ -76,7 +76,7 @@ public class Timer {
     }
 
     /**
-     * put the timer to sleep for the duration defined by {@link #withSnoozeInterval}
+     * Put the timer to sleep for the duration defined by {@link #withSnoozeInterval}.
      *
      * @return this for fluent programming
      */

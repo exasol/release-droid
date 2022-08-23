@@ -106,9 +106,9 @@ public class ReleaseInteractor implements ReleaseUseCase {
 
     // [impl->dsn~estimate-duration~1]
     private Estimation estimateDuration(final Repository repository, final List<PlatformName> platforms) {
-        final Estimation estimation = Estimation.empty();
+        Estimation estimation = Estimation.empty();
         for (final PlatformName platform : platforms) {
-            estimation.add(getReleaseMaker(platform).estimateDuration(repository));
+            estimation = estimation.plus(getReleaseMaker(platform).estimateDuration(repository));
         }
         return estimation;
     }

@@ -17,6 +17,7 @@ public class Progress {
         return new Builder();
     }
 
+    // only for manual tests in IDE Eclipse
     private static final boolean ECLIPSE_CONSOLE = false;
     private final ProgressMonitor monitor;
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");

@@ -35,8 +35,8 @@ public class Estimation {
         return new Estimation(startInstant, Duration.between(startInstant, end.toInstant()));
     }
 
-    private Instant timestamp;
-    private Duration duration;
+    private final Instant timestamp;
+    private final Duration duration;
 
     Estimation(final Instant timestamp, final Duration duration) {
         this.timestamp = timestamp;
@@ -68,14 +68,9 @@ public class Estimation {
      * @param other another estimation to be added to the current one
      * @return this for fluent programming
      */
-    public Estimation add(final Estimation other) {
-        if (other.duration != null) {
-            this.duration = durationOrZero().plus(other.duration);
-            if (this.timestamp == null) {
-                this.timestamp = other.timestamp();
-            }
-        }
-        return this;
+    public Estimation plus(final Estimation other) {
+        return new Estimation(this.timestamp != null ? this.timestamp : other.timestamp,
+                other.duration == null ? this.duration : durationOrZero().plus(other.duration));
     }
 
     /**

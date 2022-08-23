@@ -37,7 +37,7 @@ public class ReleaseManagerImpl implements ReleaseManager {
     public Progress estimateDuration(final Repository repository, final Estimation platformEstimations) {
         final Estimation estimation = this.githubGateway.estimateDuration(repository.getName(), //
                 PREPARE_ORIGINAL_CHECKSUM_WORKFLOW) //
-                .add(platformEstimations);
+                .plus(platformEstimations);
         this.progress = Progress.builder().estimation(estimation).start();
         final String prefix = this.progress.startTime() + ": Starting release process";
         LOGGER.info(() -> this.progress.welcomeMessage(prefix));
