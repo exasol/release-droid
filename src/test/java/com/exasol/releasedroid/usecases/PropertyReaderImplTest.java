@@ -9,8 +9,6 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.errorreporting.ExaError;
-
 class PropertyReaderImplTest {
     @Test
     void testReadProperty() throws IOException {
@@ -44,15 +42,5 @@ class PropertyReaderImplTest {
     void testReadPropertyWithMissingFile() {
         final PropertyReader reader = new PropertyReaderImpl("wrong/path", (key, hide) -> "value_from_console");
         assertThat(reader.readProperty("another_key", false), equalTo("value_from_console"));
-    }
-
-    @Test
-    void test() {
-        final Exception exception = new RuntimeException("something");
-        System.out.println(ExaError.messageBuilder("W-RD-GH-29")
-                .message("Failed to retrieve duration of latest run of workflow {{workflow}}: {{cause|uq}}.", //
-                        "workflowName", exception.getMessage()) //
-                .mitigation("Execution workflow with empty estimation.") //
-                .toString());
     }
 }
