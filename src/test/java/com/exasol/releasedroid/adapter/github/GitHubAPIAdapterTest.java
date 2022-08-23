@@ -2,6 +2,7 @@ package com.exasol.releasedroid.adapter.github;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,22 +46,27 @@ class GitHubAPIAdapterTest {
     void testExecuteWorkflow() throws IOException, GitHubException {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
-        final GHWorkflow workflowMock = mockWorkflow();
+        final GHWorkflow workflowMock = mockWorkflow(mockWorkflowRun());
         when(this.repositoryMock.getDefaultBranch()).thenReturn(defaultBranch);
         when(this.repositoryMock.getWorkflow(anyString())).thenReturn(workflowMock);
         this.apiAdapter.executeWorkflow(REPOSITORY_NAME, workflowName, new WorkflowOptions());
         verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of());
     }
 
-    @SuppressWarnings("unchecked")
-    private GHWorkflow mockWorkflow() throws IOException {
+    private GHWorkflowRun mockWorkflowRun() throws IOException {
         final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
         when(run.getHtmlUrl()).thenReturn(new URL("http://of-workflow-run"));
         when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
+        return run;
+    }
 
+    @SuppressWarnings("unchecked")
+    private GHWorkflow mockWorkflow(final GHWorkflowRun run) throws IOException {
         final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
-        when(ptor.hasNext()).thenReturn(true);
-        when(ptor.next()).thenReturn(run);
+        when(ptor.hasNext()).thenReturn(run != null);
+        if (run != null) {
+            when(ptor.next()).thenReturn(run);
+        }
 
         final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
         when(pable.iterator()).thenReturn(ptor);
@@ -99,12 +106,27 @@ class GitHubAPIAdapterTest {
         final URL expectedHtmlUrl = mockGHRepository(this.gitHubMock, REPOSITORY_NAME);
         final String expectedTagUrl = GitHubReleaseInfo.getTagUrl(REPOSITORY_NAME, version);
 
-        final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release,
-                Progress.builder().start());
+        final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release, Progress.builder().start());
         assertAll(() -> assertThat(info.getHtmlUrl(), equalTo(expectedHtmlUrl)), //
                 () -> assertThat(info.isDraft(), equalTo(true)), //
                 () -> assertThat(info.getTagUrl(), equalTo(expectedTagUrl)));
 
+    }
+
+    @Test
+    void estimateDurationException() throws IOException {
+        final String workflow = "workflow";
+        when(this.repositoryMock.getWorkflow(workflow)).thenThrow(new IOException("sample message"));
+        this.apiAdapter.estimateDuration(REPOSITORY_NAME, workflow);
+    }
+
+    @Test
+    void estimateDuration() throws IOException {
+        final String workflowName = "some_workflow.yml";
+        final GHWorkflow workflowMock = mockWorkflow(null);
+        when(this.repositoryMock.getWorkflow(workflowName)).thenReturn(workflowMock);
+        final Estimation actual = this.apiAdapter.estimateDuration(REPOSITORY_NAME, workflowName);
+        assertThat(actual.isPresent(), is(false));
     }
 
     private URL mockGHRepository(final GitHub gitHub, final String REPOSITORY_NAME) throws IOException {

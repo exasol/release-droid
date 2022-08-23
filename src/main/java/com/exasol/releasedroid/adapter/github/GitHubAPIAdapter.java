@@ -183,7 +183,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
         } catch (IOException | GitHubException exception) {
             LOGGER.warning(ExaError.messageBuilder("W-RD-GH-29")
                     .message("Failed to retrieve duration of latest run of workflow {{workflow}}: {{cause|uq}}.", //
-                            workflowName, exception.getMessage()) //
+                            workflowName, exception) //
                     .mitigation("Executing workflow without estimation.") //
                     .toString());
             return Estimation.empty();
