@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -117,7 +118,7 @@ class GitHubAPIAdapterTest {
     void estimateDurationException() throws IOException {
         final String workflow = "workflow";
         when(this.repositoryMock.getWorkflow(workflow)).thenThrow(new IOException("sample message"));
-        this.apiAdapter.estimateDuration(REPOSITORY_NAME, workflow);
+        assertDoesNotThrow(() -> this.apiAdapter.estimateDuration(REPOSITORY_NAME, workflow));
     }
 
     @Test
