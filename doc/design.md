@@ -359,8 +359,7 @@ Needs: impl, utest
 ### Release Duration Estimation
 `dsn~estimate-duration~1`
 
-If the current release is not the first one then RD uses the duration of the
-preceding release as estimation for the current release.
+If the current release is not the first one then RD uses the duration of the preceeding release as estimation for the current release.
 
 Covers:
 * [`req~estimation-and-progress-display~1`](system_requirements.md#release-estimation-and-progress-display)
@@ -376,7 +375,7 @@ Covers:
 * [`req~estimation-and-progress-display~1`](system_requirements.md#release-estimation-and-progress-display)
 
 Rationale:
-Most of the overall runtime is spent for execution of GitHub workflows (aka. action, workflow run). Additionally other platforms do not provide an easy way to retrive the duration of the preceding release.
+Most of the overall runtime is spent for execution of GitHub workflows (aka. action, workflow run). Additionally other platforms do not provide an easy way to retrieve the duration of the preceding release.
 
 Estimation based on workflow execution includes
 * Preparation and checksum phase
@@ -397,8 +396,7 @@ Needs: impl
 #### Progress Display
 `dsn~progress-display~1`
 
-During release process RD displays and continously updates a progress display
-with the following information
+During release process RD displays and continuously updates a progress display with the following information:
 * when the release has begun
 * how long it is already running
 * when it is expected to be finished

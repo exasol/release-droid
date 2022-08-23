@@ -6,7 +6,7 @@ import java.util.Map;
 import com.exasol.releasedroid.progress.Progress;
 
 /**
- * Instances of this class may contain map of dispatches and {@link Progress} for worflow execution.
+ * Instances of this class may contain a map of dispatches and {@link Progress} for workflow execution.
  */
 public class WorkflowOptions {
 
