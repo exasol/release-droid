@@ -3,9 +3,12 @@ package com.exasol.releasedroid.adapter.jira;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
 import com.exasol.releasedroid.usecases.release.ReleaseState;
@@ -31,7 +34,7 @@ public class JiraReleaseMaker implements ReleaseMaker {
     }
 
     @Override
-    public String makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository, final Progress progress) throws ReleaseException {
         LOGGER.fine("Creating a Jira ticket.");
         try {
             final String linkToTicket = createTicketRequest(repository);
@@ -78,5 +81,11 @@ public class JiraReleaseMaker implements ReleaseMaker {
         final Map<PlatformName, String> progress = this.releaseState.getProgress(repository.getName(),
                 repository.getVersion());
         return progress.get(PlatformName.GITHUB);
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    @Override
+    public Estimation estimateDuration(final Repository repository) {
+        return Estimation.of(Duration.ofSeconds(5));
     }
 }

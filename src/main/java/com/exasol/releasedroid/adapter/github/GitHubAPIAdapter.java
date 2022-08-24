@@ -13,7 +13,8 @@ import java.util.zip.ZipInputStream;
 import org.kohsuke.github.*;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.adapter.github.progress.ProgressFormatter;
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 
 /**
@@ -70,7 +71,8 @@ public class GitHubAPIAdapter implements GitHubGateway {
     @Override
     // [impl->dsn~retrieve-github-release-header-from-release-letter~2]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
-    public GitHubReleaseInfo createGithubRelease(final GitHubRelease gitHubRelease) throws GitHubException {
+    public GitHubReleaseInfo createGithubRelease(final GitHubRelease gitHubRelease, final Progress progress)
+            throws GitHubException {
         try {
             final GHRelease ghRelease = this.getRepository(gitHubRelease.getRepositoryName())//
                     .createRelease(gitHubRelease.getVersion()) //
@@ -80,7 +82,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     .create();
             if (gitHubRelease.hasUploadAssets()) {
                 final String uploadUrl = ghRelease.getUploadUrl();
-                executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl);
+                executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl, progress);
             }
             return GitHubReleaseInfo.builder() //
                     .repositoryName(gitHubRelease.getRepositoryName()) //
@@ -98,9 +100,13 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     // [impl->dsn~upload-github-release-assets~1]
     // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl)
-            throws GitHubException {
-        executeWorkflow(repositoryName, GITHUB_UPLOAD_ASSETS_WORKFLOW, Map.of("upload_url", uploadUrl));
+    private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl,
+            final Progress progress) throws GitHubException {
+        final WorkflowOptions options = new WorkflowOptions() //
+                .withProgress(progress) //
+                .withDispatches(Map.of("upload_url", uploadUrl));
+        executeWorkflow(repositoryName, GITHUB_UPLOAD_ASSETS_WORKFLOW, //
+                options);
     }
 
     @Override
@@ -130,49 +136,57 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     @Override
-    public void executeWorkflow(final String repositoryName, final String workflowName,
-            final Map<String, Object> dispatches) throws GitHubException {
+    public String executeWorkflowWithLogs(final String repositoryName, final String workflowName,
+            final WorkflowOptions options) throws GitHubException {
         try {
             final GHRepository repository = getRepository(repositoryName);
             final GHWorkflow workflow = repository.getWorkflow(workflowName);
-            final ProgressFormatter.Builder builder = progressFormatterBuilder(workflow) //
-                    .timeout(Duration.ofMinutes(150)) //
-                    .snoozeInterval(Duration.ofSeconds(15));
-            workflow.dispatch(getDefaultBranch(repositoryName), dispatches);
-            final ProgressFormatter progress = builder.start();
-            final String prefix = progress.startTime() //
-                    + ": Started GitHub workflow '" + workflowName + "'.\n";
-            LOGGER.info(() -> progress.welcomeMessage(prefix));
-            validateWorkflowConclusion(getWorkflowConclusion(progress, workflow));
+            executeWorkflow(repository, workflow, options);
+            return latestRun(workflow).downloadLogs(this::getStringFromInputStream);
         } catch (final IOException exception) {
             throw new GitHubException(exception);
         }
     }
 
-    private ProgressFormatter.Builder progressFormatterBuilder(final GHWorkflow workflow) throws IOException {
-        final ProgressFormatter.Builder builder = ProgressFormatter.builder();
-        final GHWorkflowRun lastRun = latestRun(workflow);
-        return lastRun == null //
-                ? builder //
-                : builder.lastRun(lastRun.getCreatedAt(), lastRun.getUpdatedAt());
-    }
-
     @Override
-    public void executeWorkflow(final String repositoryName, final String workflowName) throws GitHubException {
-        executeWorkflow(repositoryName, workflowName, Collections.emptyMap());
-    }
-
-    @Override
-    public String executeWorkflowWithLogs(final String repositoryName, final String workflowName)
+    public void executeWorkflow(final String repositoryName, final String workflowName, final WorkflowOptions options)
             throws GitHubException {
-        executeWorkflow(repositoryName, workflowName);
-        final GHRepository repository = getRepository(repositoryName);
         try {
-            final long workflowId = repository.getWorkflow(workflowName).getId();
-            final long workflowRunId = findLastWorkflowRunId(repository, workflowId);
-            return repository.getWorkflowRun(workflowRunId).downloadLogs(this::getStringFromInputStream);
+            final GHRepository repository = getRepository(repositoryName);
+            executeWorkflow(repository, getRepository(repositoryName).getWorkflow(workflowName), options);
         } catch (final IOException exception) {
             throw new GitHubException(exception);
+        }
+    }
+
+    private void executeWorkflow(final GHRepository repository, final GHWorkflow workflow,
+            final WorkflowOptions options) throws GitHubException {
+        try {
+            workflow.dispatch(getDefaultBranch(repository), options.dispatches());
+            LOGGER.info(() -> "Started GitHub workflow '" + workflow.getName() + "'");
+            validateWorkflowConclusion(getWorkflowConclusion(workflow, options));
+        } catch (final IOException exception) {
+            throw new GitHubException(exception);
+        }
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    // [impl->dsn~missing-estimation~1]
+    @Override
+    public Estimation estimateDuration(final String repositoryName, final String workflowName) {
+        try {
+            final GHWorkflow workflow = getRepository(repositoryName).getWorkflow(workflowName);
+            final GHWorkflowRun run = latestRun(workflow);
+            return run == null //
+                    ? Estimation.empty()
+                    : Estimation.from(run.getCreatedAt(), run.getUpdatedAt());
+        } catch (IOException | GitHubException exception) {
+            LOGGER.warning(ExaError.messageBuilder("W-RD-GH-29")
+                    .message("Failed to retrieve duration of latest run of workflow {{workflow}}: {{cause|uq}}.", //
+                            workflowName, exception) //
+                    .mitigation("Executing workflow without estimation.") //
+                    .toString());
+            return Estimation.empty();
         }
     }
 
@@ -180,33 +194,34 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * The fastest release takes 1-2 minutes, the slowest 1 hour and more. We send a request every 15 seconds hoping to
      * not exceed the GitHub request limits.
      */
-    // suppressing warnings for java:S106 - Standard outputs should not be used directly to log anything
-    // since GitHubAPIAdapter is intended to print on standard out.
-    // Using a logger cannot overwrite the current line.
-    @SuppressWarnings("java:S106")
-    private String getWorkflowConclusion(final ProgressFormatter progress, final GHWorkflow workflow)
+    // [impl->dsn~progress-display~1]
+    private String getWorkflowConclusion(final GHWorkflow workflow, final WorkflowOptions options)
             throws GitHubException, IOException {
         boolean reportUrl = true;
-        while (!progress.timeout()) {
-            System.out.print("\r" + progress.status());
-            System.out.flush();
+        final Duration timeout = Duration.ofMinutes(150);
+        final Timer timer = new Timer() //
+                .withTimeout(timeout) //
+                .withSnoozeInterval(Duration.ofSeconds(15)) //
+                .start();
+        while (!timer.timeout()) {
+            options.progress().reportStatus();
             waitSeconds(1);
-            if (progress.getMonitor().requestsInspection()) {
-                progress.getMonitor().snooze();
+            if (timer.alarm()) {
+                timer.snooze();
                 final GHWorkflowRun run = latestRun(workflow);
                 if (reportUrl) {
                     reportUrl = false;
-                    System.out.print("\r");
+                    options.progress().hideStatus();
                     final String message = "URL: " + formatLink(run.getHtmlUrl());
                     LOGGER.info(() -> message);
                 }
                 if (run.getConclusion() != null) {
-                    System.out.println();
+                    options.progress().newline();
                     return run.getConclusion().toString();
                 }
             }
         }
-        throw new GitHubException(getTimeoutExceptionMessage(progress.formatElapsed()));
+        throw new GitHubException(getTimeoutExceptionMessage(timeout));
     }
 
     public GHWorkflowRun latestRun(final GHWorkflow workflow) {
@@ -214,33 +229,11 @@ public class GitHubAPIAdapter implements GitHubGateway {
         return it.hasNext() ? it.next() : null;
     }
 
-    private String getTimeoutExceptionMessage(final String elapsed) {
+    private String getTimeoutExceptionMessage(final Duration timeout) {
         return ExaError.messageBuilder("E-RD-GH-3")
-                .message("GitHub workflow runs too long. The timeout for monitoring is {{timeout}} hours.")
-                .parameter("timeout", elapsed) //
+                .message("GitHub workflow runs too long. The timeout for monitoring is {{timeout|uq}}.")
+                .parameter("timeout", Progress.formatDuration(timeout)) //
                 .toString();
-    }
-
-    private long findLastWorkflowRunId(final GHRepository repository, final long workflowId)
-            throws IOException, GitHubException {
-        GHWorkflowRun lastRun = null;
-        for (final GHWorkflowRun ghWorkflowRun : repository.queryWorkflowRuns().list()) {
-            if ((ghWorkflowRun.getWorkflowId() == workflowId)
-                    && ((lastRun == null) || ghWorkflowRun.getCreatedAt().after(lastRun.getCreatedAt()))) {
-                lastRun = ghWorkflowRun;
-            }
-        }
-        validateLastRun(workflowId, lastRun);
-        return lastRun.getId();
-    }
-
-    private void validateLastRun(final long workflowId, final GHWorkflowRun lastRun) throws GitHubException {
-        if (lastRun == null) {
-            throw new GitHubException(ExaError.messageBuilder("E-RD-GH-4") //
-                    .message("Cannot find runs of GitHub workflow with id {{workflowId}}.") //
-                    .parameter("workflowId", workflowId) //
-                    .toString());
-        }
     }
 
     private void waitSeconds(final int seconds) {
@@ -262,7 +255,11 @@ public class GitHubAPIAdapter implements GitHubGateway {
 
     @Override
     public String getDefaultBranch(final String repositoryName) throws GitHubException {
-        return getRepository(repositoryName).getDefaultBranch();
+        return getDefaultBranch(getRepository(repositoryName));
+    }
+
+    private String getDefaultBranch(final GHRepository repository) {
+        return repository.getDefaultBranch();
     }
 
     @Override

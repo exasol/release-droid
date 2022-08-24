@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import org.hamcrest.Matcher;
@@ -45,9 +46,9 @@ class MavenReleaseMakerTest {
     // [utest->dsn~create-new-maven-release~1]
     void testMakeRelease() {
         simulateMavenPom();
-        assertAll(() -> assertDoesNotThrow(() -> this.releaseMaker.makeRelease(this.repositoryMock)),
-                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow(REPOSITORY_NAME,
-                        "release_droid_release_on_maven_central.yml"));
+        assertAll(() -> assertDoesNotThrow(() -> this.releaseMaker.makeRelease(this.repositoryMock, null)),
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow(eq(REPOSITORY_NAME),
+                        eq("release_droid_release_on_maven_central.yml"), any()));
     }
 
     <T extends Throwable> void assertThrows(final Class<T> expectedType, final Executable executable,
@@ -60,32 +61,35 @@ class MavenReleaseMakerTest {
     void testMakeReleaseForNonJavaProjectFails() {
         final Repository nonJavaRepository = mock(Repository.class);
         assertAll(
-                () -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(nonJavaRepository),
+                () -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(nonJavaRepository, null),
                         equalTo("E-RD-REP-29: Cannot make a Maven release for repository of type '"
                                 + nonJavaRepository.getClass().getName() + "'")), //
-                () -> verify(this.githubGatewayMock, never()).executeWorkflow(any(), any()));
+                () -> verify(this.githubGatewayMock, never()).executeWorkflow(any(), any(), any()));
     }
 
     @Test
     void testMakeReleaseWithoutMavenPomFails() {
         when(this.repositoryMock.getMavenPom()).thenReturn(null);
         assertAll(
-                () -> assertThrows(ReleaseException.class, () -> this.releaseMaker.makeRelease(this.repositoryMock),
+                () -> assertThrows(ReleaseException.class,
+                        () -> this.releaseMaker.makeRelease(this.repositoryMock, null),
                         equalTo("E-RD-REP-30: Repository '" + REPOSITORY_NAME + "' does not have Maven POM file")), //
-                () -> verify(this.githubGatewayMock, never()).executeWorkflow(any(), any()));
+                () -> verify(this.githubGatewayMock, never()).executeWorkflow(any(), any(), any()));
     }
 
     @Test
     // [utest->dsn~create-new-maven-release~1]
     void testMakeReleaseFails() throws GitHubException {
         simulateMavenPom();
-        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow(REPOSITORY_NAME,
-                "release_droid_release_on_maven_central.yml");
+        doThrow(GitHubException.class).when(this.githubGatewayMock).executeWorkflow(eq(REPOSITORY_NAME),
+                eq("release_droid_release_on_maven_central.yml"), any());
         assertAll(
                 () -> Assertions.assertThrows(ReleaseException.class,
-                        () -> this.releaseMaker.makeRelease(this.repositoryMock)),
-                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow(REPOSITORY_NAME,
-                        "release_droid_release_on_maven_central.yml"));
+                        () -> this.releaseMaker.makeRelease(this.repositoryMock, null)),
+                () -> verify(this.githubGatewayMock, times(1)).executeWorkflow( //
+                        eq(REPOSITORY_NAME), //
+                        eq("release_droid_release_on_maven_central.yml"), //
+                        any()));
     }
 
     private void simulateMavenPom() {

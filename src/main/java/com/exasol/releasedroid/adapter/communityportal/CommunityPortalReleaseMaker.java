@@ -2,8 +2,11 @@ package com.exasol.releasedroid.adapter.communityportal;
 
 import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalConstants.COMMUNITY_CONFIG_PATH;
 
+import java.time.Duration;
 import java.util.logging.Logger;
 
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -17,7 +20,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
 
     /**
      * Create a new instance of {@link CommunityPortalReleaseMaker}.
-     * 
+     *
      * @param communityPortalGateway instance of {@link CommunityPortalGateway}
      */
     public CommunityPortalReleaseMaker(final CommunityPortalGateway communityPortalGateway) {
@@ -25,7 +28,7 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
     }
 
     @Override
-    public String makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository, final Progress progress) throws ReleaseException {
         LOGGER.fine("Creating a draft of the release announcement on the Exasol Community Portal.");
         try {
             final var communityPost = getCommunityPost(repository);
@@ -68,5 +71,11 @@ public class CommunityPortalReleaseMaker implements ReleaseMaker {
         final var communityPostRenderer = new CommunityPostRenderer();
         return communityPostRenderer.renderCommunityPostBody(header, projectDescription, changesDescription,
                 gitHubReleaseLink);
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    @Override
+    public Estimation estimateDuration(final Repository repository) {
+        return Estimation.of(Duration.ofSeconds(5));
     }
 }

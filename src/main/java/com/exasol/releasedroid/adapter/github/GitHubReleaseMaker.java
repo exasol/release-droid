@@ -1,10 +1,14 @@
 package com.exasol.releasedroid.adapter.github;
 
+import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
 
+import java.time.Duration;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.release.ReleaseMaker;
@@ -29,9 +33,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
 
     @Override
     // [impl->dsn~create-new-github-release~1]
-    public String makeRelease(final Repository repository) throws ReleaseException {
+    public String makeRelease(final Repository repository, final Progress progress) throws ReleaseException {
         LOGGER.fine("Releasing on GitHub.");
-        final GitHubReleaseInfo info = createGitHubRelease(repository);
+        final GitHubReleaseInfo info = createGitHubRelease(repository, progress);
         final String tagUrl = info.getTagUrl();
         LOGGER.info(() -> "A GitHub release was created at: " + tagUrl);
         if (info.isDraft()) {
@@ -40,11 +44,11 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         return tagUrl;
     }
 
-    private GitHubReleaseInfo createGitHubRelease(final Repository repository) {
+    private GitHubReleaseInfo createGitHubRelease(final Repository repository, final Progress progress) {
         final String version = repository.getVersion();
         final GitHubRelease release = createReleaseModel(repository, version);
         try {
-            return this.githubGateway.createGithubRelease(release);
+            return this.githubGateway.createGithubRelease(release, progress);
         } catch (final GitHubException exception) {
             throw new ReleaseException(exception);
         }
@@ -60,7 +64,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
                     .toString());
         }
         final String body = releaseLetter.getBody().orElse("");
-        final boolean uploadReleaseAssets = checkIfUploadAssetsWorkflowExists(repository);
+        final boolean uploadReleaseAssets = hasUploadAssetsWorkflow(repository);
         return GitHubRelease.builder() //
                 .repositoryName(repository.getName()) //
                 .version(version) //
@@ -70,12 +74,23 @@ public class GitHubReleaseMaker implements ReleaseMaker {
                 .build();
     }
 
-    private boolean checkIfUploadAssetsWorkflowExists(final Repository repository) {
+    private boolean hasUploadAssetsWorkflow(final Repository repository) {
         try {
             repository.getSingleFileContentAsString(GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH);
             return true;
         } catch (final RepositoryException exception) {
             return false;
         }
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    @Override
+    public Estimation estimateDuration(final Repository repository) {
+        final Estimation estimation = Estimation.of(Duration.ofSeconds(10));
+        if (hasUploadAssetsWorkflow(repository)) {
+            return estimation.plus(this.githubGateway.estimateDuration( //
+                    repository.getName(), GITHUB_UPLOAD_ASSETS_WORKFLOW));
+        }
+        return estimation;
     }
 }

@@ -91,6 +91,13 @@ RD writes a report that summarizes all steps and their results.
 
 Needs: req
 
+### Estimation and Progress Display
+`feat~estimation-and-progress-display~1`
+
+RD estimates the duration of the release process and displays progress during release process.
+
+Needs: req
+
 ## Functional Requirements
 
 ### Access Project Files
@@ -156,6 +163,17 @@ RD creates a release report containing information about releases.
 Covers:
 
 * [feat~report~1](#report)
+
+Needs: dsn
+
+### Release Estimation and Progress Display
+`req~estimation-and-progress-display~1`
+
+RD estimates the duration of the release process and displays progress during release process.
+
+Covers:
+
+* `feat~estimation-and-progress-display~1`
 
 Needs: dsn
 

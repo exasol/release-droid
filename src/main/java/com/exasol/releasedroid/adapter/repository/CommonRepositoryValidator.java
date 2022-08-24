@@ -19,7 +19,7 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 /**
  * Contains language-independent validations for a repository.
  */
-// Removing string duplicates here will decrease readability.
+@SuppressWarnings("java:S1192") // Removing string duplicates here will decrease readability.
 public class CommonRepositoryValidator implements RepositoryValidator {
     private static final Logger LOGGER = Logger.getLogger(CommonRepositoryValidator.class.getName());
     private final Repository repository;

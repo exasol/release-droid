@@ -41,11 +41,13 @@ public class ReleaseDroid {
         this.releaseDroidResponseConsumers = releaseDroidResponseConsumers;
     }
 
-    /**
-     * Main entry point for all Release Droid's calls.
-     */
     // [impl->dsn~rd-creates-validation-report~1]
     // [impl->dsn~rd-creates-release-report~1]
+    /**
+     * Main entry point for all Release Droid's calls.
+     *
+     * @param userInput configuration and command line arguments provided by the user
+     */
     public void run(final UserInput userInput) {
         validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);

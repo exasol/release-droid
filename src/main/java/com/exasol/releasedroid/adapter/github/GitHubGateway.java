@@ -1,50 +1,55 @@
 package com.exasol.releasedroid.adapter.github;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 
 /**
  * Gateway for interacting with Github.
  */
 public interface GitHubGateway {
+
     /**
-     * Executes a GitHub workflow by a workflow name on the default branch.
-     *
      * @param repositoryName fully qualified name of the repository
      * @param workflowName   name of a workflow
-     * @param dispatches     map with the dispatches arguments. Can be empty
-     * @throws GitHubException when some problems occur
+     * @return estimation for duration of the workflow
      */
-    public void executeWorkflow(String repositoryName, String workflowName, Map<String, Object> dispatches)
-            throws GitHubException;
+    Estimation estimateDuration(final String repositoryName, final String workflowName);
 
     /**
      * Executes a GitHub workflow by a workflow name on the default branch.
      *
      * @param repositoryName fully qualified name of the repository
      * @param workflowName   name of a workflow
+     * @param options        {@link WorkflowOptions} for workflow execution
      * @throws GitHubException when some problems occur
      */
-    public void executeWorkflow(String repositoryName, String workflowName) throws GitHubException;
+    void executeWorkflow(String repositoryName, String workflowName, WorkflowOptions options) throws GitHubException;
 
     /**
      * Executes a GitHub workflow by a workflow name on the default branch and return logs.
      *
      * @param repositoryName fully qualified name of the repository
      * @param workflowName   name of a workflow
+     * @param options        {@link WorkflowOptions} for workflow execution
      * @return logs as a string
      * @throws GitHubException when some problems occur
      */
-    public String executeWorkflowWithLogs(String repositoryName, String workflowName) throws GitHubException;
+    String executeWorkflowWithLogs(String repositoryName, String workflowName, WorkflowOptions options)
+            throws GitHubException;
 
     /**
      * Make a GitHub release on the head of default branch.
      *
      * @param gitHubRelease instance of {@link GitHubRelease} with release information
+     * @param progress      progress to track and report progress of current release process
      * @throws GitHubException when some problems occur
      * @return information about release, including its draft state and html url for editing the draft
      */
-    public GitHubReleaseInfo createGithubRelease(GitHubRelease gitHubRelease) throws GitHubException;
+    GitHubReleaseInfo createGithubRelease(GitHubRelease gitHubRelease, Progress progress) throws GitHubException;
 
     /**
      * Get a {@link Set} of closed tickets' numbers.
@@ -53,7 +58,7 @@ public interface GitHubGateway {
      * @return set of closed tickets' numbers*
      * @throws GitHubException when some problems occur
      */
-    public Set<Integer> getClosedTickets(String repositoryName) throws GitHubException;
+    Set<Integer> getClosedTickets(String repositoryName) throws GitHubException;
 
     /**
      * Get latest tag.
@@ -62,7 +67,7 @@ public interface GitHubGateway {
      * @return latest tag
      * @throws GitHubException when some problems occur
      */
-    public String getLatestTag(String repositoryName) throws GitHubException;
+    String getLatestTag(String repositoryName) throws GitHubException;
 
     /**
      * Get a default branch of the repository.
@@ -71,7 +76,7 @@ public interface GitHubGateway {
      * @return default branch name
      * @throws GitHubException when some problems occur
      */
-    public String getDefaultBranch(String repositoryName) throws GitHubException;
+    String getDefaultBranch(String repositoryName) throws GitHubException;
 
     /**
      * Get a content of a file by path.
@@ -82,7 +87,7 @@ public interface GitHubGateway {
      * @return file content
      * @throws GitHubException when some problems occur
      */
-    public InputStream getFileContent(String repositoryName, String branchName, String filePath) throws GitHubException;
+    InputStream getFileContent(String repositoryName, String branchName, String filePath) throws GitHubException;
 
     /**
      * Update a single file content.
@@ -94,7 +99,7 @@ public interface GitHubGateway {
      * @param commitMessage  message to add to a commit
      * @throws GitHubException when some problems occur
      */
-    public void updateFileContent(String repositoryName, String branchName, String filePath, String newContent,
+    void updateFileContent(String repositoryName, String branchName, String filePath, String newContent,
             String commitMessage) throws GitHubException;
 
     /**
@@ -104,7 +109,7 @@ public interface GitHubGateway {
      * @return repository primary language as a string
      * @throws GitHubException when some problems occur
      */
-    public String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
+    String getRepositoryPrimaryLanguage(String repositoryName) throws GitHubException;
 
     /**
      * Get a list of artifact's ids that are not expired.
@@ -113,7 +118,7 @@ public interface GitHubGateway {
      * @return list of artifact's ids
      * @throws GitHubException when some problems occur
      */
-    public List<Long> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
+    List<Long> getRepositoryArtifactsIds(String repositoryName) throws GitHubException;
 
     /**
      * Download a GitHub artifact as a String.
@@ -123,7 +128,7 @@ public interface GitHubGateway {
      * @return artifact as a string
      * @throws GitHubException when some problems occur
      */
-    public String downloadArtifactAsString(String repositoryName, long artifactId) throws GitHubException;
+    String downloadArtifactAsString(String repositoryName, long artifactId) throws GitHubException;
 
     /**
      * Delete all artifacts from the repository.
@@ -131,5 +136,5 @@ public interface GitHubGateway {
      * @param repositoryName fully qualified name of the repository
      * @throws GitHubException when some problems occur
      */
-    public void deleteAllArtifacts(String repositoryName) throws GitHubException;
+    void deleteAllArtifacts(String repositoryName) throws GitHubException;
 }

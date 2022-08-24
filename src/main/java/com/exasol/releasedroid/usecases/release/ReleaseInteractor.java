@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -73,6 +75,8 @@ public class ReleaseInteractor implements ReleaseUseCase {
     @java.lang.SuppressWarnings("java:S135") // There is no a good workaround to avoid the second break here
     private List<Report> releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms,
             final Set<PlatformName> skipValidationOn) {
+        final Progress progress = this.releaseManager.estimateDuration( //
+                repository, estimateDuration(repository, platforms));
         prepareRepositoryForRelease(repository);
         final var validationReport = ValidationReport.create();
         final var releaseReport = ReleaseReport.create();
@@ -81,7 +85,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
                     skipValidationOn);
             validationReport.merge(platformValidationReport);
             if (!platformValidationReport.hasFailures()) {
-                final var releaseReportForPlatform = releaseOnPlatform(repository, platform);
+                final var releaseReportForPlatform = releaseOnPlatform(repository, platform, progress);
                 releaseReport.merge(releaseReportForPlatform);
                 if (releaseReportForPlatform.hasFailures()) {
                     break;
@@ -98,6 +102,15 @@ public class ReleaseInteractor implements ReleaseUseCase {
             cleanRepositoryAfterRelease(repository);
         }
         return List.of(validationReport, releaseReport);
+    }
+
+    // [impl->dsn~estimate-duration~1]
+    private Estimation estimateDuration(final Repository repository, final List<PlatformName> platforms) {
+        Estimation estimation = Estimation.empty();
+        for (final PlatformName platform : platforms) {
+            estimation = estimation.plus(getReleaseMaker(platform).estimateDuration(repository));
+        }
+        return estimation;
     }
 
     private List<PlatformName> getUnreleasedPlatforms(final List<PlatformName> platforms,
@@ -122,11 +135,12 @@ public class ReleaseInteractor implements ReleaseUseCase {
         return !releasedPlatforms.containsAll(platforms);
     }
 
-    private Report releaseOnPlatform(final Repository repository, final PlatformName platformName) {
+    private Report releaseOnPlatform(final Repository repository, final PlatformName platformName,
+            final Progress progress) {
         final var report = ReleaseReport.create(platformName);
         try {
             LOGGER.info(() -> "Releasing on " + platformName + " platform.");
-            final String releaseOutput = getReleaseMaker(platformName).makeRelease(repository);
+            final String releaseOutput = getReleaseMaker(platformName).makeRelease(repository, progress);
             saveProgress(platformName, repository, releaseOutput);
             report.addSuccessfulResult("Release finished.");
             LOGGER.info(() -> "Release on platform " + platformName + " is finished!");
