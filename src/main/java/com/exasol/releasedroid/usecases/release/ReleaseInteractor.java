@@ -71,34 +71,48 @@ public class ReleaseInteractor implements UseCase {
         }
     }
 
-    @java.lang.SuppressWarnings("java:S135") // There is no a good workaround to avoid the second break here
     private List<Report> releaseOnPlatforms(final Repository repository, final ReleasePlatforms platforms) {
         final Progress progress = this.releaseManager.estimateDuration( //
                 repository, estimateDuration(repository, platforms.list()));
         prepareRepositoryForRelease(repository);
-        final var validationReport = ValidationReport.create();
-        final var releaseReport = ReleaseReport.create();
-        for (final PlatformName platform : platforms.list()) {
-            final Report platformValidationReport = this.validateUseCase.apply(repository, platforms).get(0);
-            validationReport.merge(platformValidationReport);
-            if (!platformValidationReport.hasFailures()) {
-                final var releaseReportForPlatform = releaseOnPlatform(repository, platform, progress);
-                releaseReport.merge(releaseReportForPlatform);
-                if (releaseReportForPlatform.hasFailures()) {
-                    break;
-                }
-            } else {
+        final ValidationReport validationSummary = ValidationReport.create();
+        final ReleaseReport releaseSummary = ReleaseReport.create();
+
+        final Iterator<PlatformName> it = platforms.list().iterator();
+        boolean failure = false;
+        while (!failure && it.hasNext()) {
+            final PlatformName platform = it.next();
+            final List<Report> validationReport = this.validateUseCase.apply(repository, platforms);
+            failure = merge(validationSummary, validationReport);
+            if (failure) {
                 LOGGER.warning(() -> messageBuilder("W-RD-17")
                         .message("Validation for a platform {{platform name}} failed. Release is interrupted.",
                                 platform.name())
                         .toString());
-                break;
+            } else {
+                final Report releaseReport = releaseOnPlatform(repository, platform, progress);
+                releaseSummary.merge(releaseReport);
+                failure = releaseReport.hasFailures();
             }
         }
-        if (!releaseReport.hasFailures()) {
+        if (!releaseSummary.hasFailures()) {
             cleanRepositoryAfterRelease(repository);
         }
-        return List.of(validationReport, releaseReport);
+        return List.of(validationSummary, releaseSummary);
+    }
+
+    /**
+     * @param validationSummary summary of all validation reports
+     * @param validationReports validation reports for the platform
+     * @return {@code true} if any of the validation reports for the platform contained a failure
+     */
+    private boolean merge(final ValidationReport validationSummary, final List<Report> validationReports) {
+        boolean failure = false;
+        for (final Report report : validationReports) {
+            validationSummary.merge(report);
+            failure = failure || report.hasFailures();
+        }
+        return failure;
     }
 
     // [impl->dsn~estimate-duration~1]

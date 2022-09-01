@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.repository.*;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
@@ -29,15 +31,20 @@ class ReleaseDroidTest {
     private RepositoryGateway repositoryGatewayMock;
     @Mock
     private Repository repositoryMock;
+    @Mock
+    UseCase validationUseCaseMock;
+    @Mock
+    UseCase releaseUseCaseMock;
     private ReleaseDroid releaseDroid;
 
     @BeforeEach
     void beforeEach() {
-        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, null, null, null);
+        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, this.validationUseCaseMock,
+                this.releaseUseCaseMock, null);
     }
 
     @Test
-    void testUserInputWithoutRepositoryName() {
+    void userInputWithoutRepositoryName() {
         final UserInput userInput = builder().platforms(PLATFORM).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
@@ -46,7 +53,7 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithReleaseAndBranch() {
+    void userInputWithReleaseAndBranch() {
         final UserInput userInput = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
                 .branch(BRANCH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -55,7 +62,7 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithLocalPathAndBranch() {
+    void userInputWithLocalPathAndBranch() {
         final UserInput userInput = builder().platforms(PLATFORM).repositoryName(REPOSITORY_NAME).branch(BRANCH)
                 .localPath(LOCAL_PATH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -64,7 +71,7 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithLocalPathAndGoalRelease() {
+    void userInputWithLocalPathAndGoalRelease() {
         final UserInput userInput = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
                 .localPath(LOCAL_PATH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -73,7 +80,7 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithoutPlatforms() {
+    void userInputWithoutPlatforms() {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().build();
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
@@ -85,23 +92,13 @@ class ReleaseDroidTest {
     }
 
     @Test
-    void testUserInputWithoutPlatforms2() {
-        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
-        when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.empty());
-        final UserInput userInput = builder().repositoryName("name").build();
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(),
-                containsString("E-RD-20: Platform specified neither on commandline nor in configuration file"));
-    }
-
-    @Test
-    void testPlatformsFromConfig() {
+    void platformsFromConfig() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
+        mockUseVCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
-        assertThrows(NullPointerException.class, () -> this.releaseDroid.run(userInput));
+        assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
 
     @Test
@@ -109,16 +106,25 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of("jira")).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
+        mockUseVCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
-        assertThrows(NullPointerException.class, () -> this.releaseDroid.run(userInput));
+        assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
 
     @Test
-    void testUserInputWithSkippingValidation() {
+    void userInputWithSkippingValidation() {
         final UserInput userInput = builder().repositoryName("name").platforms("github").skipValidation(true)
                 .goal("validate").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-15"));
+    }
+
+    private void mockUseVCase(final UseCase useCase) {
+        when(useCase.apply(eq(this.repositoryMock), any())).thenThrow(UseCaseException.class);
+    }
+
+    private static class UseCaseException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
     }
 }
