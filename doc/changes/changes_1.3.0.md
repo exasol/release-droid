@@ -7,3 +7,4 @@ Code name: Minor improvements
 ## Features
 
 * #260: Accept groupId in file `pom.xml` from parent, too
+* #257: Appropriate git tags for golang projects
