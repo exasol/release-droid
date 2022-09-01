@@ -27,7 +27,7 @@ class CommunityPortalReleaseMakerTest {
         when(repositoryMock.getSingleFileContentAsString(COMMUNITY_CONFIG_PATH)).thenReturn(getReleaseConfig());
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
-        communityPortalReleaseMaker.makeRelease(repositoryMock);
+        communityPortalReleaseMaker.makeRelease(repositoryMock, null);
         final String body = "<h2>About the project</h2>" //
                 + "<p>Here is a project description.</p>\n" //
                 + "<h2>New release</h2>" //
@@ -76,6 +76,6 @@ class CommunityPortalReleaseMakerTest {
         when(repositoryMock.getReleaseLetter("2.0.0")).thenReturn(releaseLetter);
         final CommunityPortalReleaseMaker communityPortalReleaseMaker = new CommunityPortalReleaseMaker(gatewayMock);
         doThrow(CommunityPortalException.class).when(gatewayMock).sendDraftPost(any());
-        assertThrows(ReleaseException.class, () -> communityPortalReleaseMaker.makeRelease(repositoryMock));
+        assertThrows(ReleaseException.class, () -> communityPortalReleaseMaker.makeRelease(repositoryMock, null));
     }
 }

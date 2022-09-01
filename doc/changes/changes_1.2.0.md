@@ -1,9 +1,11 @@
-# Exasol Release Droid 1.2.0, released 2022-??-??
+# Exasol Release Droid 1.2.0, released 2022-08-24
 
-Code name: Minor improvements
+Code name: Overall Estimation And Progress Display
 
 ## Summary
 
+Release Droid now uses only a single progress display, aggregating the estimations for all configured release platforms and displaying the overall progress.
+
 ## Features
 
-* #260: Accept groupId in file `pom.xml` from parent, too
+* #256: Aggregated estimation for all platforms
