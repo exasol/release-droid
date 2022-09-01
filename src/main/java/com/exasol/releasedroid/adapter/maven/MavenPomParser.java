@@ -42,7 +42,7 @@ public class MavenPomParser {
      * @return new instance of {@link MavenPom}
      */
     public MavenPom parse() {
-        final String groupId = this.model.getGroupId();
+        final String groupId = parseGroupId();
         final String artifactId = this.model.getArtifactId();
         final Map<String, String> properties = parseProperties();
         final Map<String, MavenPlugin> plugins = parsePlugins(properties);
@@ -56,6 +56,15 @@ public class MavenPomParser {
                 .projectDescription(projectDescription) //
                 .projectURL(projectURL) //
                 .build();
+    }
+
+    private String parseGroupId() {
+        final String direct = this.model.getGroupId();
+        if (direct != null) {
+            return direct;
+        }
+        final Parent parent = this.model.getParent();
+        return parent == null ? null : parent.getGroupId();
     }
 
     private String parseProjectDescription() {
