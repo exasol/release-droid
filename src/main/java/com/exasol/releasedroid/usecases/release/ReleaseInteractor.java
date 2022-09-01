@@ -10,18 +10,19 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.*;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
+import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
 
 /**
  * Implements the Release use case.
  */
-public class ReleaseInteractor implements ReleaseUseCase {
+public class ReleaseInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
-    private final ValidateUseCase validateUseCase;
+    private final UseCase validateUseCase;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReleaseState releaseState;
     private final ReleaseManager releaseManager;
@@ -33,12 +34,12 @@ public class ReleaseInteractor implements ReleaseUseCase {
      * @param releaseMakers   map with platform names and release makers
      * @param releaseManager  instance of {@link ReleaseManager}
      */
-    public ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+    public ReleaseInteractor(final UseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final ReleaseManager releaseManager) {
         this(validateUseCase, releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
     }
 
-    ReleaseInteractor(final ValidateUseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+    ReleaseInteractor(final UseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final ReleaseManager releaseManager, final ReleaseState releaseState) {
         this.validateUseCase = validateUseCase;
         this.releaseMakers = releaseMakers;
@@ -49,23 +50,21 @@ public class ReleaseInteractor implements ReleaseUseCase {
     @Override
     // [impl->dsn~rd-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rd-runs-release-goal~1]
-    public List<Report> release(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> skipValidationOn) {
+    public List<Report> apply(final Repository repository, final ReleasePlatforms platforms) {
         try {
-            return makeRelease(repository, platforms, skipValidationOn);
+            return makeRelease(repository, platforms);
         } catch (final Exception exception) {
             throw new ReleaseException(messageBuilder("E-RD-18").message("Error creating release").toString(),
                     exception);
         }
     }
 
-    private List<Report> makeRelease(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> skipValidationOn) {
+    private List<Report> makeRelease(final Repository repository, final ReleasePlatforms platforms) {
         final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
                 repository.getVersion());
-        if (areUnreleasedPlatformsPresent(platforms, releasedPlatforms)) {
-            final List<PlatformName> unreleasedPlatforms = getUnreleasedPlatforms(platforms, releasedPlatforms);
-            return releaseOnPlatforms(repository, unreleasedPlatforms, skipValidationOn);
+        if (areUnreleasedPlatformsPresent(platforms.list(), releasedPlatforms)) {
+            final ReleasePlatforms unreleasedPlatforms = platforms.withoutReleased(releasedPlatforms);
+            return releaseOnPlatforms(repository, unreleasedPlatforms);
         } else {
             LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
             return Collections.emptyList();
@@ -73,16 +72,14 @@ public class ReleaseInteractor implements ReleaseUseCase {
     }
 
     @java.lang.SuppressWarnings("java:S135") // There is no a good workaround to avoid the second break here
-    private List<Report> releaseOnPlatforms(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> skipValidationOn) {
+    private List<Report> releaseOnPlatforms(final Repository repository, final ReleasePlatforms platforms) {
         final Progress progress = this.releaseManager.estimateDuration( //
-                repository, estimateDuration(repository, platforms));
+                repository, estimateDuration(repository, platforms.list()));
         prepareRepositoryForRelease(repository);
         final var validationReport = ValidationReport.create();
         final var releaseReport = ReleaseReport.create();
-        for (final PlatformName platform : platforms) {
-            final var platformValidationReport = this.validateUseCase.validate(repository, List.of(platform),
-                    skipValidationOn);
+        for (final PlatformName platform : platforms.list()) {
+            final Report platformValidationReport = this.validateUseCase.apply(repository, platforms).get(0);
             validationReport.merge(platformValidationReport);
             if (!platformValidationReport.hasFailures()) {
                 final var releaseReportForPlatform = releaseOnPlatform(repository, platform, progress);
@@ -111,19 +108,6 @@ public class ReleaseInteractor implements ReleaseUseCase {
             estimation = estimation.plus(getReleaseMaker(platform).estimateDuration(repository));
         }
         return estimation;
-    }
-
-    private List<PlatformName> getUnreleasedPlatforms(final List<PlatformName> platforms,
-            final Set<PlatformName> releasedPlatforms) {
-        final List<PlatformName> unreleasedPlatforms = new ArrayList<>();
-        for (final PlatformName platform : platforms) {
-            if (releasedPlatforms.contains(platform)) {
-                LOGGER.info(() -> "Skipping " + platform + " platform, the release has been already performed there.");
-            } else {
-                unreleasedPlatforms.add(platform);
-            }
-        }
-        return unreleasedPlatforms;
     }
 
     private Set<PlatformName> getAlreadyReleasedPlatforms(final String repositoryName, final String releaseVersion) {

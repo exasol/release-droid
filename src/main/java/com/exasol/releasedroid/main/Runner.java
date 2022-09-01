@@ -23,11 +23,11 @@ import com.exasol.releasedroid.formatting.*;
 import com.exasol.releasedroid.output.ResponseDiskWriter;
 import com.exasol.releasedroid.output.ResponseLogger;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.release.*;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
  * This class contains main method.
@@ -58,8 +58,8 @@ public class Runner {
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
-        final ValidateUseCase validateUseCase = new ValidateInteractor();
-        final ReleaseUseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
+        final UseCase validateUseCase = new ValidateInteractor();
+        final UseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
         final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
         return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, releaseDroidResponseConsumers);
     }

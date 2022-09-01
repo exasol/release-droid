@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.usecases.release;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,17 +17,16 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.progress.Estimation;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
+import com.exasol.releasedroid.usecases.request.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReleaseInteractorTest {
@@ -37,7 +35,7 @@ class ReleaseInteractorTest {
     private static final String GITHUB_RELEASE_OUTPUT = "GITHUB_RELEASE_OUTPUT";
 
     @Mock
-    private ValidateUseCase validateUseCaseMock;
+    private UseCase validateUseCaseMock;
     @Mock
     private ReleaseManager releaseManagerMock;
     @Mock
@@ -60,10 +58,11 @@ class ReleaseInteractorTest {
     }
 
     private List<Report> release(final PlatformName... platforms) {
-        return release(asList(platforms), emptySet());
+        return release(Arrays.asList(platforms), emptySet());
     }
 
-    private List<Report> release(final List<PlatformName> platforms, final Set<PlatformName> skipValidationOn) {
+    private List<Report> release(final List<PlatformName> platformNames, final Set<PlatformName> skip) {
+        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip);
         final Map<PlatformName, ReleaseMaker> releaseMakers = Map.of( //
                 PlatformName.GITHUB, this.githubReleaseMakerMock, //
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //
@@ -71,7 +70,7 @@ class ReleaseInteractorTest {
                 PlatformName.COMMUNITY, this.communityReleaseMakerMock);
         final ReleaseInteractor releaseInteractor = new ReleaseInteractor(this.validateUseCaseMock, releaseMakers,
                 this.releaseManagerMock, this.releaseStateMock);
-        return releaseInteractor.release(this.repositoryMock, platforms, skipValidationOn);
+        return releaseInteractor.apply(this.repositoryMock, platforms);
     }
 
     private void mockEstimation(final ReleaseMaker... releaseMakers) {
@@ -192,8 +191,8 @@ class ReleaseInteractorTest {
     }
 
     private void simulateValidationReport(final PlatformName platform, final Report report) {
-        when(this.validateUseCaseMock.validate(same(this.repositoryMock), eq(List.of(platform)), eq(emptySet())))
-                .thenReturn(report);
+        when(this.validateUseCaseMock.apply(same(this.repositoryMock), ArgumentMatchers.any()))
+                .thenReturn(List.of(report));
     }
 
     @Test

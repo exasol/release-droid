@@ -1,18 +1,16 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.release.ReleaseUseCase;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
 import com.exasol.releasedroid.usecases.request.*;
 import com.exasol.releasedroid.usecases.response.ReleaseDroidResponse;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
 
 /**
  * This class is the main entry point for calls to a Release Droid.
@@ -22,8 +20,8 @@ public class ReleaseDroid {
     private static final String EXASOL_REPOSITORY_OWNER = "exasol";
 
     private final RepositoryGateway repositoryGateway;
-    private final ReleaseUseCase releaseUseCase;
-    private final ValidateUseCase validateUseCase;
+    private final UseCase releaseUseCase;
+    private final UseCase validateUseCase;
     private final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers;
 
     /**
@@ -34,9 +32,8 @@ public class ReleaseDroid {
      * @param releaseUseCase                release use case
      * @param releaseDroidResponseConsumers response consumers
      */
-    public ReleaseDroid(final RepositoryGateway repositoryGateway, final ValidateUseCase validateUseCase,
-            final ReleaseUseCase releaseUseCase,
-            final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers) {
+    public ReleaseDroid(final RepositoryGateway repositoryGateway, final UseCase validateUseCase,
+            final UseCase releaseUseCase, final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers) {
         this.repositoryGateway = repositoryGateway;
         this.validateUseCase = validateUseCase;
         this.releaseUseCase = releaseUseCase;
@@ -53,26 +50,14 @@ public class ReleaseDroid {
     public void run(final UserInput userInput) {
         validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        final List<PlatformName> platformNames = removeDeprecatedPlatforms(getPlatformNames(userInput, repository));
-        validatePlatforms(platformNames);
+
+        final ReleasePlatforms platforms = ReleasePlatforms.from(userInput, repository);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
-        if (userInput.getGoal() == Goal.RELEASE) {
-            final Set<PlatformName> skipValidationOn = getPlatformsToSkipValidationOn(userInput);
-            reports.addAll(this.releaseUseCase.release(repository, platformNames, skipValidationOn));
-        } else {
-            reports.add(this.validateUseCase.validate(repository, platformNames, Set.of(PlatformName.JIRA)));
-        }
-        processResponse(createResponse(reports, userInput, platformNames));
-    }
-
-    private Set<PlatformName> getPlatformsToSkipValidationOn(final UserInput userInput) {
-        if (userInput.skipValidation()) {
-            return Arrays.stream(PlatformName.values()).collect(Collectors.toSet());
-        } else {
-            return Set.of();
-        }
+        final UseCase useCase = userInput.getGoal() == Goal.RELEASE ? this.releaseUseCase : this.validateUseCase;
+        reports.addAll(useCase.apply(repository, platforms));
+        processResponse(createResponse(reports, userInput, platforms.list()));
     }
 
     private void processResponse(final ReleaseDroidResponse response) {
@@ -91,50 +76,6 @@ public class ReleaseDroid {
                 .branch(userInput.getBranch()) //
                 .reports(reports) //
                 .build();
-    }
-
-    private List<PlatformName> getPlatformNames(final UserInput userInput, final Repository repository) {
-        if (userInput.hasPlatforms()) {
-            return userInput.getPlatformNames();
-        } else {
-            return repository.getReleaseConfig() //
-                    .map(ReleaseConfig::getReleasePlatforms) //
-                    .orElse(Collections.emptyList());
-        }
-    }
-
-    private List<PlatformName> removeDeprecatedPlatforms(final List<PlatformName> platformNames) {
-        final List<PlatformName> deprecated = List.of(PlatformName.JIRA);
-        for (final PlatformName p : deprecated) {
-            if (platformNames.contains(p)) {
-                LOGGER.warning(ExaError.messageBuilder("E-RD-20") //
-                        .message("Ignoring deprecated platform {{platform}}.", p)
-                        .mitigation("Remove platform from file {{config file}} to avoid this warning.",
-                                RELEASE_CONFIG_PATH)
-                        .toString());
-                platformNames.remove(p);
-            }
-        }
-        return platformNames;
-    }
-
-    private void validatePlatforms(final List<PlatformName> platformNames) {
-        validatePlatformNames(platformNames);
-        checkOutdatedPlatform(platformNames);
-    }
-
-    private void validatePlatformNames(final List<PlatformName> platformNames) {
-        if ((platformNames == null) || platformNames.isEmpty()) {
-            throwExceptionForMissingParameter("platforms");
-        }
-    }
-
-    private void checkOutdatedPlatform(final List<PlatformName> platformNames) {
-        if (platformNames.contains(PlatformName.COMMUNITY)) {
-            LOGGER.info(
-                    "Release for COMMUNITY platform is deprecated and will be removed in future. Skipping the release for the COMMUNITY platform.");
-            platformNames.remove(PlatformName.COMMUNITY);
-        }
     }
 
     private void validateUserInput(final UserInput userInput) {

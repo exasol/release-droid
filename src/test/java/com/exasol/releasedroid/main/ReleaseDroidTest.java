@@ -16,9 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
-import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
+import com.exasol.releasedroid.usecases.repository.*;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,7 +80,8 @@ class ReleaseDroidTest {
         final UserInput userInput = builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
+        assertThat(exception.getMessage(),
+                containsString("E-RD-20: Platform specified neither on commandline nor in configuration file"));
     }
 
     @Test
@@ -92,12 +91,22 @@ class ReleaseDroidTest {
         final UserInput userInput = builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(), containsString("E-RD-2: Please specify a mandatory parameter 'platforms'"));
+        assertThat(exception.getMessage(),
+                containsString("E-RD-20: Platform specified neither on commandline nor in configuration file"));
     }
 
     @Test
     void testPlatformsFromConfig() {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
+        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
+        when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
+        final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
+        assertThrows(NullPointerException.class, () -> this.releaseDroid.run(userInput));
+    }
+
+    @Test
+    void deprecatedPlatforms() {
+        final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of("jira")).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();

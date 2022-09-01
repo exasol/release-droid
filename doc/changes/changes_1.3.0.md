@@ -4,4 +4,4 @@ Code name: Minor changes
 
 ## Features
 
-* #259: Don't create EXACOM tickets anymore
+* #259: Deprecated release platform Jira to stop creating EXACOM tickets.
