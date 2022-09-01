@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.formatting;
 
 import static com.exasol.releasedroid.formatting.Colorizer.red;
+import static com.exasol.releasedroid.formatting.Colorizer.yellow;
 
 import java.util.logging.*;
 
@@ -12,8 +13,11 @@ public class LogFormatter extends Formatter {
 
     @Override
     public String format(final LogRecord logRecord) {
-        if ((logRecord.getLevel() == Level.SEVERE) || (logRecord.getLevel() == Level.WARNING)) {
+        final Level level = logRecord.getLevel();
+        if (level == Level.SEVERE) {
             logRecord.setMessage(red(logRecord.getMessage()));
+        } else if (level == Level.WARNING) {
+            logRecord.setMessage(yellow(logRecord.getMessage()));
         }
         return this.formatter.format(logRecord);
     }

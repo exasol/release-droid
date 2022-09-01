@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.main;
 
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
+
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -51,7 +53,7 @@ public class ReleaseDroid {
     public void run(final UserInput userInput) {
         validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-        final List<PlatformName> platformNames = getPlatformNames(userInput, repository);
+        final List<PlatformName> platformNames = removeDeprecatedPlatforms(getPlatformNames(userInput, repository));
         validatePlatforms(platformNames);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
@@ -99,6 +101,21 @@ public class ReleaseDroid {
                     .map(ReleaseConfig::getReleasePlatforms) //
                     .orElse(Collections.emptyList());
         }
+    }
+
+    private List<PlatformName> removeDeprecatedPlatforms(final List<PlatformName> platformNames) {
+        final List<PlatformName> deprecated = List.of(PlatformName.JIRA);
+        for (final PlatformName p : deprecated) {
+            if (platformNames.contains(p)) {
+                LOGGER.warning(ExaError.messageBuilder("E-RD-20") //
+                        .message("Ignoring deprecated platform {{platform}}.", p)
+                        .mitigation("Remove platform from file {{config file}} to avoid this warning.",
+                                RELEASE_CONFIG_PATH)
+                        .toString());
+                platformNames.remove(p);
+            }
+        }
+        return platformNames;
     }
 
     private void validatePlatforms(final List<PlatformName> platformNames) {
