@@ -68,25 +68,32 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    @Override
     // [impl->dsn~retrieve-github-release-header-from-release-letter~2]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
+    // [impl->dsn~upload-github-release-assets~1]
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
+    @Override
     public GitHubReleaseInfo createGithubRelease(final GitHubRelease gitHubRelease, final Progress progress)
             throws GitHubException {
         try {
-            final GHRelease ghRelease = this.getRepository(gitHubRelease.getRepositoryName())//
-                    .createRelease(gitHubRelease.getVersion()) //
+            final String repoName = gitHubRelease.getRepositoryName();
+            final GHRepository repository = getRepository(repoName);
+            final String version = gitHubRelease.getVersion();
+            final GHRelease ghRelease = repository //
+                    .createRelease(version) //
                     .draft(true) //
                     .body(gitHubRelease.getReleaseLetter()) //
                     .name(gitHubRelease.getHeader()) //
                     .create();
             if (gitHubRelease.hasUploadAssets()) {
-                final String uploadUrl = ghRelease.getUploadUrl();
-                executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl, progress);
+                uploadAssets(repository, ghRelease.getUploadUrl(), progress);
+            }
+            for (final String tag : gitHubRelease.additionalTags()) {
+                createTag(repository, version, tag);
             }
             return GitHubReleaseInfo.builder() //
-                    .repositoryName(gitHubRelease.getRepositoryName()) //
-                    .version(gitHubRelease.getVersion()) //
+                    .repositoryName(repoName) //
+                    .version(version) //
                     .draft(ghRelease.isDraft()) //
                     .htmlUrl(ghRelease.getHtmlUrl()) //
                     .build();
@@ -98,15 +105,29 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    // [impl->dsn~upload-github-release-assets~1]
-    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl,
-            final Progress progress) throws GitHubException {
+    private void uploadAssets(final GHRepository repository, final String uploadUrl, final Progress progress)
+            throws GitHubException {
         final WorkflowOptions options = new WorkflowOptions() //
                 .withProgress(progress) //
                 .withDispatches(Map.of("upload_url", uploadUrl));
-        executeWorkflow(repositoryName, GITHUB_UPLOAD_ASSETS_WORKFLOW, //
-                options);
+        try {
+            executeWorkflow(repository, repository.getWorkflow(GITHUB_UPLOAD_ASSETS_WORKFLOW), options);
+        } catch (final IOException exception) {
+            throw new GitHubException(exception);
+        }
+    }
+
+    // [impl->dsn~creating-git-tags~1]
+    private void createTag(final GHRepository repository, final String tag, final String alias) throws GitHubException {
+        try {
+            final String sha = repository.getRef("refs/tags/" + tag).getObject().getSha();
+            repository.createRef("refs/tags/" + alias, sha);
+        } catch (final IOException exception) {
+            // in case the alias already exists the API will throw an HttpException with message "Reference already
+            // exists".
+            throw new GitHubException(ExaError.messageBuilder("E-RD-GH-30") //
+                    .message("Failed creating alias for tag {{tag}}.", tag).toString(), exception);
+        }
     }
 
     @Override

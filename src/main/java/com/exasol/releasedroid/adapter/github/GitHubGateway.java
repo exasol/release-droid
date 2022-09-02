@@ -51,6 +51,17 @@ public interface GitHubGateway {
      */
     GitHubReleaseInfo createGithubRelease(GitHubRelease gitHubRelease, Progress progress) throws GitHubException;
 
+//    /**
+//     * Create an additional tag pointing to the same commit as an already existing tag (aka. "version"), probably
+//     * created by {@link #createGithubRelease}. This is required for releases including golang sources.
+//     *
+//     * @param repositoryName fully qualified name of the repository
+//     * @param tag            existing tag reference, e.g. "1.2.3"
+//     * @param alias          additional tag reference to create, e.g. "v1.2.3" or "subfolder/v1.2.3"
+//     * @throws GitHubException in case of failure
+//     */
+//    void createTag(final String repositoryName, final String tag, final String alias) throws GitHubException;
+
     /**
      * Get a {@link Set} of closed tickets' numbers.
      *

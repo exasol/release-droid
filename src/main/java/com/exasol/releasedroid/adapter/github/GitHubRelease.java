@@ -1,28 +1,22 @@
 package com.exasol.releasedroid.adapter.github;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.exasol.errorreporting.ExaError;
 
 /**
  * Represents a GitHub release.
  */
 public class GitHubRelease {
-    private final String repositoryName;
-    private final String version;
-    private final String header;
-    private final String releaseLetter;
-    private final boolean uploadAssets;
-
-    private GitHubRelease(final Builder builder) {
-        this.repositoryName = builder.repositoryName;
-        this.version = builder.version;
-        this.header = builder.header;
-        this.releaseLetter = builder.releaseLetter;
-        this.uploadAssets = builder.uploadAssets;
-    }
+    private String repositoryName;
+    private String version;
+    private String header;
+    private String releaseLetter;
+    private boolean uploadAssets;
+    private final List<String> additionalTags = new ArrayList<>();
 
     /**
-     * Create a new {@link Builder}.
-     *
      * @return new {@link Builder} instance
      */
     public static Builder builder() {
@@ -30,26 +24,20 @@ public class GitHubRelease {
     }
 
     /**
-     * Get a version.
-     *
-     * @return version
+     * @return version of the release
      */
     public String getVersion() {
         return this.version;
     }
 
     /**
-     * Get a release header.
-     *
-     * @return header
+     * @return release header
      */
     public String getHeader() {
         return this.header;
     }
 
     /**
-     * Get a release letter.
-     *
      * @return release letter
      */
     public String getReleaseLetter() {
@@ -57,8 +45,6 @@ public class GitHubRelease {
     }
 
     /**
-     * Get repository name.
-     *
      * @return repository name
      */
     public String getRepositoryName() {
@@ -66,97 +52,94 @@ public class GitHubRelease {
     }
 
     /**
-     * Check if upload assets required.
-     *
-     * @return true if upload assets required
+     * @return {@link true} if upload assets required
      */
     public boolean hasUploadAssets() {
         return this.uploadAssets;
     }
 
+    public List<String> additionalTags() {
+        return this.additionalTags;
+    }
+
+    // ---------------------------------------------------------------
+
     /**
      * A builder for {@link GitHubRelease}.
      */
     public static class Builder {
-        private String repositoryName;
-        private String version;
-        private String header;
-        private String releaseLetter = "";
-        private boolean uploadAssets = false;
+        private final GitHubRelease release = new GitHubRelease();
 
         /**
-         * Set a repository name.
-         *
          * @param repositoryName repository name
          * @return builder instance for fluent programming
          */
         public Builder repositoryName(final String repositoryName) {
-            this.repositoryName = repositoryName;
+            this.release.repositoryName = repositoryName;
             return this;
         }
 
         /**
-         * Set a version.
-         *
          * @param version release version
          * @return builder instance for fluent programming
          */
         public Builder version(final String version) {
-            this.version = version;
+            this.release.version = version;
             return this;
         }
 
         /**
-         * Set a header
-         *
          * @param header release header
          * @return builder instance for fluent programming
          */
         public Builder header(final String header) {
-            this.header = header;
+            this.release.header = header;
             return this;
         }
 
         /**
-         * Set a release letter.
-         *
          * @param releaseLetter release letter
          * @return builder instance for fluent programming
          */
         public Builder releaseLetter(final String releaseLetter) {
-            this.releaseLetter = releaseLetter;
+            this.release.releaseLetter = releaseLetter;
             return this;
         }
 
         /**
-         * Set upload assets flag.
-         *
-         * @param uploadAssets upload assets flag
+         * @param value {@code true} if release is designated to upload assets
          * @return builder instance for fluent programming
          */
-        public Builder uploadAssets(final boolean uploadAssets) {
-            this.uploadAssets = uploadAssets;
+        public Builder uploadAssets(final boolean value) {
+            this.release.uploadAssets = value;
             return this;
         }
 
         /**
-         * Create a new instance if {@link GitHubRelease}.
-         *
-         * @return instance of {@link GitHubRelease}
+         * @param value additional tag (aka. "git reference") pointing to the release
+         * @return builder instance for fluent programming
+         */
+        public Builder addTag(final String value) {
+            this.release.additionalTags.add(value);
+            return this;
+        }
+
+        /**
+         * @return new instance of {@link GitHubRelease}
          */
         public GitHubRelease build() {
             validateFields();
-            return new GitHubRelease(this);
+            return this.release;
         }
 
         private void validateFields() {
-            if ((this.repositoryName == null) || this.repositoryName.isEmpty()) {
+            if ((this.release.repositoryName == null) || this.release.repositoryName.isEmpty()) {
                 throw createExceptionWithInvalidField("repositoryName");
             }
-            if ((this.version == null) || this.version.isEmpty()) {
+            if ((this.release.version == null) || this.release.version.isEmpty()) {
                 throw createExceptionWithInvalidField("version");
             }
-            if ((this.header == null) || this.header.isEmpty()) {
+            if ((this.release.header == null) || this.release.header.isEmpty()) {
                 throw createExceptionWithInvalidField("header");
             }
         }

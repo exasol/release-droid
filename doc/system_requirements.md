@@ -84,6 +84,13 @@ RD supports releasing on the [Exasol Community Portal](https://community.exasol.
 
 Needs: req
 
+### Golang Support
+`feat~golang-support~1`
+
+RD supports relasing projects with modules using programming language `go`.
+
+Needs: req
+
 ### Report
 `feat~report~1`
 
@@ -106,8 +113,7 @@ Needs: req
 RD accesses the project's files it needs for validations and releases.
 
 Covers:
-
-* [feat~release-automation~1](#release-automation)
+* [`feat~release-automation~1`](#release-automation)
 
 Needs: dsn
 
@@ -117,8 +123,7 @@ Needs: dsn
 Users provide parameters RD needs for releases and validations.
 
 Covers:
-
-* [feat~release-automation~1](#release-automation)
+* [`feat~release-automation~1`](#release-automation)
 
 Needs: dsn
 
@@ -128,8 +133,7 @@ Needs: dsn
 RD runs validations on a user-specified project.
 
 Covers:
-
-* [feat~release-validation~1](#release-validation)
+* [`feat~release-validation~1`](#release-validation)
 
 Needs: dsn
 
@@ -139,8 +143,7 @@ Needs: dsn
 RD creates a validation report containing all successful and failed validations.
 
 Covers:
-
-* [feat~report~1](#report)
+* [`feat~report~1`](#report)
 
 Needs: dsn
 
@@ -150,8 +153,7 @@ Needs: dsn
 RD releases a user-specified project.
 
 Covers:
-
-* [feat~release-automation~1](#release-automation)
+* [`feat~release-automation~1`](#release-automation)
 
 Needs: dsn
 
@@ -161,8 +163,7 @@ Needs: dsn
 RD creates a release report containing information about releases.
 
 Covers:
-
-* [feat~report~1](#report)
+* [`feat~report~1`](#report)
 
 Needs: dsn
 
@@ -172,7 +173,6 @@ Needs: dsn
 RD estimates the duration of the release process and displays progress during release process.
 
 Covers:
-
 * `feat~estimation-and-progress-display~1`
 
 Needs: dsn
@@ -194,8 +194,7 @@ Needs: dsn
 RD runs all project's tests only once. This means RD will not run the tests again in case the release was not finished and no changes were made on the project, and a new release command is triggered.
 
 Covers:
-
-* [feat~release-automation~1](#release-automation)
+* [`feat~release-automation~1`](#release-automation)
 
 Needs: dsn
 
@@ -232,8 +231,7 @@ Rationale:
 This helps ensure a uniform layout and easier navigation since team members are instantly familiar with a projects's directory structure.
 
 Covers:
-
-* [feat~release-validation~1](#release-validation)
+* [`feat~release-validation~1`](#release-validation)
 
 Needs: dsn
 
@@ -247,8 +245,7 @@ Rationale:
 This typically happens if an unforeseen problem occurred, like a network outage or exceeded storage space. In this case stopping the release and fixing the underlying issue is required.
 
 Covers:
-
-* [feat~release-validation~1](#release-validation)
+* [`feat~release-validation~1`](#release-validation)
 
 Needs: dsn
 
@@ -265,8 +262,7 @@ Rationale:
 Such a conflict usually indicates that the current version number was not updated or a merge operation went wrong. Fixing the issue before the release is required.
 
 Covers:
-
-* [feat~release-validation~1](#release-validation)
+* [`feat~release-validation~1`](#release-validation)
 
 Needs: dsn
 
@@ -296,8 +292,7 @@ Since the step validation rules depend on the platform the step is executed on, 
 RD can create a Maven Central Repository release.
 
 Covers:
-
-* [feat~maven-support~1](#maven-support)
+* [`feat~maven-support~1`](#maven-support)
 
 Needs: dsn
 
@@ -311,8 +306,7 @@ Rationale:
 Integrators should maintain the current version in one single place, the project sources.
 
 Covers:
-
-* [feat~maven-support~1](#maven-support)
+* [`feat~maven-support~1`](#maven-support)
 
 Needs: dsn
 
@@ -326,8 +320,7 @@ Rationale:
 Maven projects have strict conventions. If the developers follow them, detecting the deliverables is possible using a fixed ruleset. This eliminates the chance for human error when assembling the list of deliverables.
 
 Covers:
-
-* [feat~maven-support~1](#maven-support)
+* [`feat~maven-support~1`](#maven-support)
 
 Needs: dsn
 
@@ -343,8 +336,7 @@ Rationale:
 GitHub is as of June 2020 the most prominent Source Code platform. If you use GitHub, creating releases there is a must.
 
 Covers:
-
-* [feat~github-support~1](#github-support)
+* [`feat~github-support~1`](#github-support)
 
 Needs: dsn
 
@@ -372,8 +364,7 @@ Rationale:
 Integrators should have to maintain only one single source for a release letter.
 
 Covers:
-
-* [feat~github-support~1](#github-support)
+* [`feat~github-support~1`](#github-support)
 
 Needs: dsn
 
@@ -387,8 +378,7 @@ Rationale:
 Integrators should have to maintain only one single source for the release title.
 
 Covers:
-
-* [feat~github-support~1](#github-support)
+* [`feat~github-support~1`](#github-support)
 
 Needs: dsn
 
@@ -402,8 +392,7 @@ Rationale:
 Typos in ticket IDs happen an RD should find them before users do.
 
 Covers:
-
-* [feat~github-support~1](#github-support)
+* [`feat~github-support~1`](#github-support)
 
 Needs: dsn
 
@@ -417,8 +406,7 @@ Rationale:
 If an issue is not close, the version is not complete and therefore not ready to be released.
 
 Covers:
-
-* [feat~github-support~1](#github-support)
+* [`feat~github-support~1`](#github-support)
 
 Needs: dsn
 
@@ -432,8 +420,21 @@ Rationale:
 After it found out, what the deliverables are in a separate step (see e.g. ["Detect Deliverables in a Maven Project"](#detect-deliverables-in-a-maven-project)), RD is capable of uploading them to GitHub without user intervention.
 
 Covers:
+* [`feat~github-support~1`](#github-support)
 
-* [feat~github-support~1](#github-support)
+Needs: dsn
+
+##### Creating Additional Tags
+`req~creating-git-tags~1`
+
+For projects with modules using programming language `go` RD creates approriate git tags.
+
+Rationale:
+
+For regular releases RD benefits from GitHub API already creating an appropriate tag. Projects with modules using programming language `go` in contrast may require different or even additional tags to be created, e.g. with a prefix "v".
+
+Covers:
+* [`feat~golang-support~1`](#golang-support)
 
 Needs: dsn
 
@@ -449,7 +450,6 @@ Rationale:
 We create a release announcement draft after each release. The announcements have the same structure, therefore it is easy to automate them.
 
 Covers:
-
 * [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
 
 Needs: dsn
@@ -460,7 +460,6 @@ Needs: dsn
 RD copies the new release changes description from the release letter into the release announcement.
 
 Covers:
-
 * [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
 
 Needs: dsn
@@ -471,7 +470,6 @@ Needs: dsn
 RD gets the general project-related information from the repository.
 
 Covers:
-
 * [feat~exasol-community-portal-support~1](#exasol-community-portal-support)
 
 Needs: dsn

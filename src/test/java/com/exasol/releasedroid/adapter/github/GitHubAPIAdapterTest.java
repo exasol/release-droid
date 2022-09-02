@@ -30,15 +30,15 @@ class GitHubAPIAdapterTest {
     @Mock
     private GitHub gitHubMock;
     @Mock
-    private GitHubConnector gitHubConnectorMock;
+    private GitHubConnector connectorMock;
     @Mock
     private GHRepository repositoryMock;
     private GitHubAPIAdapter apiAdapter;
 
     @BeforeEach
     void beforeEach() throws IOException {
-        this.apiAdapter = new GitHubAPIAdapter(this.gitHubConnectorMock);
-        when(this.gitHubConnectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
+        this.apiAdapter = new GitHubAPIAdapter(this.connectorMock);
+        when(this.connectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
     }
 
@@ -98,13 +98,8 @@ class GitHubAPIAdapterTest {
     @Test
     void releaseCreateRelease() throws GitHubException, IOException {
         final String version = "4.5.6";
-        final GitHubRelease release = GitHubRelease.builder() //
-                .repositoryName(REPOSITORY_NAME) //
-                .version(version).header("title") //
-                .releaseLetter("release letter") //
-                .build();
-
-        final URL expectedHtmlUrl = mockGHRepository(this.gitHubMock, REPOSITORY_NAME);
+        final GitHubRelease release = releaseBuilder(version).build();
+        final URL expectedHtmlUrl = mockGHRepository();
         final String expectedTagUrl = GitHubReleaseInfo.getTagUrl(REPOSITORY_NAME, version);
 
         final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release, Progress.builder().start());
@@ -130,17 +125,42 @@ class GitHubAPIAdapterTest {
         assertThat(actual.isPresent(), is(false));
     }
 
-    private URL mockGHRepository(final GitHub gitHub, final String REPOSITORY_NAME) throws IOException {
+    @Test
+    void additionalTags() throws GitHubException, IOException {
+        final String v1 = "v1.2.3";
+        final String v2 = "subfolder/v1.2.3";
+        final GitHubRelease release = releaseBuilder("1.2.3") //
+                .addTag(v1) //
+                .addTag(v2) //
+                .build();
+
+        mockGHRepository();
+        final GHRef ref = mock(GHRef.class);
+        final GHRef.GHObject ro = mock(GHRef.GHObject.class);
+        when(ref.getObject()).thenReturn(ro);
+        when(this.repositoryMock.getRef(any())).thenReturn(ref);
+
+        final Progress progress = mock(Progress.class);
+        this.apiAdapter.createGithubRelease(release, progress);
+        verify(this.repositoryMock).createRef(eq("refs/tags/" + v1), any());
+        verify(this.repositoryMock).createRef(eq("refs/tags/" + v2), any());
+    }
+
+    private GitHubRelease.Builder releaseBuilder(final String version) {
+        return GitHubRelease.builder() //
+                .repositoryName(REPOSITORY_NAME) //
+                .version(version).header("title") //
+                .releaseLetter("release letter");
+    }
+
+    private URL mockGHRepository() throws IOException {
         final URL htmlUrl = new URL("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123");
         final GHRelease releaseMock = mock(GHRelease.class);
         when(releaseMock.getHtmlUrl()).thenReturn(htmlUrl);
         when(releaseMock.isDraft()).thenReturn(true);
-
-        final GHRepository repoMock = Mockito.mock(GHRepository.class);
         final GHReleaseBuilder builder = releaseBuilderMock(releaseMock);
-        when(repoMock.createRelease(any())).thenReturn(builder);
-
-        when(gitHub.getRepository(REPOSITORY_NAME)).thenReturn(repoMock);
+        when(this.repositoryMock.createRelease(any())).thenReturn(builder);
+        when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
         return htmlUrl;
     }
 

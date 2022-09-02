@@ -50,7 +50,6 @@ This section describes the runtime behavior of the software.
 Users select a GitHub-based project by providing its name to RD.
 
 Covers:
-
 * [`req~users-provide-rd-parameters~1`](system_requirements.md#users-provide-rd-parameters)
 
 Needs: impl
@@ -62,7 +61,6 @@ Needs: impl
 Users select whether they want to `validate` or `release` the project.
 
 Covers:
-
 * [`req~users-provide-rd-parameters~1`](system_requirements.md#users-provide-rd-parameters)
 
 Needs: impl
@@ -74,7 +72,6 @@ Needs: impl
 Users select a list of platforms they want to perform a validation/release on.
 
 Covers:
-
 * [`req~users-provide-rd-parameters~1`](system_requirements.md#users-provide-rd-parameters)
 
 Needs: impl
@@ -86,19 +83,16 @@ Needs: impl
 Users can provide a name of a Git branch.
 
 Covers:
-
 * [`req~users-can-set-git-branch-for-validation~1`](system_requirements.md#users-can-set-git-branch-for-validation)
 
 Needs: impl
 
 ### User add Upload Definition Files for Their Deliverables
-
 `dsn~users-add-upload-definition-files-for-their-deliverables~1`
 
 Users add upload [definitions for deliverables](user_guide/templates/upload_github_release_assets_template.md) in form of a [`.yml` file](https://yaml.org/) to their project.
 
 Covers:
-
 * [`req~detect-deliverables-in-a-maven-project~1`](system_requirements.md#detect-deliverables-in-a-maven-project)
 
 Needs: impl
@@ -110,7 +104,6 @@ Needs: impl
 RD performs only validation if it gets a `validate` goal.
 
 Covers:
-
 * [`req~validate-project~1`](system_requirements.md#validate-project)
 
 Needs: impl
@@ -122,7 +115,6 @@ Needs: impl
 RD performs validation and then release if it gets a `release` goal.
 
 Covers:
-
 * [`req~release-project~1`](system_requirements.md#release-project)
 
 Needs: impl
@@ -136,7 +128,6 @@ Needs: impl
 The `LocalRepository` provides access to a local repository
 
 Covers:
-
 * [`req~access-project-files~1`](system_requirements.md#access-project-files)
 
 Needs: impl
@@ -148,7 +139,6 @@ Needs: impl
 The `GitHubRepository` provides access to a GitHub-based repository.
 
 Covers:
-
 * [`req~access-project-files~1`](system_requirements.md#access-project-files)
 
 Needs: impl
@@ -160,7 +150,6 @@ Needs: impl
 The `Repository` detects a current project's version depending on a project's programming language and project's structure.
 
 Covers:
-
 * [`req~detect-current-version-from-maven-pom~1`](system_requirements.md#detect-current-version-from-maven-pom)
 
 Needs: impl, utest
@@ -172,7 +161,6 @@ Needs: impl, utest
 The `Repository` retrieves content of specified branch.
 
 Covers:
-
 * [`req~access-project-files~1`](system_requirements.md#access-project-files)
 
 Needs: impl
@@ -186,7 +174,6 @@ Needs: impl
 RD starts release only if all validation for the platforms users specified succeed.
 
 Covers:
-
 * [`req~stopping-the-release-on-failed-step-validation~1`](system_requirements.md#stopping-the-release-on-failed-step-validation)
 
 Needs: impl
@@ -198,7 +185,6 @@ Needs: impl
 RD creates a validation report containing a summary of all validations and their results.
 
 Covers:
-
 * [`req~validation-report~1`](system_requirements.md#validation-report)
 
 Needs: impl
@@ -210,7 +196,6 @@ Needs: impl
 RD creates a release report containing a summary of all releases and their results.
 
 Covers:
-
 * [`req~release-report~1`](system_requirements.md#release-report)
 
 Needs: impl, utest
@@ -222,7 +207,6 @@ Needs: impl, utest
 RD writes a full report to a `home/.release-droid/last_report.txt` file.
 
 Covers:
-
 * [`req~validation-report~1`](system_requirements.md#validation-report)
 * [`req~release-report~1`](system_requirements.md#release-report)
 
@@ -241,7 +225,6 @@ Validations listed here are platform-independent.
 RD validates that a version consists of three parts containing only digits: <major><feature><bug>.
 
 Covers:
-
 * [`req~detect-version-conflicts-in-the-project-sources~1`](system_requirements.md#stopping-the-release-in-case-of-version-conflicts-in-the-project-sources)
 
 Needs: impl, utest
@@ -257,7 +240,6 @@ Rationale:
 Let us assume that a previous version was 1.2.3. That means that a valid version for the next release is 1.2.4 or 1.3.0 or 2.0.0.
 
 Covers:
-
 * [`req~detect-version-conflicts-in-the-project-sources~1`](system_requirements.md#stopping-the-release-in-case-of-version-conflicts-in-the-project-sources)
 
 Needs: impl, utest
@@ -269,7 +251,6 @@ Needs: impl, utest
 RD validates that `changelog.md` file contains a link to `changes_<version>.md` file.
 
 Covers:
-
 * [`req~validate-mandatory-directory-tree-elements~1`](system_requirements.md#validate-mandatory-directory-tree-elements)
 
 Needs: impl, utest
@@ -281,7 +262,6 @@ Needs: impl, utest
 RD validates that `changes_<version>.md` file contains a version to be released.
 
 Covers:
-
 * [`req~validate-mandatory-directory-tree-elements~1`](system_requirements.md#validate-mandatory-directory-tree-elements)
 
 Needs: impl, utest
@@ -293,7 +273,6 @@ Needs: impl, utest
 RD validates that `changes_<version>.md` file contains a release letter body.
 
 Covers:
-
 * [`req~validate-mandatory-directory-tree-elements~1`](system_requirements.md#validate-mandatory-directory-tree-elements)
 
 Needs: impl, utest
@@ -309,7 +288,6 @@ Validations listed here are necessary for a release on the GitHub.
 RD validates that a release letter for a GitHub release is present and contains all necessary information.
 
 Covers:
-
 * [`req~gitub-release-description-from-release-letter~1`](system_requirements.md#github-release-description-from-release-letter)
 
 Needs: impl, utest
@@ -321,7 +299,6 @@ Needs: impl, utest
 RD validates that all the issues mentioned in the release letter exist.
 
 Covers:
-
 * [`req~validation-github-issue-ticket-numbers~1`](system_requirements.md#validating-github-issue-ticket-numbers)
 
 Needs: impl, utest
@@ -333,7 +310,6 @@ Needs: impl, utest
 RD validates that all the issues mentioned in the release letter are closed on the GitHub.
 
 Covers:
-
 * [`req~validating-that-github-issues-are-closed~1`](system_requirements.md#validating-that-github-issues-are-closed)
 
 Needs: impl, utest
@@ -349,7 +325,6 @@ Validations listed here are necessary for a release on the Maven CEntral.
 RD validates that a workflow that helps us to release on Maven Central Repository exists.
 
 Covers:
-
 * [`req~releasing-on-maven~1`](system_requirements.md#releasing-on-maven-central-repository)
 
 Needs: impl, utest
@@ -420,7 +395,6 @@ Rationale:
 RD verifies that the build is green and stores a checksum file to avoid running tests again in case the release was not finished.
 
 Covers:
-
 * [`req~run-tests-only-once~1`](system_requirements.md#run-tests-only-once)
 
 Needs: impl
@@ -434,7 +408,6 @@ RD uses `print_quick_checksum.yml` workflow to create a fresh checksum.
 RD uses `prepare_original_checksum.yml` artifactory to obtain a stored checksum.
 
 Covers:
-
 * [`req~run-tests-only-once~1`](system_requirements.md#run-tests-only-once)
 
 Needs: impl
@@ -446,7 +419,6 @@ Needs: impl
 During validation RD checks if the release date is up-to-date. If it is not equal to today's date, RD prints a warning message and fails the validation.
 
 Covers:
-
 * [`req~validating-release-date~1`](system_requirements.md#validating-the-release-date)
 
 Needs: impl, utest
@@ -460,7 +432,6 @@ Needs: impl, utest
 RD creates a new GitHub release.
 
 Covers:
-
 * [`req~releasing-on-github~1`](system_requirements.md#releasing-on-github)
 
 Needs: impl
@@ -472,7 +443,6 @@ Needs: impl
 RD builds the GitHub release's title by concatenating the version and the header of the release letter.
 
 Covers:
-
 * [`req~github-release-title-from-release-letter~1`](system_requirements.md#github-release-title-from-release-letter)
 
 Needs: impl
@@ -484,20 +454,37 @@ Needs: impl
 RD extracts the GitHub release's body from the release letter.
 
 Covers:
-
 * [`req~gitub-release-description-from-release-letter~1`](system_requirements.md#github-release-description-from-release-letter)
 
 Needs: impl
 
 #### Upload GitHub Release Assets
-
 `dsn~upload-github-release-assets~1`
 
-RD uploads and attaches GitHub Release Assets to the new release.
+RD uploads and attaches GitHub Release assets to the new release.
 
 Covers:
-
 * [`req~attaching-deliverables-to-a-github-release~1`](system_requirements.md#attaching-deliverables-to-a-github-release)
+
+Needs: impl
+
+#### Git Tags
+`dsn~creating-git-tags~1`
+
+For regular releases RD benefits from GitHub API already creating an appropriate tag. Projects with modules using programming language `go` in contrast may require different or even additional tags.
+
+RD identifies go modules by entries in file `.project-keeper.yml`:
+
+* If file `.project-keeper.yml` contains a go module in root folder (`path: go.mod`)
+  * RD creates a git tag with prefix `v`, e.g. `v1.2.3`
+  * RD ignores other source modules
+* Otherwise RD simply falls back to regular git tags, e.g. `1.2.3` as created by GitHub API by default.
+
+Additionally for each go module in a subfolder contained in file `.project-keeper.yml` (e.g. `path: subfolder/go.mod`)
+* RD creates an *additional* git tag with prefix containing the name of the subfolder, a slash `/` and the letter `v`, e.g. `subfolder/v1.2.3`
+
+Covers:
+* [`req~creating-git-tags~1`](system_requirements.md#creating-additional-tags)
 
 Needs: impl
 
@@ -510,7 +497,6 @@ Needs: impl
 RD creates a new release on the Maven Central Repository.
 
 Covers:
-
 * [`req~releasing-on-maven~1`](system_requirements.md#releasing-on-maven-central-repository)
 
 Needs: impl, utest
@@ -524,7 +510,6 @@ Needs: impl, utest
 RD creates a new release announcement draft on the Exasol Community Portal via Khoros API.
 
 Covers:
-
 * [`req~releasing-on-exasol-community-portal~1`](system_requirements.md#releasing-on-exasol-community-portal)
 
 Needs: impl
@@ -536,7 +521,6 @@ Needs: impl
 RD extracts a release changes description from the `## Summary` section of the release letter.
 
 Covers:
-
 * [`req~release-changes-description-from-release-letter~1`](system_requirements.md#release-changes-description-from-release-letter)
 
 Needs: impl, utest
@@ -548,7 +532,6 @@ Needs: impl, utest
 RD extracts information required to create a release announcement from the `release_config.yml` file that is located in the root directory of the project.
 
 Covers:
-
 * [`req~get-project-description-from-repository~1`](system_requirements.md#get-project-description-from-repository)
 
 Needs: impl, utest
@@ -562,7 +545,6 @@ Needs: impl, utest
 RD removes a stored checksum after the release or when it's outdated.
 
 Covers:
-
 * [`req~run-tests-only-once~1`](system_requirements.md#run-tests-only-once)
 
 Needs: impl

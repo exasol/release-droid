@@ -20,7 +20,7 @@ error-tags:
   RD-GH:
     packages:
       - com.exasol.releasedroid.adapter.github
-    highest-index: 29
+    highest-index: 30
   RD-CP:
     packages:
       - com.exasol.releasedroid.adapter.communityportal
