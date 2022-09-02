@@ -2,33 +2,33 @@ package com.exasol.releasedroid.usecases.validate;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
+import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
 
 /**
  * Implements the Validate use case.
  */
-public class ValidateInteractor implements ValidateUseCase {
+public class ValidateInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ValidateInteractor.class.getName());
 
     @Override
     // [impl->dsn~rd-runs-validate-goal~1]
-    public Report validate(final Repository repository, final List<PlatformName> platforms,
-            final Set<PlatformName> skippedPlatforms) {
+    public List<Report> apply(final Repository repository, final ReleasePlatforms platforms) {
         LOGGER.info(() -> "Validation started.");
         final var report = ValidationReport.create();
-        for (final PlatformName platformName : platforms) {
-            if (!skippedPlatforms.contains(platformName)) {
+        for (final PlatformName platformName : platforms.list()) {
+            if (!platforms.skipValidationOn().contains(platformName)) {
                 report.merge(this.validateForPlatform(platformName, repository.getPlatformValidators()));
             }
         }
-        return report;
+        return List.of(report);
     }
 
     private Report validateForPlatform(final PlatformName platformName,
