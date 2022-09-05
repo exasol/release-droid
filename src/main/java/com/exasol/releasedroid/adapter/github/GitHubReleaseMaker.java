@@ -42,7 +42,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         LOGGER.info(() -> "A GitHub release was created at: " + formatLink(tagUrl));
         final Optional<String> tagsReport = info.additionalTagsReport();
         if (!tagsReport.isEmpty()) {
-            LOGGER.info(() -> "Created " + tagsReport.get());
+            LOGGER.info(() -> "Created " + tagsReport.get() + ".");
         }
         if (info.isDraft()) {
             LOGGER.info(() -> "Please do not forget to finalize the draft at: " + formatLink(info.getHtmlUrl()));
@@ -74,7 +74,6 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final boolean uploadReleaseAssets = hasUploadAssetsWorkflow(repository);
         return GitHubRelease.builder() //
                 .repositoryName(repository.getName()) //
-                // .version(version) //
                 .tags(repository.getGitTags()) //
                 .header(version + ": " + header) //
                 .releaseLetter(body) //

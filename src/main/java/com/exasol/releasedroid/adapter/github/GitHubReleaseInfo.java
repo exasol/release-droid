@@ -64,7 +64,7 @@ public class GitHubReleaseInfo {
         if (n < 1) {
             return Optional.empty();
         }
-        return Optional.of(String.format("%d additional tag%s: ", //
+        return Optional.of(String.format("%d additional tag%s: %s", //
                 n, plural(n), String.join(", ", this.additionalTags)));
     }
 

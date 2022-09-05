@@ -36,8 +36,8 @@ public class Revision {
         final List<String> result = new ArrayList<>();
         result.add((containsGolangRootModule() ? "v" : "") + this.version);
         for (final String folder : golangSubFolders()) {
-            final String folderVersion = folder.replaceFirst("[^/]+$", "v" + this.version);
-            result.add(folderVersion);
+            final int i = folder.lastIndexOf("/");
+            result.add(folder.substring(0, i + 1) + "v" + this.version);
         }
         return result;
     }
