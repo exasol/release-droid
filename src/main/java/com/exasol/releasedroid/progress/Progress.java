@@ -9,6 +9,14 @@ import java.time.format.DateTimeFormatter;
 public class Progress {
 
     /**
+     * @param number number of items
+     * @return if n == 1 then empty string "" for singular otherwise plural "s"
+     */
+    public static String plural(final long number) {
+        return (number == 1 ? "" : "s");
+    }
+
+    /**
      * Return a silent progress not printing anything when asked
      */
     public static final Progress SILENT = new SilentProgress();
@@ -163,10 +171,6 @@ public class Progress {
     }
 
     // ------------------------------------------------
-
-    private static String plural(final long x) {
-        return (x == 1 ? "" : "s");
-    }
 
     static String repeat(final String s, final int repetitions) {
         final StringBuilder builder = new StringBuilder(repetitions);

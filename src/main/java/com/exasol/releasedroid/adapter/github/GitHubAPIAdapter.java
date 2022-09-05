@@ -94,20 +94,20 @@ public class GitHubAPIAdapter implements GitHubGateway {
             if (gitHubRelease.hasUploadAssets()) {
                 uploadAssets(repository, ghRelease.getUploadUrl(), progress);
             }
+            final GitHubTag githubTag = new GitHubTag(repository);
             for (final String tag : gitHubRelease.additionalTags()) {
-                createTag(repository, version, tag);
+                githubTag.create(tag);
             }
             return GitHubReleaseInfo.builder() //
                     .repositoryName(repoName) //
                     .version(version) //
+                    .additionalTags(gitHubRelease.additionalTags()) //
                     .draft(ghRelease.isDraft()) //
                     .htmlUrl(ghRelease.getHtmlUrl()) //
                     .build();
         } catch (final IOException exception) {
-            throw new GitHubException(
-                    ExaError.messageBuilder("F-RD-GH-11")
-                            .message("Exception happened during releasing a new tag on the GitHub.").toString(),
-                    exception);
+            throw new GitHubException(ExaError.messageBuilder("F-RD-GH-11")
+                    .message("Exception happened during releasing on the GitHub.").toString(), exception);
         }
     }
 
@@ -120,19 +120,6 @@ public class GitHubAPIAdapter implements GitHubGateway {
             executeWorkflow(repository, repository.getWorkflow(GITHUB_UPLOAD_ASSETS_WORKFLOW), options);
         } catch (final IOException exception) {
             throw new GitHubException(exception);
-        }
-    }
-
-    // [impl->dsn~creating-git-tags~1]
-    private void createTag(final GHRepository repository, final String tag, final String alias) throws GitHubException {
-        try {
-            final String sha = repository.getRef("refs/tags/" + tag).getObject().getSha();
-            repository.createRef("refs/tags/" + alias, sha);
-        } catch (final IOException exception) {
-            // in case the alias already exists the API will throw an HttpException with message "Reference already
-            // exists".
-            throw new GitHubException(ExaError.messageBuilder("E-RD-GH-30") //
-                    .message("Failed creating alias for tag {{tag}}.", tag).toString(), exception);
         }
     }
 

@@ -39,6 +39,10 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final GitHubReleaseInfo info = createGitHubRelease(repository, progress);
         final String tagUrl = info.getTagUrl();
         LOGGER.info(() -> "A GitHub release was created at: " + formatLink(tagUrl));
+        final String tagsReport = info.additionalTagsReport();
+        if (!tagsReport.isEmpty()) {
+            LOGGER.info(() -> "Created " + tagsReport);
+        }
         if (info.isDraft()) {
             LOGGER.info(() -> "Please do not forget to finalize the draft at: " + formatLink(info.getHtmlUrl()));
         }

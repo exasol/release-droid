@@ -1,15 +1,28 @@
 package com.exasol.releasedroid.adapter.github;
 
-import java.net.URL;
+import static com.exasol.releasedroid.progress.Progress.plural;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Informations about a release after release has been created
+ */
 public class GitHubReleaseInfo {
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public static String getTagUrl(final String repo, final String version) {
-        return "https://github.com/" + repo + "/releases/tag/" + version;
+    /**
+     *
+     * @param repository repository name
+     * @param version    version of the release
+     * @return url pointing to the release
+     */
+    public static String getTagUrl(final String repository, final String version) {
+        return "https://github.com/" + repository + "/releases/tag/" + version;
     }
 
     private GitHubReleaseInfo() {
@@ -18,19 +31,42 @@ public class GitHubReleaseInfo {
 
     private String repositoryName;
     private String version;
+    private final List<String> additionalTags = new ArrayList<>();
     private boolean isDraft;
     private URL htmlUrl;
 
+    /**
+     * @return url pointing to the release
+     */
     public String getTagUrl() {
         return getTagUrl(this.repositoryName, this.version);
     }
 
+    /**
+     * @return {@code true} if the release is in draft status, yet
+     */
     public boolean isDraft() {
         return this.isDraft;
     }
 
+    /**
+     * @return HTML URL of the release enabling human visitors to display the release in a browser
+     */
     public URL getHtmlUrl() {
         return this.htmlUrl;
+    }
+
+    /**
+     * @return string representing additional git tags if such tags have been created for the release, an empty string
+     *         otherwise.
+     */
+    public String additionalTagsReport() {
+        final int n = this.additionalTags.size();
+        if (n < 1) {
+            return "";
+        }
+        return String.format("%d additional tag%s: ", //
+                n, plural(n), String.join(", ", this.additionalTags));
     }
 
     static class Builder {
@@ -43,6 +79,11 @@ public class GitHubReleaseInfo {
 
         public Builder version(final String value) {
             this.info.version = value;
+            return this;
+        }
+
+        public Builder additionalTags(final List<String> tags) {
+            this.info.additionalTags.addAll(tags);
             return this;
         }
 
