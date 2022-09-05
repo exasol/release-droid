@@ -10,3 +10,4 @@ With this release RD creates appropriate git tags for different types of go sour
 
 * #260: Accept groupId in file `pom.xml` from parent, too.
 * #257: Create appropriate git tags for golang projects, too.
+* #259: Deprecated release platform Jira to stop creating EXACOM tickets.

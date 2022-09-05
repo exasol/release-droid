@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.usecases.release;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,18 +17,17 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
+import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.request.PlatformName;
-import com.exasol.releasedroid.usecases.validate.ValidateUseCase;
+import com.exasol.releasedroid.usecases.request.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReleaseInteractorTest {
@@ -40,7 +38,7 @@ class ReleaseInteractorTest {
     private static final Progress PROGRESS = Progress.SILENT;
 
     @Mock
-    private ValidateUseCase validateUseCaseMock;
+    private UseCase validateUseCaseMock;
     @Mock
     private ReleaseManager releaseManagerMock;
     @Mock
@@ -146,8 +144,8 @@ class ReleaseInteractorTest {
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.jiraReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
         assertReport(reports, ReportStatus.FAILURE, ReportStatus.SUCCESS);
-        verify(this.jiraReleaseMakerMock).estimateDuration(this.repositoryMock);
-        verifyNoMoreInteractions(this.jiraReleaseMakerMock);
+        verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
+        verifyNoMoreInteractions(this.mavenReleaseMakerMock);
     }
 
     @Test
@@ -157,8 +155,8 @@ class ReleaseInteractorTest {
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.jiraReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.FAILURE);
-        verify(this.jiraReleaseMakerMock).estimateDuration(this.repositoryMock);
-        verifyNoMoreInteractions(this.jiraReleaseMakerMock);
+        verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
+        verifyNoMoreInteractions(this.mavenReleaseMakerMock);
     }
 
     private void simulateSuccessValidationReport(final PlatformName platform) {
@@ -174,8 +172,8 @@ class ReleaseInteractorTest {
     }
 
     private void simulateValidationReport(final PlatformName platform, final Report report) {
-        when(this.validateUseCaseMock.validate(same(this.repositoryMock), eq(List.of(platform)), eq(emptySet())))
-                .thenReturn(report);
+        when(this.validateUseCaseMock.apply(same(this.repositoryMock), ArgumentMatchers.any()))
+                .thenReturn(List.of(report));
     }
 
     @Test
