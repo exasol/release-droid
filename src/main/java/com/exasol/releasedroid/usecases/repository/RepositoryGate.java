@@ -2,6 +2,8 @@ package com.exasol.releasedroid.usecases.repository;
 
 import java.util.Optional;
 
+import com.exasol.releasedroid.usecases.repository.version.Version;
+
 /**
  * Gate to access a repository content.
  */
@@ -50,7 +52,7 @@ public interface RepositoryGate {
      *
      * @return latest tag as a string or empty optional
      */
-    public Optional<String> getLatestTag();
+    public Optional<Version> getLatestTag();
 
     /**
      * Get repository's full name.

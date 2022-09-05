@@ -5,6 +5,7 @@ import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLO
 import static com.exasol.releasedroid.formatting.Colorizer.formatLink;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -39,9 +40,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final GitHubReleaseInfo info = createGitHubRelease(repository, progress);
         final String tagUrl = info.getTagUrl();
         LOGGER.info(() -> "A GitHub release was created at: " + formatLink(tagUrl));
-        final String tagsReport = info.additionalTagsReport();
+        final Optional<String> tagsReport = info.additionalTagsReport();
         if (!tagsReport.isEmpty()) {
-            LOGGER.info(() -> "Created " + tagsReport);
+            LOGGER.info(() -> "Created " + tagsReport.get());
         }
         if (info.isDraft()) {
             LOGGER.info(() -> "Please do not forget to finalize the draft at: " + formatLink(info.getHtmlUrl()));

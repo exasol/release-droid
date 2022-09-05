@@ -23,9 +23,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.adapter.github.GitHubGateway;
-import com.exasol.releasedroid.adapter.repository.CommonRepositoryValidator;
-import com.exasol.releasedroid.adapter.repository.GenericRepository;
+import com.exasol.releasedroid.adapter.repository.*;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
+import com.exasol.releasedroid.usecases.repository.version.Version;
 
 @ExtendWith(MockitoExtension.class)
 class RepositoryTest {
@@ -74,7 +74,7 @@ class RepositoryTest {
     @Test
     void getLatestTag() {
         final Repository repository = repository();
-        final Optional<String> tag = Optional.of("1.1.1");
+        final Optional<Version> tag = Optional.of(Version.parse("1.1.1"));
         when(this.repositoryGateMock.getLatestTag()).thenReturn(tag);
         assertThat(repository.getLatestTag(), equalTo(tag));
     }

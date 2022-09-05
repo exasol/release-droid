@@ -9,6 +9,7 @@ import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.BaseRepository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
+import com.exasol.releasedroid.usecases.repository.version.Version;
 
 /**
  * This class represents a GitHub-based repository.
@@ -96,9 +97,10 @@ public class GitHubRepositoryGate implements RepositoryGate {
     }
 
     @Override
-    public Optional<String> getLatestTag() {
+    public Optional<Version> getLatestTag() {
         try {
-            return Optional.ofNullable(this.githubGateway.getLatestTag(getName()));
+            final String tag = this.githubGateway.getLatestTag(getName());
+            return Optional.ofNullable(tag == null ? null : Version.parse(tag));
         } catch (final GitHubException exception) {
             throw new RepositoryException(exception);
         }

@@ -6,8 +6,7 @@ import java.util.*;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
-import com.exasol.releasedroid.usecases.repository.version.Revision;
-import com.exasol.releasedroid.usecases.repository.version.RevisionParser;
+import com.exasol.releasedroid.usecases.repository.version.*;
 import com.exasol.releasedroid.usecases.repository.version.RevisionParser.ChangelogException;
 import com.exasol.releasedroid.usecases.repository.version.RevisionParser.ConfigurationException;
 
@@ -84,7 +83,7 @@ public abstract class BaseRepository implements Repository {
     }
 
     @Override
-    public Optional<String> getLatestTag() {
+    public Optional<Version> getLatestTag() {
         return this.repositoryGate.getLatestTag();
     }
 

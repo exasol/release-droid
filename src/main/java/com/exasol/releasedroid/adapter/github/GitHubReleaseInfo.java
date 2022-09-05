@@ -3,8 +3,7 @@ package com.exasol.releasedroid.adapter.github;
 import static com.exasol.releasedroid.progress.Progress.plural;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Informations about a release after release has been created
@@ -60,13 +59,13 @@ public class GitHubReleaseInfo {
      * @return string representing additional git tags if such tags have been created for the release, an empty string
      *         otherwise.
      */
-    public String additionalTagsReport() {
+    public Optional<String> additionalTagsReport() {
         final int n = this.additionalTags.size();
         if (n < 1) {
-            return "";
+            return Optional.empty();
         }
-        return String.format("%d additional tag%s: ", //
-                n, plural(n), String.join(", ", this.additionalTags));
+        return Optional.of(String.format("%d additional tag%s: ", //
+                n, plural(n), String.join(", ", this.additionalTags)));
     }
 
     static class Builder {

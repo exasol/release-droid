@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
+import com.exasol.releasedroid.usecases.repository.version.Version;
 
 @ExtendWith(MockitoExtension.class)
 class GitHubRepositoryGateTest {
@@ -33,8 +35,9 @@ class GitHubRepositoryGateTest {
     @Test
     void testGetLatestTag() throws GitHubException {
         when(this.githubGatewayMock.getLatestTag(NAME)).thenReturn(LATEST_TAG);
-        assertAll(() -> assertThat(this.gitHubRepositoryGate.getLatestTag().isPresent(), equalTo(true)),
-                () -> assertThat(this.gitHubRepositoryGate.getLatestTag().get(), equalTo(LATEST_TAG)));
+        final Optional<Version> tag = this.gitHubRepositoryGate.getLatestTag();
+        assertAll(() -> assertThat(tag.isPresent(), equalTo(true)),
+                () -> assertThat(tag.get(), equalTo(Version.parse(LATEST_TAG))));
     }
 
     @Test

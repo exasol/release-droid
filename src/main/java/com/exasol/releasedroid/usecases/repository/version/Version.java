@@ -1,61 +1,92 @@
-package com.exasol.releasedroid.adapter.repository;
+package com.exasol.releasedroid.usecases.repository.version;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class Version implements Comparable<Version> {
+public class Version implements Comparable<Version> {
 
-    private static final Pattern PATTERN = Pattern.compile("(v?)(\\d+(\\.\\d+)*+)");
+    private static final String SUFFIX = "(v?)(\\d+(\\.\\d+)*+)";
+    private static final Pattern PATTERN = Pattern.compile(SUFFIX);
+    private static final Pattern GIT_TAG = Pattern.compile(org.eclipse.jgit.lib.Constants.R_TAGS + "(.*/)?" + SUFFIX);
     private static final int COMPONENTS = 3;
     private static final int LESS = -1;
     private static final int EQUAL = 0;
     private static final int GREATER = 1;
 
+    public static Version fromGitTag(final String tag) {
+        final Matcher matcher = GIT_TAG.matcher(tag);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Failed reading version from git tag '" + tag + "'.");
+        }
+        return parse(matcher.group(1), matcher.group(2) + matcher.group(3));
+    }
+
     public static Version parse(final String string) {
+        return parse("", string);
+    }
+
+    static Version parse(final String subfolder, final String string) {
         final Matcher matcher = PATTERN.matcher(string);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Illegal version format: '" + string + "'");
         }
+
         final int[] numbers = Arrays.stream(matcher.group(2).split("\\.")).mapToInt(Integer::parseInt).toArray();
         if (numbers.length != COMPONENTS) {
             throw new IllegalArgumentException("Illegal version format: '" + string //
                     + "'. Expected " + COMPONENTS + " components separated by dots.");
         }
-        return new Version(matcher.group(1), numbers);
+        return new Version(subfolder == null ? "" : subfolder, matcher.group(1), numbers);
     }
 
+    private final String subfolder;
     private final String prefix;
     private final int[] numbers;
 
     /**
-     * @param prefix  optional prefix "v"
-     * @param numbers major, minor, fix
+     * @param subfolder optional subfolder, used for golang modules in subfolders
+     * @param prefix    optional prefix "v"
+     * @param numbers   major, minor, fix
      */
-    Version(final String prefix, final int... numbers) {
+    public Version(final String subfolder, final String prefix, final int... numbers) {
+        this.subfolder = subfolder;
         this.prefix = prefix;
         this.numbers = numbers;
     }
 
     @Override
     public String toString() {
-        return this.prefix + Arrays.stream(this.numbers) //
+        return this.subfolder + this.prefix + Arrays.stream(this.numbers) //
                 .mapToObj(String::valueOf) //
                 .collect(Collectors.joining("."));
     }
 
-    // TODO: don't list all potential successors explicitly, e.g. "1.2.3" and "v1.2.3",
-    // but rather stick to simple versions without prefix and fix this in validation, as validation should ignore
-    // potential prefixes then.
-    Set<Version> potentialSuccessors() {
+    /**
+     * @return set of versions that are potential successors of the current version
+     */
+    public Set<Version> potentialSuccessors() {
         final Set<Version> result = new HashSet<>();
         for (int level = 0; level < this.numbers.length; level++) {
             final int[] successor = successorNumber(level);
-            result.add(new Version("", successor));
-            result.add(new Version("v", successor));
+            result.add(new Version("", "", successor));
         }
         return result;
+    }
+
+    /**
+     * @param other other version to evaluate as potential successor
+     * @return {@code true} if version {@code other} is a valid successor to the current version
+     */
+    public boolean acceptsSuccessor(final Version other) {
+        for (int level = 0; level < this.numbers.length; level++) {
+            final int[] successor = successorNumber(level);
+            if (Arrays.equals(successor, other.numbers)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int[] successorNumber(final int level) {
@@ -81,7 +112,7 @@ class Version implements Comparable<Version> {
         final int prime = 31;
         int result = 1;
         result = (prime * result) + Arrays.hashCode(this.numbers);
-        result = (prime * result) + Objects.hash(this.prefix);
+        result = (prime * result) + Objects.hash(this.prefix, this.subfolder);
         return result;
     }
 
@@ -97,7 +128,8 @@ class Version implements Comparable<Version> {
             return false;
         }
         final Version other = (Version) obj;
-        return Arrays.equals(this.numbers, other.numbers) && Objects.equals(this.prefix, other.prefix);
+        return Arrays.equals(this.numbers, other.numbers) && Objects.equals(this.prefix, other.prefix)
+                && Objects.equals(this.subfolder, other.subfolder);
     }
 
     @Override
