@@ -96,7 +96,7 @@ public class ReleaseInteractor implements UseCase {
             }
         }
         progress.reportStatus().newline();
-        if (!releaseReport.hasFailures()) {
+        if (!releaseSummary.hasFailures()) {
             cleanRepositoryAfterRelease(repository);
         }
         return List.of(validationSummary, releaseSummary);

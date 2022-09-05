@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.usecases.release;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -141,8 +142,8 @@ class ReleaseInteractorTest {
     @Test
     void testReleaseMultiplePlatformsSkipsAfterValidationFailure() {
         simulateFailureValidationReport(PlatformName.GITHUB);
-        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.jiraReleaseMakerMock);
-        final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
+        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.mavenReleaseMakerMock);
+        final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.MAVEN), emptySet());
         assertReport(reports, ReportStatus.FAILURE, ReportStatus.SUCCESS);
         verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
         verifyNoMoreInteractions(this.mavenReleaseMakerMock);
@@ -152,8 +153,8 @@ class ReleaseInteractorTest {
     void testReleaseMultiplePlatformsSkipsAfterReleaseFailure() {
         simulateSuccessValidationReport(PlatformName.GITHUB);
         simulateReleaseFailure(this.githubReleaseMakerMock);
-        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.jiraReleaseMakerMock);
-        final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.JIRA), emptySet());
+        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.mavenReleaseMakerMock);
+        final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.MAVEN), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.FAILURE);
         verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
         verifyNoMoreInteractions(this.mavenReleaseMakerMock);
@@ -200,7 +201,8 @@ class ReleaseInteractorTest {
         return release(asList(platforms), emptySet());
     }
 
-    private List<Report> release(final List<PlatformName> platforms, final Set<PlatformName> skipValidationOn) {
+    private List<Report> release(final List<PlatformName> platformNames, final Set<PlatformName> skip) {
+        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip);
         final Map<PlatformName, ReleaseMaker> releaseMakers = Map.of( //
                 PlatformName.GITHUB, this.githubReleaseMakerMock, //
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //
@@ -208,7 +210,7 @@ class ReleaseInteractorTest {
                 PlatformName.COMMUNITY, this.communityReleaseMakerMock);
         final ReleaseInteractor releaseInteractor = new ReleaseInteractor(this.validateUseCaseMock, releaseMakers,
                 this.releaseManagerMock, this.releaseStateMock);
-        return releaseInteractor.release(this.repositoryMock, platforms, skipValidationOn);
+        return releaseInteractor.apply(this.repositoryMock, platforms);
     }
 
     private void mockEstimationAndProgress(final ReleaseManager manager, final ReleaseMaker... releaseMakers) {
