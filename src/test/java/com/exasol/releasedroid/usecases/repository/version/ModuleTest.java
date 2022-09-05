@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class ModuleTest {
+class ModuleTest {
     @Test
     void equalsContract() {
         EqualsVerifier.simple().forClass(Module.class).verify();
