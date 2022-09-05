@@ -2,6 +2,7 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
+import static com.exasol.releasedroid.formatting.Colorizer.formatLink;
 
 import java.time.Duration;
 import java.util.logging.Logger;
@@ -37,9 +38,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         LOGGER.fine("Releasing on GitHub.");
         final GitHubReleaseInfo info = createGitHubRelease(repository, progress);
         final String tagUrl = info.getTagUrl();
-        LOGGER.info(() -> "A GitHub release was created at: " + tagUrl);
+        LOGGER.info(() -> "A GitHub release was created at: " + formatLink(tagUrl));
         if (info.isDraft()) {
-            LOGGER.info(() -> "Please do not forget to finalize the draft at: " + info.getHtmlUrl());
+            LOGGER.info(() -> "Please do not forget to finalize the draft at: " + formatLink(info.getHtmlUrl()));
         }
         return tagUrl;
     }

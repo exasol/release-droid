@@ -25,6 +25,10 @@ public class Colorizer {
     }
 
     public static String formatLink(final URL url) {
+        return formatLink(url.toString());
+    }
+
+    public static String formatLink(final String url) {
         return ansi().fgBrightBlue().a(Attribute.UNDERLINE).a(url).reset().toString();
     }
 
