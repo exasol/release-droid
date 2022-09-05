@@ -1,10 +1,10 @@
-# Exasol Release Droid 1.3.0, released 2022-??-??
+# Exasol Release Droid 1.3.0, released 2022-09-06
 
 Code name: Git Tags For Golang and Minor Improvements
 
 ## Summary
 
-With this release RD creates appropriate git tags for different types of go sources, see [README](../../README.md#).
+With this release RD creates appropriate git tags for different types of go sources, see [system design](../design.md#git-tags).
 
 ## Features
 
