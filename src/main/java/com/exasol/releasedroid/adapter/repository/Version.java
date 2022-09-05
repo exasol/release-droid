@@ -45,6 +45,9 @@ class Version implements Comparable<Version> {
                 .collect(Collectors.joining("."));
     }
 
+    // TODO: don't list all potential successors explicitly, e.g. "1.2.3" and "v1.2.3",
+    // but rather stick to simple versions without prefix and fix this in validation, as validation should ignore
+    // potential prefixes then.
     Set<Version> potentialSuccessors() {
         final Set<Version> result = new HashSet<>();
         for (int level = 0; level < this.numbers.length; level++) {

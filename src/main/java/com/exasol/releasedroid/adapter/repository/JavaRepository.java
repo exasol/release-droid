@@ -72,16 +72,6 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
     }
 
     @Override
-    public String getVersion() {
-        /*
-         * Getting the version from changelog is safe since project-keeper validates it RD validates that the project
-         * uses project-keeper. In contrast to getting the version from the pom this approach also works with
-         * multimodule projects.
-         */
-        return getVersionFromChangelogFile();
-    }
-
-    @Override
     public List<RepositoryValidator> getRepositoryValidators() {
         return this.repositoryValidators;
     }

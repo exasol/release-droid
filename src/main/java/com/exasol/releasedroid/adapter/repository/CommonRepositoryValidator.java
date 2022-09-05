@@ -40,7 +40,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         final String version = this.repository.getVersion();
         report.merge(validateVersion(version));
         if (!report.hasFailures()) {
-            final String changelog = this.repository.getChangelogFile();
+            final String changelog = this.repository.getChangelog();
             report.merge(validateChangelog(changelog, version));
             final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
             report.merge(validateChanges(releaseLetter, version, this.repository.isOnDefaultBranch()));

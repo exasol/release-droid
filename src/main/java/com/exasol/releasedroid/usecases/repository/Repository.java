@@ -1,8 +1,6 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.validate.ReleasePlatformValidator;
@@ -13,18 +11,14 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public interface Repository extends RepositoryGate {
     /**
-     * Get a release config.
-     *
-     * @return release config
+     * @return release configuration
      */
-    public Optional<ReleaseConfig> getReleaseConfig();
+    Optional<ReleaseConfig> getReleaseConfig();
 
     /**
-     * Get a changelog file as a string.
-     *
      * @return changelog file as a string
      */
-    public String getChangelogFile();
+    String getChangelog();
 
     /**
      * Get a changes file as an instance of {@link ReleaseLetter}.
@@ -32,27 +26,27 @@ public interface Repository extends RepositoryGate {
      * @param version version as a string
      * @return release changes file
      */
-    public ReleaseLetter getReleaseLetter(final String version);
+    ReleaseLetter getReleaseLetter(final String version);
 
     /**
-     * Get a current project version.
-     *
-     * @return version as a string
+     * @return current project version as a string
      */
     // [impl->dsn~repository-provides-current-version~1]
-    public String getVersion();
+    String getVersion();
 
     /**
-     * Get the repository validators.
-     *
+     * @return git tags of the repository
+     */
+    // [impl->dsn~creating-git-tags~1]
+    List<String> getGitTags();
+
+    /**
      * @return repository validators
      */
-    public List<RepositoryValidator> getRepositoryValidators();
+    List<RepositoryValidator> getRepositoryValidators();
 
     /**
-     * Get the platform validators.
-     *
      * @return platform validators
      */
-    public Map<PlatformName, ReleasePlatformValidator> getPlatformValidators();
+    Map<PlatformName, ReleasePlatformValidator> getPlatformValidators();
 }

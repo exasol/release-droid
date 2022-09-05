@@ -20,8 +20,8 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 // [impl->dsn~local-repository~1]
 public class LocalRepositoryGate implements RepositoryGate {
 
+    // TODO: support golang subfolders here
     static Optional<String> latestTagFromRefs(final List<Ref> refs) {
-
         return refs.stream() //
                 .map(r -> r.getName().replace("refs/tags/", "")) //
                 .map(Version::parse) //

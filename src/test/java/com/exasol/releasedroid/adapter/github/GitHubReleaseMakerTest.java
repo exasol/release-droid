@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +49,7 @@ class GitHubReleaseMakerTest {
         final Repository repoMock = mock(Repository.class);
         when(repoMock.getName()).thenReturn(REPO_NAME);
         when(repoMock.getVersion()).thenReturn(VERSION);
+        when(repoMock.getGitTags()).thenReturn(List.of(VERSION));
         when(repoMock.getReleaseLetter(VERSION)).thenReturn(releaseLetter(releaseLetterHeader));
         return repoMock;
     }

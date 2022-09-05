@@ -94,7 +94,7 @@ class GitHubPlatformValidatorTest {
         when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY.minusDays(1)));
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-26")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-31")));
     }
 
     @Test
@@ -104,7 +104,7 @@ class GitHubPlatformValidatorTest {
         when(this.releaseLetterMock.getReleaseDate()).thenReturn(Optional.of(TODAY.plusDays(1)));
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
-                () -> assertThat(report.toString(), containsString("E-RD-GH-26")));
+                () -> assertThat(report.toString(), containsString("E-RD-GH-31")));
     }
 
     @Test

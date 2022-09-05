@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.*;
@@ -37,7 +38,7 @@ class GitHubAPIAdapterTest {
 
     @BeforeEach
     void beforeEach() throws IOException {
-        this.apiAdapter = new GitHubAPIAdapter(this.connectorMock);
+        this.apiAdapter = new GitHubAPIAdapter(this.connectorMock, Duration.ofMillis(10));
         when(this.connectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
     }

@@ -98,6 +98,7 @@ public class ReleaseInteractor implements ReleaseUseCase {
                 break;
             }
         }
+        progress.reportStatus().newline();
         if (!releaseReport.hasFailures()) {
             cleanRepositoryAfterRelease(repository);
         }

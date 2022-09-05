@@ -45,8 +45,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
     }
 
     private GitHubReleaseInfo createGitHubRelease(final Repository repository, final Progress progress) {
-        final String version = repository.getVersion();
-        final GitHubRelease release = createReleaseModel(repository, version);
+        final GitHubRelease release = createReleaseModel(repository);
         try {
             return this.githubGateway.createGithubRelease(release, progress);
         } catch (final GitHubException exception) {
@@ -54,7 +53,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         }
     }
 
-    private GitHubRelease createReleaseModel(final Repository repository, final String version) {
+    // [impl->dsn~creating-git-tags~1]
+    private GitHubRelease createReleaseModel(final Repository repository) {
+        final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         final String header = releaseLetter.getHeader().orElse("");
         if (header.isEmpty()) {
@@ -67,7 +68,8 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final boolean uploadReleaseAssets = hasUploadAssetsWorkflow(repository);
         return GitHubRelease.builder() //
                 .repositoryName(repository.getName()) //
-                .version(version) //
+                // .version(version) //
+                .tags(repository.getGitTags()) //
                 .header(version + ": " + header) //
                 .releaseLetter(body) //
                 .uploadAssets(uploadReleaseAssets) //

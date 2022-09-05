@@ -24,6 +24,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private static final Logger LOGGER = Logger.getLogger(GitHubAPIAdapter.class.getName());
     private final Map<String, GHRepository> repositories = new HashMap<>();
     private final GitHubConnector gitHubConnector;
+    private final Duration workflowQueryInterval;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
@@ -31,7 +32,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * @param gitHubConnector GitHub connector
      */
     public GitHubAPIAdapter(final GitHubConnector gitHubConnector) {
+        this(gitHubConnector, Duration.ofSeconds(15));
+    }
+
+    GitHubAPIAdapter(final GitHubConnector gitHubConnector, final Duration worklflowQueryInterval) {
         this.gitHubConnector = gitHubConnector;
+        this.workflowQueryInterval = worklflowQueryInterval;
     }
 
     private GHRepository getRepository(final String repositoryName) throws GitHubException {
@@ -222,7 +228,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
         final Duration timeout = Duration.ofMinutes(150);
         final Timer timer = new Timer() //
                 .withTimeout(timeout) //
-                .withSnoozeInterval(Duration.ofSeconds(15)) //
+                .withSnoozeInterval(this.workflowQueryInterval) //
                 .start();
         while (!timer.timeout()) {
             options.progress().reportStatus();
@@ -237,7 +243,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     LOGGER.info(() -> message);
                 }
                 if (run.getConclusion() != null) {
-                    options.progress().newline();
+                    options.progress().hideStatus();
                     return run.getConclusion().toString();
                 }
             }

@@ -116,6 +116,21 @@ public class GitHubRelease {
         }
 
         /**
+         * @param tags list of git tags to assign to the release
+         * @return builder instance for fluent programming
+         */
+        public Builder tags(final List<String> tags) {
+            if (tags.isEmpty()) {
+                return this;
+            }
+            this.release.version = tags.get(0);
+            for (int i = 1; i < tags.size(); i++) {
+                addTag(tags.get(i));
+            }
+            return this;
+        }
+
+        /**
          * @param value additional tag (aka. "git reference") pointing to the release
          * @return builder instance for fluent programming
          */
