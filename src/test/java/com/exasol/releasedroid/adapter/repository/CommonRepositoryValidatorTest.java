@@ -170,7 +170,6 @@ class CommonRepositoryValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "1.2.2", "2.1.2", "2.2.1", "2.2.2", "4.2.2", "2.4.2", "2.2.4" })
-    // @ValueSource(strings = { "1.3.7", "1.3.4", "1.4.3", "1.3.5", "1.2.0", "3.0.0", "2.0.1", "2.1.0" })
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.repositoryMock.getVersion()).thenReturn(version);

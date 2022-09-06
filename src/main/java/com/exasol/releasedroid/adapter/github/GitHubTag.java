@@ -55,7 +55,7 @@ public class GitHubTag {
         final String sha = this.repository.getRef("refs/heads/" + branch).getObject().getSha();
         final PagedIterator<GHCommit> it = this.repository.queryCommits().from(sha).pageSize(1).list().iterator();
         if (!it.hasNext()) {
-            throw new LatestCommitException("");
+            throw new LatestCommitException("No commit exists");
         }
         return it.next();
     }

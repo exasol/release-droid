@@ -87,7 +87,7 @@ Needs: req
 ### Golang Support
 `feat~golang-support~1`
 
-RD supports relasing projects with modules using programming language `go`.
+RD supports releasing projects with modules using programming language `go`.
 
 Needs: req
 

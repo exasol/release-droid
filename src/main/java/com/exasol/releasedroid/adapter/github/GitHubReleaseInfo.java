@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Informations about a release after release has been created
+ * Information about a release after it has been created.
  */
 public class GitHubReleaseInfo {
 
@@ -15,7 +15,6 @@ public class GitHubReleaseInfo {
     }
 
     /**
-     *
      * @param repository repository name
      * @param version    version of the release
      * @return url pointing to the release
@@ -42,7 +41,7 @@ public class GitHubReleaseInfo {
     }
 
     /**
-     * @return {@code true} if the release is in draft status, yet
+     * @return {@code true} if the release is still in draft status
      */
     public boolean isDraft() {
         return this.isDraft;

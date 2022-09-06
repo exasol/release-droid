@@ -21,7 +21,7 @@ public abstract class BaseRepository implements Repository {
     static final String CHANGELOG_FILE = "doc/changes/changelog.md";
 
     /**
-     * Configuration file used by <a href="https://github.com/exasol/project-keeper">project-keeper</a> describing the
+     * Configuration file used by <a href="https://github.com/exasol/project-keeper">project-keeper</a> describing the project structure.
      */
     static final String CONFIGURATION_FILE = ".project-keeper.yml";
 
