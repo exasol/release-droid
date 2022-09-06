@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.exasol.errorreporting.ErrorMessageBuilder;
 import com.exasol.errorreporting.ExaError;
 
 public class Version implements Comparable<Version> {
@@ -31,20 +30,23 @@ public class Version implements Comparable<Version> {
     }
 
     static Version parse(final String subfolder, final String string) throws VersionFormatException {
-        final ErrorMessageBuilder builder = ExaError.messageBuilder("E-RD-REP-22") //
-                .message("Illegal version format: {{version}}. ", string);
+        final VersionFormatException versionFormatException = new VersionFormatException(ExaError //
+                .messageBuilder("E-RD-REP-22") //
+                .message("Illegal version format: {{version}}. ", string) //
+                .mitigation("Please ensure to use format {{components}} components separated by dots:"
+                        + " <major>.<minor>.<fix> with optional preifx 'v'.")
+                .toString());
         if (string == null) {
-            throw new VersionFormatException(builder.toString());
+            throw versionFormatException;
         }
         final Matcher matcher = PATTERN.matcher(string);
         if (!matcher.matches()) {
-            throw new VersionFormatException(builder.toString());
+            throw versionFormatException;
         }
 
         final int[] numbers = Arrays.stream(matcher.group(2).split("\\.")).mapToInt(Integer::parseInt).toArray();
         if (numbers.length != COMPONENTS) {
-            throw new VersionFormatException(builder //
-                    .message("Expected {{components}} components separated by dots.", COMPONENTS).toString());
+            throw versionFormatException;
         }
         return new Version(subfolder == null ? "" : subfolder, matcher.group(1), numbers);
     }
