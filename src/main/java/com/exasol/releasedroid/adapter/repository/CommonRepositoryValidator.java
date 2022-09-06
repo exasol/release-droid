@@ -89,7 +89,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     private Report validateVersionFormat(final String version) {
         final var report = ValidationReport.create();
         try {
-            Version.parse(version); // .()
+            Version.parse(version);
             report.addSuccessfulResult("Version format is correct.");
         } catch (final VersionFormatException e) {
             report.addFailedResult(e.getMessage());
