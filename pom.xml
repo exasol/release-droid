@@ -171,6 +171,8 @@
                             jira-rest-java-client-core and currently there is no newer release of guava available.
                             See https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>sonatype-2020-0926</exclude>
+                        <!-- Excluded as there is no update available currently. -->
+                        <exclude>CVE-2022-38752</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
