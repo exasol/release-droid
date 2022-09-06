@@ -33,8 +33,9 @@ public class Version implements Comparable<Version> {
         final VersionFormatException versionFormatException = new VersionFormatException(ExaError //
                 .messageBuilder("E-RD-REP-22") //
                 .message("Illegal version format: {{version}}. ", string) //
-                .mitigation("Please ensure to use format {{components}} components separated by dots:"
-                        + " <major>.<minor>.<fix> with optional preifx 'v'.")
+                .mitigation("Please ensure to use optional prefix 'v'" //
+                        + " followed by {{components}} components separated by dots: <major>.<minor>.<fix>.",
+                        COMPONENTS)
                 .toString());
         if (string == null) {
             throw versionFormatException;
