@@ -2,8 +2,10 @@ package com.exasol.releasedroid.adapter.github;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.GITHUB_UPLOAD_ASSETS_WORKFLOW_PATH;
+import static com.exasol.releasedroid.formatting.Colorizer.formatLink;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -37,16 +39,19 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         LOGGER.fine("Releasing on GitHub.");
         final GitHubReleaseInfo info = createGitHubRelease(repository, progress);
         final String tagUrl = info.getTagUrl();
-        LOGGER.info(() -> "A GitHub release was created at: " + tagUrl);
+        LOGGER.info(() -> "A GitHub release was created at: " + formatLink(tagUrl));
+        final Optional<String> tagsReport = info.additionalTagsReport();
+        if (!tagsReport.isEmpty()) {
+            LOGGER.info(() -> "Created " + tagsReport.get() + ".");
+        }
         if (info.isDraft()) {
-            LOGGER.info(() -> "Please do not forget to finalize the draft at: " + info.getHtmlUrl());
+            LOGGER.info(() -> "Please do not forget to finalize the draft at: " + formatLink(info.getHtmlUrl()));
         }
         return tagUrl;
     }
 
     private GitHubReleaseInfo createGitHubRelease(final Repository repository, final Progress progress) {
-        final String version = repository.getVersion();
-        final GitHubRelease release = createReleaseModel(repository, version);
+        final GitHubRelease release = createReleaseModel(repository);
         try {
             return this.githubGateway.createGithubRelease(release, progress);
         } catch (final GitHubException exception) {
@@ -54,7 +59,9 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         }
     }
 
-    private GitHubRelease createReleaseModel(final Repository repository, final String version) {
+    // [impl->dsn~creating-git-tags~1]
+    private GitHubRelease createReleaseModel(final Repository repository) {
+        final String version = repository.getVersion();
         final ReleaseLetter releaseLetter = repository.getReleaseLetter(version);
         final String header = releaseLetter.getHeader().orElse("");
         if (header.isEmpty()) {
@@ -67,7 +74,7 @@ public class GitHubReleaseMaker implements ReleaseMaker {
         final boolean uploadReleaseAssets = hasUploadAssetsWorkflow(repository);
         return GitHubRelease.builder() //
                 .repositoryName(repository.getName()) //
-                .version(version) //
+                .tags(repository.getGitTags()) //
                 .header(version + ": " + header) //
                 .releaseLetter(body) //
                 .uploadAssets(uploadReleaseAssets) //

@@ -37,11 +37,6 @@ public class GenericRepository extends BaseRepository {
     }
 
     @Override
-    public String getVersion() {
-        return getVersionFromChangelogFile();
-    }
-
-    @Override
     public List<RepositoryValidator> getRepositoryValidators() {
         return this.repositoryValidators;
     }

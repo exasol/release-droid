@@ -9,6 +9,14 @@ import java.time.format.DateTimeFormatter;
 public class Progress {
 
     /**
+     * @param number number of items
+     * @return if n == 1 then empty string "" for singular otherwise plural "s"
+     */
+    public static String plural(final long number) {
+        return (number == 1 ? "" : "s");
+    }
+
+    /**
      * Return a silent progress not printing anything when asked
      */
     public static final Progress SILENT = new SilentProgress();
@@ -66,37 +74,44 @@ public class Progress {
 
     /**
      * Report the current status of the progress to {@code System.out}.
+     *
+     * @return this for fluent programming
      */
-    public void reportStatus() {
-        stdoutFlush("\r" + status());
+    public Progress reportStatus() {
+        return stdoutFlush("\r" + status());
     }
 
     /**
      * Hide status that as been displayed to {@code System.out} in order to overwrite the previously displayed status
      * with other information.
+     *
+     * @return this for fluent programming
      */
-    public void hideStatus() {
-        stdoutFlush("\r" + repeat(" ", 80) + "\r");
+    public Progress hideStatus() {
+        return stdoutFlush("\r" + repeat(" ", 80) + "\r");
     }
 
     /**
      * Print a new line to {@code System.out} in order to display additional log messages after a status has been
      * displayed previously.
+     *
+     * @return this for fluent programming
      */
-    public void newline() {
-        stdoutFlush("\n");
+    public Progress newline() {
+        return stdoutFlush("\n");
     }
 
     @SuppressWarnings("java:S106")
     // suppressing warnings for java:S106 - Standard outputs should not be used directly to log anything
     // since GitHubAPIAdapter is intended to print on standard out.
     // Using a logger cannot overwrite the current line.
-    void stdoutFlush(final String s) {
+    Progress stdoutFlush(final String s) {
         if (ECLIPSE_CONSOLE) {
             System.out.println(new String(new char[70]).replace("\0", "\r\n"));
         }
         System.out.print(s);
         System.out.flush();
+        return this;
     }
 
     private String statusWithEstimation(final Duration elapsed, final Duration estimation) {
@@ -157,10 +172,6 @@ public class Progress {
 
     // ------------------------------------------------
 
-    private static String plural(final long x) {
-        return (x == 1 ? "" : "s");
-    }
-
     static String repeat(final String s, final int repetitions) {
         final StringBuilder builder = new StringBuilder(repetitions);
         for (int i = 0; i < repetitions; i++) {
@@ -204,8 +215,9 @@ public class Progress {
         }
 
         @Override
-        void stdoutFlush(final String s) {
+        Progress stdoutFlush(final String s) {
             // do not display anything
+            return this;
         }
     }
 

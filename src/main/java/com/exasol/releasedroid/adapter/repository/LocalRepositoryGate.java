@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.Ref;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
+import com.exasol.releasedroid.usecases.repository.version.Version;
 
 /**
  * This class represents a local repository.
@@ -20,13 +21,18 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 // [impl->dsn~local-repository~1]
 public class LocalRepositoryGate implements RepositoryGate {
 
-    static Optional<String> latestTagFromRefs(final List<Ref> refs) {
-
+    /**
+     * Potential tags include "refs/tags/1.2.3", "refs/tags/v1.2.3", "refs/tags/go-module/v1.2.3". The last two variants
+     * observed for a golang module in root folder or subfolder "go-module", respectively.
+     *
+     * @param refs tags retrieved from git repository.
+     * @return version represented by latest tag
+     */
+    static Optional<Version> latestTagFromRefs(final List<Ref> refs) {
         return refs.stream() //
-                .map(r -> r.getName().replace("refs/tags/", "")) //
-                .map(Version::parse) //
+                .map(Ref::getName) //
+                .map(Version::fromGitTag) //
                 .sorted(Comparator.reverseOrder()) //
-                .map(Version::toString) //
                 .findFirst();
     }
 
@@ -87,7 +93,7 @@ public class LocalRepositoryGate implements RepositoryGate {
     }
 
     @Override
-    public Optional<String> getLatestTag() {
+    public Optional<Version> getLatestTag() {
         final File rootDirectory = new File(this.localPath);
         try (final Git git = Git.open(rootDirectory)) {
             return latestTagFromRefs(git.getRepository().getRefDatabase().getRefsByPrefix(R_TAGS));

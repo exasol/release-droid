@@ -75,14 +75,20 @@ public class GitHubPlatformValidator implements ReleasePlatformValidator {
         final var report = ValidationReport.create();
         final Optional<LocalDate> releaseDate = releaseLetter.getReleaseDate();
         final LocalDate today = LocalDate.ofInstant(this.clock.instant(), this.clock.getZone());
-        if ((releaseDate.isEmpty()) || !(releaseDate.get().equals(today))) {
+        if (releaseDate.isEmpty()) {
             report.addFailedResult(ExaError.messageBuilder("E-RD-GH-26")
-                    .message("The file {{fileName}} has a missing or outdated release date."
-                            + " Please update the file header to match '# <Project> <Version>, released <Date>'",
-                            releaseLetter.getFileName()) //
+                    .message("Release date is not specified in file {{fileName}}.", releaseLetter.getFileName()) //
+                    .mitigation("Please update the file header to match '# <Project> <Version>, released <Date>'") //
                     .toString());
-        } else {
+        } else if (releaseDate.get().equals(today)) {
             report.addSuccessfulResult("Release date.");
+        } else {
+            final String delta = releaseDate.get().isAfter(today) ? "is in the future" : "has past already";
+            report.addFailedResult(ExaError.messageBuilder("E-RD-GH-31")
+                    .message("Release date {{date}} in file {{fileName}} {{delta|uq}}.", releaseDate.get(),
+                            releaseLetter.getFileName(), delta)
+                    .mitigation("Please make sure to release on the same date as specified.") //
+                    .toString());
         }
         return report;
     }

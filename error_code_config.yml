@@ -16,11 +16,11 @@ error-tags:
       - com.exasol.releasedroid.usecases.repository
       - com.exasol.releasedroid.adapter.repository
       - com.exasol.releasedroid.adapter
-    highest-index: 31
+    highest-index: 33
   RD-GH:
     packages:
       - com.exasol.releasedroid.adapter.github
-    highest-index: 29
+    highest-index: 32
   RD-CP:
     packages:
       - com.exasol.releasedroid.adapter.communityportal

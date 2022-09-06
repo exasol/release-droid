@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.adapter.github;
 
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARATOR;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.*;
@@ -22,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
+import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 
 @ExtendWith(MockitoExtension.class)
 class GitHubAPIAdapterTest {
@@ -30,15 +34,15 @@ class GitHubAPIAdapterTest {
     @Mock
     private GitHub gitHubMock;
     @Mock
-    private GitHubConnector gitHubConnectorMock;
+    private GitHubConnector connectorMock;
     @Mock
     private GHRepository repositoryMock;
     private GitHubAPIAdapter apiAdapter;
 
     @BeforeEach
     void beforeEach() throws IOException {
-        this.apiAdapter = new GitHubAPIAdapter(this.gitHubConnectorMock);
-        when(this.gitHubConnectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
+        this.apiAdapter = new GitHubAPIAdapter(this.connectorMock, Duration.ofMillis(10));
+        when(this.connectorMock.connectToGitHub()).thenReturn(this.gitHubMock);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
     }
 
@@ -98,13 +102,8 @@ class GitHubAPIAdapterTest {
     @Test
     void releaseCreateRelease() throws GitHubException, IOException {
         final String version = "4.5.6";
-        final GitHubRelease release = GitHubRelease.builder() //
-                .repositoryName(REPOSITORY_NAME) //
-                .version(version).header("title") //
-                .releaseLetter("release letter") //
-                .build();
-
-        final URL expectedHtmlUrl = mockGHRepository(this.gitHubMock, REPOSITORY_NAME);
+        final GitHubRelease release = releaseBuilder(version).build();
+        final URL expectedHtmlUrl = mockGHRepository();
         final String expectedTagUrl = GitHubReleaseInfo.getTagUrl(REPOSITORY_NAME, version);
 
         final GitHubReleaseInfo info = this.apiAdapter.createGithubRelease(release, Progress.builder().start());
@@ -130,17 +129,79 @@ class GitHubAPIAdapterTest {
         assertThat(actual.isPresent(), is(false));
     }
 
-    private URL mockGHRepository(final GitHub gitHub, final String REPOSITORY_NAME) throws IOException {
+    @Test
+    void additionalTags() throws GitHubException, IOException {
+        final String v1 = "v1.2.3";
+        final String v2 = "subfolder/v1.2.3";
+        final GitHubRelease release = releaseBuilder("1.2.3") //
+                .addTag(v1) //
+                .addTag(v2) //
+                .build();
+
+        mockGHRepository();
+
+        final Progress progress = mock(Progress.class);
+        mockCommits(this.repositoryMock, true);
+        this.apiAdapter.createGithubRelease(release, progress);
+        verify(this.repositoryMock).createRef(eq("refs/tags/" + v1), any());
+        verify(this.repositoryMock).createRef(eq("refs/tags/" + v2), any());
+    }
+
+    void manualExperiments() throws Exception {
+        final String credentials = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
+        final GitHubConnectorImpl connector = new GitHubConnectorImpl(new PropertyReaderImpl(credentials));
+        final GHRepository repository = connector.connectToGitHub().getRepository("exasol/testing-release-robot");
+        final String branch = repository.getDefaultBranch();
+        final String sha = repository.getRef("refs/heads/" + branch).getObject().getSha();
+        final PagedIterable<GHCommit> pi = repository.queryCommits().from(sha).pageSize(1).list();
+        final PagedIterator<GHCommit> it = pi.iterator();
+        while (it.hasNext()) {
+            final GHCommit commit = it.next();
+            System.out.println(commit.getCommitDate() + " sha " + commit.getSHA1());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void mockCommits(final GHRepository repositoryMock, final boolean hasCommits) throws IOException {
+        final GHRef ref = mock(GHRef.class);
+        final GHRef.GHObject ro = mock(GHRef.GHObject.class);
+        when(ref.getObject()).thenReturn(ro);
+        when(repositoryMock.getRef(any())).thenReturn(ref);
+
+        final GHCommitQueryBuilder builder = mock(GHCommitQueryBuilder.class);
+        when(repositoryMock.queryCommits()).thenReturn(builder);
+
+        when(builder.from(any())).thenReturn(builder);
+        when(builder.pageSize(anyInt())).thenReturn(builder);
+
+        final PagedIterable<GHCommit> iterable = mock(PagedIterable.class);
+        when(builder.list()).thenReturn(iterable);
+
+        final PagedIterator<GHCommit> iterator = mock(PagedIterator.class);
+        when(iterable.iterator()).thenReturn(iterator);
+        when(iterator.hasNext()).thenReturn(hasCommits);
+        if (hasCommits) {
+            final GHCommit commit = mock(GHCommit.class);
+            when(commit.getSHA1()).thenReturn("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            when(iterator.next()).thenReturn(commit);
+        }
+    }
+
+    private GitHubRelease.Builder releaseBuilder(final String version) {
+        return GitHubRelease.builder() //
+                .repositoryName(REPOSITORY_NAME) //
+                .version(version).header("title") //
+                .releaseLetter("release letter");
+    }
+
+    private URL mockGHRepository() throws IOException {
         final URL htmlUrl = new URL("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123");
         final GHRelease releaseMock = mock(GHRelease.class);
         when(releaseMock.getHtmlUrl()).thenReturn(htmlUrl);
         when(releaseMock.isDraft()).thenReturn(true);
-
-        final GHRepository repoMock = Mockito.mock(GHRepository.class);
         final GHReleaseBuilder builder = releaseBuilderMock(releaseMock);
-        when(repoMock.createRelease(any())).thenReturn(builder);
-
-        when(gitHub.getRepository(REPOSITORY_NAME)).thenReturn(repoMock);
+        when(this.repositoryMock.createRelease(any())).thenReturn(builder);
+        when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(this.repositoryMock);
         return htmlUrl;
     }
 

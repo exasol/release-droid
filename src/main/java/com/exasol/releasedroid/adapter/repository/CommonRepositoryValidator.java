@@ -2,11 +2,9 @@ package com.exasol.releasedroid.adapter.repository;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -14,6 +12,8 @@ import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.version.Version;
+import com.exasol.releasedroid.usecases.repository.version.Version.VersionFormatException;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -40,7 +40,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         final String version = this.repository.getVersion();
         report.merge(validateVersion(version));
         if (!report.hasFailures()) {
-            final String changelog = this.repository.getChangelogFile();
+            final String changelog = this.repository.getChangelog();
             report.merge(validateChangelog(changelog, version));
             final ReleaseLetter releaseLetter = this.repository.getReleaseLetter(version);
             report.merge(validateChanges(releaseLetter, version, this.repository.isOnDefaultBranch()));
@@ -81,29 +81,27 @@ public class CommonRepositoryValidator implements RepositoryValidator {
         final var report = ValidationReport.create();
         report.merge(validateVersionFormat(version));
         if (!report.hasFailures()) {
-            report.merge(validateIfNewReleaseTagValid(version));
+            report.merge(validateIfNewReleaseTagValid(Version.parse(version)));
         }
         return report;
     }
 
     private Report validateVersionFormat(final String version) {
         final var report = ValidationReport.create();
-        if ((version != null) && version.matches(VERSION_REGEX)) {
+        try {
+            Version.parse(version);
             report.addSuccessfulResult("Version format is correct.");
-        } else {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-22")
-                    .message("A version or tag found in this repository has invalid format: {{version|uq}}. "
-                            + "The valid format is: <major>.<minor>.<fix>.", version)
-                    .toString());
+        } catch (final VersionFormatException e) {
+            report.addFailedResult(e.getMessage());
         }
         return report;
     }
 
-    private Report validateIfNewReleaseTagValid(final String newVersion) {
+    private Report validateIfNewReleaseTagValid(final Version newVersion) {
         final var report = ValidationReport.create();
-        final Optional<String> latestReleaseTag = this.repository.getLatestTag();
-        if (latestReleaseTag.isPresent()) {
-            report.merge(validateNewVersionWithPreviousTag(newVersion, latestReleaseTag.get()));
+        final Optional<Version> latest = this.repository.getLatestTag();
+        if (latest.isPresent()) {
+            report.merge(validateSuccessor(newVersion, latest.get()));
         } else {
             report.addSuccessfulResult("A new tag. This is the first release.");
         }
@@ -112,18 +110,16 @@ public class CommonRepositoryValidator implements RepositoryValidator {
 
     // [impl->dsn~validate-release-version-format~1]
     // [impl->dsn~validate-release-version-increased-correctly~1]
-    private Report validateNewVersionWithPreviousTag(final String newTag, final String latestTag) {
+    private Report validateSuccessor(final Version newVersion, final Version latest) {
         final var report = ValidationReport.create();
-        final Version candidate = Version.parse(newTag);
-        final Set<Version> legalSuccessors = Version.parse(latestTag).potentialSuccessors();
-        if (legalSuccessors.contains(candidate)) {
+        if (latest.acceptsSuccessor(newVersion)) {
             report.addSuccessfulResult("A new tag.");
         } else {
             report.addFailedResult(ExaError.messageBuilder("E-RD-REP-23")
                     .message(
                             "The new version {{newTag}} does not fit the versioning rules. "
                                     + "Possible versions for the release are: {{possibleVersions|uq}}",
-                            candidate.toString(), legalSuccessors.toString())
+                            newVersion.toString(), latest.potentialSuccessors().toString())
                     .toString());
         }
         return report;

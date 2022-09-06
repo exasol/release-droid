@@ -6,15 +6,30 @@ import java.util.*;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
+import com.exasol.releasedroid.usecases.repository.version.*;
+import com.exasol.releasedroid.usecases.repository.version.RevisionParser.ChangelogException;
+import com.exasol.releasedroid.usecases.repository.version.RevisionParser.ConfigurationException;
 
 /**
  * Base implementation of repository.
  */
 public abstract class BaseRepository implements Repository {
-    public static final String CHANGELOG_FILE_PATH = "doc/changes/changelog.md";
+
+    /**
+     * Changelog file used to retrieve current version of the repository.
+     */
+    static final String CHANGELOG_FILE = "doc/changes/changelog.md";
+
+    /**
+     * Configuration file used by <a href="https://github.com/exasol/project-keeper">project-keeper</a> describing the project structure.
+     */
+    static final String CONFIGURATION_FILE = ".project-keeper.yml";
 
     private final Map<String, ReleaseLetter> releaseLetters = new HashMap<>();
     private final RepositoryGate repositoryGate;
+    private Revision revision;
+    private String changelog;
+    private String configuration;
 
     /**
      * Create a new instance of {@link BaseRepository}.
@@ -35,8 +50,20 @@ public abstract class BaseRepository implements Repository {
     }
 
     @Override
-    public String getChangelogFile() {
-        return getSingleFileContentAsString(CHANGELOG_FILE_PATH);
+    public String getChangelog() {
+        if (this.changelog == null) {
+            this.changelog = getSingleFileContentAsString(CHANGELOG_FILE);
+        }
+        return this.changelog;
+    }
+
+    private String getProjectConfiguration() {
+        if (this.configuration == null) {
+            this.configuration = hasFile(CONFIGURATION_FILE) //
+                    ? getSingleFileContentAsString(CONFIGURATION_FILE)
+                    : "";
+        }
+        return this.configuration;
     }
 
     @Override
@@ -56,7 +83,7 @@ public abstract class BaseRepository implements Repository {
     }
 
     @Override
-    public Optional<String> getLatestTag() {
+    public Optional<Version> getLatestTag() {
         return this.repositoryGate.getLatestTag();
     }
 
@@ -85,15 +112,39 @@ public abstract class BaseRepository implements Repository {
         return this.repositoryGate.getBranchName();
     }
 
-    protected String getVersionFromChangelogFile() {
-        final String changelogFile = getChangelogFile();
-        final int from = changelogFile.indexOf('[');
-        final int to = changelogFile.indexOf(']');
-        if (from == -1 || to == -1 || to < from) {
-            throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-21")
-                    .message("Cannot detect the version of the project.")
-                    .mitigation("Please make sure you specified the version in the changelog.md file").toString());
+    /**
+     * Getting the version from changelog is safe since project-keeper validates it. In contrast to getting the version
+     * from the pom this approach also works with multimodule projects.
+     *
+     * @return {@link Revision}
+     */
+    Revision revision() {
+        if (this.revision == null) {
+            try {
+                this.revision = RevisionParser.parse(getChangelog(), getProjectConfiguration());
+            } catch (final ChangelogException e) {
+                throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-21")
+                        .message("Cannot detect the version of the project.")
+                        .mitigation("Please make sure file {{changelog}} contains the current version of the project.",
+                                CHANGELOG_FILE)
+                        .toString());
+            } catch (final ConfigurationException e) {
+                throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-33")
+                        .message("Failed to read project modules.")
+                        .mitigation("Please make sure file {{configuration}} is a valid yml file.", CONFIGURATION_FILE)
+                        .toString());
+            }
         }
-        return changelogFile.substring(from + 1, to);
+        return this.revision;
+    }
+
+    @Override
+    public String getVersion() {
+        return revision().getVersion();
+    }
+
+    @Override
+    public List<String> getGitTags() {
+        return revision().getTags();
     }
 }

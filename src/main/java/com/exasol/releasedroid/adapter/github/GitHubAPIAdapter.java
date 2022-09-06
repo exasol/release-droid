@@ -24,6 +24,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     private static final Logger LOGGER = Logger.getLogger(GitHubAPIAdapter.class.getName());
     private final Map<String, GHRepository> repositories = new HashMap<>();
     private final GitHubConnector gitHubConnector;
+    private final Duration workflowQueryInterval;
 
     /**
      * Create a new instance of {@link GitHubAPIAdapter}.
@@ -31,7 +32,12 @@ public class GitHubAPIAdapter implements GitHubGateway {
      * @param gitHubConnector GitHub connector
      */
     public GitHubAPIAdapter(final GitHubConnector gitHubConnector) {
+        this(gitHubConnector, Duration.ofSeconds(15));
+    }
+
+    GitHubAPIAdapter(final GitHubConnector gitHubConnector, final Duration worklflowQueryInterval) {
         this.gitHubConnector = gitHubConnector;
+        this.workflowQueryInterval = worklflowQueryInterval;
     }
 
     private GHRepository getRepository(final String repositoryName) throws GitHubException {
@@ -68,45 +74,53 @@ public class GitHubAPIAdapter implements GitHubGateway {
         }
     }
 
-    @Override
     // [impl->dsn~retrieve-github-release-header-from-release-letter~2]
     // [impl->dsn~retrieve-github-release-body-from-release-letter~1]
+    // [impl->dsn~upload-github-release-assets~1]
+    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
+    @Override
     public GitHubReleaseInfo createGithubRelease(final GitHubRelease gitHubRelease, final Progress progress)
             throws GitHubException {
         try {
-            final GHRelease ghRelease = this.getRepository(gitHubRelease.getRepositoryName())//
-                    .createRelease(gitHubRelease.getVersion()) //
+            final String repoName = gitHubRelease.getRepositoryName();
+            final GHRepository repository = getRepository(repoName);
+            final String version = gitHubRelease.getVersion();
+            final GHRelease ghRelease = repository //
+                    .createRelease(version) //
                     .draft(true) //
                     .body(gitHubRelease.getReleaseLetter()) //
                     .name(gitHubRelease.getHeader()) //
                     .create();
             if (gitHubRelease.hasUploadAssets()) {
-                final String uploadUrl = ghRelease.getUploadUrl();
-                executeWorkflowToUploadAssets(gitHubRelease.getRepositoryName(), uploadUrl, progress);
+                uploadAssets(repository, ghRelease.getUploadUrl(), progress);
+            }
+            final GitHubTag githubTag = new GitHubTag(repository);
+            for (final String tag : gitHubRelease.additionalTags()) {
+                githubTag.create(tag);
             }
             return GitHubReleaseInfo.builder() //
-                    .repositoryName(gitHubRelease.getRepositoryName()) //
-                    .version(gitHubRelease.getVersion()) //
+                    .repositoryName(repoName) //
+                    .version(version) //
+                    .additionalTags(gitHubRelease.additionalTags()) //
                     .draft(ghRelease.isDraft()) //
                     .htmlUrl(ghRelease.getHtmlUrl()) //
                     .build();
         } catch (final IOException exception) {
-            throw new GitHubException(
-                    ExaError.messageBuilder("F-RD-GH-11")
-                            .message("Exception happened during releasing a new tag on the GitHub.").toString(),
-                    exception);
+            throw new GitHubException(ExaError.messageBuilder("F-RD-GH-11")
+                    .message("Exception happened during releasing on the GitHub.").toString(), exception);
         }
     }
 
-    // [impl->dsn~upload-github-release-assets~1]
-    // [impl->dsn~users-add-upload-definition-files-for-their-deliverables~1]
-    private void executeWorkflowToUploadAssets(final String repositoryName, final String uploadUrl,
-            final Progress progress) throws GitHubException {
+    private void uploadAssets(final GHRepository repository, final String uploadUrl, final Progress progress)
+            throws GitHubException {
         final WorkflowOptions options = new WorkflowOptions() //
                 .withProgress(progress) //
                 .withDispatches(Map.of("upload_url", uploadUrl));
-        executeWorkflow(repositoryName, GITHUB_UPLOAD_ASSETS_WORKFLOW, //
-                options);
+        try {
+            executeWorkflow(repository, repository.getWorkflow(GITHUB_UPLOAD_ASSETS_WORKFLOW), options);
+        } catch (final IOException exception) {
+            throw new GitHubException(exception);
+        }
     }
 
     @Override
@@ -201,7 +215,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
         final Duration timeout = Duration.ofMinutes(150);
         final Timer timer = new Timer() //
                 .withTimeout(timeout) //
-                .withSnoozeInterval(Duration.ofSeconds(15)) //
+                .withSnoozeInterval(this.workflowQueryInterval) //
                 .start();
         while (!timer.timeout()) {
             options.progress().reportStatus();
@@ -216,7 +230,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
                     LOGGER.info(() -> message);
                 }
                 if (run.getConclusion() != null) {
-                    options.progress().newline();
+                    options.progress().hideStatus();
                     return run.getConclusion().toString();
                 }
             }

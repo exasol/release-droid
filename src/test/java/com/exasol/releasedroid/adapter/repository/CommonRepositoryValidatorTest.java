@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.version.Version;
 
 @ExtendWith(MockitoExtension.class)
 class CommonRepositoryValidatorTest {
@@ -46,7 +47,7 @@ class CommonRepositoryValidatorTest {
     // [utest->dsn~validate-changes-file-contains-release-letter-body~1]
     void testValidateSuccessful(final String releaseLetterVersion) {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getChangelog()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
@@ -62,7 +63,7 @@ class CommonRepositoryValidatorTest {
     @CsvSource(value = { "x2.1.0", "2.1.1", "''", "null" }, nullValues = { "null" })
     void testValidateVersionNumberFails(final String releaseLetterVersion) {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getChangelog()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(true);
@@ -78,7 +79,7 @@ class CommonRepositoryValidatorTest {
     // [utest->dsn~validate-changelog~1]
     void testValidateChangelogEmpty() {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("");
+        when(this.repositoryMock.getChangelog()).thenReturn("");
         final Report report = this.validator.validate();
         assertAll(() -> assertTrue(report.hasFailures()), //
                 () -> assertThat(report.toString(), containsString("E-RD-REP-24: The file "
@@ -88,7 +89,7 @@ class CommonRepositoryValidatorTest {
     @Test
     void testValidateChangesInvalidDateWarning() {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getChangelog()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of(VERSION));
@@ -101,7 +102,7 @@ class CommonRepositoryValidatorTest {
     @Test
     void testValidateChangesNoDateWarning() {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getChangelog()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.releaseLetterMock.getVersionNumber()).thenReturn(Optional.of(VERSION));
@@ -162,22 +163,20 @@ class CommonRepositoryValidatorTest {
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTag(final String version) {
         when(this.repositoryMock.getVersion()).thenReturn(version);
-        when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of("1.36.12"));
+        when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of(Version.parse("1.36.12")));
         final Report report = this.validator.validate();
         assertThat(report.toString(), containsString("Version format is correct"));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "1.3.7", "1.3.4", "1.4.3", "1.2.0", "3.0.0", "2.0.1", "2.1.0" })
+    @ValueSource(strings = { "1.2.2", "2.1.2", "2.2.1", "2.2.2", "4.2.2", "2.4.2", "2.2.4" })
     // [utest->dsn~validate-release-version-increased-correctly~1]
     void testValidateVersionWithPreviousTagInvalid(final String version) {
         when(this.repositoryMock.getVersion()).thenReturn(version);
-        when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of("1.3.5"));
+        when(this.repositoryMock.getLatestTag()).thenReturn(Optional.of(Version.parse("2.2.2")));
         final Report report = this.validator.validate();
-        assertAll(() -> assertTrue(report.hasFailures()),
-                () -> assertThat(report.toString(), containsString("E-RD-REP-23: The new version '" + version
-                        + "' does not fit the versioning rules. "
-                        + "Possible versions for the release are: [2.0.0, 1.3.6, v1.4.0, v2.0.0, 1.4.0, v1.3.6]")));
+        assertAll(() -> assertTrue(report.hasFailures()), () -> assertThat(report.toString(),
+                containsString("E-RD-REP-23: The new version '" + version + "' does not fit the versioning rules. ")));
     }
 
     @Test
@@ -199,7 +198,7 @@ class CommonRepositoryValidatorTest {
     @Test
     void testValidateSuccessfulWithoutWorkflows() {
         when(this.repositoryMock.getVersion()).thenReturn(VERSION);
-        when(this.repositoryMock.getChangelogFile()).thenReturn("[2.1.0](changes_2.1.0.md)");
+        when(this.repositoryMock.getChangelog()).thenReturn("[2.1.0](changes_2.1.0.md)");
         when(this.repositoryMock.getReleaseLetter(VERSION)).thenReturn(this.releaseLetterMock);
         when(this.repositoryMock.isOnDefaultBranch()).thenReturn(true);
         when(this.repositoryMock.hasFile(PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH)).thenReturn(false);

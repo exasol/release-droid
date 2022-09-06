@@ -14,21 +14,24 @@ import org.eclipse.jgit.lib.Ref;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.exasol.releasedroid.usecases.repository.version.Version;
+
 class LocalRepositoryGateTest {
 
     @Test
     void latestTagFromRefs() {
         final List<Ref> refs = List.of( //
                 mockRef("1.2.3"), //
-                mockRef("v1.2.1"));
-        final Optional<String> actual = LocalRepositoryGate.latestTagFromRefs(refs);
+                mockRef("v1.2.1"), //
+                mockRef("go-subfolder/v1.0.1"));
+        final Optional<Version> actual = LocalRepositoryGate.latestTagFromRefs(refs);
         assertAll(() -> assertThat(actual.isPresent(), is(true)), //
-                () -> assertThat(actual.get(), equalTo("1.2.3")));
+                () -> assertThat(actual.get(), equalTo(Version.parse("1.2.3"))));
     }
 
     @Test
     void emptyRefs() {
-        final Optional<String> actual = LocalRepositoryGate.latestTagFromRefs(List.of());
+        final Optional<Version> actual = LocalRepositoryGate.latestTagFromRefs(List.of());
         assertThat(actual.isPresent(), is(false));
     }
 
