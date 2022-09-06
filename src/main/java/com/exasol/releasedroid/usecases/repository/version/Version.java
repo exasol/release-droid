@@ -5,6 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.exasol.errorreporting.ErrorMessageBuilder;
+import com.exasol.errorreporting.ExaError;
+
 public class Version implements Comparable<Version> {
 
     private static final String SUFFIX = "(v?)(\\d+(\\.\\d+)*+)";
@@ -15,10 +18,10 @@ public class Version implements Comparable<Version> {
     private static final int EQUAL = 0;
     private static final int GREATER = 1;
 
-    public static Version fromGitTag(final String tag) {
+    public static Version fromGitTag(final String tag) throws VersionFormatException {
         final Matcher matcher = GIT_TAG.matcher(tag);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Failed reading version from git tag '" + tag + "'.");
+            throw new VersionFormatException("Failed reading version from git tag '" + tag + "'.");
         }
         return parse(matcher.group(1), matcher.group(2) + matcher.group(3));
     }
@@ -27,16 +30,21 @@ public class Version implements Comparable<Version> {
         return parse("", string);
     }
 
-    static Version parse(final String subfolder, final String string) {
+    static Version parse(final String subfolder, final String string) throws VersionFormatException {
+        final ErrorMessageBuilder builder = ExaError.messageBuilder("E-RD-REP-22") //
+                .message("Illegal version format: {{version}}. ", string);
+        if (string == null) {
+            throw new VersionFormatException(builder.toString());
+        }
         final Matcher matcher = PATTERN.matcher(string);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Illegal version format: '" + string + "'");
+            throw new VersionFormatException(builder.toString());
         }
 
         final int[] numbers = Arrays.stream(matcher.group(2).split("\\.")).mapToInt(Integer::parseInt).toArray();
         if (numbers.length != COMPONENTS) {
-            throw new IllegalArgumentException("Illegal version format: '" + string //
-                    + "'. Expected " + COMPONENTS + " components separated by dots.");
+            throw new VersionFormatException(builder //
+                    .message("Expected {{components}} components separated by dots.", COMPONENTS).toString());
         }
         return new Version(subfolder == null ? "" : subfolder, matcher.group(1), numbers);
     }
@@ -165,4 +173,11 @@ public class Version implements Comparable<Version> {
         return result != EQUAL;
     }
 
+    public static class VersionFormatException extends RuntimeException {
+        public VersionFormatException(final String message) {
+            super(message);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
 }

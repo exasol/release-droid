@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import com.exasol.releasedroid.usecases.repository.version.Version;
+import com.exasol.releasedroid.usecases.repository.version.Version.VersionFormatException;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -22,13 +23,12 @@ class VersionTest {
     @ParameterizedTest(name = "{0}")
     @CsvSource(value = { "a1.2.3", "1.a.2", "1.2", "1.", "1.2.3.4" })
     void illegalVersionFormat(final String version) {
-        assertThrows(IllegalArgumentException.class, () -> Version.parse(version));
+        assertThrows(VersionFormatException.class, () -> Version.parse(version));
     }
 
     @Test
     void illegalGitTag() {
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> Version.fromGitTag("abc/1.2.3"));
+        final Exception e = assertThrows(VersionFormatException.class, () -> Version.fromGitTag("abc/1.2.3"));
         assertThat(e.getMessage(), containsString("led reading version from git tag"));
     }
 

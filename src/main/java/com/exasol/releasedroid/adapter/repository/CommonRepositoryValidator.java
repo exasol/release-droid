@@ -2,7 +2,6 @@ package com.exasol.releasedroid.adapter.repository;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PREPARE_ORIGINAL_CHECKSUM_WORKFLOW_PATH;
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.PRINT_QUICK_CHECKSUM_WORKFLOW_PATH;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.VERSION_REGEX;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -14,6 +13,7 @@ import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.ReleaseLetter;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.repository.version.Version;
+import com.exasol.releasedroid.usecases.repository.version.Version.VersionFormatException;
 import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 
 /**
@@ -88,13 +88,11 @@ public class CommonRepositoryValidator implements RepositoryValidator {
 
     private Report validateVersionFormat(final String version) {
         final var report = ValidationReport.create();
-        if ((version != null) && version.matches(VERSION_REGEX)) {
+        try {
+            Version.parse(version); // .()
             report.addSuccessfulResult("Version format is correct.");
-        } else {
-            report.addFailedResult(ExaError.messageBuilder("E-RD-REP-22")
-                    .message("The version of this repository has invalid format: {{version}}. "
-                            + "The valid format is: <major>.<minor>.<fix>.", version)
-                    .toString());
+        } catch (final VersionFormatException e) {
+            report.addFailedResult(e.getMessage());
         }
         return report;
     }
