@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.adapter.repository;
 
+import static com.exasol.releasedroid.formatting.Colorizer.code;
+
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -83,8 +85,12 @@ public class RepositoryFactory implements RepositoryGateway {
                     .getRepositoryPrimaryLanguage(userInput.getFullRepositoryName());
             validateLanguage(repositoryPrimaryLanguage);
             final var language = Language.getLanguage(repositoryPrimaryLanguage);
-            LOGGER.warning(() -> "The repository language was detected automatically: " + language
-                    + ". If it was detected incorrectly, please specify it manually using -lg <language> argument.");
+            LOGGER.warning(() -> ExaError.messageBuilder("W-RD-REP-34") //
+                    .message("The repository language was detected automatically as {{language}}.", language.name())
+                    .mitigation("If incorrect then please add {{entry|uq}} to file {{file|uq}}" //
+                            + " or use command line argument {{cli|uq}}.", //
+                            code("language: <language>"), code("release_config.yml"), code("-lg <language>"))
+                    .toString());
             return language;
         } catch (final GitHubException exception) {
             throw new RepositoryException(exception);
