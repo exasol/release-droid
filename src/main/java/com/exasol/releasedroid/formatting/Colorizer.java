@@ -39,4 +39,8 @@ public class Colorizer {
     public static String yellow(final String s) {
         return ansi().fgBrightYellow().a(s).reset().toString();
     }
+
+    public static String code(final String s) {
+        return ansi().fgBrightCyan().a(s).reset().toString();
+    }
 }
