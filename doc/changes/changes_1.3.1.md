@@ -1,6 +1,6 @@
 # Exasol Release Droid 1.3.1, released 2022-09-27
 
-Code name: Minor improvements
+Code name: Fix vulnerabilities in dependencies
 
 ## Summary
 
@@ -13,6 +13,7 @@ This release fixes CVE-2022-38751 and CVE-2022-38752 in snakeyaml.
 ## Bug Fixes
 
 * #267: Fixed vulnerabilities in dependencies.
+
 ## Dependency Updates
 
 ### Compile Dependency Updates
