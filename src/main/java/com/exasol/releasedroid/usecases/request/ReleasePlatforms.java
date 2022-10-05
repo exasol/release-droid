@@ -7,8 +7,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.exasol.errorreporting.ExaError;
-import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
-import com.exasol.releasedroid.usecases.repository.Repository;
+import com.exasol.releasedroid.usecases.repository.*;
 
 public class ReleasePlatforms {
     private static final Logger LOGGER = Logger.getLogger(ReleasePlatforms.class.getName());
@@ -16,11 +15,14 @@ public class ReleasePlatforms {
 
     public static ReleasePlatforms from(final UserInput userInput, final Repository repository) {
         final List<PlatformName> platforms = platforms(userInput, repository);
-        if ((platforms == null) || platforms.isEmpty()) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-20").message(
-                    "Platform specified neither on commandline nor in configuration file {{configuration file}}.",
-                    RELEASE_CONFIG_PATH) //
-                    .mitigation("Please specify at least one platform and re-run the Release Droid.").toString());
+        if (platforms.isEmpty()) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-20") //
+                    .message("No release platform specified.") //
+                    .mitigation("Please specify at least one release platform either on command line" //
+                            + " or with key {{configuration key}} in file {{configuration file}}"
+                            + " and re-run the Release Droid.", ReleaseConfigParser.RELEASE_PLATFORMS_KEY,
+                            RELEASE_CONFIG_PATH)
+                    .toString());
         }
         return new ReleasePlatforms(userInput.getGoal(), platforms, skipValidationOn(userInput));
     }
@@ -70,7 +72,7 @@ public class ReleasePlatforms {
         final List<PlatformName> result = new ArrayList<>();
         for (final PlatformName p : platforms) {
             if (ReleasePlatforms.DEPRECATED.contains(p)) {
-                LOGGER.warning(() -> ExaError.messageBuilder("E-RD-21") //
+                LOGGER.warning(() -> ExaError.messageBuilder("W-RD-21") //
                         .message("Ignoring deprecated platform {{platform}}.", p)
                         .mitigation("Remove platform from file {{config file}} to avoid this warning.",
                                 RELEASE_CONFIG_PATH)
