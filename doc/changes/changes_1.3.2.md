@@ -19,7 +19,7 @@ The improved warning message is now
 ### Compile Dependency Updates
 
 * Updated `com.exasol:error-reporting-java:0.4.1` to `1.0.0`
-* Updated `commons-cli:commons-cli:1.5.0` to `20040117.000000`
+* Added `com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1`
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.2.0.202206071550-r` to `6.3.0.202209071007-r`
 * Updated `org.json:json:20220320` to `20220924`
 * Updated `org.kohsuke:github-api:1.307` to `1.313`
