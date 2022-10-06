@@ -87,8 +87,9 @@ class ReleaseDroidTest {
         final UserInput userInput = builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
-        assertThat(exception.getMessage(),
-                containsString("E-RD-20: Platform specified neither on commandline nor in configuration file"));
+        assertThat(exception.getMessage(), containsString("E-RD-20: No release platform specified." //
+                + " Please specify at least one release platform either on command line"
+                + " or with key 'release-platforms' in file 'release_config.yml'"));
     }
 
     @Test
