@@ -6,14 +6,15 @@ Code name: Improved warning message for unspecified release platforms
 
 Improved warning message for unspecified release platforms.
 
-## Bug Fixes
-
-* #266: Improved warning message for unspecified release platforms.
-
 If user misspells the key `release-platforms` then RD complained about missing specification of release platforms but was not able to identify a misspelled key, e.g. `platforms` in the reported issue for repository [small-json-files-test-fixture](https://github.com/exasol/small-json-files-test-fixture).
 
 The improved warning message is now
 > E-RD-20: No release platform specified. Please specify at least one release platform either on command line or with key 'release-platforms' in file 'release_config.yml' and re-run the Release Droid.
+
+## Bug Fixes
+
+* #266: Improved warning message for unspecified release platforms.
+
 ## Dependency Updates
 
 ### Compile Dependency Updates
