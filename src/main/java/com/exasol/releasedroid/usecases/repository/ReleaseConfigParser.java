@@ -11,9 +11,11 @@ import com.exasol.releasedroid.adapter.ListExtractor;
  * A parser for {@link ReleaseConfig}.
  */
 public class ReleaseConfigParser {
-    private static final String RELEASE_PLATFORMS_KEY = "release-platforms";
+    /** key for release platforms in configuration file */
+    public static final String RELEASE_PLATFORMS_KEY = "release-platforms";
 
     private ReleaseConfigParser() {
+        // only static use
     }
 
     /**
