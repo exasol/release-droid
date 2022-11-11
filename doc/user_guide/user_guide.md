@@ -207,3 +207,14 @@ Please also note the option to specify the platforms in the configuration file [
 ## Debugging
 
 If you need to debug RD, you can adjust the Java log level in file `src/main/resources/logging.properties`. The default level used by release droid is `INFO`.
+
+
+## Troubleshooting
+
+### Redoing a Release
+
+While making a new release instead of redoing a release, sometimes you can be forced to. E.g. in cases where people depend on a certain version that later turns out to be incomplete. In such cases:
+
+1. Remove all deployed artifacts from the platforms by hand (e.g. GH release and tag)
+2. Remove the local status file of the release from `~/.release-droid/state/`
+3. Restart the release
