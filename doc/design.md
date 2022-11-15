@@ -386,7 +386,7 @@ Needs: impl
 #### Target audience
 `dsn~target-audience~1`
 
-RD detects the defined target audience for releases of the current project from central project overview at https://github.com/exasol/project-overview/blob/main/projects.yaml.
+RD detects the defined target audience for releases of the current project from central project overview.
 
 Covers:
 * `req~target-audience-for-annnouncing-the-release~1`

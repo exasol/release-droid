@@ -224,7 +224,7 @@ RD collects the data from various sources:
 
 | Source | Location | Retrieved information | Key |
 |--------|----------|-----------------------|-----|
-| [project-overview/projects.yaml](https://github.com/exasol/project-overview/blob/main/projects.yaml) | GitHub | Target audience |
+| `project-overview/projects.yaml` | GitHub | Target audience |
 | file `release_config.yml` | project's repository | Maven URLs | `maven-artifacts` |
 | file `error_code_config.yml` | project's repository | Short tag for team planning page |See [error-code-crawler-maven-plugin](https://github.com/exasol/error-code-crawler-maven-plugin) for details |
 | file `doc/changes/changes_<version>.md` | project's repository | Release summary | `## Summary` |
