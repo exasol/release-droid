@@ -61,8 +61,6 @@ public class LocalRepositoryGate implements RepositoryGate {
             if (origin.isPresent()) {
                 final String path = origin.get().getURIs().get(0).getPath();
                 final String repoName = PATTERN.matcher(path).replaceFirst("$1");
-//                final String[] pathParts = path.split("/");
-//                final String repoName = pathParts[pathParts.length - 1].replace(".git", "");
                 return Optional.of(repoName);
             } else {
                 return Optional.empty();

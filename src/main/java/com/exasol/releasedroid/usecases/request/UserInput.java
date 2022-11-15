@@ -379,7 +379,9 @@ public class UserInput {
          * @return builder instance for fluent programming
          */
         public Builder releaseGuide(final String path) {
-            this.releaseGuide = Optional.of(Paths.get(path));
+            if (path != null) {
+                this.releaseGuide = Optional.of(Paths.get(path));
+            }
             return this;
         }
     }
