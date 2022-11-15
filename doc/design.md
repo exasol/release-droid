@@ -381,10 +381,52 @@ Covers:
 
 Needs: impl
 
+### Release Guide
+
+#### Target audience
+`dsn~target-audience~1`
+
+RD detects the defined target audience for releases of the current project from central project overview at https://github.com/exasol/project-overview/blob/main/projects.yaml.
+
+Covers:
+* `req~target-audience-for-annnouncing-the-release~1`
+
+Needs: impl
+
+#### Aggregate data
+`dsn~aggregate-data~1`
+
+RD aggregates data from appropriate sources in order to fill the content of the release guide.
+
+Covers:
+* `req~channels-for-announcing-the-release~1`
+
+Needs: impl
+
+#### Release Guide Channels
+`dsn~release-guide-channels~1`
+
+For each channel the release guide contains all required data.
+
+Covers:
+* `req~channels-for-announcing-the-release~1`
+
+Needs: impl
+
+#### Configure Actual URLs
+`dsn~configure-actual-urls~1`
+
+User can configure actual URLs for channels and publication pages in separate configuration files.
+
+Rationale:
+* Hide confidential data such as URLs inside the company's intranet.
+* Adapt to changes of processes or tools in the future without code changes.
+
+Needs: impl
+
 ### Release Preparations
 
 #### Prepare Checksum
-
 `dsn~prepare-checksum~1`
 
 RD prepares a checksum for each deliverable and store it in the GitHub artifactory.

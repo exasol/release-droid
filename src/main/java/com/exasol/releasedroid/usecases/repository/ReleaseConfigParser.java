@@ -1,11 +1,10 @@
 package com.exasol.releasedroid.usecases.repository;
 
-import java.util.List;
+import static com.exasol.releasedroid.adapter.ListExtractor.extractListOfStrings;
+
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
-
-import com.exasol.releasedroid.adapter.ListExtractor;
 
 /**
  * A parser for {@link ReleaseConfig}.
@@ -13,6 +12,8 @@ import com.exasol.releasedroid.adapter.ListExtractor;
 public class ReleaseConfigParser {
     /** key for release platforms in configuration file */
     public static final String RELEASE_PLATFORMS_KEY = "release-platforms";
+    /** key for maven artifacts in configuration file */
+    public static final String MAVEN_ARTIFACTS_KEY = "maven-artifacts";
 
     private ReleaseConfigParser() {
         // only static use
@@ -30,17 +31,11 @@ public class ReleaseConfigParser {
         if (parsedConfig == null) {
             return ReleaseConfig.builder().build();
         }
-        final List<String> releasePlatforms = getReleasePlatforms(parsedConfig);
-
-        final ReleaseConfig.Builder builder = ReleaseConfig.builder().releasePlatforms(releasePlatforms);
         final Object language = parsedConfig.get("language");
-        if (language != null) {
-            builder.language(language.toString());
-        }
+        final ReleaseConfig.Builder builder = ReleaseConfig.builder() //
+                .releasePlatforms(extractListOfStrings(parsedConfig, RELEASE_PLATFORMS_KEY)) //
+                .language(language == null ? null : language.toString()) //
+                .mavenArtifacts(extractListOfStrings(parsedConfig, MAVEN_ARTIFACTS_KEY));
         return builder.build();
-    }
-
-    private static List<String> getReleasePlatforms(final Map<String, Object> parsedConfig) {
-        return ListExtractor.extractListOfStrings(parsedConfig, RELEASE_PLATFORMS_KEY);
     }
 }

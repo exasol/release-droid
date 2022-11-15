@@ -4,12 +4,20 @@ Code name: Improved warning message for unspecified release platforms
 
 ## Summary
 
+Added option to generate a release guide guding the user through the release process. See details in [User Guide](../user_guide/user_guide.md#release-guide).
+
+Making releases still requires some time, effort, and stereotype tasks. Depending on the project to release the user needs to enter data in various places. Release Droid therefore provides a guide aggregating all the data to make the current release as convenient as possible.
+
 Improved warning message for unspecified release platforms.
 
 If user misspells the key `release-platforms` then RD complained about missing specification of release platforms but was not able to identify a misspelled key, e.g. `platforms` in the reported issue for repository [small-json-files-test-fixture](https://github.com/exasol/small-json-files-test-fixture).
 
 The improved warning message is now
 > E-RD-20: No release platform specified. Please specify at least one release platform either on command line or with key 'release-platforms' in file 'release_config.yml' and re-run the Release Droid.
+
+## Features
+
+* #275: Generate a release guide.
 
 ## Bug Fixes
 

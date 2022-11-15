@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.output.guide.ReleaseGuide;
 import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -55,7 +56,11 @@ public class ReleaseDroid {
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
-        final UseCase useCase = userInput.getGoal() == Goal.RELEASE ? this.releaseUseCase : this.validateUseCase;
+        final boolean isValidate = userInput.getGoal() != Goal.RELEASE;
+        final UseCase useCase = isValidate ? this.validateUseCase : this.releaseUseCase;
+        if (userInput.releaseGuide().isPresent() && isValidate) {
+            ReleaseGuide.from(repository).write(userInput.releaseGuide().get());
+        }
         reports.addAll(useCase.apply(repository, platforms));
         processResponse(createResponse(reports, userInput, platforms.list()));
     }

@@ -98,6 +98,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
             for (final String tag : gitHubRelease.additionalTags()) {
                 githubTag.create(tag);
             }
+            progress.setGitHubTagUrl(ghRelease.getHtmlUrl());
             return GitHubReleaseInfo.builder() //
                     .repositoryName(repoName) //
                     .version(version) //

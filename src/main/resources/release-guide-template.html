@@ -1,0 +1,111 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.2//EN">
+<html><head>
+<title>$PageTitle</title>
+<meta name="language" content="HTML" />
+<meta name="date"			content="$Date" />
+
+<style type="text/css">
+body { font-family: Arial }
+
+table {
+	border-collapse: collapse;
+	font-size: 11pt;
+}
+
+table.light tr {
+	border-bottom: 1px solid #d0d0e8;
+}
+
+table.light tr td {
+	padding: 4px;
+	background-color: white;
+}
+
+table.light tr td:nth-child(odd) {
+	background-color: #eaf8ff;
+}
+
+table.light tr th {
+	padding: 4px;
+	background-color: #105a90;
+	font-weight: normal;
+	color: #e0e0ff;
+	border: 1px solid #d0d0e8;
+}
+
+td, th {
+	background-color: #eeeeee;
+	font-family: Arial;
+	text-align: left;
+	vertical-align: top;
+}
+
+th {
+		background-color: #ccccff;
+}
+
+table.light tr td.blank {
+	background-color: white;
+	font-weight: bold;
+	padding-top: 20px;
+}
+
+.info {
+	color: #fcc;
+	cursor: pointer;
+}
+.em {
+		font-size: 80%;
+		color: #666;
+		vertical-align: bottom;
+		font-style: italic;
+}
+
+.error {
+		color: #f00;
+		font-style: italic;
+}
+
+code {
+		background-color: #eeeeee;
+		padding: 1px;
+		xcolor: #055;
+		xfont-style: normal;
+}
+
+</style>
+<script>
+function copy(id) {
+	text = document.getElementById(id).innerHTML;
+	function listener(e) {
+		e.clipboardData.setData("text/html", text);
+		e.clipboardData.setData("text/plain", text);
+		e.preventDefault();
+	}
+	document.addEventListener("copy", listener);
+	document.execCommand("copy");
+	document.removeEventListener("copy", listener);
+}
+</script>
+</head> <body> <!-- -------------------------------------------------- -->
+
+<h3>$PageTitle</h3>
+
+<table class="light">
+<tr><td class="blank" width="140">Release Checklist</td><td class="em">Copy</td></tr>
+<tr><th>Link <span class="info" title="URL from file ~/.release-droid/credentials">&#x24D8;</span></th><td></td><td>$ReleaseChecklists</td></tr>
+<tr><th>Title</th><td><button title="Copy to clipboard" onclick="copy('ReleaseLabel')">&#x1F4CB;</button></td><td id="ReleaseLabel">$ReleaseLabel</td></tr>
+<tr><th>GitHub tag</th><td><button title="Copy to clipboard" onclick="copy('GitHubTagUrl')">&#x1F4CB;</button></td><td id="GitHubTagUrl"><a href="$GitHubTagUrl">$GitHubTagUrl</a></td></tr>
+<tr><th>Maven</th><td><button title="Copy to clipboard" onclick="copy('MavenUrls')">&#x1F4CB;</button></td><td id="MavenUrls">$MavenUrls</td></tr>
+<tr><th>Target Audience <span class="info" title="Retrieved from https://github.com/exasol/project-overview/projects.yaml">&#x24D8;</span></th><td></td><td>$TargetAudience</td></tr>
+
+<tr><td class="blank">Team Planning</td></tr>
+<tr><th>Link <span class="info" title="URL from file ~/.release-droid/credentials">&#x24D8;</span></th><td></td><td>$TeamPlanning</td></tr>
+<tr><th>Entry <span class="info" title="Short tag from file error_code_config.yml">&#x24D8;</span></th><td><button title="Copy to clipboard" onclick="copy('TeamPlanningEntry')">&#x1F4CB;</button></td><td id="TeamPlanningEntry">$ProjectShortTag (<a href="$GitHubTagUrl">$ReleaseVersion</a>)</td></tr>
+
+<tr><td class="blank">Announce on Slack</td></tr>
+<tr><th>Channel <span class="info" title="Derived from target audience">&#x24D8;</span></th><td></td><td>$AnnounceChannel</td></tr>
+<tr><th>Content</th><td><button title="Copy to clipboard" onclick="copy('AnnounceText')">&#x1F4CB;</button></td><td id="AnnounceText">I am happy to announce release <a href="$GitHubTagUrl">$ReleaseLabel</a> on $PublicationPlatforms: $ReleaseContentSummary</td></tr>
+</table>
+
+</body></html>

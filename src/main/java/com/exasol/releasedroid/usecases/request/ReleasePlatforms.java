@@ -2,6 +2,7 @@ package com.exasol.releasedroid.usecases.request;
 
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CONFIG_PATH;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,7 +25,8 @@ public class ReleasePlatforms {
                             RELEASE_CONFIG_PATH)
                     .toString());
         }
-        return new ReleasePlatforms(userInput.getGoal(), platforms, skipValidationOn(userInput));
+        return new ReleasePlatforms(userInput.getGoal(), platforms, skipValidationOn(userInput),
+                userInput.releaseGuide());
     }
 
     private static List<PlatformName> platforms(final UserInput userInput, final Repository repository) {
@@ -48,17 +50,20 @@ public class ReleasePlatforms {
     private final Goal goal;
     private final List<PlatformName> platforms;
     private final Set<PlatformName> skipValidationOn;
+    private final Optional<Path> releaseGuide;
 
     /**
      * @param goal
      * @param platforms
      * @param skipValidationOn
+     * @param b
      */
     public ReleasePlatforms(final Goal goal, final List<PlatformName> platforms,
-            final Collection<PlatformName> skipValidationOn) {
+            final Collection<PlatformName> skipValidationOn, final Optional<Path> releaseGuide) {
         this.goal = goal;
         this.platforms = removeDeprecated(platforms);
         this.skipValidationOn = new HashSet<>(skipValidationOn);
+        this.releaseGuide = releaseGuide;
     }
 
     /**
@@ -97,7 +102,7 @@ public class ReleasePlatforms {
                 result.add(p);
             }
         }
-        return new ReleasePlatforms(this.goal, result, this.skipValidationOn);
+        return new ReleasePlatforms(this.goal, result, this.skipValidationOn, this.releaseGuide);
     }
 
     /**
@@ -108,5 +113,16 @@ public class ReleasePlatforms {
             return this.skipValidationOn;
         }
         return Set.of(PlatformName.JIRA);
+    }
+
+    /**
+     * @return optional path to release guide in case user requested to generate such
+     */
+    public Optional<Path> releaseGuide() {
+        return this.releaseGuide;
+    }
+
+    public boolean createReleaseGuide() {
+        return this.releaseGuide.isPresent();
     }
 }

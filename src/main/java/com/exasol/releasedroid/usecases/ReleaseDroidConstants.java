@@ -11,6 +11,7 @@ public final class ReleaseDroidConstants {
     public static final String RELEASE_DROID_DIRECTORY = HOME_DIRECTORY + FILE_SEPARATOR + ".release-droid";
     public static final String RELEASE_CONFIG_PATH = "release_config.yml";
     public static final String RELEASE_DROID_STATE_DIRECTORY = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "state";
+    public static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
 
     private ReleaseDroidConstants() {
         // prevent instantiation

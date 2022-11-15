@@ -1,7 +1,8 @@
 package com.exasol.releasedroid.usecases.request;
 
-import java.util.List;
-import java.util.Objects;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * This class stores user input.
@@ -15,6 +16,7 @@ public class UserInput {
     private final String localPath;
     private final Language language;
     private final boolean skipValidation;
+    private final Optional<Path> releaseGuide;
 
     /**
      * Get a branch name.
@@ -28,7 +30,7 @@ public class UserInput {
     /**
      * Check if input contains a branch.
      *
-     * @return true if a branch presents
+     * @return {@code true} if a branch presents
      */
     public boolean hasBranch() {
         return (this.branch != null) && !this.branch.isEmpty();
@@ -37,10 +39,19 @@ public class UserInput {
     /**
      * Check if user wants to skip validation.
      *
-     * @return true to skip validation
+     * @return {@code true} to skip validation
      */
     public boolean skipValidation() {
         return this.skipValidation;
+    }
+
+    /**
+     * Get path to optional release guide. If empty then user did not request to create a release guide.
+     *
+     * @return optional path to release guide
+     */
+    public Optional<Path> releaseGuide() {
+        return this.releaseGuide;
     }
 
     /**
@@ -55,7 +66,7 @@ public class UserInput {
     /**
      * Check if input contains goal.
      *
-     * @return true if a goal present
+     * @return {@code true} if a goal present
      */
     public boolean hasGoal() {
         return this.goal != null;
@@ -82,7 +93,7 @@ public class UserInput {
     /**
      * Check if input contains platforms.
      *
-     * @return true if platforms present
+     * @return {@code true} if platforms present
      */
     public boolean hasPlatforms() {
         return (this.platformNames != null) && !this.platformNames.isEmpty();
@@ -100,10 +111,10 @@ public class UserInput {
     /**
      * Check if input contains a repository name.
      *
-     * @return true if a repository name present
+     * @return {@code true} if a repository name present
      */
     public boolean hasRepositoryName() {
-        return this.repositoryName != null && !this.repositoryName.isEmpty();
+        return (this.repositoryName != null) && !this.repositoryName.isEmpty();
     }
 
     /**
@@ -118,10 +129,10 @@ public class UserInput {
     /**
      * Check if input contains an owner.
      *
-     * @return true if an owner present
+     * @return {@code true} if an owner present
      */
     public boolean hasOwner() {
-        return this.owner != null && !this.owner.isEmpty();
+        return (this.owner != null) && !this.owner.isEmpty();
     }
 
     /**
@@ -135,7 +146,7 @@ public class UserInput {
 
     /**
      * Get path to the local repository.
-     * 
+     *
      * @return path to the local repository
      */
     public String getLocalPath() {
@@ -144,11 +155,11 @@ public class UserInput {
 
     /**
      * Check if a path to a local repository exists.
-     * 
-     * @return true if a path to a local repository exists
+     *
+     * @return {@code true} if a path to a local repository exists
      */
     public boolean hasLocalPath() {
-        return this.localPath != null && !this.localPath.isEmpty();
+        return (this.localPath != null) && !this.localPath.isEmpty();
     }
 
     /**
@@ -163,7 +174,7 @@ public class UserInput {
     /**
      * Check if primary language of the repository is provided.
      *
-     * @return true if primary language of the repository is provided
+     * @return {@code true} if primary language of the repository is provided
      */
     public boolean hasLanguage() {
         return this.language != null;
@@ -171,7 +182,7 @@ public class UserInput {
 
     /**
      * Get a full repository name in format owner/repository.
-     * 
+     *
      * @return full repository name
      */
     public String getFullRepositoryName() {
@@ -187,6 +198,7 @@ public class UserInput {
         this.localPath = builder.localPath;
         this.language = builder.language;
         this.skipValidation = builder.skipValidation;
+        this.releaseGuide = builder.releaseGuide;
     }
 
     /**
@@ -199,33 +211,44 @@ public class UserInput {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final UserInput userInput = (UserInput) o;
-        return this.skipValidation == userInput.skipValidation && Objects.equals(this.owner, userInput.owner)
-                && Objects.equals(this.branch, userInput.branch) && this.goal == userInput.goal
-                && Objects.equals(this.platformNames, userInput.platformNames)
-                && Objects.equals(this.repositoryName, userInput.repositoryName)
-                && Objects.equals(this.localPath, userInput.localPath) && this.language == userInput.language;
+    public int hashCode() {
+        return Objects.hash(this.branch, this.goal, this.language, this.localPath, this.owner, this.platformNames,
+                this.releaseGuide, this.repositoryName, this.skipValidation);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(this.owner, this.branch, this.goal, this.platformNames, this.repositoryName, this.localPath,
-                this.language, this.skipValidation);
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserInput other = (UserInput) obj;
+        return Objects.equals(this.branch, other.branch) && (this.goal == other.goal)
+                && (this.language == other.language) && Objects.equals(this.localPath, other.localPath)
+                && Objects.equals(this.owner, other.owner) && Objects.equals(this.platformNames, other.platformNames)
+                && Objects.equals(this.releaseGuide, other.releaseGuide)
+                && Objects.equals(this.repositoryName, other.repositoryName)
+                && (this.skipValidation == other.skipValidation);
     }
 
     @Override
     public String toString() {
-        return "UserInput{" + "owner='" + this.owner + '\'' + ", branch='" + this.branch + '\'' + ", goal=" + this.goal
-                + ", platformNames=" + this.platformNames + ", repositoryName='" + this.repositoryName + '\''
-                + ", localPath='" + this.localPath + '\'' + ", language=" + this.language + ", skipValidation="
-                + this.skipValidation + '}';
+        return "UserInput{" //
+                + "owner='" + this.owner + '\'' //
+                + ", branch='" + this.branch + '\'' //
+                + ", goal=" + this.goal //
+                + ", platformNames=" + this.platformNames //
+                + ", repositoryName='" + this.repositoryName + '\'' //
+                + ", localPath='" + this.localPath + '\'' //
+                + ", language=" + this.language //
+                + ", skipValidation=" + this.skipValidation //
+                + ", releaseGuide=" + this.releaseGuide //
+                + '}';
     }
 
     /**
@@ -240,6 +263,7 @@ public class UserInput {
         private Language language;
         private String owner;
         private boolean skipValidation;
+        private Optional<Path> releaseGuide = Optional.empty();
 
         /**
          * Add a branch.
@@ -345,6 +369,17 @@ public class UserInput {
          */
         public Builder skipValidation(final boolean skipValidation) {
             this.skipValidation = skipValidation;
+            return this;
+        }
+
+        /**
+         * Path of release guide to be generated by Release Droid
+         *
+         * @param path path of release guide to generate
+         * @return builder instance for fluent programming
+         */
+        public Builder releaseGuide(final String path) {
+            this.releaseGuide = Optional.of(Paths.get(path));
             return this;
         }
     }

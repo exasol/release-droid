@@ -2,8 +2,10 @@ package com.exasol.releasedroid.progress;
 
 import static com.exasol.releasedroid.formatting.Colorizer.*;
 
+import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 // [impl->dsn~progress-display~1]
 public class Progress {
@@ -30,6 +32,7 @@ public class Progress {
     private final ProgressMonitor monitor;
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private URL gitHubTagUrl = null;
 
     private Progress(final ProgressMonitor monitor) {
         this.monitor = monitor;
@@ -70,6 +73,20 @@ public class Progress {
         } else {
             return formatElapsed(elapsed) + " elapsed";
         }
+    }
+
+    /**
+     * @param url HTML URL of GitHub release
+     */
+    public void setGitHubTagUrl(final URL url) {
+        this.gitHubTagUrl = url;
+    }
+
+    /**
+     * @return HTML URL of GitHub release
+     */
+    public Optional<URL> gitHubTagUrl() {
+        return Optional.ofNullable(this.gitHubTagUrl);
     }
 
     /**

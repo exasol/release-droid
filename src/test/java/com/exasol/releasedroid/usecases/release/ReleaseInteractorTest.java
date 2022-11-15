@@ -202,7 +202,7 @@ class ReleaseInteractorTest {
     }
 
     private List<Report> release(final List<PlatformName> platformNames, final Set<PlatformName> skip) {
-        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip);
+        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip, Optional.empty());
         final Map<PlatformName, ReleaseMaker> releaseMakers = Map.of( //
                 PlatformName.GITHUB, this.githubReleaseMakerMock, //
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //

@@ -9,6 +9,7 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
  */
 public class ReleaseConfig {
     private List<PlatformName> releasePlatforms = Collections.emptyList();
+    private List<String> mavenArtifacts = Collections.emptyList();
     private Optional<String> language = Optional.empty();
 
     private ReleaseConfig() {
@@ -22,6 +23,13 @@ public class ReleaseConfig {
      */
     public List<PlatformName> getReleasePlatforms() {
         return this.releasePlatforms;
+    }
+
+    /**
+     * @return list of artifacts to be reported in release checklist
+     */
+    public List<String> getMavenArtifacts() {
+        return this.mavenArtifacts;
     }
 
     /**
@@ -81,13 +89,24 @@ public class ReleaseConfig {
         }
 
         /**
+         * Add a list of artifacts to be reported in release checklist
+         *
+         * @param artifacts list of artifacts
+         * @return builder
+         */
+        public Builder mavenArtifacts(final List<String> artifacts) {
+            this.config.mavenArtifacts = artifacts;
+            return this;
+        }
+
+        /**
          * Add main programming language.
          *
          * @param value main programming language
          * @return builder
          */
         public Builder language(final String value) {
-            this.config.language = Optional.of(value);
+            this.config.language = Optional.ofNullable(value);
             return this;
         }
 

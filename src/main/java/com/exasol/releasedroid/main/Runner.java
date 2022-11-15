@@ -1,6 +1,7 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.HOME_DIRECTORY;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,6 @@ import com.exasol.releasedroid.usecases.validate.ValidateInteractor;
 public class Runner {
 
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
-    private static final String RELEASE_DROID_CREDENTIALS = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
     private static final String REPORT_PATH = HOME_DIRECTORY + "/.release-droid";
     private static final String REPORT_NAME = "last_report.txt";
     private static final String USER_GUIDE_URL = "https://github.com/exasol/release-droid/blob/main/doc/user_guide/user_guide.md";
