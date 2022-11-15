@@ -4,9 +4,7 @@ Code name: Improved warning message for unspecified release platforms
 
 ## Summary
 
-Added option to generate a release guide guding the user through the release process. See details in [User Guide](../user_guide/user_guide.md#release-guide).
-
-Making releases still requires some time, effort, and stereotype tasks. Depending on the project to release the user needs to enter data in various places. Release Droid therefore provides a guide aggregating all the data to make the current release as convenient as possible.
+Added option to generate a release guide guiding the user through the release process, see details in the User Guide.
 
 Improved warning message for unspecified release platforms.
 
