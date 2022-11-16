@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.exasol.releasedroid.output.guide.ReleaseGuide;
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.UseCase;
@@ -127,7 +126,7 @@ public class ReleaseInteractor implements UseCase {
             return; // release guide has already been generated, no need to generate it twice
         }
         this.releaseGuidePath = path.get();
-        ReleaseGuide.from(repository, gitHubTagUrl.get().toString()).write(this.releaseGuidePath);
+        this.releaseManager.generateReleaseGuide(repository, gitHubTagUrl.get().toString(), this.releaseGuidePath);
     }
 
     /**

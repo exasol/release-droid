@@ -8,7 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -60,7 +61,7 @@ class ReleaseGuideTest {
     @Test
     void invalidPath() throws Exception {
         final ReleaseGuide testee = testee();
-        final Path path = Paths.get("/non/existing/path");
+        final Path path = Path.of("/non/existing/path");
         final Exception exception = assertThrows(UncheckedIOException.class, () -> testee.write(path));
         assertThat(exception.getMessage(), startsWith("E-RD-22: Could not write release guide"));
     }
@@ -83,7 +84,7 @@ class ReleaseGuideTest {
                 "team_channel", "http://team_channel", //
                 "customer_channel", "http://customer_channel" //
         ));
-        final ReleaseGuideProperties rgprops = new ReleaseGuideProperties(Paths.get(RELEASE_DROID_CREDENTIALS),
+        final ReleaseGuideProperties rgprops = new ReleaseGuideProperties(Path.of(RELEASE_DROID_CREDENTIALS),
                 properties);
 
         final GitHubGateway githubGateway = mock(GitHubGateway.class);
@@ -108,13 +109,13 @@ class ReleaseGuideTest {
 
     void manualTest() throws Exception {
         final String folderName = "extension-manager"; // keeper "exasol-testcontainers";
-        final RepositoryGate gate = LocalRepositoryGate.from(Paths.get("/my-folder/" + folderName));
+        final RepositoryGate gate = LocalRepositoryGate.from(Path.of("/my-folder/" + folderName));
         final Repository repo = new GenericRepository(gate, gitHubGateway());
-        ReleaseGuide.from(repo).write(Paths.get("target/sample-guide.html"));
+        ReleaseGuide.from(repo).write(Path.of("target/sample-guide.html"));
     }
 
     private GitHubGateway gitHubGateway() {
-        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Paths.get(RELEASE_DROID_CREDENTIALS));
+        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Path.of(RELEASE_DROID_CREDENTIALS));
         return new GitHubAPIAdapter(new GitHubConnectorImpl(properties));
     }
 

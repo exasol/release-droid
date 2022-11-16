@@ -21,7 +21,9 @@ public class Progress {
     /**
      * Return a silent progress not printing anything when asked
      */
-    public static final Progress SILENT = new SilentProgress();
+    public static final Progress silent() {
+        return new SilentProgress();
+    }
 
     public static Builder builder() {
         return new Builder();

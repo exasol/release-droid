@@ -5,7 +5,8 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DRO
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -53,7 +54,7 @@ public class Runner {
     }
 
     static ReleaseDroid createReleaseDroid() {
-        checkCredentialsFile(Paths.get(RELEASE_DROID_CREDENTIALS));
+        checkCredentialsFile(Path.of(RELEASE_DROID_CREDENTIALS));
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(getPropertyReader()));
         final RepositoryGateway repositoryGateway = new RepositoryFactory(githubGateway);
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);

@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.output.guide;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 class UrlBuilder {
     private String prefix = "";
@@ -28,6 +27,6 @@ class UrlBuilder {
     }
 
     Path path(final String repo, final String version) {
-        return Paths.get(build(repo, version));
+        return Path.of(build(repo, version));
     }
 }

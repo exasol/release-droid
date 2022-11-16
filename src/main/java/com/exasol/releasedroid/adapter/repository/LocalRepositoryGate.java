@@ -4,7 +4,8 @@ import static org.eclipse.jgit.lib.Constants.R_TAGS;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.jgit.api.Git;
@@ -66,7 +67,7 @@ public class LocalRepositoryGate implements RepositoryGate {
 
     @Override
     public String getSingleFileContentAsString(final String filePath) {
-        final Path path = Paths.get(this.localPath, filePath);
+        final Path path = Path.of(this.localPath, filePath);
         try {
             return Files.readString(path);
         } catch (final IOException exception) {
@@ -78,7 +79,7 @@ public class LocalRepositoryGate implements RepositoryGate {
 
     @Override
     public boolean hasFile(final String filePath) {
-        return Files.exists(Paths.get(this.localPath, filePath));
+        return Files.exists(Path.of(this.localPath, filePath));
     }
 
     @Override

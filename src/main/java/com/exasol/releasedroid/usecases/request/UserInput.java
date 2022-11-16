@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.usecases.request;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -380,7 +379,7 @@ public class UserInput {
          */
         public Builder releaseGuide(final String path) {
             if (path != null) {
-                this.releaseGuide = Optional.of(Paths.get(path));
+                this.releaseGuide = Optional.of(Path.of(path));
             }
             return this;
         }

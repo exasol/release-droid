@@ -3,7 +3,8 @@ package com.exasol.releasedroid.output.guide;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class ReleaseGuide {
      * @return new instance of {@link ReleaseGuide}
      */
     public static ReleaseGuide from(final Repository repo, final String gitHubTagUrl) {
-        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Paths.get(RELEASE_DROID_CREDENTIALS));
+        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Path.of(RELEASE_DROID_CREDENTIALS));
         final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(properties));
         return from(repo, githubGateway, properties, gitHubTagUrl);
     }

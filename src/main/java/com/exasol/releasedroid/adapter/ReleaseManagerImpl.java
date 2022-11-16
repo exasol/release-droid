@@ -2,11 +2,13 @@ package com.exasol.releasedroid.adapter;
 
 import static com.exasol.releasedroid.adapter.github.GitHubConstants.*;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.formatting.ChecksumFormatter;
+import com.exasol.releasedroid.output.guide.ReleaseGuide;
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.release.ReleaseManager;
@@ -42,6 +44,11 @@ public class ReleaseManagerImpl implements ReleaseManager {
         final String prefix = this.progress.startTime() + ": Starting release process";
         LOGGER.info(() -> this.progress.welcomeMessage(prefix));
         return this.progress;
+    }
+
+    @Override
+    public void generateReleaseGuide(final Repository repository, final String gitHubTagUrl, final Path destination) {
+        ReleaseGuide.from(repository, gitHubTagUrl).write(destination);
     }
 
     private boolean hasChecksumBuilds(final Repository repository) {

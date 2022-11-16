@@ -1,5 +1,7 @@
 package com.exasol.releasedroid.usecases.release;
 
+import java.nio.file.Path;
+
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.repository.Repository;
@@ -34,4 +36,13 @@ public interface ReleaseManager {
      * @param repository repository to clean-up
      */
     void cleanUpAfterRelease(Repository repository);
+
+    /**
+     * Generate a release guide.
+     *
+     * @param repository   repository to retrieve additional information for release guide
+     * @param gitHubTagUrl HTML URL of GitHub release
+     * @param destination  path to release guide
+     */
+    void generateReleaseGuide(Repository repository, String gitHubTagUrl, Path destination);
 }

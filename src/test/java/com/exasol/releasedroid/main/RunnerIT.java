@@ -8,7 +8,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class RunnerIT {
     @Test
     void testJarIsExecutable() throws IOException, InterruptedException {
         final String currentVersion = MavenProjectVersionGetter.getCurrentProjectVersion();
-        final Path jar = Paths.get("target").resolve("release-droid-" + currentVersion + ".jar").toAbsolutePath();
+        final Path jar = Path.of("target").resolve("release-droid-" + currentVersion + ".jar").toAbsolutePath();
         if (!Files.exists(jar)) {
             fail("Jar " + jar + " does not exist. Run 'mvn package' before starting the integration tests");
         }

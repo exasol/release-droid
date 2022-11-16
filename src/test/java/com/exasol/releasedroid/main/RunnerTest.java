@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +18,6 @@ class RunnerTest {
 
     @Test
     void checkCredentialsFile() throws IOException {
-        assertThat(Runner.checkCredentialsFile(Paths.get("/non/existing/file")), is(false));
+        assertThat(Runner.checkCredentialsFile(Path.of("/non/existing/file")), is(false));
     }
 }

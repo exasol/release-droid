@@ -12,6 +12,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 
@@ -33,10 +36,10 @@ import com.exasol.releasedroid.usecases.request.*;
 @ExtendWith(MockitoExtension.class)
 class ReleaseInteractorTest {
 
+    private static final String GITHUB_TAG_URL = "https://github.com/owner/full-name/relases/tag/1.2.3";
     private static final String REPOSITORY_NAME = "repo-name";
     private static final String REPOSITORY_VERSION = "repo-version";
     private static final String GITHUB_RELEASE_OUTPUT = "GITHUB_RELEASE_OUTPUT";
-    private static final Progress PROGRESS = Progress.SILENT;
 
     @Mock
     private UseCase validateUseCaseMock;
@@ -55,10 +58,13 @@ class ReleaseInteractorTest {
     @Mock
     private ReleaseMaker communityReleaseMakerMock;
 
+    private Progress progress;
+
     @BeforeEach
     void setup() {
         when(this.repositoryMock.getName()).thenReturn(REPOSITORY_NAME);
         when(this.repositoryMock.getVersion()).thenReturn(REPOSITORY_VERSION);
+        // this.progress.setGitHubTagUrl(url(GITHUB_TAG_URL));
     }
 
     @Test
@@ -70,8 +76,9 @@ class ReleaseInteractorTest {
     @Test
     void testReleaseSinglePlatformSuccess() {
         simulateSuccessValidationReport(PlatformName.GITHUB);
-        when(this.githubReleaseMakerMock.makeRelease(this.repositoryMock, PROGRESS)).thenReturn(GITHUB_RELEASE_OUTPUT);
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock);
+        when(this.githubReleaseMakerMock.makeRelease(this.repositoryMock, this.progress))
+                .thenReturn(GITHUB_RELEASE_OUTPUT);
         final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.SUCCESS);
         verifyGithubReleaseAndCleanup();
@@ -101,7 +108,7 @@ class ReleaseInteractorTest {
         inOrder.verify(this.githubReleaseMakerMock).estimateDuration(this.repositoryMock);
         inOrder.verify(this.releaseManagerMock).estimateDuration(eq(this.repositoryMock), any());
         inOrder.verify(this.releaseManagerMock).prepareForRelease(this.repositoryMock);
-        inOrder.verify(this.githubReleaseMakerMock).makeRelease(this.repositoryMock, PROGRESS);
+        inOrder.verify(this.githubReleaseMakerMock).makeRelease(this.repositoryMock, this.progress);
         inOrder.verify(this.releaseManagerMock).cleanUpAfterRelease(this.repositoryMock);
         inOrder.verifyNoMoreInteractions();
     }
@@ -195,6 +202,33 @@ class ReleaseInteractorTest {
                 () -> assertThat(exception.getCause().getMessage(), equalTo("expected")));
     }
 
+    @Test
+    void releaseGuide_Created() {
+        final Path path = Path.of("/path/to/release-guide.html");
+        simulateReleaseGuide(GITHUB_TAG_URL, path);
+        verify(this.releaseManagerMock).generateReleaseGuide(this.repositoryMock, GITHUB_TAG_URL, path);
+    }
+
+    @Test
+    void releaseGuide_NotRequested() {
+        simulateReleaseGuide(GITHUB_TAG_URL, null);
+        verify(this.releaseManagerMock, never()).generateReleaseGuide(any(), any(), any());
+    }
+
+    @Test
+    void releaseGuide_NoGitHubTagYet() {
+        simulateReleaseGuide(null, Path.of("/path/to/release-guide.html"));
+        verify(this.releaseManagerMock, never()).generateReleaseGuide(any(), any(), any());
+    }
+
+    private void simulateReleaseGuide(final String gitHubTagUrl, final Path path) {
+        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.mavenReleaseMakerMock);
+        if (gitHubTagUrl != null) {
+            this.progress.setGitHubTagUrl(url(gitHubTagUrl));
+        }
+        release(List.of(PlatformName.GITHUB, PlatformName.MAVEN), emptySet(), path);
+    }
+
     // --------------------------------------------------
 
     private List<Report> release(final PlatformName... platforms) {
@@ -202,7 +236,13 @@ class ReleaseInteractorTest {
     }
 
     private List<Report> release(final List<PlatformName> platformNames, final Set<PlatformName> skip) {
-        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip, Optional.empty());
+        return release(platformNames, skip, null);
+    }
+
+    private List<Report> release(final List<PlatformName> platformNames, final Set<PlatformName> skip,
+            final Path releaseGuide) {
+        final ReleasePlatforms platforms = new ReleasePlatforms(Goal.RELEASE, platformNames, skip,
+                Optional.ofNullable(releaseGuide));
         final Map<PlatformName, ReleaseMaker> releaseMakers = Map.of( //
                 PlatformName.GITHUB, this.githubReleaseMakerMock, //
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //
@@ -214,9 +254,18 @@ class ReleaseInteractorTest {
     }
 
     private void mockEstimationAndProgress(final ReleaseManager manager, final ReleaseMaker... releaseMakers) {
-        when(manager.estimateDuration(any(), any())).thenReturn(PROGRESS);
+        this.progress = Progress.silent();
+        when(manager.estimateDuration(any(), any())).thenReturn(this.progress);
         for (final ReleaseMaker maker : releaseMakers) {
             when(maker.estimateDuration(any())).thenReturn(Estimation.of(Duration.ofSeconds(1)));
+        }
+    }
+
+    private URL url(final String url) {
+        try {
+            return new URL(GITHUB_TAG_URL);
+        } catch (final MalformedURLException exception) {
+            throw new IllegalStateException(exception);
         }
     }
 
