@@ -59,9 +59,10 @@ class ReleaseGuideTest {
 
     @Test
     void invalidPath() throws Exception {
-        final Exception e = assertThrows(UncheckedIOException.class,
-                () -> testee().write(Paths.get("/non/existing/path")));
-        assertThat(e.getMessage(), startsWith("E-RD-22: Could not write release guide"));
+        final ReleaseGuide testee = testee();
+        final Path path = Paths.get("/non/existing/path");
+        final Exception exception = assertThrows(UncheckedIOException.class, () -> testee.write(path));
+        assertThat(exception.getMessage(), startsWith("E-RD-22: Could not write release guide"));
     }
 
     private ReleaseGuide testee() throws GitHubException {

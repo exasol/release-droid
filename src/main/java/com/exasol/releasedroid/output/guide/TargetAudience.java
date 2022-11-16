@@ -70,6 +70,6 @@ class TargetAudience {
     }
 
     boolean available() {
-        return (this.exception == null) & (this.name != null);
+        return (this.exception == null) && (this.name != null);
     }
 }
