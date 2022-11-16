@@ -25,7 +25,8 @@ class ReleaseGuideProperties implements PropertyReader {
     }
 
     static String error(final String format, final Object... args) {
-        return String.format("<span class=\"error\">(" + format + ")</span>", args);
+        return "<span class=\"error\">(" + String.format(format, args) + ")</span>";
+
     }
 
     private final Path path;

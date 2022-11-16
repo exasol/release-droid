@@ -71,20 +71,20 @@ public class ReleaseGuide {
         final TargetAudience targetAudience = TargetAudience.retrieve(githubGateway, name);
         final ChangesFileParser changesFile = new ChangesFileParser(repo, version);
         return new ReleaseGuide() //
-                .var("PageTitle", "Releasing " + releaseLabel + " on " + date) //
-                .var("Date", date) //
-                .var("ReleaseChecklists", properties.releaseChecklists()) //
-                .var("ReleaseLabel", releaseLabel) //
-                .var("ProjectName", name) //
-                .var("ReleaseVersion", version) //
-                .var("GitHubTagUrl", gitHubTagUrl) //
-                .var("MavenUrls", publication.mavenUrls(repo.getName(), version)) //
-                .var("TargetAudience", targetAudience.display()) //
-                .var("TeamPlanning", properties.teamPlanning()) //
-                .var("ProjectShortTag", shortTag) //
-                .var("AnnounceChannel", properties.announceChannel(targetAudience)) //
-                .var("PublicationPlatforms", publication.icons()) //
-                .var("ReleaseContentSummary", changesFile.getSummary());
+                .replace("$PageTitle", "Releasing " + releaseLabel + " on " + date) //
+                .replace("$Date", date) //
+                .replace("$ReleaseChecklists", properties.releaseChecklists()) //
+                .replace("$ReleaseLabel", releaseLabel) //
+                .replace("$ProjectName", name) //
+                .replace("$ReleaseVersion", version) //
+                .replace("$GitHubTagUrl", gitHubTagUrl) //
+                .replace("$MavenUrls", publication.mavenUrls(repo.getName(), version)) //
+                .replace("$TargetAudience", targetAudience.display()) //
+                .replace("$TeamPlanning", properties.teamPlanning()) //
+                .replace("$ProjectShortTag", shortTag) //
+                .replace("$AnnounceChannel", properties.announceChannel(targetAudience)) //
+                .replace("$PublicationPlatforms", publication.icons()) //
+                .replace("$ReleaseContentSummary", changesFile.getSummary());
     }
 
     private static String removePrefix(final String repoName) {
@@ -102,7 +102,7 @@ public class ReleaseGuide {
      * @param value value of the variable
      * @return this for fluent programming
      */
-    public ReleaseGuide var(final String name, final String value) {
+    public ReleaseGuide replace(final String name, final String value) {
         this.map.put(name, value);
         return this;
     }
@@ -116,7 +116,7 @@ public class ReleaseGuide {
         try (BufferedReader reader = reader(TEMPLATE); //
                 BufferedWriter writer = Files.newBufferedWriter(destination)) {
             write(reader, writer);
-            LOGGER.info("Generated release guide to file " + destination);
+            LOGGER.info(() -> "Generated release guide to file " + destination);
         } catch (final IOException exception) {
             throw new UncheckedIOException(ExaError.messageBuilder("E-RD-22") //
                     .message("Could not write release guide").toString(), //
@@ -147,7 +147,7 @@ public class ReleaseGuide {
         while ((i < line.length()) && matcher.find(i)) {
             stringBuilder //
                     .append(line.substring(i, matcher.start())) //
-                    .append(replaceVar(matcher.group()));
+                    .append(replacement(matcher.group()));
             i = matcher.end();
         }
         return stringBuilder //
@@ -155,8 +155,8 @@ public class ReleaseGuide {
                 .toString();
     }
 
-    private String replaceVar(final String name) {
-        final String value = this.map.get(name.substring(1));
+    private String replacement(final String name) {
+        final String value = this.map.get(name);
         if (value != null) {
             return value;
         }

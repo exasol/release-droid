@@ -18,12 +18,6 @@ class TargetAudience {
     private static final String AUDIENCE_PROPERTY = "target_audience";
     private static final String DEFAULT_AUDIENCE = "team";
 
-//    static TargetAudience retrieve(final PropertyReader propertyReader, final String repoName) {
-//        final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(propertyReader));
-//        final GitHubRepositoryGate gate = new GitHubRepositoryGate(githubGateway, "main", PROJECT_OVERVIEW_REPO);
-//        return retrieve(gate, repoName);
-//    }
-
     static TargetAudience retrieve(final GitHubGateway githubGateway, final String repoName) {
         final GitHubRepositoryGate gate = new GitHubRepositoryGate(githubGateway, "main", PROJECT_OVERVIEW_REPO);
         return retrieve(gate, repoName);

@@ -110,16 +110,17 @@ public class ReleaseInteractor implements UseCase {
     /**
      * If user requested to generate release guide and HTML URL of GitHub tag is known already (as provided by
      * GitHubReleaseMaker) and guide has not been generated, yet, then generate release guide.
-     * @param repository       repository to retrieve additional information for release guide
-     * @param gitHubTagUrl     HTML URL of GitHub release
-     * @param path optional path to release guide or empty if user did not request to generate such
+     *
+     * @param repository   repository to retrieve additional information for release guide
+     * @param gitHubTagUrl HTML URL of GitHub release
+     * @param path         optional path to release guide or empty if user did not request to generate such
      */
     private void createReleaseGuide(final Repository repository, final Optional<URL> gitHubTagUrl,
             final Optional<Path> path) {
         if (path.isEmpty()) {
             return; // user did not request to generate a release guide
         }
-        if (gitHubTagUrl.isEmpty() || (this.releaseGuidePath != null)) {
+        if (gitHubTagUrl.isEmpty()) {
             return; // HTML URL of GitHub tag is not known, yet.
         }
         if (this.releaseGuidePath != null) {

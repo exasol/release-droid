@@ -81,7 +81,7 @@ class ChangesFileParser {
 
     String markdownToHtml(final String line) {
         return line //
-                .replaceFirst("^\\*\\s*(.*)$", "<li>$1</li>") //
+                .replaceFirst("^\\*\\s*(.*?)$", "<li>$1</li>") //
                 .replaceAll("`([^`]+)`", "<code>$1</code>");
     }
 

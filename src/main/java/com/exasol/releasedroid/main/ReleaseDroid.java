@@ -1,7 +1,7 @@
 package com.exasol.releasedroid.main;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.exasol.errorreporting.ExaError;
@@ -58,8 +58,9 @@ public class ReleaseDroid {
         final List<Report> reports = new ArrayList<>();
         final boolean isValidate = userInput.getGoal() != Goal.RELEASE;
         final UseCase useCase = isValidate ? this.validateUseCase : this.releaseUseCase;
-        if (userInput.releaseGuide().isPresent() && isValidate) {
-            ReleaseGuide.from(repository).write(userInput.releaseGuide().get());
+        final Optional<Path> releaseGuide = userInput.releaseGuide();
+        if (releaseGuide.isPresent() && isValidate) {
+            ReleaseGuide.from(repository).write(releaseGuide.get());
         }
         reports.addAll(useCase.apply(repository, platforms));
         processResponse(createResponse(reports, userInput, platforms.list()));
