@@ -6,11 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.RemoteConfig;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
@@ -47,27 +45,9 @@ public class LocalRepositoryGate implements RepositoryGate {
      * @throws IOException if accessing the Git metadata of the local repository fails.
      */
     public static LocalRepositoryGate from(final Path folder) throws IOException {
-        final String name = getRepoNameFromRemote(Git.open(folder.toFile())).orElse(folder.getFileName().toString());
+        final String name = new RemoteName(Git.open(folder.toFile())).retrieve()
+                .orElse(folder.getFileName().toString());
         return new LocalRepositoryGate(folder.toString(), name);
-    }
-
-    private static final Pattern PATTERN = Pattern.compile(".*/([^/]+/[^/]+)\\.git");
-
-    private static Optional<String> getRepoNameFromRemote(final Git git) {
-        try {
-            final List<RemoteConfig> remotes = git.remoteList().call();
-            final Optional<RemoteConfig> origin = remotes.stream().filter(remote -> remote.getName().equals("origin"))
-                    .findAny();
-            if (origin.isPresent()) {
-                final String path = origin.get().getURIs().get(0).getPath();
-                final String repoName = PATTERN.matcher(path).replaceFirst("$1");
-                return Optional.of(repoName);
-            } else {
-                return Optional.empty();
-            }
-        } catch (final Exception exception) {
-            return Optional.empty();
-        }
     }
 
     private final String localPath;
