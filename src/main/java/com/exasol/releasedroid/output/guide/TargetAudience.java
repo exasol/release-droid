@@ -62,11 +62,11 @@ class TargetAudience {
     String display() {
         return (this.name != null) //
                 ? this.name
-                : ReleaseGuideProperties.error("Failed to retrieve target audience: " + suffix());
+                : ReleaseGuideProperties.error("Failed to retrieve target audience" + suffix());
     }
 
     private String suffix() {
-        return this.exception == null ? "" : " " + this.exception.getMessage();
+        return this.exception == null ? "" : ": " + this.exception.getMessage();
     }
 
     boolean available() {

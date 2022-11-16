@@ -39,8 +39,8 @@ class ReleaseGuideTest {
         assertThat(process(testee, "$PageTitle"), equalTo("Releasing sample-repo 1.2.3 on " + date));
         assertThat(process(testee, "$Date"), equalTo("2022-11-16"));
         assertThat(process(testee, "$ReleaseVersion"), equalTo("1.2.3"));
-        assertThat(process(testee, "$ReleaseChecklists"), equalTo("Create new checklist on page" + //
-                " <a href=\"http://release_checklists\">Release checklists</a>"));
+        assertThat(process(testee, "$ReleaseChecklists"), equalTo("Create new checklist on page" //
+                + ahref("http://release_checklists", "Release checklists")));
         assertThat(process(testee, "$ReleaseLabel"), equalTo("sample-repo 1.2.3"));
         assertThat(process(testee, "$GitHubTagUrl"), equalTo(GITHUB_URL));
         assertThat(process(testee, "$MavenUrls"), equalTo(ahref(MAVEN_URL)));
@@ -94,8 +94,12 @@ class ReleaseGuideTest {
         return ReleaseGuide.from(repo, githubGateway, rgprops, GITHUB_URL);
     }
 
-    private String ahref(final String url) {
-        return "<a href=\"" + url + "\">" + url + "</a>";
+    static String ahref(final String url) {
+        return ahref(url, url);
+    }
+
+    static String ahref(final String url, final String label) {
+        return "<a href=\"" + url + "\">" + label + "</a>";
     }
 
     private String process(final ReleaseGuide testee, final String template) throws IOException {

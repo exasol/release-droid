@@ -57,7 +57,7 @@ class ReleaseGuideProperties implements PropertyReader {
         }
         final AnnounceChannel channel = AnnounceChannel.find(targetAudience.display());
         if (channel.property == null) {
-            return error("unsupported target audience '%s'", targetAudience);
+            return error("unsupported target audience '%s'", targetAudience.display());
         }
         final String url = this.properties.getProperty(channel.property);
         return url != null //
