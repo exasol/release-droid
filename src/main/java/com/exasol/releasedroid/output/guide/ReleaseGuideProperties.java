@@ -9,13 +9,19 @@ import java.util.Properties;
 import com.exasol.releasedroid.usecases.PropertyReader;
 
 // [impl->dsn~configure-actual-urls~1]
-class XProperties implements PropertyReader {
+class ReleaseGuideProperties implements PropertyReader {
 
     private static final String RELEASE_CHECKLISTS_KEY = "release_checklists";
     private static final String TEAMPLANNING_KEY = "team_planning";
 
-    static XProperties from(final Path path) {
-        return new XProperties(path).read();
+    static ReleaseGuideProperties from(final Path path) {
+        final Properties properties = new Properties();
+        try (final InputStream stream = Files.newInputStream(path)) {
+            properties.load(stream);
+        } catch (final IOException exception) {
+            // class XProperties is designed to not throw an exception in case read from file fails
+        }
+        return new ReleaseGuideProperties(path, properties);
     }
 
     static String error(final String format, final Object... args) {
@@ -23,19 +29,11 @@ class XProperties implements PropertyReader {
     }
 
     private final Path path;
-    private final Properties properties = new Properties();
+    private final Properties properties;
 
-    XProperties(final Path path) {
+    ReleaseGuideProperties(final Path path, final Properties properties) {
         this.path = path;
-    }
-
-    XProperties read() {
-        try (final InputStream stream = Files.newInputStream(this.path)) {
-            this.properties.load(stream);
-        } catch (final IOException exception) {
-            // class XProperties is designed to not throw an exception in case read from file fails
-        }
-        return this;
+        this.properties = properties;
     }
 
     String releaseChecklists() {

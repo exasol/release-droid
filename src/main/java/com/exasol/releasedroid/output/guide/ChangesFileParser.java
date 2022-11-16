@@ -13,7 +13,7 @@ import com.exasol.releasedroid.usecases.repository.RepositoryGate;
  */
 class ChangesFileParser {
 
-    private static final String changesFilePath(final String version) {
+    static final String changesFilePath(final String version) {
         return "doc/changes/changes_" + version + ".md";
     }
 
@@ -43,7 +43,7 @@ class ChangesFileParser {
         try {
             return getSummary(changesFilePath(this.version));
         } catch (final IOException | RepositoryException exception) {
-            return XProperties.error("Failed to read changes file: " + exception.getMessage());
+            return ReleaseGuideProperties.error("Failed to read changes file: " + exception.getMessage());
         }
     }
 

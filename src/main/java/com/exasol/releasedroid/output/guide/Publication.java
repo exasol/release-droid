@@ -2,50 +2,48 @@ package com.exasol.releasedroid.output.guide;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.exasol.releasedroid.usecases.ReleaseDroidConstants;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
+import com.exasol.releasedroid.usecases.request.PlatformName;
 
 class Publication {
-
-    static Publication create(final boolean isMaven, final RepositoryGate gate) {
-        final String configuration = gate.getSingleFileContentAsString(ReleaseDroidConstants.RELEASE_CONFIG_PATH);
-        final ReleaseConfig parsed = ReleaseConfigParser.parse(configuration);
-        return new Publication(isMaven, parsed.getMavenArtifacts());
-    }
 
     private static final UrlBuilder MAVEN_URL = new UrlBuilder() //
             .prefix("https://repo1.maven.org/maven2/com/");
 
-    private final boolean publishedToMaven;
-    private final List<String> mavenArtifacts;
+    private final Optional<ReleaseConfig> config;
 
-    Publication(final boolean publishedToMaven, final List<String> mavenArtifacts) {
-        this.publishedToMaven = publishedToMaven;
-        this.mavenArtifacts = mavenArtifacts;
+    Publication(final Optional<ReleaseConfig> config) {
+        this.config = config;
     }
 
     String mavenUrls(final String repoName, final String version) {
-        return artifactNames(repoName) //
+        if (!isMaven()) {
+            return "";
+        }
+        return mavenArtifacts(repoName) //
                 .map(a -> MAVEN_URL.build(a, version)) //
                 .map(this::formatUrl) //
                 .collect(Collectors.joining("<br />\n"));
     }
 
     String icons() {
-        return ":github:" + (this.publishedToMaven ? " and :maven:" : "");
+        return ":github:" + (isMaven() ? " and :maven:" : "");
     }
 
-    private Stream<String> artifactNames(final String repoName) {
-        if (!this.publishedToMaven) {
-            return Stream.empty();
+    private Stream<String> mavenArtifacts(final String repoName) {
+        final List<String> artifacts = this.config.get().getMavenArtifacts();
+        return artifacts.isEmpty() ? Stream.of(repoName) : artifacts.stream();
+    }
+
+    private boolean isMaven() {
+        if (this.config.isEmpty()) {
+            return false;
         }
-        if (this.mavenArtifacts.isEmpty()) {
-            return Stream.of(repoName);
-        }
-        return this.mavenArtifacts.stream();
+        return this.config.get().getReleasePlatforms().contains(PlatformName.MAVEN);
     }
 
     private String formatUrl(final String url) {

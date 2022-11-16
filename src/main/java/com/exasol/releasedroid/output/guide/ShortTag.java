@@ -8,7 +8,7 @@ import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 
 class ShortTag {
-    private static final String FILENAME = "error_code_config.yml";
+    static final String FILENAME = "error_code_config.yml";
 
     private final RepositoryGate gate;
 
@@ -21,7 +21,7 @@ class ShortTag {
         try {
             content = this.gate.getSingleFileContentAsString(FILENAME);
         } catch (final RepositoryException exception) {
-            return XProperties.error("Could not retrieve shorttag: " + exception.getMessage());
+            return ReleaseGuideProperties.error("Could not retrieve shorttag: " + exception.getMessage());
         }
         final Map<String, Object> ecc = new Yaml().load(content);
         final Object errorTags = ecc.get("error-tags");

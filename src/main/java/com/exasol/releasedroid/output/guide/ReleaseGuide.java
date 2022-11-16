@@ -6,14 +6,15 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.exasol.errorreporting.ExaError;
+import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.repository.Repository;
-import com.exasol.releasedroid.usecases.request.*;
 
 /**
  * Generate a release guide.
@@ -53,17 +54,21 @@ public class ReleaseGuide {
      * @return new instance of {@link ReleaseGuide}
      */
     public static ReleaseGuide from(final Repository repo, final String gitHubTagUrl) {
+        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Paths.get(RELEASE_DROID_CREDENTIALS));
+        final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(properties));
+        return from(repo, githubGateway, properties, gitHubTagUrl);
+    }
+
+    public static ReleaseGuide from(final Repository repo, final GitHubGateway githubGateway,
+            final ReleaseGuideProperties properties, final String gitHubTagUrl) {
         final String version = repo.getVersion().replace("v", "");
         final String name = removePrefix(repo.getName());
         final String date = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
         final String releaseLabel = name + " " + version;
 
-        final XProperties properties = XProperties.from(Paths.get(RELEASE_DROID_CREDENTIALS));
-
-        final ReleasePlatforms platforms = ReleasePlatforms.from(UserInput.builder().build(), repo);
-        final Publication publication = Publication.create(platforms.list().contains(PlatformName.MAVEN), repo);
+        final Publication publication = new Publication(repo.getReleaseConfig());
         final String shortTag = new ShortTag(repo).retrieve();
-        final TargetAudience targetAudience = TargetAudience.retrieve(properties, name);
+        final TargetAudience targetAudience = TargetAudience.retrieve(githubGateway, name);
         final ChangesFileParser changesFile = new ChangesFileParser(repo, version);
         return new ReleaseGuide() //
                 .var("PageTitle", "Releasing " + releaseLabel + " on " + date) //
@@ -106,32 +111,28 @@ public class ReleaseGuide {
      * Write release guide to specified destination path.
      *
      * @param destination path to write the release guide to
-     * @throws IOException if writing fails
      */
     public void write(final Path destination) {
-        try (BufferedWriter writer = Files.newBufferedWriter(destination)) {
-            write(writer);
+        try (BufferedReader reader = reader(TEMPLATE); //
+                BufferedWriter writer = Files.newBufferedWriter(destination)) {
+            write(reader, writer);
             LOGGER.info("Generated release guide to file " + destination);
         } catch (final IOException exception) {
-            LOGGER.warning(() -> ExaError.messageBuilder("RD-W-22") //
-                    .message("Could not write release guide: {{cause}}", //
-                            destination, exception.getMessage()) //
-                    .toString());
+            throw new UncheckedIOException(ExaError.messageBuilder("E-RD-22") //
+                    .message("Could not write release guide").toString(), //
+                    exception);
         }
     }
 
-    /**
-     * Write release guide to specified writer.
-     *
-     * @param writer writer to send output to
-     * @throws IOException if writing fails
-     */
-    public void write(final BufferedWriter writer) throws IOException {
-        try (BufferedReader reader = reader(TEMPLATE)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(replaceTokens(line));
+    void write(final BufferedReader reader, final BufferedWriter writer) throws IOException {
+        String line;
+        boolean first = true;
+        while ((line = reader.readLine()) != null) {
+            if (!first) {
+                writer.write("\n");
             }
+            writer.write(replaceVariables(line));
+            first = false;
         }
     }
 
@@ -139,23 +140,26 @@ public class ReleaseGuide {
         return new BufferedReader(new InputStreamReader(ReleaseGuide.class.getResourceAsStream(resource)));
     }
 
-    private String replaceTokens(final String line) {
+    private String replaceVariables(final String line) {
         final Matcher matcher = REFERENCE_PATTERN.matcher(line);
         final StringBuilder stringBuilder = new StringBuilder();
         int i = 0;
         while ((i < line.length()) && matcher.find(i)) {
             stringBuilder //
                     .append(line.substring(i, matcher.start())) //
-                    .append(replaceReference(matcher.group()));
+                    .append(replaceVar(matcher.group()));
             i = matcher.end();
         }
         return stringBuilder //
                 .append(line.substring(i)) //
-                .append("\n") //
                 .toString();
     }
 
-    private String replaceReference(final String reference) {
-        return Objects.requireNonNull(this.map.get(reference.substring(1)));
+    private String replaceVar(final String name) {
+        final String value = this.map.get(name.substring(1));
+        if (value != null) {
+            return value;
+        }
+        throw new IllegalStateException("No value for variable " + name);
     }
 }

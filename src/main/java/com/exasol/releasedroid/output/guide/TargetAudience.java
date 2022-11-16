@@ -5,21 +5,26 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.exasol.releasedroid.adapter.github.*;
-import com.exasol.releasedroid.usecases.PropertyReader;
+import com.exasol.releasedroid.adapter.github.GitHubGateway;
+import com.exasol.releasedroid.adapter.github.GitHubRepositoryGate;
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
 import com.exasol.releasedroid.usecases.repository.RepositoryGate;
 
 // [impl->dsn~target-audience~1]
 class TargetAudience {
 
-    private static final String DEFAULT_AUDIENCE = "team";
-    private static final String PROJECT_OVERVIEW_REPO = "exasol/project-overview";
-    private static final String INVENTORY_FILE = "projects.yaml";
+    static final String PROJECT_OVERVIEW_REPO = "exasol/project-overview";
+    static final String INVENTORY = "projects.yaml";
     private static final String AUDIENCE_PROPERTY = "target_audience";
+    private static final String DEFAULT_AUDIENCE = "team";
 
-    static TargetAudience retrieve(final PropertyReader propertyReader, final String repoName) {
-        final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(propertyReader));
+//    static TargetAudience retrieve(final PropertyReader propertyReader, final String repoName) {
+//        final GitHubGateway githubGateway = new GitHubAPIAdapter(new GitHubConnectorImpl(propertyReader));
+//        final GitHubRepositoryGate gate = new GitHubRepositoryGate(githubGateway, "main", PROJECT_OVERVIEW_REPO);
+//        return retrieve(gate, repoName);
+//    }
+
+    static TargetAudience retrieve(final GitHubGateway githubGateway, final String repoName) {
         final GitHubRepositoryGate gate = new GitHubRepositoryGate(githubGateway, "main", PROJECT_OVERVIEW_REPO);
         return retrieve(gate, repoName);
     }
@@ -27,7 +32,7 @@ class TargetAudience {
     static TargetAudience retrieve(final RepositoryGate gate, final String repoName) {
         final String inventory;
         try {
-            inventory = gate.getSingleFileContentAsString(INVENTORY_FILE);
+            inventory = gate.getSingleFileContentAsString(INVENTORY);
         } catch (final RepositoryException exception) {
             return failed(exception);
         }
@@ -63,7 +68,7 @@ class TargetAudience {
     String display() {
         return (this.name != null) //
                 ? this.name
-                : XProperties.error("Failed to retrieve target audience: " + suffix());
+                : ReleaseGuideProperties.error("Failed to retrieve target audience: " + suffix());
     }
 
     private String suffix() {
