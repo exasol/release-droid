@@ -37,9 +37,9 @@ class ReleaseGuideTest {
         final ReleaseGuide testee = testee();
         final String date = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
         assertThat(process(testee, "$PageTitle"), equalTo("Releasing sample-repo 1.2.3 on " + date));
-        assertThat(process(testee, "$Date"), equalTo("2022-11-16"));
+        assertThat(process(testee, "$Date"), equalTo(date));
         assertThat(process(testee, "$ReleaseVersion"), equalTo("1.2.3"));
-        assertThat(process(testee, "$ReleaseChecklists"), equalTo("Create new checklist on page" //
+        assertThat(process(testee, "$ReleaseChecklists"), equalTo("Create new checklist on page " //
                 + ahref("http://release_checklists", "Release checklists")));
         assertThat(process(testee, "$ReleaseLabel"), equalTo("sample-repo 1.2.3"));
         assertThat(process(testee, "$GitHubTagUrl"), equalTo(GITHUB_URL));
