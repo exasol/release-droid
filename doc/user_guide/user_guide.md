@@ -126,7 +126,7 @@ The lines with prefix "jira" are only relevant if releasing to platform Jira.
 
 If you want RD to generate a [Release Guide](#release-guide) then you might want to add additional entries.
 
-If RD cannot find this file during an execution, it asks the user to input the credentials directly through terminal.
+If RD cannot find this file during runtime, it asks the user to input the credentials directly through terminal.
 
 We recommend restricting access to this file for security purposes:
 
@@ -212,23 +212,23 @@ Please also note the option to specify the platforms in the configuration file [
 
 ### Release Guide
 
-Making releases still requires some time, effort, and often stereotype tasks. Depending on the project to release the user needs to aggregate data from various sources and type it into different documents and publications. Release Droid therefore provides a document guiding the user through the release process to make releasing as convenient as possible.
+Making releases still requires time, effort, and often stereotype tasks. Depending on the project to release the user needs to aggregate data from various sources and type it into different documents and publications. Release Droid therefore provides a document guiding the user through the release process to make releasing as convenient as possible.
 
 Upon [command line option](#command-line-arguments) `-guide` or `--release-guide` RD generates an HTML page containing the release guide.
 
-The user can open the document in a  web browser, follow the described process, and copy the data for release checklist, team planning, and announcement.
+The user can open the document in a  web browser, follow the described steps, and copy the data for release checklist, team planning, and announcement to chat channels.
 
 #### Data Sources For Release Guide
 
 RD collects the data from various sources:
 
-| Source | Location | Retrieved information | Key |
-|--------|----------|-----------------------|-----|
-| `project-overview/projects.yaml` | GitHub | Target audience |
-| file `release_config.yml` | project's repository | Maven URLs | `maven-artifacts` |
-| file `error_code_config.yml` | project's repository | Short tag for team planning page |See [error-code-crawler-maven-plugin](https://github.com/exasol/error-code-crawler-maven-plugin) for details |
-| file `doc/changes/changes_<version>.md` | project's repository | Release summary | `## Summary` |
-| file `~/.release-droid/credentials` | user's home directory | URLs for announcing the release | See section [URLs for Announcing the Release](#urls-for-announcing-the-release) |
+| Source                                  | Location              | Retrieved information            | Key                                                                             |
+|-----------------------------------------|-----------------------|----------------------------------|---------------------------------------------------------------------------------|
+| `project-overview/projects.yaml`        | GitHub                | Target audience                  |                                                                                 |
+| file `release_config.yml`               | project's repository  | Maven URLs                       | `maven-artifacts`                                                               |
+| file `error_code_config.yml`            | project's repository  | Short tag for team planning page | See [error-code-crawler-maven-plugin](https://github.com/exasol/error-code-crawler-maven-plugin) for details |
+| file `doc/changes/changes_<version>.md` | project's repository  | Release summary                  | `## Summary`                                                                    |
+| file `~/.release-droid/credentials`     | user's home directory | URLs for announcing the release  | See section [URLs for Announcing the Release](#urls-for-announcing-the-release) |
 
 #### Link to Release on Maven Central
 
@@ -246,11 +246,11 @@ maven-artifacts:
 
 In file [`~/.release-droid/credentials`](#file-release-droidcredentials) you can add the following keys and assign a URL to each of them
 
-| Key                  | Value: URL of |
-|----------------------|---------------|
-| `release_checklists` | Release checklists page |
-| `team_planning`      | Team planning page current quarter in company wiki |
-| `team_channel`       | Channel for announcing new releases to team in company chat tool |
+| Key                  | Value: URL of                                                         |
+|----------------------|-----------------------------------------------------------------------|
+| `release_checklists` | Release checklists page                                               |
+| `team_planning`      | Team planning page current quarter in company wiki                    |
+| `team_channel`       | Channel for announcing new releases to team in company chat tool      |
 | `customer_channel`   | Channel for announcing new releases to customers in company chat tool |
 
 When generating the release guide RD will use these URLs in the generated HTML file.

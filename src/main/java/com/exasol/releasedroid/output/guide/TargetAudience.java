@@ -59,6 +59,10 @@ class TargetAudience {
         this.name = name;
     }
 
+    boolean available() {
+        return (this.exception == null) && (this.name != null);
+    }
+
     String display() {
         return (this.name != null) //
                 ? this.name
@@ -67,9 +71,5 @@ class TargetAudience {
 
     private String suffix() {
         return this.exception == null ? "" : ": " + this.exception.getMessage();
-    }
-
-    boolean available() {
-        return (this.exception == null) && (this.name != null);
     }
 }

@@ -20,22 +20,22 @@ public class ReleaseConfigParser {
     }
 
     /**
-     * Parse release config.
+     * Parse release configuration.
      *
-     * @param releaseConfigString release config as a string
-     * @return release config
+     * @param content release configuration as a string
+     * @return instance of {@link ReleaseConfig}
      */
-    public static ReleaseConfig parse(final String releaseConfigString) {
+    public static ReleaseConfig parse(final String content) {
         final var yaml = new Yaml();
-        final Map<String, Object> parsedConfig = yaml.load(releaseConfigString);
-        if (parsedConfig == null) {
+        final Map<String, Object> parsed = yaml.load(content);
+        if (parsed == null) {
             return ReleaseConfig.builder().build();
         }
-        final Object language = parsedConfig.get("language");
+        final Object language = parsed.get("language");
         final ReleaseConfig.Builder builder = ReleaseConfig.builder() //
-                .releasePlatforms(extractListOfStrings(parsedConfig, RELEASE_PLATFORMS_KEY)) //
+                .releasePlatforms(extractListOfStrings(parsed, RELEASE_PLATFORMS_KEY)) //
                 .language(language == null ? null : language.toString()) //
-                .mavenArtifacts(extractListOfStrings(parsedConfig, MAVEN_ARTIFACTS_KEY));
+                .mavenArtifacts(extractListOfStrings(parsed, MAVEN_ARTIFACTS_KEY));
         return builder.build();
     }
 }

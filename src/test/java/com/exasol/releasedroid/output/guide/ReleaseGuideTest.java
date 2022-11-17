@@ -19,7 +19,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.releasedroid.adapter.github.*;
+import com.exasol.releasedroid.adapter.github.GitHubException;
+import com.exasol.releasedroid.adapter.github.GitHubGateway;
 import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
@@ -108,11 +109,6 @@ class ReleaseGuideTest {
             testee.write(reader, bw);
         }
         return writer.toString();
-    }
-
-    private GitHubGateway gitHubGateway() {
-        final ReleaseGuideProperties properties = ReleaseGuideProperties.from(Path.of(RELEASE_DROID_CREDENTIALS));
-        return new GitHubAPIAdapter(new GitHubConnectorImpl(properties));
     }
 
     private final String errorCodeConfig(final String shortTag) {

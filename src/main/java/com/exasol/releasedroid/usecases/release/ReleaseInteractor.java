@@ -111,7 +111,7 @@ public class ReleaseInteractor implements UseCase {
      * GitHubReleaseMaker) and guide has not been generated, yet, then generate release guide.
      *
      * @param repository   repository to retrieve additional information for release guide
-     * @param gitHubTagUrl HTML URL of GitHub release
+     * @param gitHubTagUrl HTML URL of GitHub release, empty if GitHub tag has not been created, yet
      * @param path         optional path to release guide or empty if user did not request to generate such
      */
     private void createReleaseGuide(final Repository repository, final Optional<URL> gitHubTagUrl,

@@ -199,7 +199,7 @@ Needs: dsn
 #### Channels for Announcing the Release
 `req~channels-for-announcing-the-release~1`
 
-The release guide lists all channels the developer needs to announce the release to.
+The release guide lists all channels the developer needs to announce the release to:
 * team's release checklist in the company's intranet
 * entry in the team planning page in the company's intranet
 * appropriate chat channel for the detected target audience

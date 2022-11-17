@@ -60,7 +60,7 @@ public class ReleaseGuide {
         return from(repo, githubGateway, properties, gitHubTagUrl);
     }
 
-    public static ReleaseGuide from(final Repository repo, final GitHubGateway githubGateway,
+    static ReleaseGuide from(final Repository repo, final GitHubGateway githubGateway,
             final ReleaseGuideProperties properties, final String gitHubTagUrl) {
         final String version = repo.getVersion().replace("v", "");
         final String name = removePrefix(repo.getName());
@@ -96,15 +96,16 @@ public class ReleaseGuide {
     private final Map<String, String> map = new HashMap<>();
 
     /**
-     * Add a variable definition. {@link ReleaseGuide} identifies variables in the template by prefix "$" and replaces
-     * each variable with the value provided beforehand. For variables with unspecified value an exception is thrown.
+     * Add a replacement definition. {@link ReleaseGuide} identifies variables in the template by prefix "$" and
+     * replaces each variable with the value provided beforehand. For variables with unspecified value an exception is
+     * thrown.
      *
-     * @param name  name of the variable
-     * @param value value of the variable
+     * @param name        name of the variable
+     * @param replacement text that should be used to replace the variable
      * @return this for fluent programming
      */
-    public ReleaseGuide replace(final String name, final String value) {
-        this.map.put(name, value);
+    public ReleaseGuide replace(final String name, final String replacement) {
+        this.map.put(name, replacement);
         return this;
     }
 
