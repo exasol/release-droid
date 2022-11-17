@@ -17,7 +17,7 @@ import java.util.Properties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class ReleaseGuidePropertiesTest {
+class ReleaseGuidePropertiesTest {
 
     private static final Path SAMPLE_RD_CREDENTIALS_FILE = Path.of("sample-credentials-file");
 
@@ -65,7 +65,7 @@ public class ReleaseGuidePropertiesTest {
     }
 
     @Test
-    void ignoreExceptions(@TempDir final Path temp) throws IOException {
+    void ignoreExceptions() {
         assertDoesNotThrow(() -> ReleaseGuideProperties.from(Path.of("/non/existing/file.txt")));
     }
 
