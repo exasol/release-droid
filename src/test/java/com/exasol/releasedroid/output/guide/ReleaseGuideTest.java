@@ -20,9 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.releasedroid.adapter.github.*;
-import com.exasol.releasedroid.adapter.repository.GenericRepository;
-import com.exasol.releasedroid.adapter.repository.LocalRepositoryGate;
-import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.repository.ReleaseConfig;
+import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 
 class ReleaseGuideTest {
@@ -109,13 +108,6 @@ class ReleaseGuideTest {
             testee.write(reader, bw);
         }
         return writer.toString();
-    }
-
-    void manualTest() throws Exception {
-        final String folderName = "extension-manager"; // keeper "exasol-testcontainers";
-        final RepositoryGate gate = LocalRepositoryGate.from(Path.of("/my-folder/" + folderName));
-        final Repository repo = new GenericRepository(gate, gitHubGateway());
-        ReleaseGuide.from(repo).write(Path.of("target/sample-guide.html"));
     }
 
     private GitHubGateway gitHubGateway() {
