@@ -33,6 +33,7 @@ public class LocalRepositoryGate implements RepositoryGate {
         return refs.stream() //
                 .map(Ref::getName) //
                 .map(Version::fromGitTag) //
+                .flatMap(Optional::stream) //
                 .sorted(Comparator.reverseOrder()) //
                 .findFirst();
     }

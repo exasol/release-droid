@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,8 +29,8 @@ class VersionTest {
 
     @Test
     void illegalGitTag() {
-        final Exception e = assertThrows(VersionFormatException.class, () -> Version.fromGitTag("abc/1.2.3"));
-        assertThat(e.getMessage(), containsString("led reading version from git tag"));
+        final Optional<Version> optional = Version.fromGitTag("abc/1.2.3");
+        assertThat(optional.isEmpty(), is(true));
     }
 
     @Test
@@ -39,8 +40,9 @@ class VersionTest {
 
     @Test
     void fromGitTag() {
-        assertThat(Version.fromGitTag("refs/tags/v1.2.3"), equalTo(new Version("", "v", 1, 2, 3)));
-        assertThat(Version.fromGitTag("refs/tags/go-module/v1.2.3"), equalTo(new Version("go-module/", "v", 1, 2, 3)));
+        assertThat(Version.fromGitTag("refs/tags/v1.2.3").get(), equalTo(new Version("", "v", 1, 2, 3)));
+        assertThat(Version.fromGitTag("refs/tags/go-module/v1.2.3").get(),
+                equalTo(new Version("go-module/", "v", 1, 2, 3)));
     }
 
     @Test

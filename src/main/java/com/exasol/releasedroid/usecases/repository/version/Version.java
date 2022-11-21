@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import com.exasol.errorreporting.ExaError;
 
+/**
+ * Represents a version of a release with optional prefix "v".
+ */
 public class Version implements Comparable<Version> {
 
     private static final String SUFFIX = "(v?)(\\d+(\\.\\d+)*+)";
@@ -17,14 +20,27 @@ public class Version implements Comparable<Version> {
     private static final int EQUAL = 0;
     private static final int GREATER = 1;
 
-    public static Version fromGitTag(final String tag) throws VersionFormatException {
+    /**
+     * Create new instance of {@link Version} based on label of a Git tag.
+     *
+     * @param tag name of Git tag
+     * @return Optional containing the new instance of {@link Version} or empty optional if label of Git tag does not
+     *         match the expected version pattern
+     */
+    public static Optional<Version> fromGitTag(final String tag) {
         final Matcher matcher = GIT_TAG.matcher(tag);
         if (!matcher.matches()) {
-            throw new VersionFormatException("Failed reading version from git tag '" + tag + "'.");
+            return Optional.empty();
         }
-        return parse(matcher.group(1), matcher.group(2) + matcher.group(3));
+        return Optional.of(parse(matcher.group(1), matcher.group(2) + matcher.group(3)));
     }
 
+    /**
+     * Parse version from given string (without sub-folder prefix).
+     *
+     * @param string string to parse
+     * @return instance of {@link Version}
+     */
     public static Version parse(final String string) {
         return parse("", string);
     }

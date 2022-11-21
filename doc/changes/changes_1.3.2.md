@@ -20,6 +20,7 @@ The improved warning message is now
 ## Bug Fixes
 
 * #266: Improved warning message for unspecified release platforms.
+* #277: Made RD ignore Git tags with unsupported version pattern.
 
 ## Dependency Updates
 
