@@ -27,7 +27,8 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
 
 class ReleaseGuideTest {
 
-    private static final String GITHUB_URL = "https://github.com/sample-repo-github-tag-url";
+    private static final String GITHUB_URL = "https://github.com/releases/tag/1.2.3";
+    private static final String GITHUB_DRAFT_URL = GITHUB_URL.replace("/releases/tag/", "/releases/edit/");
     private static final String MAVEN_URL = "https://repo1.maven.org/maven2/com/exasol/sample-repo/1.2.3/";
     private static final String TEAM_PLANNING = "http://team_planning";
     private static final String RELEASE_CHECKLISTS = "http://release_checklists";
@@ -43,6 +44,7 @@ class ReleaseGuideTest {
                 + ahref("http://release_checklists", "Release checklists")));
         assertThat(process(testee, "$ReleaseLabel"), equalTo("sample-repo 1.2.3"));
         assertThat(process(testee, "$GitHubTagUrl"), equalTo(GITHUB_URL));
+        assertThat(process(testee, "$GitHubDraftReleaseUrl"), equalTo(GITHUB_DRAFT_URL));
         assertThat(process(testee, "$MavenUrls"), equalTo(ahref(MAVEN_URL)));
         assertThat(process(testee, "$TargetAudience"), equalTo("customer"));
         assertThat(process(testee, "$TeamPlanning"), equalTo(ahref(TEAM_PLANNING)));

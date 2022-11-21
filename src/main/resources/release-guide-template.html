@@ -92,7 +92,10 @@ function copy(id) {
 <h3>$PageTitle</h3>
 
 <table class="light">
-<tr><td class="blank" width="140">Release Checklist</td><td class="em">Copy</td></tr>
+<tr><td class="blank" width="140">Edit Draft Release</td><td class="em">Copy</td></tr>
+<tr><th>Link</th><td></td><td><a href="$GitHubDraftReleaseUrl">Edit draft release</a> and make it final</td></tr>
+
+<tr><td class="blank">Release Checklist</td></tr>
 <tr><th>Link <span class="info" title="URL from file ~/.release-droid/credentials">&#x24D8;</span></th><td></td><td>$ReleaseChecklists</td></tr>
 <tr><th>Title</th><td><button title="Copy to clipboard" onclick="copy('ReleaseLabel')">&#x1F4CB;</button></td><td id="ReleaseLabel">$ReleaseLabel</td></tr>
 <tr><th>GitHub tag</th><td><button title="Copy to clipboard" onclick="copy('GitHubTagUrl')">&#x1F4CB;</button></td><td id="GitHubTagUrl"><a href="$GitHubTagUrl">$GitHubTagUrl</a></td></tr>
