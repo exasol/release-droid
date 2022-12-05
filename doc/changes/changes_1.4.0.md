@@ -45,4 +45,10 @@ The improved warning message is now
 
 ### Plugin Dependency Updates
 
+* Updated `com.exasol:artifact-reference-checker-maven-plugin:0.4.0` to `0.4.2`
+* Updated `com.exasol:error-code-crawler-maven-plugin:1.1.2` to `1.2.1`
 * Updated `com.exasol:project-keeper-maven-plugin:2.8.0` to `2.9.1`
+* Updated `io.github.zlika:reproducible-build-maven-plugin:0.15` to `0.16`
+* Updated `org.apache.maven.plugins:maven-jar-plugin:3.2.2` to `3.3.0`
+* Updated `org.codehaus.mojo:flatten-maven-plugin:1.2.7` to `1.3.0`
+* Updated `org.codehaus.mojo:versions-maven-plugin:2.10.0` to `2.13.0`
