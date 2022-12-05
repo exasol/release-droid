@@ -42,3 +42,7 @@ The improved warning message is now
 * Updated `org.junit.jupiter:junit-jupiter:5.9.0` to `5.9.1`
 * Updated `org.mockito:mockito-core:4.6.1` to `4.8.0`
 * Updated `org.mockito:mockito-junit-jupiter:4.6.1` to `4.8.0`
+
+### Plugin Dependency Updates
+
+* Updated `com.exasol:project-keeper-maven-plugin:2.8.0` to `2.9.1`
