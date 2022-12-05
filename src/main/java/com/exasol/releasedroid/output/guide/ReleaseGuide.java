@@ -74,7 +74,7 @@ public class ReleaseGuide {
         return new ReleaseGuide() //
                 .replace("$PageTitle", "Releasing " + releaseLabel + " on " + date) //
                 .replace("$Date", date) //
-                .replace("$GitHubDraftReleaseUrl", gitHubTagUrl.replace("/releases/tag/", "/releases/edit/")) //
+                .replace("$GitHubDraftReleaseUrl", gitHubTagUrl.replaceFirst("/releases/tag/.*", "/releases/edit/")) //
                 .replace("$ReleaseChecklists", properties.releaseChecklists()) //
                 .replace("$ReleaseLabel", releaseLabel) //
                 .replace("$ProjectName", name) //
