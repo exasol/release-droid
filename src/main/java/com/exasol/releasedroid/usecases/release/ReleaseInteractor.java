@@ -3,6 +3,8 @@ package com.exasol.releasedroid.usecases.release;
 import static com.exasol.errorreporting.ExaError.messageBuilder;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -22,26 +24,27 @@ import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
  */
 public class ReleaseInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
-    private final UseCase validateUseCase;
+    private final UseCase validator;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReleaseState releaseState;
     private final ReleaseManager releaseManager;
+    private Path releaseGuidePath = null;
 
     /**
      * Create a new instance of {@link ReleaseInteractor}.
      *
-     * @param validateUseCase validate use case for validating the platforms
-     * @param releaseMakers   map with platform names and release makers
-     * @param releaseManager  instance of {@link ReleaseManager}
+     * @param validator      use case for validating the platforms
+     * @param releaseMakers  map with platform names and release makers
+     * @param releaseManager instance of {@link ReleaseManager}
      */
-    public ReleaseInteractor(final UseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+    public ReleaseInteractor(final UseCase validator, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final ReleaseManager releaseManager) {
-        this(validateUseCase, releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
+        this(validator, releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
     }
 
-    ReleaseInteractor(final UseCase validateUseCase, final Map<PlatformName, ReleaseMaker> releaseMakers,
+    ReleaseInteractor(final UseCase validator, final Map<PlatformName, ReleaseMaker> releaseMakers,
             final ReleaseManager releaseManager, final ReleaseState releaseState) {
-        this.validateUseCase = validateUseCase;
+        this.validator = validator;
         this.releaseMakers = releaseMakers;
         this.releaseManager = releaseManager;
         this.releaseState = releaseState;
@@ -82,7 +85,7 @@ public class ReleaseInteractor implements UseCase {
         boolean failure = false;
         while (!failure && it.hasNext()) {
             final PlatformName platform = it.next();
-            final List<Report> validationReport = this.validateUseCase.apply(repository, platforms);
+            final List<Report> validationReport = this.validator.apply(repository, platforms);
             failure = merge(validationSummary, validationReport);
             if (failure) {
                 LOGGER.warning(() -> messageBuilder("W-RD-17")
@@ -94,12 +97,36 @@ public class ReleaseInteractor implements UseCase {
                 releaseSummary.merge(releaseReport);
                 failure = releaseReport.hasFailures();
             }
+            createReleaseGuide(repository, progress.gitHubTagUrl(), platforms.releaseGuide());
         }
         progress.reportStatus().newline();
         if (!releaseSummary.hasFailures()) {
             cleanRepositoryAfterRelease(repository);
         }
         return List.of(validationSummary, releaseSummary);
+    }
+
+    /**
+     * If user requested to generate release guide and HTML URL of GitHub tag is known already (as provided by
+     * GitHubReleaseMaker) and guide has not been generated, yet, then generate release guide.
+     *
+     * @param repository   repository to retrieve additional information for release guide
+     * @param gitHubTagUrl HTML URL of GitHub release, empty if GitHub tag has not been created, yet
+     * @param path         optional path to release guide or empty if user did not request to generate such
+     */
+    private void createReleaseGuide(final Repository repository, final Optional<URL> gitHubTagUrl,
+            final Optional<Path> path) {
+        if (path.isEmpty()) {
+            return; // user did not request to generate a release guide
+        }
+        if (gitHubTagUrl.isEmpty()) {
+            return; // HTML URL of GitHub tag is not known, yet.
+        }
+        if (this.releaseGuidePath != null) {
+            return; // release guide has already been generated, no need to generate it twice
+        }
+        this.releaseGuidePath = path.get();
+        this.releaseManager.generateReleaseGuide(repository, gitHubTagUrl.get().toString(), this.releaseGuidePath);
     }
 
     /**

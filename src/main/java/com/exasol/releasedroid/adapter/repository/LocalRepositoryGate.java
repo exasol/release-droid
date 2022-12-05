@@ -4,7 +4,8 @@ import static org.eclipse.jgit.lib.Constants.R_TAGS;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.jgit.api.Git;
@@ -36,6 +37,21 @@ public class LocalRepositoryGate implements RepositoryGate {
                 .findFirst();
     }
 
+    /**
+     * Create a {@link LocalRepositoryGate} base on a working copy in a local folder and retrieve the full name of the
+     * (remote) repository from its Git metadata.
+     *
+     * @param folder folder containing the files of the local repository
+     * @return new instance of {@link LocalRepositoryGate}
+     * @throws IOException if accessing the Git metadata of the local repository fails.
+     */
+    public static LocalRepositoryGate from(final Path folder) throws IOException {
+        try (Git git = Git.open(folder.toFile())) {
+            final String name = new RemoteName(git).retrieve().orElse(folder.getFileName().toString());
+            return new LocalRepositoryGate(folder.toString(), name);
+        }
+    }
+
     private final String localPath;
     private final String fullName;
 
@@ -52,20 +68,19 @@ public class LocalRepositoryGate implements RepositoryGate {
 
     @Override
     public String getSingleFileContentAsString(final String filePath) {
-        final Path path = Paths.get(this.localPath, filePath);
+        final Path path = Path.of(this.localPath, filePath);
         try {
             return Files.readString(path);
         } catch (final IOException exception) {
             throw new RepositoryException(ExaError.messageBuilder("E-RD-REP-1")
-                    .message("Cannot read a file from the local repository: {{path}}.")
-                    .parameter("path", this.localPath + filePath)
+                    .message("Cannot read a file from the local repository: {{path}}.").parameter("path", path)
                     .mitigation("Please check that the file exists and the local path is correct").toString());
         }
     }
 
     @Override
     public boolean hasFile(final String filePath) {
-        return Files.exists(Paths.get(this.localPath, filePath));
+        return Files.exists(Path.of(this.localPath, filePath));
     }
 
     @Override

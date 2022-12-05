@@ -111,9 +111,9 @@ If you want to reduce the number of keystrokes required to run release droid you
 
 If you create this file in your home directory then release droid will read credentials for GitHub and Jira from this file. This way you no longer need to manually enter the credentials into the terminal each time you want to run release droid.
 
-On Windows you can place the `credentials` file in `C:\Users\<username>\.release-droid` (Full path: `C:\Users\<username>\.release-droid\credentials`).
+On Windows RD expects the file at `C:\Users\<username>\.release-droid\credentials`.
 
-Sample content
+Sample content:
 
 ```properties
 github_username=<your github username>
@@ -122,8 +122,11 @@ jira_username=<your jira user name>
 jira_password=<jira password>
 ```
 
-The last to lines are only relevant if releasing to platform Jira.<br />
-If Release Droid cannot find this file during an execution, it asks the user to input the credentials directly through terminal.<br />
+The lines with prefix "jira" are only relevant if releasing to platform Jira.
+
+If you want RD to generate a [Release Guide](#release-guide) then you might want to add additional entries.
+
+If RD cannot find this file during runtime, it asks the user to input the credentials directly through terminal.
 
 We recommend restricting access to this file for security purposes:
 
@@ -148,6 +151,8 @@ release-platforms:
 language: Java
 ```
 
+Section [Release Guide](#release-guide) describes optional additional entries.
+
 ## How to Use Release Droid
 
 ### Run from Terminal
@@ -168,29 +173,30 @@ language: Java
 
 1. Run Release Droid from a terminal:
 
-   `java -jar release-droid-1.3.2.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
+   `java -jar release-droid-1.4.0.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
 
    For example:
 
-   `java -jar release-droid-1.3.2.jar -name virtual-schema-common-java -goal validate -platforms github`
+   `java -jar release-droid-1.4.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
-   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.3.2.jar %*`.
+   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.4.0.jar %*`.
    Make sure you use the full path for the .jar file and don't forget to include the location of your new batch file in your PATH so you can always access it from your CLI.
    You can just use the name of the .bat file you created from then on e.g.:
    `release-droid -name virtual-schema-common-java -goal validate ...`
 
 #### Command Line Arguments
 
-| Long Option     | Short Option | Mandatory | Description                                             | Possible values                        |
-|-----------------|--------------|-----------|---------------------------------------------------------|----------------------------------------|
-| -branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                |
-| -goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                  |
-| -help           | -h           | No        | Prints help                                             |                                        |
-| -language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`             |
-| -local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path |
-| -name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name            |
-| -platforms      | -p           | No        | Comma-separated list of release platforms. (*)          | `github`, `maven`, `jira`              |
-| -skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                        |
+| Long Option     | Short Option | Mandatory | Description                                             | Possible values                         |
+|-----------------|--------------|-----------|---------------------------------------------------------|-----------------------------------------|
+| -branch         | -b           | No        | Git branch to work with (only for `validate` goal)      | A valid git branch name                 |
+| -goal           | -g           | No        | Goal to execute. `validate` is a default goal.          | `validate`, `release`                   |
+| -help           | -h           | No        | Prints help                                             |                                         |
+| -language       | -lg          | No        | Specify repository language if not auto-detected        | `java`, `scala`, `generic`              |
+| -local          | -l           | No        | Path to the repository root directory                   | A valid repository root directory path  |
+| -name           | -n           | Yes       | GitHub project name                                     | A valid GitHub project name             |
+| -platforms      | -p           | No        | Comma-separated list of release platforms. (*)          | `github`, `maven`, `jira`               |
+| -skipvalidation |              | No        | Only valid with `release` goal. Use in emergency cases. |                                         |
+| -release-guide  | -guide       | No        | Path to write the [Release Guide](#release-guide) to    | Valid path to a file, may exist already |
 
 (*) There are two ways to specify multiple platforms via CLI:
 
@@ -203,6 +209,60 @@ Please also note the option to specify the platforms in the configuration file [
 
 * `validate` - check if the repository is ready to be released. Runs on default branch if `--branch` is not provided.
 * `release` - validate and immediately start the release process. Only runs on the default branch.
+
+### Release Guide
+
+Making releases still requires time, effort, and often stereotype tasks. Depending on the project to release the user needs to aggregate data from various sources and type it into different documents and publications. Release Droid therefore provides a document guiding the user through the release process to make releasing as convenient as possible.
+
+Upon [command line option](#command-line-arguments) `-guide` or `--release-guide` RD generates an HTML page containing the release guide.
+
+The user can open the document in a  web browser, follow the described steps, and copy the data for release checklist, team planning, and announcement to chat channels.
+
+#### Data Sources For Release Guide
+
+RD collects the data from various sources:
+
+| Source                                  | Location              | Retrieved information            | Key                                                                             |
+|-----------------------------------------|-----------------------|----------------------------------|---------------------------------------------------------------------------------|
+| `project-overview/projects.yaml`        | GitHub                | Target audience                  |                                                                                 |
+| file `release_config.yml`               | project's repository  | Maven URLs                       | `maven-artifacts`                                                               |
+| file `error_code_config.yml`            | project's repository  | Short tag for team planning page | See [error-code-crawler-maven-plugin](https://github.com/exasol/error-code-crawler-maven-plugin) for details |
+| file `doc/changes/changes_<version>.md` | project's repository  | Release summary                  | `## Summary`                                                                    |
+| file `~/.release-droid/credentials`     | user's home directory | URLs for announcing the release  | See section [URLs for Announcing the Release](#urls-for-announcing-the-release) |
+
+#### Link to Release on Maven Central
+
+If your project is published to Maven Central (i.e. file [`release_config.yml`](#file-release_configyml) mentions platform `Maven`) then RD also adds an appropriate link to the release guide.
+
+By default RD generates the link based on the name of the project's repository. In case your project generates multiple Maven artifacts you need to specify their names in file [`release_config.yml`](#file-release_configyml):
+
+```
+maven-artifacts:
+  - exasol/project-keeper-cli
+  - exasol/project-keeper-maven-plugin
+```
+
+#### URLs for Announcing the Release
+
+In file [`~/.release-droid/credentials`](#file-release-droidcredentials) you can add the following keys and assign a URL to each of them
+
+| Key                  | Value: URL of                                                         |
+|----------------------|-----------------------------------------------------------------------|
+| `release_checklists` | Release checklists page                                               |
+| `team_planning`      | Team planning page current quarter in company wiki                    |
+| `team_channel`       | Channel for announcing new releases to team in company chat tool      |
+| `customer_channel`   | Channel for announcing new releases to customers in company chat tool |
+
+When generating the release guide RD will use these URLs in the generated HTML file.
+
+Additional sample content in file `~/.release-droid/credentials`:
+
+```properties
+release_checklists=https://intranet....
+team_planning=https://intranet....
+team_channel=https://channel....
+customer_channel=https://channel...
+```
 
 ## Debugging
 

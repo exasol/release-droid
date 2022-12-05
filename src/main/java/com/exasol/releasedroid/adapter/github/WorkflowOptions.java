@@ -11,7 +11,7 @@ import com.exasol.releasedroid.progress.Progress;
 public class WorkflowOptions {
 
     private Map<String, Object> dispatches = Collections.emptyMap();
-    private Progress progress = Progress.SILENT;
+    private Progress progress = Progress.silent();
 
     /**
      * @param value dispatches to be used when executing the workflow

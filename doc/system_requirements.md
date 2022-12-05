@@ -105,6 +105,13 @@ RD estimates the duration of the release process and displays progress during re
 
 Needs: req
 
+### Release Guide
+`feat~release-guide~1`
+
+RD supports developers to aggregate data describing the release and for announcing it to the defined channels.
+
+Needs: req
+
 ## Functional Requirements
 
 ### Access Project Files
@@ -174,6 +181,31 @@ RD estimates the duration of the release process and displays progress during re
 
 Covers:
 * `feat~estimation-and-progress-display~1`
+
+Needs: dsn
+
+### Release Guide
+
+#### Target Audience for Annnouncing the Release
+`req~target-audience-for-annnouncing-the-release~1`
+
+RD identifies the defined target audience for annnouncing the release.
+
+Covers:
+* `feat~release-guide~1`
+
+Needs: dsn
+
+#### Channels for Announcing the Release
+`req~channels-for-announcing-the-release~1`
+
+The release guide lists all channels the developer needs to announce the release to:
+* team's release checklist in the company's intranet
+* entry in the team planning page in the company's intranet
+* appropriate chat channel for the detected target audience
+
+Covers:
+* `feat~release-guide~1`
 
 Needs: dsn
 

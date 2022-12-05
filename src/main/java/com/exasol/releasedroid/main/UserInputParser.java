@@ -9,18 +9,24 @@ import com.exasol.releasedroid.usecases.request.UserInput;
  * Parser for user input.
  */
 public class UserInputParser {
-    private static final String PLATFORM_SHORT_OPTION = "p";
-    private static final String NAME_SHORT_OPTION = "n";
-    private static final String GOAL_SHORT_OPTION = "g";
-    private static final String BRANCH_SHORT_OPTION = "b";
-    private static final String LOCAL_SHORT_OPTION = "l";
-    private static final String LANGUAGE_SHORT_OPTION = "lg";
-    private static final String HELP_SHORT_OPTION = "h";
-    private static final String SKIP_VALIDATION_OPTION = "skipvalidation";
+    private static final Option NAME = new Option("n", "name", true, "project name");
+    private static final Option GOAL = new Option("g", "goal", true, "goal to execute");
+    private static final Option PLATFORM = Option.builder().option("p").longOpt("platforms") //
+            .numberOfArgs(Option.UNLIMITED_VALUES).valueSeparator(',') //
+            .desc("comma-separated list of release platforms") //
+            .build();
+    private static final Option BRANCH = new Option("b", "branch", true, "git branch (only for validation)");
+    private static final Option LOCAL = new Option("l", "local", true, "local path to the repository");
+    private static final Option LANGUAGE = new Option("lg", "language", true, //
+            "programming language of the repository");
+    private static final Option HELP = new Option("h", "help", false, "Help command");
+    private static final Option SKIP_VALIDATION = new Option("skipvalidation", "skipvalidation", false,
+            "Release without validation.");
+    private static final Option RELEASE_GUIDE = new Option("guide", "release-guide", true, "Generate release guide.");
 
     /**
      * Parse user input.
-     * 
+     *
      * @param args user input from the console
      * @return instance of {@link UserInput}
      */
@@ -29,38 +35,35 @@ public class UserInputParser {
         final CommandLine cmd = getCommandLine(args, options);
         printHelpIfNeeded(options, cmd);
         return UserInput.builder() //
-                .repositoryName(cmd.getOptionValue(NAME_SHORT_OPTION)) //
-                .goal(cmd.getOptionValue(GOAL_SHORT_OPTION)) //
-                .platforms(cmd.getOptionValues(PLATFORM_SHORT_OPTION)) //
-                .branch(cmd.getOptionValue(BRANCH_SHORT_OPTION)) //
-                .localPath(cmd.getOptionValue(LOCAL_SHORT_OPTION)) //
-                .language(cmd.getOptionValue(LANGUAGE_SHORT_OPTION)) //
-                .skipValidation(cmd.hasOption(SKIP_VALIDATION_OPTION)).build();
+                .repositoryName(cmd.getOptionValue(NAME)) //
+                .goal(cmd.getOptionValue(GOAL)) //
+                .platforms(cmd.getOptionValues(PLATFORM)) //
+                .branch(cmd.getOptionValue(BRANCH)) //
+                .localPath(cmd.getOptionValue(LOCAL)) //
+                .language(cmd.getOptionValue(LANGUAGE)) //
+                .skipValidation(cmd.hasOption(SKIP_VALIDATION)) //
+                .releaseGuide(cmd.getOptionValue(RELEASE_GUIDE)) //
+                .build();
     }
 
     private void printHelpIfNeeded(final Options options, final CommandLine cmd) {
-        if (cmd.hasOption(HELP_SHORT_OPTION)) {
+        if (cmd.hasOption(HELP)) {
             printHelp(options);
             System.exit(0);
         }
     }
 
     private static Options createOptions() {
-        final Option name = new Option(NAME_SHORT_OPTION, "name", true, "project name");
-        final Option goal = new Option(GOAL_SHORT_OPTION, "goal", true, "goal to execute");
-        final Option platforms = new Option(PLATFORM_SHORT_OPTION, "platforms", true,
-                "comma-separated list of release platforms");
-        platforms.setArgs(Option.UNLIMITED_VALUES);
-        platforms.setValueSeparator(',');
-        final Option branch = new Option(BRANCH_SHORT_OPTION, "branch", true, "git branch (only for validation)");
-        final Option local = new Option(LOCAL_SHORT_OPTION, "local", true, "local path to the repository");
-        final Option language = new Option(LANGUAGE_SHORT_OPTION, "language", true,
-                "programming language of the repository");
-        final Option help = new Option(HELP_SHORT_OPTION, "help", false, "Help command");
-        final Option skipValidation = new Option(SKIP_VALIDATION_OPTION, SKIP_VALIDATION_OPTION, false,
-                "Release without validation.");
-        return new Options().addOption(name).addOption(goal).addOption(platforms).addOption(branch).addOption(local)
-                .addOption(language).addOption(help).addOption(skipValidation);
+        return new Options() //
+                .addOption(NAME) //
+                .addOption(GOAL) //
+                .addOption(PLATFORM) //
+                .addOption(BRANCH) //
+                .addOption(LOCAL) //
+                .addOption(LANGUAGE) //
+                .addOption(HELP) //
+                .addOption(SKIP_VALIDATION) //
+                .addOption(RELEASE_GUIDE);
     }
 
     private static CommandLine getCommandLine(final String[] args, final Options options) {

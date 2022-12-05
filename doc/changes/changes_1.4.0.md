@@ -4,12 +4,18 @@ Code name: Improved warning message for unspecified release platforms
 
 ## Summary
 
+Added option to generate a release guide guiding the user through the release process, see details in the User Guide.
+
 Improved warning message for unspecified release platforms.
 
 If user misspells the key `release-platforms` then RD complained about missing specification of release platforms but was not able to identify a misspelled key, e.g. `platforms` in the reported issue for repository [small-json-files-test-fixture](https://github.com/exasol/small-json-files-test-fixture).
 
 The improved warning message is now
 > E-RD-20: No release platform specified. Please specify at least one release platform either on command line or with key 'release-platforms' in file 'release_config.yml' and re-run the Release Droid.
+
+## Features
+
+* #275: Generate a release guide.
 
 ## Bug Fixes
 
@@ -36,3 +42,13 @@ The improved warning message is now
 * Updated `org.junit.jupiter:junit-jupiter:5.9.0` to `5.9.1`
 * Updated `org.mockito:mockito-core:4.6.1` to `4.8.0`
 * Updated `org.mockito:mockito-junit-jupiter:4.6.1` to `4.8.0`
+
+### Plugin Dependency Updates
+
+* Updated `com.exasol:artifact-reference-checker-maven-plugin:0.4.0` to `0.4.2`
+* Updated `com.exasol:error-code-crawler-maven-plugin:1.1.2` to `1.2.1`
+* Updated `com.exasol:project-keeper-maven-plugin:2.8.0` to `2.9.1`
+* Updated `io.github.zlika:reproducible-build-maven-plugin:0.15` to `0.16`
+* Updated `org.apache.maven.plugins:maven-jar-plugin:3.2.2` to `3.3.0`
+* Updated `org.codehaus.mojo:flatten-maven-plugin:1.2.7` to `1.3.0`
+* Updated `org.codehaus.mojo:versions-maven-plugin:2.10.0` to `2.13.0`
