@@ -29,7 +29,7 @@ public class UserInput {
     /**
      * Check if input contains a branch.
      *
-     * @return {@code true} if a branch presents
+     * @return {@code true} if a branch is present
      */
     public boolean hasBranch() {
         return (this.branch != null) && !this.branch.isEmpty();
@@ -65,7 +65,7 @@ public class UserInput {
     /**
      * Check if input contains goal.
      *
-     * @return {@code true} if a goal present
+     * @return {@code true} if a goal is present
      */
     public boolean hasGoal() {
         return this.goal != null;
@@ -92,7 +92,7 @@ public class UserInput {
     /**
      * Check if input contains platforms.
      *
-     * @return {@code true} if platforms present
+     * @return {@code true} if platforms are present
      */
     public boolean hasPlatforms() {
         return (this.platformNames != null) && !this.platformNames.isEmpty();
@@ -110,7 +110,7 @@ public class UserInput {
     /**
      * Check if input contains a repository name.
      *
-     * @return {@code true} if a repository name present
+     * @return {@code true} if a repository name is present
      */
     public boolean hasRepositoryName() {
         return (this.repositoryName != null) && !this.repositoryName.isEmpty();
@@ -128,7 +128,7 @@ public class UserInput {
     /**
      * Check if input contains an owner.
      *
-     * @return {@code true} if an owner present
+     * @return {@code true} if an owner is present
      */
     public boolean hasOwner() {
         return (this.owner != null) && !this.owner.isEmpty();

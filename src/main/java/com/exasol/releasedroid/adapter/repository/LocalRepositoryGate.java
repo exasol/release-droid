@@ -47,9 +47,10 @@ public class LocalRepositoryGate implements RepositoryGate {
      * @throws IOException if accessing the Git metadata of the local repository fails.
      */
     public static LocalRepositoryGate from(final Path folder) throws IOException {
-        final String name = new RemoteName(Git.open(folder.toFile())).retrieve()
-                .orElse(folder.getFileName().toString());
-        return new LocalRepositoryGate(folder.toString(), name);
+        try (Git git = Git.open(folder.toFile())) {
+            final String name = new RemoteName(git).retrieve().orElse(folder.getFileName().toString());
+            return new LocalRepositoryGate(folder.toString(), name);
+        }
     }
 
     private final String localPath;

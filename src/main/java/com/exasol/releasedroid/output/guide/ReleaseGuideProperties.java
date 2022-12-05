@@ -19,7 +19,7 @@ class ReleaseGuideProperties implements PropertyReader {
         try (final InputStream stream = Files.newInputStream(path)) {
             properties.load(stream);
         } catch (final IOException exception) {
-            // class XProperties is designed to not throw an exception in case read from file fails
+            // class ReleaseGuideProperties is designed to not throw an exception in case read from file fails
         }
         return new ReleaseGuideProperties(path, properties);
     }
