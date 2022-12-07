@@ -1,6 +1,6 @@
-# Exasol Release Droid 1.3.2, released 2022-??-??
+# Exasol Release Droid 1.4.0, released 2022-12-07
 
-Code name: Improved warning message for unspecified release platforms
+Code name: Release Guide
 
 ## Summary
 
@@ -13,13 +13,17 @@ If user misspells the key `release-platforms` then RD complained about missing s
 The improved warning message is now
 > E-RD-20: No release platform specified. Please specify at least one release platform either on command line or with key 'release-platforms' in file 'release_config.yml' and re-run the Release Droid.
 
+Bug #278 was caused by dependency `jira-rest-java-client-core` using an older version of `slf4j-api:1.7.30` while there was a direct dependency to the implementation `slf4j-simple:2.0.3` and could be fixed by downgrading dependency to slf4j implementation to version `slf4j-simple:1.7.36`.
+
 ## Features
 
 * #275: Generate a release guide.
 
 ## Bug Fixes
 
+* #277: Made RD ignore Git tags with unsupported version pattern.
 * #266: Improved warning message for unspecified release platforms.
+* #278: Fixed slf4j error "failed to load class StaticLoggerBinder"
 
 ## Dependency Updates
 
@@ -30,7 +34,6 @@ The improved warning message is now
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.2.0.202206071550-r` to `6.3.0.202209071007-r`
 * Updated `org.json:json:20220320` to `20220924`
 * Updated `org.kohsuke:github-api:1.307` to `1.313`
-* Updated `org.slf4j:slf4j-simple:1.7.36` to `2.0.3`
 
 ### Runtime Dependency Updates
 

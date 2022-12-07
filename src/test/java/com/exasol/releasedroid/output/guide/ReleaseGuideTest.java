@@ -28,7 +28,7 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
 class ReleaseGuideTest {
 
     private static final String GITHUB_URL = "https://github.com/releases/tag/1.2.3";
-    private static final String GITHUB_DRAFT_URL = GITHUB_URL.replaceFirst("/releases/tag/.*", "/releases/edit/");
+    private static final String GITHUB_DRAFT_URL = GITHUB_URL.replaceFirst("/releases/tag/.*", "/releases/");
     private static final String MAVEN_URL = "https://repo1.maven.org/maven2/com/exasol/sample-repo/1.2.3/";
     private static final String TEAM_PLANNING = "http://team_planning";
     private static final String RELEASE_CHECKLISTS = "http://release_checklists";

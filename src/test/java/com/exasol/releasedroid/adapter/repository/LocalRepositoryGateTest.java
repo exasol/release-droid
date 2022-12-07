@@ -27,6 +27,8 @@ class LocalRepositoryGateTest {
         final List<Ref> refs = List.of( //
                 mockRef("1.2.3"), //
                 mockRef("v1.2.1"), //
+                mockRef("xxx"), //
+                mockRef("go-sufolder/9.9.9-a"), //
                 mockRef("go-subfolder/v1.0.1"));
         final Optional<Version> actual = LocalRepositoryGate.latestTagFromRefs(refs);
         assertAll(() -> assertThat(actual.isPresent(), is(true)), //
