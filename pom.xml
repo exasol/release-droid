@@ -58,7 +58,8 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.3</version>
+            <!-- must be compatible to slf-api:1.7.30 required by jira-rest-java-client-core -->
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
