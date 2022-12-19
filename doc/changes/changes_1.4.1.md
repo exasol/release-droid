@@ -21,7 +21,7 @@ Updated dependencies and excluded vulnerability sonatype-2022-6438 reported for 
 
 ### Runtime Dependency Updates
 
-* Updated `org.springframework:spring-beans:5.3.23` to `6.0.3`
+* Updated `org.springframework:spring-beans:5.3.23` to `5.3.24`
 
 ### Test Dependency Updates
 
