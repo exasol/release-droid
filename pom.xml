@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <mockito.version>4.8.0</mockito.version>
+        <mockito.version>4.10.0</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -27,12 +27,12 @@
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.23</version>
+            <version>6.0.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -48,12 +48,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.0-rc1</version>
+            <version>2.14.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.3.0.202209071007-r</version>
+            <version>6.4.0.202211300538-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.19.0</version>
+            <version>0.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.10.1</version>
+            <version>3.12.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -177,12 +177,13 @@
                 <artifactId>ossindex-maven-plugin</artifactId>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!--Excluded vulnerability reported for transitive dependency of jira-rest-java-client-core as there is no newer release of guava available, see https://github.com/exasol/release-droid/issues/234 -->
+                        <!-- Excluded vulnerability reported for transitive dependency of jira-rest-java-client-core as there is no newer release of guava available, see https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>sonatype-2020-0926</exclude>
                         <!-- Exclude vulnerabilities found in org.yaml:snakeyaml:jar:1.33
                              as there is no update available currently -->
                         <exclude>CVE-2022-1471</exclude>
-                        <exclude>CVE-2022-40150</exclude>
+                        <!-- Exclude vulnerability for com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update available, yet. -->
+                        <exclude>sonatype-2022-6438</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
@@ -268,7 +269,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
     <url>https://github.com/exasol/release-droid/</url>
