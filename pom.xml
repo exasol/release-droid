@@ -29,6 +29,7 @@
             <artifactId>jettison</artifactId>
             <version>1.5.3</version>
         </dependency>
+        <!-- Major version 5 required to remain compatible to jira-rest-java-client-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
