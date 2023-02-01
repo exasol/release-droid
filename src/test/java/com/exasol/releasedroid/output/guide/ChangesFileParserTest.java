@@ -19,7 +19,7 @@ class ChangesFileParserTest {
     static final String SAMPLE = lines( //
             "# Header", //
             "", //
-            "Code name: bla bla", //
+            "Code name: Release Code Name", //
             "", //
             "##Summary", //
             "", //
@@ -37,6 +37,7 @@ class ChangesFileParserTest {
             "bla bla", //
             "");
     private static final String EXPECTED = lines( //
+            "Release Code Name: ", //
             "Initial sentence", //
             "<ul>", //
             "<li>first list item with <code>code</code></li>", //

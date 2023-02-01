@@ -5,12 +5,18 @@ Code name: Updated Release Guide
 ## Summary
 
 This release fixes and improves the Release Guide added in version 1.4.0.
+* Moved "edit draft release" to the bottom of the release guide, as this action usually comes last because it needs to wait until RD has created the draft release on github.
+* Add code name to proposed release summary in release guide
+* Enable users to configure the prefix for announcements in file `.release-droid/credentials`, e.g. "I just released" 
+
 
 ## Features
 
-* #281: For projects with multiple error codes display the shortest common prefix.
+* #280: Optimized Release Guide
 
 ## Bugfixes
+
+* #281: Fixed display of shortest common prefix for projects with multiple error codes.
 
 Marked vulnerability CVE-2022-45688 in [org.json:json:jar:20220924](https://ossindex.sonatype.org/component/pkg:maven/org.json/json@20220924?u) in compile to be ignored as affected releases to community portal are currently disabled anyway.
 

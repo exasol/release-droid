@@ -85,6 +85,7 @@ public class ReleaseGuide {
                 .replace("$TeamPlanning", properties.teamPlanning()) //
                 .replace("$ProjectShortTag", shortTag) //
                 .replace("$AnnounceChannel", properties.announceChannel(targetAudience)) //
+                .replace("$AnnouncePrefix", properties.announcePrefix()) //
                 .replace("$PublicationPlatforms", publication.icons()) //
                 .replace("$ReleaseContentSummary", changesFile.getSummary());
     }
