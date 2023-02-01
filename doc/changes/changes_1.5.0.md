@@ -7,8 +7,9 @@ Code name: Updated Release Guide
 This release fixes and improves the Release Guide added in version 1.4.0.
 * Moved "edit draft release" to the bottom of the release guide, as this action usually comes last because it needs to wait until RD has created the draft release on github.
 * Add code name to proposed release summary in release guide
-* Enable users to configure the prefix for announcements in file `.release-droid/credentials`, e.g. "I just released" 
+* Enable users to configure the prefix for announcements in file `.release-droid/credentials`, e.g. "I just released"
 
+Additionally replaced the dependency to `org.json:json` by `jakarta.json:jakarta.json-api` and `org.eclipse.yasson`.
 
 ## Features
 
@@ -25,10 +26,13 @@ Marked vulnerability CVE-2022-45688 in [org.json:json:jar:20220924](https://ossi
 ### Compile Dependency Updates
 
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1` to `2.14.2`
+* Added `jakarta.json:jakarta.json-api:2.1.1`
 * Updated `org.apache.maven:maven-model:3.8.6` to `3.8.7`
 * Updated `org.codehaus.jettison:jettison:1.5.1` to `1.5.3`
 * Updated `org.commonmark:commonmark:0.19.0` to `0.21.0`
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r` to `6.4.0.202211300538-r`
+* Added `org.eclipse:yasson:2.0.4`
+* Removed `org.json:json:20220924`
 
 ### Runtime Dependency Updates
 
