@@ -32,7 +32,7 @@ class ShortTag {
     }
 
     private String shortestKey(final Map<?, ?> map) {
-        String tag = "";
+        String tag = null;
         for (final Object o : map.keySet()) {
             if (o instanceof String) {
                 tag = shortest(tag, (String) o);
@@ -42,7 +42,7 @@ class ShortTag {
     }
 
     private String shortest(final String current, final String candidate) {
-        return ((current == null) || candidate.startsWith(current)) //
+        return ((current == null) || current.startsWith(candidate)) //
                 ? candidate
                 : current;
     }

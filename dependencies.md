@@ -78,7 +78,7 @@
 [12]: https://commons.apache.org/proper/commons-cli/
 [13]: https://github.com/douglascrockford/JSON-java
 [14]: https://github.com/stleary/JSON-java/blob/master/LICENSE
-[15]: https://maven.apache.org/ref/3.8.6/maven-model/
+[15]: https://maven.apache.org/ref/3.8.7/maven-model/
 [16]: https://github.com/exasol/error-reporting-java/
 [17]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
 [18]: https://github.com/commonmark/commonmark-java
@@ -103,7 +103,7 @@
 [37]: https://www.mojohaus.org/flatten-maven-plugin/
 [38]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [39]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[40]: https://www.mojohaus.org/versions-maven-plugin/
+[40]: https://www.mojohaus.org/versions/versions-maven-plugin/
 [41]: https://maven.apache.org/plugins/maven-assembly-plugin/
 [42]: https://maven.apache.org/plugins/maven-jar-plugin/
 [43]: https://github.com/itsallcode/openfasttrace-maven-plugin
