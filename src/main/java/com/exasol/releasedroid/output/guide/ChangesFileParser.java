@@ -18,7 +18,7 @@ class ChangesFileParser {
         return "doc/changes/changes_" + version + ".md";
     }
 
-    private static final Pattern CODE_NAME = Pattern.compile("^Code name:\\s*(.*)");
+    private static final Pattern CODE_NAME = Pattern.compile("^Code name:\\s*(.*?)");
     private static final Pattern SUMMARY = Pattern.compile("^##\\s*Summary\\s*");
 
     static boolean empty(final String line) {
