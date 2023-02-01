@@ -173,13 +173,13 @@ Section [Release Guide](#release-guide) describes optional additional entries.
 
 1. Run Release Droid from a terminal:
 
-   `java -jar release-droid-1.4.1.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
+   `java -jar release-droid-1.5.0.jar -name <project name> -goal <goal> -platforms <comma-separated list of platforms>`
 
    For example:
 
-   `java -jar release-droid-1.4.1.jar -name virtual-schema-common-java -goal validate -platforms github`
+   `java -jar release-droid-1.5.0.jar -name virtual-schema-common-java -goal validate -platforms github`
 
-   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.4.1.jar %*`.
+   (Optional) Windows: You can simplify this by creating a `release-droid.bat` file containing the following contents `java -jar C:\tools\release-droid-1.5.0.jar %*`.
    Make sure you use the full path for the .jar file and don't forget to include the location of your new batch file in your PATH so you can always access it from your CLI.
    You can just use the name of the .bat file you created from then on e.g.:
    `release-droid -name virtual-schema-common-java -goal validate ...`
