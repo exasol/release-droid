@@ -67,7 +67,8 @@ class ReleaseGuideProperties implements PropertyReader {
     }
 
     String announcePrefix() {
-        return getProperty(ANNOUNCE_PREFIX_KEY);
+        final String value = getProperty(ANNOUNCE_PREFIX_KEY);
+        return value != null ? value : "I am happy to announce";
     }
 
     private String getProperty(final String key) {
