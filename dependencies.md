@@ -14,7 +14,7 @@
 | [SLF4J Simple Binding][10]                  | [MIT License][11]                                                                                              |
 | [Apache Commons CLI][12]                    | [Apache License, Version 2.0][8]                                                                               |
 | [Jakarta JSON Processing API][13]           | [Eclipse Public License 2.0][14]; [GNU General Public License, version 2 with the GNU Classpath Exception][15] |
-| [org.eclipse.yasson][16]                    | [Eclipse Public License v. 2.0][17]; [Eclipse Distribution License v. 1.0][18]                                 |
+| [Yasson][16]                                | [Eclipse Public License v. 2.0][17]; [Eclipse Distribution License v. 1.0][18]                                 |
 | [Maven Model][19]                           | [Apache License, Version 2.0][8]                                                                               |
 | [error-reporting-java][20]                  | [MIT License][21]                                                                                              |
 | [commonmark-java core][22]                  | [BSD 2-Clause License][23]                                                                                     |

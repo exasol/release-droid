@@ -29,7 +29,7 @@ Additionally replaced the dependency to `org.json:json` by `jakarta.json:jakarta
 * Updated `org.codehaus.jettison:jettison:1.5.1` to `1.5.3`
 * Updated `org.commonmark:commonmark:0.19.0` to `0.21.0`
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r` to `6.4.0.202211300538-r`
-* Added `org.eclipse:yasson:2.0.4`
+* Added `org.eclipse:yasson:3.0.2`
 * Removed `org.json:json:20220924`
 
 ### Runtime Dependency Updates
