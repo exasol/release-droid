@@ -4,7 +4,7 @@ Code name: Updated Release Guide
 
 ## Summary
 
-This release improves the Release Guide added in version 1.4.0.
+This release fixes and improves the Release Guide added in version 1.4.0.
 
 ## Features
 
