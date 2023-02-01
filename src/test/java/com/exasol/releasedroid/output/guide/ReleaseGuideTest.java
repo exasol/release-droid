@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.output.guide;
 
+import static com.exasol.releasedroid.Lines.lines;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -13,8 +14,6 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -132,9 +131,5 @@ class ReleaseGuideTest {
                 "  - id: " + repo, //
                 "    target_audience: " + targetAudience);
         return new ByteArrayInputStream(content.getBytes());
-    }
-
-    private String lines(final String... string) {
-        return Stream.of(string).collect(Collectors.joining("\n"));
     }
 }

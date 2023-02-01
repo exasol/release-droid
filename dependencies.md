@@ -103,7 +103,7 @@
 [37]: https://www.mojohaus.org/flatten-maven-plugin/
 [38]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [39]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[40]: https://www.mojohaus.org/versions-maven-plugin/
+[40]: https://www.mojohaus.org/versions/versions-maven-plugin/
 [41]: https://maven.apache.org/plugins/maven-assembly-plugin/
 [42]: https://maven.apache.org/plugins/maven-jar-plugin/
 [43]: https://github.com/itsallcode/openfasttrace-maven-plugin
