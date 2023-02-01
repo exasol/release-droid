@@ -19,8 +19,6 @@ Additionally replaced the dependency to `org.json:json` by `jakarta.json:jakarta
 
 * #281: Fixed display of shortest common prefix for projects with multiple error codes.
 
-Marked vulnerability CVE-2022-45688 in [org.json:json:jar:20220924](https://ossindex.sonatype.org/component/pkg:maven/org.json/json@20220924?u) in compile to be ignored as affected releases to community portal are currently disabled anyway.
-
 ## Dependency Updates
 
 ### Compile Dependency Updates

@@ -190,6 +190,8 @@
                         <exclude>CVE-2022-1471</exclude>
                         <!-- Ignore vulnerability for com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update available, yet. -->
                         <exclude>sonatype-2022-6438</exclude>
+                        <!-- Ignore vulnerability in org.json:json:jar:20220924 as affected releases to community portal are currently disabled anyway -->
+                        <exclude>CVE-2022-45688</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
