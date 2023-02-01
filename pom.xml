@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <mockito.version>4.10.0</mockito.version>
+        <mockito.version>5.1.1</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.1</version>
+            <version>2.14.2</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>3.8.6</version>
+            <version>3.8.7</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.1</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.12.3</version>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -178,13 +178,15 @@
                 <artifactId>ossindex-maven-plugin</artifactId>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!-- Excluded vulnerability reported for transitive dependency of jira-rest-java-client-core as there is no newer release of guava available, see https://github.com/exasol/release-droid/issues/234 -->
+                        <!-- Ignore vulnerability reported for transitive dependency of jira-rest-java-client-core as there is no newer release of guava available, see https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>sonatype-2020-0926</exclude>
-                        <!-- Exclude vulnerabilities found in org.yaml:snakeyaml:jar:1.33
+                        <!-- Ignore vulnerabilities found in org.yaml:snakeyaml:jar:1.33
                              as there is no update available currently -->
                         <exclude>CVE-2022-1471</exclude>
-                        <!-- Exclude vulnerability for com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update available, yet. -->
+                        <!-- Ignore vulnerability for com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update available, yet. -->
                         <exclude>sonatype-2022-6438</exclude>
+                        <!-- Ignore vulnerability in org.json:json:jar:20220924 as affected releases to community portal are currently disabled anyway -->
+                        <exclude>CVE-2022-45688</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
