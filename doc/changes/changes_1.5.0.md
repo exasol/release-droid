@@ -14,6 +14,7 @@ Additionally replaced the dependency to `org.json:json` by `jakarta.json:jakarta
 ## Features
 
 * #280: Optimized Release Guide
+* #272: Changed duration estimate to consider only successful workflow runs
 
 ## Bugfixes
 
