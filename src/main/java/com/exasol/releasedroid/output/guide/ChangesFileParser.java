@@ -2,6 +2,7 @@ package com.exasol.releasedroid.output.guide;
 
 import java.io.*;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.exasol.releasedroid.usecases.exception.RepositoryException;
@@ -17,6 +18,7 @@ class ChangesFileParser {
         return "doc/changes/changes_" + version + ".md";
     }
 
+    private static final Pattern CODE_NAME = Pattern.compile("^Code name:\\s*(\\S.*)");
     private static final Pattern SUMMARY = Pattern.compile("^##\\s*Summary\\s*");
 
     static boolean empty(final String line) {
@@ -55,6 +57,12 @@ class ChangesFileParser {
             String line;
             while (((line = reader.readLine()) != null) && (mode != Mode.DONE)) {
                 mode = mode.next(line);
+                if (mode == Mode.SEARCH) {
+                    final Matcher matcher = CODE_NAME.matcher(line);
+                    if (matcher.matches()) {
+                        sb.append(matcher.group(1)).append(": ");
+                    }
+                }
                 if (!mode.isCollect()) {
                     continue;
                 }

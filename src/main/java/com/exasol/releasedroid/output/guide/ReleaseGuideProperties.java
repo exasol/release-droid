@@ -13,6 +13,7 @@ class ReleaseGuideProperties implements PropertyReader {
 
     private static final String RELEASE_CHECKLISTS_KEY = "release_checklists";
     private static final String TEAMPLANNING_KEY = "team_planning";
+    private static final String ANNOUNCE_PREFIX_KEY = "announce_prefix";
 
     static ReleaseGuideProperties from(final Path path) {
         final Properties properties = new Properties();
@@ -63,6 +64,11 @@ class ReleaseGuideProperties implements PropertyReader {
         return url != null //
                 ? String.format("<a href=\"%s\">%s</a>", url, channel.label)
                 : valueOrError(channel.property);
+    }
+
+    String announcePrefix() {
+        final String value = getProperty(ANNOUNCE_PREFIX_KEY);
+        return value != null ? value : "I am happy to announce";
     }
 
     private String getProperty(final String key) {

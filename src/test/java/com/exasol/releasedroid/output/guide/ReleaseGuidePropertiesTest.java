@@ -1,5 +1,6 @@
 package com.exasol.releasedroid.output.guide;
 
+import static com.exasol.releasedroid.Lines.lines;
 import static com.exasol.releasedroid.output.guide.ReleaseGuideProperties.error;
 import static com.exasol.releasedroid.output.guide.ReleaseGuideTest.ahref;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,8 +73,9 @@ class ReleaseGuidePropertiesTest {
     @Test
     void itest(@TempDir final Path temp) throws IOException {
         final Path file = temp.resolve("file.properties");
-        Files.writeString(file, "team_planning=abc");
+        Files.writeString(file, lines("team_planning=abc", "announce_prefix=prefix"));
         assertThat(ReleaseGuideProperties.from(file).teamPlanning(), equalTo(ahref("abc")));
+        assertThat(ReleaseGuideProperties.from(file).announcePrefix(), equalTo("prefix"));
     }
 
     // ------------------------------------------------------------

@@ -4,17 +4,14 @@ import static com.exasol.releasedroid.adapter.communityportal.CommunityPortalCon
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
-import java.net.ProxySelector;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-import org.json.JSONObject;
+import java.io.StringReader;
+import java.net.*;
+import java.net.http.*;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.PropertyReader;
+
+import jakarta.json.*;
 
 /**
  * Implements an adapter to interact with Exasol Community Portal via API.
@@ -24,7 +21,7 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
 
     /**
      * Create a new instance of {@link CommunityPortalAPIAdapter}.
-     * 
+     *
      * @param propertyReader property reader
      */
     public CommunityPortalAPIAdapter(final PropertyReader propertyReader) {
@@ -92,7 +89,13 @@ public class CommunityPortalAPIAdapter implements CommunityPortalGateway {
     }
 
     private String extractPostUrl(final String body) {
-        return new JSONObject(body).getJSONObject("data").getString("view_href");
+        return json(body).getJsonObject("data").getString("view_href");
+    }
+
+    static JsonObject json(final String string) {
+        try (JsonReader jsonReader = Json.createReader(new StringReader(string))) {
+            return jsonReader.readObject();
+        }
     }
 
     private void validateResponse(final HttpResponse<String> response) throws CommunityPortalException {

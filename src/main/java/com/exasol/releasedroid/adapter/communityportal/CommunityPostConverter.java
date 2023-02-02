@@ -2,8 +2,7 @@ package com.exasol.releasedroid.adapter.communityportal;
 
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import jakarta.json.*;
 
 /**
  * Converter for Community Post.
@@ -19,26 +18,25 @@ public class CommunityPostConverter {
      * @return community post as a JSON string
      */
     public static String toJson(final CommunityPost communityPost) {
-        final var board = new JSONObject();
-        board.put("id", communityPost.getBoardId());
-        final var contentWorkflowAction = new JSONObject();
-        contentWorkflowAction.put("workflow_action", "submit_for_review");
-        final var jsonTags = new JSONObject();
-        final var tagItems = new JSONArray();
-        for (final var tag : communityPost.getTags()) {
-            tagItems.put(new JSONObject().put("text", tag));
+        final JsonArrayBuilder tagItems = Json.createArrayBuilder();
+        for (final String tag : communityPost.getTags()) {
+            tagItems.add(Json.createObjectBuilder().add("text", tag));
         }
-        jsonTags.put("items", tagItems);
-        final var data = new JSONObject();
-        data.put("type", "message");
-        data.put("board", board);
-        data.put("subject", communityPost.getHeader());
-        data.put("body", communityPost.getBody());
-        data.put("teaser", getTeaser(communityPost));
-        data.put("tags", jsonTags);
-        data.put("content_workflow_action", contentWorkflowAction);
-        final var jsonBody = new JSONObject();
-        jsonBody.put("data", data);
+
+        final JsonObject jsonBody = Json.createObjectBuilder() //
+                .add("data", Json.createObjectBuilder() //
+                        .add("subject", communityPost.getHeader()) //
+                        .add("type", "message") //
+                        .add("body", communityPost.getBody()) //
+                        .add("board", Json.createObjectBuilder() //
+                                .add("id", communityPost.getBoardId())) //
+                        .add("content_workflow_action", Json.createObjectBuilder() //
+                                .add("workflow_action", "submit_for_review")) //
+                        .add("teaser", getTeaser(communityPost)) //
+                        .add("tags", Json.createObjectBuilder() //
+                                .add("items", tagItems))) //
+                .build();
+
         return jsonBody.toString();
     }
 

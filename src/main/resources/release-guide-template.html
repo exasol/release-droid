@@ -92,9 +92,6 @@ function copy(id) {
 <h3>$PageTitle</h3>
 
 <table class="light">
-<tr><td class="blank" width="140">Edit Draft Release</td><td class="em">Copy</td></tr>
-<tr><th>Link</th><td></td><td><a href="$GitHubDraftReleaseUrl">Edit draft release</a> and make it final</td></tr>
-
 <tr><td class="blank">Release Checklist</td></tr>
 <tr><th>Link <span class="info" title="URL from file ~/.release-droid/credentials">&#x24D8;</span></th><td></td><td>$ReleaseChecklists</td></tr>
 <tr><th>Title</th><td><button title="Copy to clipboard" onclick="copy('ReleaseLabel')">&#x1F4CB;</button></td><td id="ReleaseLabel">$ReleaseLabel</td></tr>
@@ -108,7 +105,10 @@ function copy(id) {
 
 <tr><td class="blank">Announce on Slack</td></tr>
 <tr><th>Channel <span class="info" title="Derived from target audience">&#x24D8;</span></th><td></td><td>$AnnounceChannel</td></tr>
-<tr><th>Content</th><td><button title="Copy to clipboard" onclick="copy('AnnounceText')">&#x1F4CB;</button></td><td id="AnnounceText">I am happy to announce release <a href="$GitHubTagUrl">$ReleaseLabel</a> on $PublicationPlatforms: $ReleaseContentSummary</td></tr>
+<tr><th>Content</th><td><button title="Copy to clipboard" onclick="copy('AnnounceText')">&#x1F4CB;</button></td><td id="AnnounceText">$AnnouncePrefix release <a href="$GitHubTagUrl">$ReleaseLabel</a> on $PublicationPlatforms: $ReleaseContentSummary</td></tr>
+
+<tr><td class="blank" width="140">Edit Draft Release</td><td class="em">Copy</td></tr>
+<tr><th>Link</th><td></td><td><a href="$GitHubDraftReleaseUrl">Edit draft release</a> and make it final</td></tr>
 </table>
 
 </body></html>

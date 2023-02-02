@@ -31,6 +31,7 @@ class ReleaseGuideTest {
     private static final String MAVEN_URL = "https://repo1.maven.org/maven2/com/exasol/sample-repo/1.2.3/";
     private static final String TEAM_PLANNING = "http://team_planning";
     private static final String RELEASE_CHECKLISTS = "http://release_checklists";
+    private static final String ANNOUNCE_PREFIX = "Release announcement:";
 
     @Test
     void test() throws Exception {
@@ -49,7 +50,8 @@ class ReleaseGuideTest {
         assertThat(process(testee, "$TeamPlanning"), equalTo(ahref(TEAM_PLANNING)));
         assertThat(process(testee, "$AnnounceChannel"),
                 equalTo("<a href=\"http://customer_channel\">#global-product-news</a>"));
-        assertThat(process(testee, "$ReleaseContentSummary"), equalTo("Changes"));
+        assertThat(process(testee, "$ReleaseContentSummary"), equalTo("Code name: \nChanges"));
+        assertThat(process(testee, "$AnnouncePrefix"), equalTo(ANNOUNCE_PREFIX));
     }
 
     @Test
@@ -83,7 +85,8 @@ class ReleaseGuideTest {
                 "release_checklists", RELEASE_CHECKLISTS, //
                 "team_planning", TEAM_PLANNING, //
                 "team_channel", "http://team_channel", //
-                "customer_channel", "http://customer_channel" //
+                "customer_channel", "http://customer_channel", //
+                "announce_prefix", ANNOUNCE_PREFIX //
         ));
         final ReleaseGuideProperties rgprops = new ReleaseGuideProperties(Path.of(RELEASE_DROID_CREDENTIALS),
                 properties);
@@ -121,6 +124,8 @@ class ReleaseGuideTest {
 
     private final String changesFile() {
         return lines( //
+                "Code name: Code name", //
+                "", //
                 "## Summary", //
                 "Changes");
     }

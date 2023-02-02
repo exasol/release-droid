@@ -242,7 +242,7 @@ maven-artifacts:
   - exasol/project-keeper-maven-plugin
 ```
 
-#### URLs for Announcing the Release
+#### URLs and Introduction for Announcing the Release
 
 In file [`~/.release-droid/credentials`](#file-release-droidcredentials) you can add the following keys and assign a URL to each of them
 
@@ -252,8 +252,9 @@ In file [`~/.release-droid/credentials`](#file-release-droidcredentials) you can
 | `team_planning`      | Team planning page current quarter in company wiki                    |
 | `team_channel`       | Channel for announcing new releases to team in company chat tool      |
 | `customer_channel`   | Channel for announcing new releases to customers in company chat tool |
+| `announce_prefix`    | Introduction for your announcement, e.g. "I am happy to announce" or "I just released" |
 
-When generating the release guide RD will use these URLs in the generated HTML file.
+When generating the release guide RD will use these URLs and the introduction in the generated HTML file.
 
 Additional sample content in file `~/.release-droid/credentials`:
 
@@ -262,12 +263,12 @@ release_checklists=https://intranet....
 team_planning=https://intranet....
 team_channel=https://channel....
 customer_channel=https://channel...
+announce_prefix=I am happy to announce
 ```
 
 ## Debugging
 
 If you need to debug RD, you can adjust the Java log level in file `src/main/resources/logging.properties`. The default level used by release droid is `INFO`.
-
 
 ## Troubleshooting
 
