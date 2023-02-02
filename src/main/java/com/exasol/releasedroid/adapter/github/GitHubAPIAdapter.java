@@ -8,9 +8,11 @@ import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipInputStream;
 
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHWorkflowRun.Conclusion;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.progress.Estimation;
@@ -191,7 +193,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     public Estimation estimateDuration(final String repositoryName, final String workflowName) {
         try {
             final GHWorkflow workflow = getRepository(repositoryName).getWorkflow(workflowName);
-            final GHWorkflowRun run = latestRun(workflow);
+            final GHWorkflowRun run = latestSuccessfulRun(workflow);
             return run == null //
                     ? Estimation.empty()
                     : Estimation.from(run.getCreatedAt(), run.getUpdatedAt());
@@ -239,9 +241,30 @@ public class GitHubAPIAdapter implements GitHubGateway {
         throw new GitHubException(getTimeoutExceptionMessage(timeout));
     }
 
+    /**
+     * Retrieve latest run for the specified workflow.
+     *
+     * @param workflow workflow to retrieve latest run for
+     * @return latest run or {@code null}
+     */
     public GHWorkflowRun latestRun(final GHWorkflow workflow) {
         final PagedIterator<GHWorkflowRun> it = workflow.listRuns().iterator();
         return it.hasNext() ? it.next() : null;
+    }
+
+    /**
+     * Retrieve latest successful run for the specified workflow.
+     *
+     * @param workflow workflow to retrieve latest run for
+     * @return latest successful run or {@code null}
+     */
+    public GHWorkflowRun latestSuccessfulRun(final GHWorkflow workflow) {
+        final Iterable<GHWorkflowRun> iterable = () -> workflow.listRuns().iterator();
+        final boolean parallel = false;
+        return StreamSupport.stream(iterable.spliterator(), parallel) //
+                .filter(run -> run.getConclusion() == Conclusion.SUCCESS) //
+                .findFirst() //
+                .orElse(null);
     }
 
     private String getTimeoutExceptionMessage(final Duration timeout) {
