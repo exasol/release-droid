@@ -15,7 +15,7 @@ import org.kohsuke.github.GHWorkflowRun.Conclusion;
 
 import com.google.common.collect.Streams;
 
-public class LatestSuccessfulRunTest {
+class LatestSuccessfulRunTest {
     @Test
     void testSuccessfulRunFound() {
         final GHWorkflow workflow = mockWorkflow( //
