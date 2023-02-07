@@ -1,20 +1,25 @@
-# Exasol Release Droid 1.5.0, released 2023-??-??
+# Exasol Release Droid 1.5.0, released 2023-02-03
 
-Code name: Updated Release Guide
+Code name: Minor Improvements
 
 ## Summary
 
-This release fixes and improves the Release Guide added in version 1.4.0.
+RD now only considers successful runs for estimating the duration of GitHub workflows such as creating a release.
+
+On option `-g release` RD now additionally first validates the project and continues release only if validation didn't show any failures.
+
+Additionally this release fixes and improves the Release Guide added in version 1.4.0.
 * Moved "edit draft release" to the bottom of the release guide, as this action usually comes last because it needs to wait until RD has created the draft release on github.
 * Add code name to proposed release summary in release guide
 * Enable users to configure the prefix for announcements in file `.release-droid/credentials`, e.g. "I just released"
 
-Additionally replaced the dependency to `org.json:json` by `jakarta.json:jakarta.json-api` and `org.eclipse.yasson`.
+Last not least the dependency to `org.json:json` has been replaced by `jakarta.json:jakarta.json-api` and `org.eclipse.yasson`.
 
 ## Features
 
-* #280: Optimized Release Guide
 * #272: Changed duration estimate to consider only successful workflow runs
+* #240: Changed RD to always validate the current project before attempting to release
+* #280: Optimized Release Guide
 
 ## Bugfixes
 

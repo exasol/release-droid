@@ -51,19 +51,26 @@ public class ReleaseDroid {
     public void run(final UserInput userInput) {
         validateUserInput(userInput);
         final Repository repository = this.repositoryGateway.getRepository(userInput);
-
         final ReleasePlatforms platforms = ReleasePlatforms.from(userInput, repository);
         LOGGER.fine(() -> "Release Droid has received '" + userInput.getGoal() + "' request for the project '"
                 + userInput.getFullRepositoryName() + "'.");
         final List<Report> reports = new ArrayList<>();
-        final boolean isValidate = userInput.getGoal() != Goal.RELEASE;
-        final UseCase useCase = isValidate ? this.validateUseCase : this.releaseUseCase;
+
         final Optional<Path> releaseGuide = userInput.releaseGuide();
-        if (releaseGuide.isPresent() && isValidate) {
+        if (releaseGuide.isPresent()) {
             ReleaseGuide.from(repository).write(releaseGuide.get());
         }
-        reports.addAll(useCase.apply(repository, platforms));
+        // always apply use case "validate" first
+        reports.addAll(this.validateUseCase.apply(repository, platforms));
+        // apply use case "release" only if requested and validation showed no failures
+        if ((userInput.getGoal() == Goal.RELEASE) && !hasFailures(reports)) {
+            reports.addAll(this.releaseUseCase.apply(repository, platforms));
+        }
         processResponse(createResponse(reports, userInput, platforms.list()));
+    }
+
+    private boolean hasFailures(final List<Report> reports) {
+        return reports.stream().map(Report::hasFailures).findAny().orElse(false);
     }
 
     private void processResponse(final ReleaseDroidResponse response) {
