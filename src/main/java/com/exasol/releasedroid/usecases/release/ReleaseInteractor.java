@@ -51,7 +51,6 @@ public class ReleaseInteractor implements UseCase {
     }
 
     @Override
-    // [impl->dsn~rd-starts-release-only-if-all-validation-succeed~1]
     // [impl->dsn~rd-runs-release-goal~1]
     public List<Report> apply(final Repository repository, final ReleasePlatforms platforms) {
         try {
