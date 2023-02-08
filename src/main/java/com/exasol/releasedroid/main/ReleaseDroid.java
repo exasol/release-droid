@@ -60,9 +60,8 @@ public class ReleaseDroid {
         if (releaseGuide.isPresent()) {
             ReleaseGuide.from(repository).write(releaseGuide.get());
         }
-        // always apply use case "validate" first
         reports.addAll(this.validateUseCase.apply(repository, platforms));
-        // apply use case "release" only if requested and validation showed no failures
+        // [impl->dsn~rd-starts-release-only-if-all-validations-succeed~1]
         if ((userInput.getGoal() == Goal.RELEASE) && !hasFailures(reports)) {
             reports.addAll(this.releaseUseCase.apply(repository, platforms));
         }

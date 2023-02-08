@@ -169,7 +169,7 @@ Needs: impl
 
 ### RD Starts Release Only If All Validation Succeed
 
-`dsn~rd-starts-release-only-if-all-validation-succeed~1`
+`dsn~rd-starts-release-only-if-all-validations-succeed~1`
 
 RD starts release only if all validation for the platforms users specified succeed.
 
