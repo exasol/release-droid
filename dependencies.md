@@ -15,7 +15,7 @@
 | [Apache Commons CLI][12]                    | [Apache License, Version 2.0][8]                                                                               |
 | [Jakarta JSON Processing API][13]           | [Eclipse Public License 2.0][14]; [GNU General Public License, version 2 with the GNU Classpath Exception][15] |
 | [Yasson][16]                                | [Eclipse Public License v. 2.0][17]; [Eclipse Distribution License v. 1.0][18]                                 |
-| [Maven Model][19]                           | [Apache License, Version 2.0][8]                                                                               |
+| [Maven Model][19]                           | [Apache-2.0][8]                                                                                                |
 | [error-reporting-java][20]                  | [MIT License][21]                                                                                              |
 | [commonmark-java core][22]                  | [BSD 2-Clause License][23]                                                                                     |
 | [SnakeYAML][24]                             | [Apache License, Version 2.0][25]                                                                              |
@@ -83,7 +83,7 @@
 [16]: https://projects.eclipse.org/projects/ee4j.yasson
 [17]: http://www.eclipse.org/legal/epl-v20.html
 [18]: http://www.eclipse.org/org/documents/edl-v10.php
-[19]: https://maven.apache.org/ref/3.8.7/maven-model/
+[19]: https://maven.apache.org/ref/3.9.0/maven-model/
 [20]: https://github.com/exasol/error-reporting-java/
 [21]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
 [22]: https://github.com/commonmark/commonmark-java
