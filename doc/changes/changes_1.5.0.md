@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.5.0, released 2023-02-03
+# Exasol Release Droid 1.5.0, released 2023-03-21
 
 Code name: Minor Improvements
 
@@ -13,13 +13,18 @@ Additionally this release fixes and improves the Release Guide added in version 
 * Add code name to proposed release summary in release guide
 * Enable users to configure the prefix for announcements in file `.release-droid/credentials`, e.g. "I just released"
 
-Last not least the dependency to `org.json:json` has been replaced by `jakarta.json:jakarta.json-api` and `org.eclipse.yasson`.
+Last not least the dependency to `org.json:json` has been replaced by `jakarta.json:jakarta.json-api` and `org.eclipse.yasson` and this release updates dependencies to fix the following vulnerabilities:
+
+* CVE-2022-1471
+* CVE-2022-45688
 
 ## Features
 
 * #272: Changed duration estimate to consider only successful workflow runs
 * #240: Changed RD to always validate the current project before attempting to release
 * #280: Optimized Release Guide
+* #288: Upgraded dependencies to fix vulnerabilities
+* #290: Ensured RD reports validation success only once
 
 ## Bugfixes
 
