@@ -274,7 +274,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.5.1</version>
+        <version>1.5.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
