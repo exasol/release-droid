@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -18,7 +19,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.UseCase;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +44,7 @@ class ReleaseDroidTest {
     @BeforeEach
     void beforeEach() {
         this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, this.validationUseCaseMock,
-                this.releaseUseCaseMock, null);
+                this.releaseUseCaseMock, List.of());
     }
 
     @Test
@@ -97,7 +101,7 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        mockUseVCase(this.releaseUseCaseMock);
+        mockUseCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
         assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
@@ -107,7 +111,7 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of("jira")).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        mockUseVCase(this.releaseUseCaseMock);
+        mockUseCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
         assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
@@ -121,7 +125,25 @@ class ReleaseDroidTest {
         assertThat(exception.getMessage(), containsString("E-RD-15"));
     }
 
-    private void mockUseVCase(final UseCase useCase) {
+    @Test
+    void skipValidation() {
+
+    }
+
+    @Test
+    void failedValidationSkipsReleases() {
+        final UserInput userInput = builder().repositoryName("name").platforms("github").goal("release").build();
+        simulateFailure(this.validationUseCaseMock, ValidationReport.create(PlatformName.GITHUB));
+        this.releaseDroid.run(userInput);
+        verifyNoMoreInteractions(this.releaseUseCaseMock);
+    }
+
+    private void simulateFailure(final UseCase useCase, final Report report) {
+        report.addFailedResult("failure");
+        when(useCase.apply(any(), any())).thenReturn(List.of(report));
+    }
+
+    private void mockUseCase(final UseCase useCase) {
         when(useCase.apply(eq(this.repositoryMock), any())).thenThrow(UseCaseException.class);
     }
 
