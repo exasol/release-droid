@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.5.1, released 2023-??-??
+# Exasol Release Droid 1.5.1, released 2023-03-21
 
 Code name: Upgrade dependencies
 
@@ -12,6 +12,7 @@ This release updates dependencies to fix the following vulnerabilities:
 ## Features
 
 * #288: Upgraded dependencies to fix vulnerabilities
+* #290: Ensured RD reports validation success only once
 
 ## Dependency Updates
 
