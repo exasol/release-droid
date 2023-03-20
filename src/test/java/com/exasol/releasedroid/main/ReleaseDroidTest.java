@@ -6,8 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +14,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -53,7 +54,7 @@ class ReleaseDroidTest {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(),
-                containsString("E-RD-2: Please specify a mandatory parameter 'repository name'"));
+                containsString("E-RD-2: Please specify mandatory parameter 'repository name'"));
     }
 
     @Test
@@ -125,9 +126,24 @@ class ReleaseDroidTest {
         assertThat(exception.getMessage(), containsString("E-RD-15"));
     }
 
-    @Test
-    void skipValidation() {
-
+    @ParameterizedTest
+    @CsvSource(value = { "release, false, true", //
+            "release, true, false", //
+            "validate, false, true", })
+    void validation(final String goal, final boolean skipValidation, final boolean expectValidation) {
+        final UserInput userInput = builder().repositoryName("name").platforms("github").goal(goal)
+                .skipValidation(skipValidation).build();
+        this.releaseDroid.run(userInput);
+        if (expectValidation) {
+            verify(this.validationUseCaseMock).apply(any(), any());
+        } else {
+            verifyNoMoreInteractions(this.validationUseCaseMock);
+        }
+        if (goal.equals("release")) {
+            verify(this.releaseUseCaseMock).apply(any(), any());
+        } else {
+            verifyNoMoreInteractions(this.releaseUseCaseMock);
+        }
     }
 
     @Test

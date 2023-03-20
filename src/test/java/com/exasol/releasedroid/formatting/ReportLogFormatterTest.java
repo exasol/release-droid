@@ -23,7 +23,7 @@ class ReportLogFormatterTest {
         outer.merge(github);
         outer.merge(maven);
         final String formattedReport = this.formatter.formatReport(outer);
-        assertThat(formattedReport, equalTo(green("Release was performed without any problems!")));
+        assertThat(formattedReport, equalTo(green("Release was performed without any problems.")));
     }
 
     @Test
@@ -50,7 +50,7 @@ class ReportLogFormatterTest {
         outer.merge(github);
         outer.merge(maven);
         final String formattedReport = this.formatter.formatReport(outer);
-        assertThat(formattedReport, equalTo(green("Validation was performed without any problems!")));
+        assertThat(formattedReport, equalTo(green("Validation was performed without any problems.")));
     }
 
     @Test

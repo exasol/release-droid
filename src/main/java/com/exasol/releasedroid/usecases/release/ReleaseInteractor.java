@@ -24,7 +24,6 @@ import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
  */
 public class ReleaseInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
-//    private final UseCase validator;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReleaseState releaseState;
     private final ReleaseManager releaseManager;
@@ -115,20 +114,6 @@ public class ReleaseInteractor implements UseCase {
         this.releaseGuidePath = path.get();
         this.releaseManager.generateReleaseGuide(repository, gitHubTagUrl.get().toString(), this.releaseGuidePath);
     }
-
-//    /**
-//     * @param validationSummary summary of all validation reports
-//     * @param validationReports validation reports for the platform
-//     * @return {@code true} if any of the validation reports for the platform contained a failure
-//     */
-//    private boolean merge(final ValidationReport validationSummary, final List<Report> validationReports) {
-//        boolean failure = false;
-//        for (final Report report : validationReports) {
-//            validationSummary.merge(report);
-//            failure = failure || report.hasFailures();
-//        }
-//        return failure;
-//    }
 
     // [impl->dsn~estimate-duration~1]
     private Estimation estimateDuration(final Repository repository, final List<PlatformName> platforms) {
