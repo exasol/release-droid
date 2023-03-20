@@ -42,7 +42,7 @@ public class ReportLogFormatter implements ReportFormatter {
     }
 
     private String formatSuccessMessage(final Report report) {
-        return green(report.getReportName() + " was performed without any problems!");
+        return green(report.getReportName() + " was performed without any problems.");
     }
 
     private String formatFailedResult(final Result result) {

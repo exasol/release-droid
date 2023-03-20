@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +14,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.UseCase;
+import com.exasol.releasedroid.usecases.report.Report;
+import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.*;
+import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.UserInput;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +45,7 @@ class ReleaseDroidTest {
     @BeforeEach
     void beforeEach() {
         this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, this.validationUseCaseMock,
-                this.releaseUseCaseMock, null);
+                this.releaseUseCaseMock, List.of());
     }
 
     @Test
@@ -49,7 +54,7 @@ class ReleaseDroidTest {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(),
-                containsString("E-RD-2: Please specify a mandatory parameter 'repository name'"));
+                containsString("E-RD-2: Please specify mandatory parameter 'repository name'"));
     }
 
     @Test
@@ -97,7 +102,7 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of(PLATFORM)).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        mockUseVCase(this.releaseUseCaseMock);
+        mockUseCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
         assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
@@ -107,7 +112,7 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of("jira")).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        mockUseVCase(this.releaseUseCaseMock);
+        mockUseCase(this.releaseUseCaseMock);
         final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
         assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
@@ -121,7 +126,40 @@ class ReleaseDroidTest {
         assertThat(exception.getMessage(), containsString("E-RD-15"));
     }
 
-    private void mockUseVCase(final UseCase useCase) {
+    @ParameterizedTest
+    @CsvSource(value = { "release, false, true", //
+            "release, true, false", //
+            "validate, false, true", })
+    void validation(final String goal, final boolean skipValidation, final boolean expectValidation) {
+        final UserInput userInput = builder().repositoryName("name").platforms("github").goal(goal)
+                .skipValidation(skipValidation).build();
+        this.releaseDroid.run(userInput);
+        if (expectValidation) {
+            verify(this.validationUseCaseMock).apply(any(), any());
+        } else {
+            verifyNoMoreInteractions(this.validationUseCaseMock);
+        }
+        if (goal.equals("release")) {
+            verify(this.releaseUseCaseMock).apply(any(), any());
+        } else {
+            verifyNoMoreInteractions(this.releaseUseCaseMock);
+        }
+    }
+
+    @Test
+    void failedValidationSkipsReleases() {
+        final UserInput userInput = builder().repositoryName("name").platforms("github").goal("release").build();
+        simulateFailure(this.validationUseCaseMock, ValidationReport.create(PlatformName.GITHUB));
+        this.releaseDroid.run(userInput);
+        verifyNoMoreInteractions(this.releaseUseCaseMock);
+    }
+
+    private void simulateFailure(final UseCase useCase, final Report report) {
+        report.addFailedResult("failure");
+        when(useCase.apply(any(), any())).thenReturn(List.of(report));
+    }
+
+    private void mockUseCase(final UseCase useCase) {
         when(useCase.apply(eq(this.repositoryMock), any())).thenThrow(UseCaseException.class);
     }
 

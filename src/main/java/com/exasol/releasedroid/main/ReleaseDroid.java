@@ -60,12 +60,21 @@ public class ReleaseDroid {
         if (releaseGuide.isPresent()) {
             ReleaseGuide.from(repository).write(releaseGuide.get());
         }
-        reports.addAll(this.validateUseCase.apply(repository, platforms));
+        if (needsValidation(userInput)) {
+            reports.addAll(this.validateUseCase.apply(repository, platforms));
+        }
         // [impl->dsn~rd-starts-release-only-if-all-validations-succeed~1]
         if ((userInput.getGoal() == Goal.RELEASE) && !hasFailures(reports)) {
             reports.addAll(this.releaseUseCase.apply(repository, platforms));
         }
         processResponse(createResponse(reports, userInput, platforms.list()));
+    }
+
+    private boolean needsValidation(final UserInput userInput) {
+        if (userInput.getGoal() != Goal.RELEASE) {
+            return true;
+        }
+        return !userInput.skipValidation();
     }
 
     private boolean hasFailures(final List<Report> reports) {
@@ -141,7 +150,7 @@ public class ReleaseDroid {
 
     private void throwExceptionForMissingParameter(final String parameter) {
         throw new IllegalArgumentException(ExaError.messageBuilder("E-RD-2")
-                .message("Please specify a mandatory parameter {{parameter}} and re-run the Release Droid.", parameter)
+                .message("Please specify mandatory parameter {{parameter}} and re-run the Release Droid.", parameter)
                 .toString());
     }
 }

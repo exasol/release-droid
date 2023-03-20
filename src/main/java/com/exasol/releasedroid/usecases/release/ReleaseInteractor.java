@@ -24,7 +24,6 @@ import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
  */
 public class ReleaseInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
-    private final UseCase validator;
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
     private final ReleaseState releaseState;
     private final ReleaseManager releaseManager;
@@ -33,18 +32,15 @@ public class ReleaseInteractor implements UseCase {
     /**
      * Create a new instance of {@link ReleaseInteractor}.
      *
-     * @param validator      use case for validating the platforms
      * @param releaseMakers  map with platform names and release makers
      * @param releaseManager instance of {@link ReleaseManager}
      */
-    public ReleaseInteractor(final UseCase validator, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final ReleaseManager releaseManager) {
-        this(validator, releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
+    public ReleaseInteractor(final Map<PlatformName, ReleaseMaker> releaseMakers, final ReleaseManager releaseManager) {
+        this(releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
     }
 
-    ReleaseInteractor(final UseCase validator, final Map<PlatformName, ReleaseMaker> releaseMakers,
-            final ReleaseManager releaseManager, final ReleaseState releaseState) {
-        this.validator = validator;
+    ReleaseInteractor(final Map<PlatformName, ReleaseMaker> releaseMakers, final ReleaseManager releaseManager,
+            final ReleaseState releaseState) {
         this.releaseMakers = releaseMakers;
         this.releaseManager = releaseManager;
         this.releaseState = releaseState;
@@ -84,18 +80,9 @@ public class ReleaseInteractor implements UseCase {
         boolean failure = false;
         while (!failure && it.hasNext()) {
             final PlatformName platform = it.next();
-            final List<Report> validationReport = this.validator.apply(repository, platforms);
-            failure = merge(validationSummary, validationReport);
-            if (failure) {
-                LOGGER.warning(() -> messageBuilder("W-RD-17")
-                        .message("Validation for a platform {{platform name}} failed. Release is interrupted.",
-                                platform.name())
-                        .toString());
-            } else {
-                final Report releaseReport = releaseOnPlatform(repository, platform, progress);
-                releaseSummary.merge(releaseReport);
-                failure = releaseReport.hasFailures();
-            }
+            final Report releaseReport = releaseOnPlatform(repository, platform, progress);
+            releaseSummary.merge(releaseReport);
+            failure = releaseReport.hasFailures();
             createReleaseGuide(repository, progress.gitHubTagUrl(), platforms.releaseGuide());
         }
         progress.reportStatus().newline();
@@ -126,20 +113,6 @@ public class ReleaseInteractor implements UseCase {
         }
         this.releaseGuidePath = path.get();
         this.releaseManager.generateReleaseGuide(repository, gitHubTagUrl.get().toString(), this.releaseGuidePath);
-    }
-
-    /**
-     * @param validationSummary summary of all validation reports
-     * @param validationReports validation reports for the platform
-     * @return {@code true} if any of the validation reports for the platform contained a failure
-     */
-    private boolean merge(final ValidationReport validationSummary, final List<Report> validationReports) {
-        boolean failure = false;
-        for (final Report report : validationReports) {
-            validationSummary.merge(report);
-            failure = failure || report.hasFailures();
-        }
-        return failure;
     }
 
     // [impl->dsn~estimate-duration~1]

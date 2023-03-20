@@ -60,7 +60,7 @@ public class Runner {
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
         final UseCase validateUseCase = new ValidateInteractor();
-        final UseCase releaseUseCase = new ReleaseInteractor(validateUseCase, releaseMakers, releaseManager);
+        final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager);
         final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
         return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, releaseDroidResponseConsumers);
     }

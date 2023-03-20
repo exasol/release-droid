@@ -44,7 +44,7 @@
 | ------------------------------------------------------- | ------------------------------------- |
 | [SonarQube Scanner for Maven][37]                       | [GNU LGPL 3][38]                      |
 | [Apache Maven Compiler Plugin][39]                      | [Apache License, Version 2.0][8]      |
-| [Apache Maven Enforcer Plugin][40]                      | [Apache License, Version 2.0][8]      |
+| [Apache Maven Enforcer Plugin][40]                      | [Apache-2.0][8]                       |
 | [Maven Flatten Plugin][41]                              | [Apache Software Licenese][8]         |
 | [org.sonatype.ossindex.maven:ossindex-maven-plugin][42] | [ASL2][25]                            |
 | [Maven Surefire Plugin][43]                             | [Apache License, Version 2.0][8]      |
@@ -83,7 +83,7 @@
 [16]: https://projects.eclipse.org/projects/ee4j.yasson
 [17]: http://www.eclipse.org/legal/epl-v20.html
 [18]: http://www.eclipse.org/org/documents/edl-v10.php
-[19]: https://maven.apache.org/ref/3.9.0/maven-model/
+[19]: https://maven.apache.org/ref/3.9.1/maven-model/
 [20]: https://github.com/exasol/error-reporting-java/
 [21]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
 [22]: https://github.com/commonmark/commonmark-java

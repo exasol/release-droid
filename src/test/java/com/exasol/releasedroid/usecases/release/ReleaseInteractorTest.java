@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import java.net.MalformedURLException;
@@ -21,15 +20,14 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
-import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
 import com.exasol.releasedroid.usecases.report.Report;
-import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.*;
 
@@ -41,8 +39,6 @@ class ReleaseInteractorTest {
     private static final String REPOSITORY_VERSION = "repo-version";
     private static final String GITHUB_RELEASE_OUTPUT = "GITHUB_RELEASE_OUTPUT";
 
-    @Mock
-    private UseCase validateUseCaseMock;
     @Mock
     private ReleaseManager releaseManagerMock;
     @Mock
@@ -70,12 +66,11 @@ class ReleaseInteractorTest {
     @Test
     void testReleaseNoPlatforms() {
         release(emptyList(), emptySet());
-        verifyNoInteractions(this.releaseManagerMock, this.validateUseCaseMock);
+        verifyNoInteractions(this.releaseManagerMock);
     }
 
     @Test
     void testReleaseSinglePlatformSuccess() {
-        simulateSuccessValidationReport(PlatformName.GITHUB);
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock);
         when(this.githubReleaseMakerMock.makeRelease(this.repositoryMock, this.progress))
                 .thenReturn(GITHUB_RELEASE_OUTPUT);
@@ -86,11 +81,8 @@ class ReleaseInteractorTest {
 
     private void assertReport(final List<Report> reports, final ReportStatus validationResult,
             final ReportStatus releaseResult) {
-        assertAll(() -> assertThat(reports, hasSize(2)),
-                () -> assertThat("Validation Report: " + reports.get(0), reports.get(0).hasFailures(),
-                        is(validationResult.failure)),
-                () -> assertThat("Release Report: " + reports.get(1), reports.get(1).hasFailures(),
-                        is(releaseResult.failure)));
+        assertAll(() -> assertThat(reports, hasSize(2)), () -> assertThat("Release Report: " + reports.get(1),
+                reports.get(1).hasFailures(), is(releaseResult.failure)));
     }
 
     private enum ReportStatus {
@@ -114,27 +106,7 @@ class ReleaseInteractorTest {
     }
 
     @Test
-    void testReleaseSinglePlatformValidationFailure() {
-        simulateFailureValidationReport(PlatformName.GITHUB);
-        mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock);
-        final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
-        assertReport(reports, ReportStatus.FAILURE, ReportStatus.SUCCESS);
-        verifyGithubReleaseSkipped();
-    }
-
-    private void verifyGithubReleaseSkipped() {
-        final InOrder inOrder = inOrder(this.releaseManagerMock);
-        inOrder.verify(this.releaseManagerMock).estimateDuration(eq(this.repositoryMock), any());
-        inOrder.verify(this.releaseManagerMock).prepareForRelease(this.repositoryMock);
-        inOrder.verify(this.releaseManagerMock).cleanUpAfterRelease(this.repositoryMock);
-        inOrder.verifyNoMoreInteractions();
-        verify(this.githubReleaseMakerMock).estimateDuration(this.repositoryMock);
-        verifyNoMoreInteractions(this.githubReleaseMakerMock);
-    }
-
-    @Test
     void testReleaseSinglePlatformReleaseFailure() {
-        simulateSuccessValidationReport(PlatformName.GITHUB);
         simulateReleaseFailure(this.githubReleaseMakerMock);
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB), emptySet());
@@ -148,40 +120,20 @@ class ReleaseInteractorTest {
 
     @Test
     void testReleaseMultiplePlatformsSkipsAfterValidationFailure() {
-        simulateFailureValidationReport(PlatformName.GITHUB);
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.mavenReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.MAVEN), emptySet());
         assertReport(reports, ReportStatus.FAILURE, ReportStatus.SUCCESS);
         verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
-        verifyNoMoreInteractions(this.mavenReleaseMakerMock);
     }
 
     @Test
     void testReleaseMultiplePlatformsSkipsAfterReleaseFailure() {
-        simulateSuccessValidationReport(PlatformName.GITHUB);
         simulateReleaseFailure(this.githubReleaseMakerMock);
         mockEstimationAndProgress(this.releaseManagerMock, this.githubReleaseMakerMock, this.mavenReleaseMakerMock);
         final List<Report> reports = release(List.of(PlatformName.GITHUB, PlatformName.MAVEN), emptySet());
         assertReport(reports, ReportStatus.SUCCESS, ReportStatus.FAILURE);
         verify(this.mavenReleaseMakerMock).estimateDuration(this.repositoryMock);
         verifyNoMoreInteractions(this.mavenReleaseMakerMock);
-    }
-
-    private void simulateSuccessValidationReport(final PlatformName platform) {
-        final Report report = ValidationReport.create(platform);
-        report.addSuccessfulResult("success");
-        simulateValidationReport(platform, report);
-    }
-
-    private void simulateFailureValidationReport(final PlatformName platform) {
-        final Report report = ValidationReport.create(platform);
-        report.addFailedResult("failure");
-        simulateValidationReport(platform, report);
-    }
-
-    private void simulateValidationReport(final PlatformName platform, final Report report) {
-        when(this.validateUseCaseMock.apply(same(this.repositoryMock), ArgumentMatchers.any()))
-                .thenReturn(List.of(report));
     }
 
     @Test
@@ -248,8 +200,8 @@ class ReleaseInteractorTest {
                 PlatformName.JIRA, this.jiraReleaseMakerMock, //
                 PlatformName.MAVEN, this.mavenReleaseMakerMock, //
                 PlatformName.COMMUNITY, this.communityReleaseMakerMock);
-        final ReleaseInteractor releaseInteractor = new ReleaseInteractor(this.validateUseCaseMock, releaseMakers,
-                this.releaseManagerMock, this.releaseStateMock);
+        final ReleaseInteractor releaseInteractor = new ReleaseInteractor(releaseMakers, this.releaseManagerMock,
+                this.releaseStateMock);
         return releaseInteractor.apply(this.repositoryMock, platforms);
     }
 
