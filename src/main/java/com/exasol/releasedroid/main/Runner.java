@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -61,14 +62,14 @@ public class Runner {
         final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
         final UseCase validateUseCase = new ValidateInteractor();
         final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager);
-        final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
-        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, releaseDroidResponseConsumers);
-    }
-
-    private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
-        return List.of( //
-                new ResponseLogger(new ReportLogFormatter()),
-                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH, REPORT_NAME));
+        return ReleaseDroid.builder() //
+                .repositoryGateway(repositoryGateway) //
+                .validateUseCase(validateUseCase) //
+                .releaseUseCase(releaseUseCase) //
+                .loggerResponseConsumer(new ResponseLogger(new ReportLogFormatter())) //
+                .diskWriterResponseConsumer(new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(),
+                        REPORT_PATH, REPORT_NAME)) //
+                .build();
     }
 
     static boolean checkCredentialsFile(final Path path) {

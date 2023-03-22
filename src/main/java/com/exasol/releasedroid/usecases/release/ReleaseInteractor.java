@@ -14,7 +14,8 @@ import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
 import com.exasol.releasedroid.usecases.UseCase;
 import com.exasol.releasedroid.usecases.exception.ReleaseException;
-import com.exasol.releasedroid.usecases.report.*;
+import com.exasol.releasedroid.usecases.report.ReleaseReport;
+import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.request.PlatformName;
 import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
@@ -73,23 +74,22 @@ public class ReleaseInteractor implements UseCase {
         final Progress progress = this.releaseManager.estimateDuration( //
                 repository, estimateDuration(repository, platforms.list()));
         prepareRepositoryForRelease(repository);
-        final ValidationReport validationSummary = ValidationReport.create();
-        final ReleaseReport releaseSummary = ReleaseReport.create();
+        final ReleaseReport reports = ReleaseReport.create();
 
         final Iterator<PlatformName> it = platforms.list().iterator();
         boolean failure = false;
         while (!failure && it.hasNext()) {
             final PlatformName platform = it.next();
-            final Report releaseReport = releaseOnPlatform(repository, platform, progress);
-            releaseSummary.merge(releaseReport);
-            failure = releaseReport.hasFailures();
+            final Report platformReport = releaseOnPlatform(repository, platform, progress);
+            reports.merge(platformReport);
+            failure = platformReport.hasFailures();
             createReleaseGuide(repository, progress.gitHubTagUrl(), platforms.releaseGuide());
         }
         progress.reportStatus().newline();
-        if (!releaseSummary.hasFailures()) {
+        if (!reports.hasFailures()) {
             cleanRepositoryAfterRelease(repository);
         }
-        return List.of(validationSummary, releaseSummary);
+        return List.of(reports);
     }
 
     /**

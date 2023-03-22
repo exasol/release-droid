@@ -40,12 +40,19 @@ class ReleaseDroidTest {
     UseCase validationUseCaseMock;
     @Mock
     UseCase releaseUseCaseMock;
+    @Mock
+    ReleaseDroidResponseConsumer responseConsumerMock;
     private ReleaseDroid releaseDroid;
 
     @BeforeEach
     void beforeEach() {
-        this.releaseDroid = new ReleaseDroid(this.repositoryGatewayMock, this.validationUseCaseMock,
-                this.releaseUseCaseMock, List.of());
+        this.releaseDroid = ReleaseDroid.builder() //
+                .repositoryGateway(this.repositoryGatewayMock) //
+                .validateUseCase(this.validationUseCaseMock) //
+                .releaseUseCase(this.releaseUseCaseMock) //
+                .loggerResponseConsumer(this.responseConsumerMock) //
+                .diskWriterResponseConsumer(this.responseConsumerMock) //
+                .build();
     }
 
     @Test
