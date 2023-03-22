@@ -3,9 +3,7 @@ package com.exasol.releasedroid.usecases.release;
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.LINE_SEPARATOR;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -16,7 +14,7 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
 /**
  * This class is responsible for the release state.
  */
-public class ReleaseState {
+public class ReleaseState implements ProgressRecorder {
     private final String directory;
 
     /**
@@ -28,14 +26,7 @@ public class ReleaseState {
         this.directory = directory;
     }
 
-    /**
-     * Save release progress.
-     *
-     * @param repositoryName repository name
-     * @param releaseVersion release version
-     * @param platformName   platform name
-     * @param releaseOutput  output to save
-     */
+    @Override
     public void saveProgress(final String repositoryName, final String releaseVersion, final PlatformName platformName,
             final String releaseOutput) {
         final Path pathToDirectory = Path.of(this.directory);
@@ -87,6 +78,10 @@ public class ReleaseState {
 
     private String renderWriteString(final String platformName, final String releaseOutput) {
         return platformName + "::" + releaseOutput + LINE_SEPARATOR;
+    }
+
+    public Set<PlatformName> getAlreadyReleased(final String repositoryName, final String releaseVersion) {
+        return getProgress(repositoryName, releaseVersion).keySet();
     }
 
     /**

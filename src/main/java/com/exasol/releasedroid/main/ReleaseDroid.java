@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.output.guide.ReleaseGuide;
 import com.exasol.releasedroid.usecases.UseCase;
+import com.exasol.releasedroid.usecases.release.ReleaseState;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.repository.Repository;
 import com.exasol.releasedroid.usecases.repository.RepositoryGateway;
@@ -21,6 +22,7 @@ public class ReleaseDroid {
     private static final String EXASOL_REPOSITORY_OWNER = "exasol";
 
     private RepositoryGateway repositoryGateway;
+    private ReleaseState releaseState;
     private UseCase releaseUseCase;
     private UseCase validateUseCase;
     private ReleaseDroidResponseConsumer loggerResponseConsumer;
@@ -49,14 +51,31 @@ public class ReleaseDroid {
         if (releaseGuide.isPresent()) {
             ReleaseGuide.from(repository).write(releaseGuide.get());
         }
+
+        final ReleasePlatforms unreleased = unreleased(repository, platforms);
+        if (unreleased.isEmpty()) {
+            LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
+            return;
+        }
+
         if (needsValidation(userInput)) {
-            reports.addAll(report(this.validateUseCase, userInput, repository, platforms));
+            reports.addAll(report(this.validateUseCase, userInput, repository, unreleased));
         }
         // [impl->dsn~rd-starts-release-only-if-all-validations-succeed~1]
         if ((userInput.getGoal() == Goal.RELEASE) && !hasFailures(reports)) {
-            reports.addAll(report(this.releaseUseCase, userInput, repository, platforms));
+            reports.addAll(report(this.releaseUseCase, userInput, repository, unreleased));
         }
         this.diskWriterResponseConsumer.consumeResponse(createResponse(reports, userInput, platforms.list()));
+    }
+
+    private ReleasePlatforms unreleased(final Repository repository, final ReleasePlatforms all) {
+        final Set<PlatformName> released = this.releaseState.getAlreadyReleased(repository.getName(),
+                repository.getVersion());
+        return all.remaining(released, this::logSkipped);
+    }
+
+    private void logSkipped(final PlatformName platformName) {
+        LOGGER.info(() -> "Skipping " + platformName + " platform, as release has been already performed there.");
     }
 
     private List<Report> report(final UseCase useCase, final UserInput userInput, final Repository repository,
@@ -157,6 +176,11 @@ public class ReleaseDroid {
 
         Builder repositoryGateway(final RepositoryGateway value) {
             this.result.repositoryGateway = value;
+            return this;
+        }
+
+        Builder releaseState(final ReleaseState value) {
+            this.result.releaseState = value;
             return this;
         }
 

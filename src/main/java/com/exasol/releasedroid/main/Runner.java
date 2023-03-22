@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.HOME_DIRECTORY;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,9 +60,11 @@ public class Runner {
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
         final UseCase validateUseCase = new ValidateInteractor();
-        final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager);
+        final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
+        final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager, releaseState);
         return ReleaseDroid.builder() //
                 .repositoryGateway(repositoryGateway) //
+                .releaseState(releaseState) //
                 .validateUseCase(validateUseCase) //
                 .releaseUseCase(releaseUseCase) //
                 .loggerResponseConsumer(new ResponseLogger(new ReportLogFormatter())) //

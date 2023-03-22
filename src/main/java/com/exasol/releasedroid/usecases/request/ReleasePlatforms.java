@@ -4,6 +4,7 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_CON
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,7 @@ public class ReleasePlatforms {
      * @param skipValidationOn
      * @param b
      */
-    public ReleasePlatforms(final Goal goal, final List<PlatformName> platforms,
+    public ReleasePlatforms(final Goal goal, final Collection<PlatformName> platforms,
             final Collection<PlatformName> skipValidationOn, final Optional<Path> releaseGuide) {
         this.goal = goal;
         this.platforms = removeDeprecated(platforms);
@@ -71,6 +72,10 @@ public class ReleasePlatforms {
      */
     public List<PlatformName> list() {
         return this.platforms;
+    }
+
+    public boolean isEmpty() {
+        return this.platforms.isEmpty();
     }
 
     private List<PlatformName> removeDeprecated(final Collection<PlatformName> platforms) {
@@ -90,19 +95,23 @@ public class ReleasePlatforms {
     }
 
     /**
-     * @param released list of platforms that have been released in an earlier session
-     * @return {@link ReleasePlatforms} for which release is still pending
+     * @param releasedPlatforms list of platforms that already have been released successfully in a former session
+     * @return {@code true} if there are more platforms, waiting to be released
      */
-    public ReleasePlatforms withoutReleased(final Collection<PlatformName> released) {
-        final List<PlatformName> result = new ArrayList<>();
-        for (final PlatformName p : this.platforms) {
-            if (released.contains(p)) {
-                LOGGER.info(() -> "Skipping " + p + " platform, as release has been already performed there.");
-            } else {
-                result.add(p);
-            }
-        }
-        return new ReleasePlatforms(this.goal, result, this.skipValidationOn, this.releaseGuide);
+    public boolean hasUnreleasedPlatforms(final Set<PlatformName> releasedPlatforms) {
+        return !releasedPlatforms.containsAll(this.platforms);
+    }
+
+    /**
+     * @param excluded list of platforms to exclude
+     * @return new instance of {@link ReleasePlatforms} for the remaining platforms after removing the excluded
+     *         platforms
+     */
+    public ReleasePlatforms remaining(final Collection<PlatformName> excluded, final Consumer<PlatformName> logger) {
+        excluded.forEach(logger);
+        final List<PlatformName> remaining = new ArrayList<>(this.platforms);
+        remaining.removeAll(excluded);
+        return new ReleasePlatforms(this.goal, remaining, this.skipValidationOn, this.releaseGuide);
     }
 
     /**

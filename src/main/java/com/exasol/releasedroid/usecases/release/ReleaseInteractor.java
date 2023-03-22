@@ -1,7 +1,6 @@
 package com.exasol.releasedroid.usecases.release;
 
 import static com.exasol.errorreporting.ExaError.messageBuilder;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_STATE_DIRECTORY;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -26,7 +25,7 @@ import com.exasol.releasedroid.usecases.request.ReleasePlatforms;
 public class ReleaseInteractor implements UseCase {
     private static final Logger LOGGER = Logger.getLogger(ReleaseInteractor.class.getName());
     private final Map<PlatformName, ReleaseMaker> releaseMakers;
-    private final ReleaseState releaseState;
+    private final ProgressRecorder progressRecorder;
     private final ReleaseManager releaseManager;
     private Path releaseGuidePath = null;
 
@@ -35,48 +34,39 @@ public class ReleaseInteractor implements UseCase {
      *
      * @param releaseMakers  map with platform names and release makers
      * @param releaseManager instance of {@link ReleaseManager}
+     * @param releaseState   release state to incrementally save the current state or progress enabling to recover and
+     *                       continue after a failure
      */
-    public ReleaseInteractor(final Map<PlatformName, ReleaseMaker> releaseMakers, final ReleaseManager releaseManager) {
-        this(releaseMakers, releaseManager, new ReleaseState(RELEASE_DROID_STATE_DIRECTORY));
-    }
 
-    ReleaseInteractor(final Map<PlatformName, ReleaseMaker> releaseMakers, final ReleaseManager releaseManager,
-            final ReleaseState releaseState) {
+    public ReleaseInteractor(final Map<PlatformName, ReleaseMaker> releaseMakers, final ReleaseManager releaseManager,
+            final ProgressRecorder progressRecorder) {
         this.releaseMakers = releaseMakers;
         this.releaseManager = releaseManager;
-        this.releaseState = releaseState;
+        this.progressRecorder = progressRecorder;
     }
 
     @Override
     // [impl->dsn~rd-runs-release-goal~1]
     public List<Report> apply(final Repository repository, final ReleasePlatforms platforms) {
+        releaseOnPlatforms(repository, platforms);
         try {
-            return makeRelease(repository, platforms);
+            return releaseOnPlatforms(repository, platforms);
         } catch (final Exception exception) {
             throw new ReleaseException(messageBuilder("E-RD-18").message("Error creating release").toString(),
                     exception);
         }
     }
 
-    private List<Report> makeRelease(final Repository repository, final ReleasePlatforms platforms) {
-        final Set<PlatformName> releasedPlatforms = getAlreadyReleasedPlatforms(repository.getName(),
-                repository.getVersion());
-        if (areUnreleasedPlatformsPresent(platforms.list(), releasedPlatforms)) {
-            final ReleasePlatforms unreleasedPlatforms = platforms.withoutReleased(releasedPlatforms);
-            return releaseOnPlatforms(repository, unreleasedPlatforms);
-        } else {
-            LOGGER.info(() -> "Nothing to release. The release has been already performed on all mentioned platforms.");
-            return Collections.emptyList();
-        }
-    }
-
     private List<Report> releaseOnPlatforms(final Repository repository, final ReleasePlatforms platforms) {
+        final Iterator<PlatformName> it = platforms.list().iterator();
+        if (!it.hasNext()) {
+            return List.of();
+        }
         final Progress progress = this.releaseManager.estimateDuration( //
                 repository, estimateDuration(repository, platforms.list()));
         prepareRepositoryForRelease(repository);
         final ReleaseReport reports = ReleaseReport.create();
 
-        final Iterator<PlatformName> it = platforms.list().iterator();
         boolean failure = false;
         while (!failure && it.hasNext()) {
             final PlatformName platform = it.next();
@@ -124,15 +114,6 @@ public class ReleaseInteractor implements UseCase {
         return estimation;
     }
 
-    private Set<PlatformName> getAlreadyReleasedPlatforms(final String repositoryName, final String releaseVersion) {
-        return this.releaseState.getProgress(repositoryName, releaseVersion).keySet();
-    }
-
-    private boolean areUnreleasedPlatformsPresent(final List<PlatformName> platforms,
-            final Set<PlatformName> releasedPlatforms) {
-        return !releasedPlatforms.containsAll(platforms);
-    }
-
     private Report releaseOnPlatform(final Repository repository, final PlatformName platformName,
             final Progress progress) {
         final var report = ReleaseReport.create(platformName);
@@ -151,7 +132,7 @@ public class ReleaseInteractor implements UseCase {
 
     private void saveProgress(final PlatformName platformName, final Repository repository,
             final String releaseOutput) {
-        this.releaseState.saveProgress(repository.getName(), repository.getVersion(), platformName, releaseOutput);
+        this.progressRecorder.saveProgress(repository.getName(), repository.getVersion(), platformName, releaseOutput);
     }
 
     private void prepareRepositoryForRelease(final Repository repository) {

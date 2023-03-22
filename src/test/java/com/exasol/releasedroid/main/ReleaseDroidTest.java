@@ -1,6 +1,5 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.request.UserInput.builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,8 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.usecases.UseCase;
+import com.exasol.releasedroid.usecases.release.ReleaseState;
 import com.exasol.releasedroid.usecases.report.Report;
 import com.exasol.releasedroid.usecases.report.ValidationReport;
 import com.exasol.releasedroid.usecases.repository.*;
@@ -29,6 +28,7 @@ import com.exasol.releasedroid.usecases.request.UserInput;
 @ExtendWith(MockitoExtension.class)
 class ReleaseDroidTest {
     private static final String REPOSITORY_NAME = "repository";
+    private static final String REPOSITORY_VERSION = "1.2.3";
     private static final String PLATFORM = "github";
     private static final String BRANCH = "branch";
     private static final String LOCAL_PATH = "some/path";
@@ -36,6 +36,8 @@ class ReleaseDroidTest {
     private RepositoryGateway repositoryGatewayMock;
     @Mock
     private Repository repositoryMock;
+    @Mock
+    private ReleaseState releaseStateMock;
     @Mock
     UseCase validationUseCaseMock;
     @Mock
@@ -48,6 +50,7 @@ class ReleaseDroidTest {
     void beforeEach() {
         this.releaseDroid = ReleaseDroid.builder() //
                 .repositoryGateway(this.repositoryGatewayMock) //
+                .releaseState(this.releaseStateMock) //
                 .validateUseCase(this.validationUseCaseMock) //
                 .releaseUseCase(this.releaseUseCaseMock) //
                 .loggerResponseConsumer(this.responseConsumerMock) //
@@ -57,7 +60,7 @@ class ReleaseDroidTest {
 
     @Test
     void userInputWithoutRepositoryName() {
-        final UserInput userInput = builder().platforms(PLATFORM).build();
+        final UserInput userInput = UserInput.builder().platforms(PLATFORM).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(),
@@ -66,8 +69,7 @@ class ReleaseDroidTest {
 
     @Test
     void userInputWithReleaseAndBranch() {
-        final UserInput userInput = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
-                .branch(BRANCH).build();
+        final UserInput userInput = userInput("RELEASE").branch(BRANCH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-1"));
@@ -75,8 +77,7 @@ class ReleaseDroidTest {
 
     @Test
     void userInputWithLocalPathAndBranch() {
-        final UserInput userInput = builder().platforms(PLATFORM).repositoryName(REPOSITORY_NAME).branch(BRANCH)
-                .localPath(LOCAL_PATH).build();
+        final UserInput userInput = userInput().branch(BRANCH).localPath(LOCAL_PATH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-6"));
@@ -84,8 +85,7 @@ class ReleaseDroidTest {
 
     @Test
     void userInputWithLocalPathAndGoalRelease() {
-        final UserInput userInput = builder().goal("RELEASE").platforms(PLATFORM).repositoryName(REPOSITORY_NAME)
-                .localPath(LOCAL_PATH).build();
+        final UserInput userInput = userInput("RELEASE").localPath(LOCAL_PATH).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-6"));
@@ -96,7 +96,7 @@ class ReleaseDroidTest {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().build();
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        final UserInput userInput = builder().repositoryName("name").build();
+        final UserInput userInput = UserInput.builder().repositoryName("name").build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-20: No release platform specified." //
@@ -110,7 +110,7 @@ class ReleaseDroidTest {
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
         mockUseCase(this.releaseUseCaseMock);
-        final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
+        final UserInput userInput = UserInput.builder().repositoryName(REPOSITORY_NAME).goal("RELEASE").build();
         assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
     }
 
@@ -119,15 +119,15 @@ class ReleaseDroidTest {
         final ReleaseConfig releaseConfig = ReleaseConfig.builder().releasePlatforms(List.of("jira")).build();
         when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
         when(this.repositoryMock.getReleaseConfig()).thenReturn(Optional.of(releaseConfig));
-        mockUseCase(this.releaseUseCaseMock);
-        final UserInput userInput = builder().repositoryName("name").goal("RELEASE").build();
-        assertThrows(UseCaseException.class, () -> this.releaseDroid.run(userInput));
+        final UserInput userInput = UserInput.builder().repositoryName(REPOSITORY_NAME).goal("RELEASE").build();
+        this.releaseDroid.run(userInput);
+        verifyNoInteractions(this.validationUseCaseMock);
+        verifyNoInteractions(this.releaseUseCaseMock);
     }
 
     @Test
     void userInputWithSkippingValidation() {
-        final UserInput userInput = builder().repositoryName("name").platforms("github").skipValidation(true)
-                .goal("validate").build();
+        final UserInput userInput = userInput("validate").skipValidation(true).build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> this.releaseDroid.run(userInput));
         assertThat(exception.getMessage(), containsString("E-RD-15"));
@@ -138,8 +138,8 @@ class ReleaseDroidTest {
             "release, true, false", //
             "validate, false, true", })
     void validation(final String goal, final boolean skipValidation, final boolean expectValidation) {
-        final UserInput userInput = builder().repositoryName("name").platforms("github").goal(goal)
-                .skipValidation(skipValidation).build();
+        final UserInput userInput = userInput(goal).skipValidation(skipValidation).build();
+        mockRepositoryAndState();
         this.releaseDroid.run(userInput);
         if (expectValidation) {
             verify(this.validationUseCaseMock).apply(any(), any());
@@ -155,10 +155,27 @@ class ReleaseDroidTest {
 
     @Test
     void failedValidationSkipsReleases() {
-        final UserInput userInput = builder().repositoryName("name").platforms("github").goal("release").build();
         simulateFailure(this.validationUseCaseMock, ValidationReport.create(PlatformName.GITHUB));
-        this.releaseDroid.run(userInput);
+        mockRepositoryAndState();
+        this.releaseDroid.run(userInput("release").build());
         verifyNoMoreInteractions(this.releaseUseCaseMock);
+    }
+
+    @Test
+    void testSkipAlreadyReleased() {
+        mockRepositoryAndState();
+        when(this.repositoryMock.getName()).thenReturn(REPOSITORY_NAME);
+        when(this.repositoryMock.getVersion()).thenReturn(REPOSITORY_VERSION);
+        when(this.releaseStateMock.getAlreadyReleased(REPOSITORY_NAME, REPOSITORY_VERSION))
+                .thenReturn(Set.of(PlatformName.GITHUB));
+        this.releaseDroid.run(userInput("release").build());
+        verifyNoInteractions(this.validationUseCaseMock);
+        verifyNoInteractions(this.releaseUseCaseMock);
+    }
+
+    private void mockRepositoryAndState() {
+        when(this.repositoryGatewayMock.getRepository(any())).thenReturn(this.repositoryMock);
+        when(this.releaseStateMock.getAlreadyReleased(any(), any())).thenReturn(Set.of());
     }
 
     private void simulateFailure(final UseCase useCase, final Report report) {
@@ -172,5 +189,13 @@ class ReleaseDroidTest {
 
     private static class UseCaseException extends RuntimeException {
         private static final long serialVersionUID = 1L;
+    }
+
+    private UserInput.Builder userInput(final String goal) {
+        return userInput().goal(goal);
+    }
+
+    private UserInput.Builder userInput() {
+        return UserInput.builder().repositoryName(REPOSITORY_NAME).platforms(PLATFORM);
     }
 }
