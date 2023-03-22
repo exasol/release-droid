@@ -48,7 +48,6 @@ public class ReleaseInteractor implements UseCase {
     @Override
     // [impl->dsn~rd-runs-release-goal~1]
     public List<Report> apply(final Repository repository, final ReleasePlatforms platforms) {
-        releaseOnPlatforms(repository, platforms);
         try {
             return releaseOnPlatforms(repository, platforms);
         } catch (final Exception exception) {
