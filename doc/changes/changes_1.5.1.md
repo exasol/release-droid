@@ -1,4 +1,4 @@
-# Exasol Release Droid 1.5.1, released 2023-03-22
+# Exasol Release Droid 1.5.1, released 2023-03-23
 
 Code name: Fixed Report
 
