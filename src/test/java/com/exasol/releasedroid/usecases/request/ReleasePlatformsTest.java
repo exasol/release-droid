@@ -45,7 +45,8 @@ class ReleasePlatformsTest {
 
     @Test
     void unreleased() {
-        final ReleasePlatforms platforms = run(Goal.RELEASE, false).withoutReleased(List.of(PlatformName.MAVEN));
+        final ReleasePlatforms platforms = run(Goal.RELEASE, false).remaining(List.of(PlatformName.MAVEN), p -> {
+        });
         assertThat(platforms.list(), equalTo(List.of(PlatformName.GITHUB)));
     }
 

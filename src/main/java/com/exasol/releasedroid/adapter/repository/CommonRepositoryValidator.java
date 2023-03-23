@@ -52,7 +52,7 @@ public class CommonRepositoryValidator implements RepositoryValidator {
     private Report validateChecksumWorkflows() {
         final var report = ValidationReport.create();
         if (repositoryHasBothWorkflows()) {
-            report.addSuccessfulResult("Workflows for checksum generation exist.");
+            report.addSuccessfulResult("Workflows for checksum generation exists.");
         } else if (repositoryMissesBothWorkflows()) {
             LOGGER.warning("Attention! This repository misses workflows for checksum generation. "
                     + "Please make sure that it's intended.");

@@ -1,13 +1,13 @@
 package com.exasol.releasedroid.main;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.HOME_DIRECTORY;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_CREDENTIALS;
+import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -60,15 +60,17 @@ public class Runner {
         final Map<PlatformName, ReleaseMaker> releaseMakers = createReleaseMakers(githubGateway);
         final ReleaseManager releaseManager = new ReleaseManagerImpl(githubGateway);
         final UseCase validateUseCase = new ValidateInteractor();
-        final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager);
-        final List<ReleaseDroidResponseConsumer> releaseDroidResponseConsumers = getReportConsumers();
-        return new ReleaseDroid(repositoryGateway, validateUseCase, releaseUseCase, releaseDroidResponseConsumers);
-    }
-
-    private static List<ReleaseDroidResponseConsumer> getReportConsumers() {
-        return List.of( //
-                new ResponseLogger(new ReportLogFormatter()),
-                new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(), REPORT_PATH, REPORT_NAME));
+        final ReleaseState releaseState = new ReleaseState(RELEASE_DROID_STATE_DIRECTORY);
+        final UseCase releaseUseCase = new ReleaseInteractor(releaseMakers, releaseManager, releaseState);
+        return ReleaseDroid.builder() //
+                .repositoryGateway(repositoryGateway) //
+                .releaseState(releaseState) //
+                .validateUseCase(validateUseCase) //
+                .releaseUseCase(releaseUseCase) //
+                .loggerResponseConsumer(new ResponseLogger(new ReportLogFormatter())) //
+                .diskWriterResponseConsumer(new ResponseDiskWriter(new ReportSummaryFormatter(), new HeaderFormatter(),
+                        REPORT_PATH, REPORT_NAME)) //
+                .build();
     }
 
     static boolean checkCredentialsFile(final Path path) {
