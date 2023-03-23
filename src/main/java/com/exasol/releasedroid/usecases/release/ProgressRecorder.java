@@ -4,7 +4,6 @@ import com.exasol.releasedroid.usecases.request.PlatformName;
 
 /**
  * This interface describes a recorder for incremental saving the current state or progress.
- *
  * <p>
  * In case of a failure of the current session this enables to recover and continue later on.
  */
