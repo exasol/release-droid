@@ -20,6 +20,12 @@
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
             <version>5.2.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- explicite dependency to fix vulnerability CVE-2022-40149 in transitive dependency of jira-rest-java-client-core to jettison 1.3.2 -->
         <dependency>
