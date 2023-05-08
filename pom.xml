@@ -27,17 +27,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- explicite dependency to fix vulnerability CVE-2022-40149 in transitive dependency of jira-rest-java-client-core to jettison 1.3.2 -->
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-        <!-- Major version 5 required to remain compatible to jira-rest-java-client-core -->
+        <!-- Do not update, the major version 5 required to remain compatible to jira-rest-java-client-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>6.0.8</version>
+            <version>5.3.27</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

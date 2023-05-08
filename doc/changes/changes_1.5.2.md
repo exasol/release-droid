@@ -16,11 +16,12 @@ Code name:
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.5`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.15.0`
+* Removed `org.codehaus.jettison:jettison:1.5.4`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.3`
 
 ### Runtime Dependency Updates
 
-* Updated `org.springframework:spring-beans:5.3.25` to `6.0.8`
+* Updated `org.springframework:spring-beans:5.3.25` to `5.3.27`
 
 ### Test Dependency Updates
 
