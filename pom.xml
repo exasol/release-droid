@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>6.0.8</version>
+            <version>5.3.25</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -58,7 +58,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <!-- must be compatible to slf-api:1.7.30 required by jira-rest-java-client-core -->
-            <version>2.0.7</version>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -181,11 +181,13 @@
                 <artifactId>ossindex-maven-plugin</artifactId>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!-- Ignore vulnerability reported for transitive dependency of
-                        jira-rest-java-client-core as there is no newer release of guava available,
-                        see https://github.com/exasol/release-droid/issues/234 -->
+                        <!-- Ignore vulnerability reported for transitive dependency
+                             com.google.guava:guava:jar:30.1.1-jre via jira-rest-java-client-core
+                             as there is no newer release jira-rest-java-client-core available
+                             and newer versions of guava may be incompatible
+                             as major version 31 indicates breaking changes,
+                             see https://github.com/exasol/release-droid/issues/234 -->
                         <exclude>CVE-2020-8908</exclude>
-                        <exclude>sonatype-2020-0926</exclude>
                         <!-- Ignore vulnerability for
                         com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update
                         available, yet. -->

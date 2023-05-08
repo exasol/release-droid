@@ -4,7 +4,7 @@ Code name: t.b.d.
 
 ## Summary
 
-This release updates dependencies and accepts a vulnerability reported in transitive dependency `com.google.guava:guava:jar:30.1.1` of `jira-rest-java-client-core` as currently there is no update available for Jira Client. Please note that additionally currently there are no releases to platform Jira.
+This release updates dependencies and vulnerability CVE-2020-8908 reported in transitive dependency `com.google.guava:guava:jar:30.1.1` of `jira-rest-java-client-core` as currently there is no update available for Jira Client. Please note that additionally currently there are no releases to platform Jira.
 
 ## Features
 
