@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
     <properties>
-        <mockito.version>5.2.0</mockito.version>
+        <mockito.version>5.3.1</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -19,19 +19,19 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
-            <version>5.2.4</version>
+            <version>5.2.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- explicite dependency to fix vulnerability CVE-2022-40149 in transitive dependency of jira-rest-java-client-core to jettison 1.3.2 -->
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-        <!-- Major version 5 required to remain compatible to jira-rest-java-client-core -->
+        <!-- Do not update, the major version 5 required to remain compatible to jira-rest-java-client-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.25</version>
+            <version>5.3.27</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.2</version>
+            <version>2.15.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <!-- must be compatible to slf-api:1.7.30 required by jira-rest-java-client-core -->
+            <!-- must be compatible to slf4j-api:1.7.36 required by jira-rest-java-client-core -->
             <version>1.7.36</version>
         </dependency>
         <dependency>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.2</version>
+            <version>5.9.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -143,7 +143,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -152,12 +151,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M6</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M6</version>
                 <configuration>
                     <forkCount>0</forkCount>
                 </configuration>
@@ -165,7 +162,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
                 <configuration>
                     <finalName>release-droid-${project.version}</finalName>
                     <archive>
@@ -184,18 +180,14 @@
                         <!-- Ignore vulnerability reported for transitive dependency of
                         jira-rest-java-client-core as there is no newer release of guava available,
                         see https://github.com/exasol/release-droid/issues/234 -->
-                        <exclude>sonatype-2020-0926</exclude>
-                        <!-- Ignore vulnerability for
-                        com.fasterxml.jackson.core:jackson-core:jar:2.14.1 as there is no update
-                        available, yet. -->
-                        <exclude>sonatype-2022-6438</exclude>
+                        <exclude>CVE-2020-8908</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.itsallcode</groupId>
                 <artifactId>openfasttrace-maven-plugin</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
                 <executions>
                     <execution>
                         <id>trace-requirements</id>
@@ -211,7 +203,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.9.6</version>
+                <version>2.9.7</version>
                 <executions>
                     <execution>
                         <goals>
@@ -232,49 +224,11 @@
                 </configuration>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.exasol</groupId>
-                    <artifactId>artifact-reference-checker-maven-plugin</artifactId>
-                    <version>0.4.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.ossindex.maven</groupId>
-                    <artifactId>ossindex-maven-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.5.1</version>
+        <version>1.5.2</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
