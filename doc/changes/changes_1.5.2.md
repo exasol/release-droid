@@ -9,15 +9,21 @@ Code name:
 ## Security
 
 * #295: Fixed dependency check vulnerability findings
+* #299: Fixed dependency check vulnerability findings
 
 ## Dependency Updates
 
 ### Compile Dependency Updates
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.5`
-* Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.15.0`
+* Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.15.2`
+* Added `com.google.guava:guava:32.1.1-jre`
+* Updated `jakarta.json:jakarta.json-api:2.1.1` to `2.1.2`
+* Updated `org.apache.maven:maven-model:3.9.1` to `3.9.3`
 * Removed `org.codehaus.jettison:jettison:1.5.4`
+* Updated `org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r` to `6.6.0.202305301015-r`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.3`
+* Updated `org.kohsuke:github-api:1.314` to `1.315`
 
 ### Runtime Dependency Updates
 
@@ -25,9 +31,10 @@ Code name:
 
 ### Test Dependency Updates
 
+* Updated `nl.jqno.equalsverifier:equalsverifier:3.14.1` to `3.14.3`
 * Updated `org.junit.jupiter:junit-jupiter:5.9.2` to `5.9.3`
-* Updated `org.mockito:mockito-core:5.2.0` to `5.3.1`
-* Updated `org.mockito:mockito-junit-jupiter:5.2.0` to `5.3.1`
+* Updated `org.mockito:mockito-core:5.2.0` to `5.4.0`
+* Updated `org.mockito:mockito-junit-jupiter:5.2.0` to `5.4.0`
 
 ### Plugin Dependency Updates
 
