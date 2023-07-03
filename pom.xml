@@ -7,7 +7,7 @@
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
     <properties>
-        <mockito.version>5.3.1</mockito.version>
+        <mockito.version>5.4.0</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -27,6 +27,16 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- override transitive dependency to guava via jira client
+             to fix vulnerability CVE-2023-2976
+             in com.google.guava:guava:jar:30.1.1-jre:
+             CWE-552: Files or Directories Accessible to External Parties
+        -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.1-jre</version>
+        </dependency>
         <!-- Do not update, the major version 5 required to remain compatible to jira-rest-java-client-core -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -42,17 +52,17 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.314</version>
+            <version>1.315</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.0</version>
+            <version>2.15.2</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.5.0.202303070854-r</version>
+            <version>6.6.0.202305301015-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -63,12 +73,12 @@
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
+            <version>20040117.000000</version>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
-            <version>2.1.1</version>
+            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -78,7 +88,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>3.9.1</version>
+            <version>3.9.3</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -134,7 +144,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.14.1</version>
+            <version>3.14.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
