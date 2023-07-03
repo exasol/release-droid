@@ -17,18 +17,17 @@ Code name:
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.5`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.15.2`
-* Updated `commons-cli:commons-cli:1.5.0` to `20040117.000000`
+* Added `com.google.guava:guava:32.1.1-jre`
 * Updated `jakarta.json:jakarta.json-api:2.1.1` to `2.1.2`
 * Updated `org.apache.maven:maven-model:3.9.1` to `3.9.3`
 * Removed `org.codehaus.jettison:jettison:1.5.4`
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r` to `6.6.0.202305301015-r`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.3`
 * Updated `org.kohsuke:github-api:1.314` to `1.315`
-* Updated `org.slf4j:slf4j-simple:1.7.36` to `2.0.7`
 
 ### Runtime Dependency Updates
 
-* Updated `org.springframework:spring-beans:5.3.25` to `6.0.10`
+* Updated `org.springframework:spring-beans:5.3.25` to `5.3.27`
 
 ### Test Dependency Updates
 
