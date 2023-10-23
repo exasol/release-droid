@@ -18,7 +18,6 @@ Code name:
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.7`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.15.3`
-* Updated `commons-cli:commons-cli:1.5.0` to `20040117.000000`
 * Updated `jakarta.json:jakarta.json-api:2.1.1` to `2.1.3`
 * Updated `org.apache.maven:maven-model:3.9.1` to `3.9.5`
 * Removed `org.codehaus.jettison:jettison:1.5.4`
