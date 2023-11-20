@@ -11,7 +11,7 @@ Code name:
 * #295: Fixed dependency check vulnerability findings
 * #299: Fixed dependency check vulnerability findings
 * #302: Fixed vulnerability CVE-2023-4759 in `org.eclipse.jgit:org.eclipse.jgit`
-* #304: Fixed vulnerability CVE-2023-4043 in transitive test dependency `org.eclipse.parsson:parsson`
+* #304: Fixed vulnerability CVE-2023-4043 by updating transitive dependency `org.eclipse.parsson:parsson`
 
 ## Dependency Updates
 
