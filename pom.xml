@@ -7,7 +7,7 @@
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
     <properties>
-        <mockito.version>5.6.0</mockito.version>
+        <mockito.version>5.7.0</mockito.version>
     </properties>
     <repositories>
         <repository>
@@ -27,10 +27,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Do not update, the major version 5 required to remain compatible to jira-rest-java-client-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
+            <!-- keep major version 5 to remain compatible to jira-rest-java-client-core -->
             <version>5.3.27</version>
             <scope>runtime</scope>
         </dependency>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.3</version>
+            <version>2.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -63,7 +63,8 @@
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
+            <!-- Do not use version like 20040117.000000 -->
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>
@@ -74,6 +75,12 @@
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
             <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <!-- override transitive dependency of yasson to fix vulnerability CVE-2023-4043 -->
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -104,7 +111,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -134,7 +141,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.15.2</version>
+            <version>3.15.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -191,7 +198,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.9.12</version>
+                <version>2.9.16</version>
                 <executions>
                     <execution>
                         <goals>
