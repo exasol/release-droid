@@ -24,6 +24,7 @@ Code name:
 * Updated `org.apache.maven:maven-model:3.9.1` to `3.9.5`
 * Removed `org.codehaus.jettison:jettison:1.5.4`
 * Updated `org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r` to `6.7.0.202309050840-r`
+* Added `org.eclipse.parsson:parsson:1.1.5`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.3`
 * Updated `org.fusesource.jansi:jansi:2.4.0` to `2.4.1`
 * Updated `org.kohsuke:github-api:1.314` to `1.317`

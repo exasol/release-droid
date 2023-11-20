@@ -77,6 +77,12 @@
             <version>3.0.3</version>
         </dependency>
         <dependency>
+            <!-- override transitive dependency of yasson to fix vulnerability CVE-2023-4043 -->
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.5</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
             <version>3.9.5</version>
