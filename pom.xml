@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
-            <version>6.0.1</version>
+            <version>5.2.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -31,7 +31,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <!-- keep major version 5 to remain compatible to jira-rest-java-client-core -->
-            <version>6.1.13</version>
+            <version>5.3.39</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -44,6 +44,19 @@
             <artifactId>github-api</artifactId>
             <version>1.326</version>
         </dependency>
+        <!-- transitive dependencies of github-api expected to be provided since version 1.326 -->
+        <dependency>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-annotations</artifactId>
+          <version>4.8.6</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.infradna.tool</groupId>
+          <artifactId>bridge-method-annotation</artifactId>
+          <version>1.29</version>
+          <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -52,7 +65,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>7.0.0.202409031743-r</version>
+            <version>6.7.0.202309050840-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -149,21 +162,9 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <forkCount>0</forkCount>
+                    <useModules>false</useModules>
                 </configuration>
             </plugin>
             <plugin>
@@ -216,6 +217,16 @@
                         <exclude>src/test/java/com/exasol/releasedroid/formatting/ChecksumFormatterTest.java</exclude>
                         <exclude>src/test/java/com/exasol/releasedroid/main/RunnerIT.java</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:all,-processing</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

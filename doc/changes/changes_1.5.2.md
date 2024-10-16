@@ -18,15 +18,16 @@ Code name:
 
 ### Compile Dependency Updates
 
-* Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `6.0.1`
+* Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.7`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.18.0`
+* Added `com.infradna.tool:bridge-method-annotation:1.29`
 * Updated `commons-cli:commons-cli:1.5.0` to `1.9.0`
 * Updated `io.atlassian.fugue:fugue:5.0.0` to `6.1.0`
 * Updated `jakarta.json:jakarta.json-api:2.1.1` to `2.1.3`
 * Updated `org.apache.maven:maven-model:3.9.1` to `3.9.9`
 * Removed `org.codehaus.jettison:jettison:1.5.4`
 * Updated `org.commonmark:commonmark:0.21.0` to `0.23.0`
-* Updated `org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r` to `7.0.0.202409031743-r`
+* Updated `org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r` to `6.7.0.202309050840-r`
 * Added `org.eclipse.parsson:parsson:1.1.7`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.4`
 * Updated `org.fusesource.jansi:jansi:2.4.0` to `2.4.1`
@@ -35,7 +36,7 @@ Code name:
 
 ### Runtime Dependency Updates
 
-* Updated `org.springframework:spring-beans:5.3.25` to `6.1.13`
+* Updated `org.springframework:spring-beans:5.3.25` to `5.3.39`
 
 ### Test Dependency Updates
 
