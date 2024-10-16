@@ -57,6 +57,7 @@ class LatestSuccessfulRunTest {
         return run;
     }
 
+    @SuppressWarnings("varargs")
     @SafeVarargs
     private <T> void mockIterator(final PagedIterator<T> iterator, final T first, final T... items) {
         final Boolean[] hasNext = Streams.concat( //
