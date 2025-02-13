@@ -10,6 +10,10 @@
         <mockito.version>5.14.2</mockito.version>
     </properties>
     <repositories>
+	<repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/releases/</url>
+        </repository>
         <repository>
             <id>atlassian-public</id>
             <url>https://packages.atlassian.com/maven/repository/public</url>
