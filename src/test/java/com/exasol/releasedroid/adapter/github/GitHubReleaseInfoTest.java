@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -23,8 +24,8 @@ class GitHubReleaseInfoTest {
     }
 
     @Test
-    void htmlUrl() throws MalformedURLException {
-        final URL url = new URL("http://www.abc");
+    void htmlUrl() throws MalformedURLException, URISyntaxException {
+        final URL url = new java.net.URI("http://www.abc").toURL();
         final GitHubReleaseInfo info = GitHubReleaseInfo.builder().htmlUrl(url).build();
         assertThat(info.getHtmlUrl(), equalTo(url));
     }

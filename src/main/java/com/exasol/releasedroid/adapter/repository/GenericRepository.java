@@ -18,7 +18,7 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  * unsupported programming languages.
  */
 public class GenericRepository extends BaseRepository {
-    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this));
+    private final List<RepositoryValidator> repositoryValidators;
     private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
 
     /**
@@ -27,6 +27,7 @@ public class GenericRepository extends BaseRepository {
      * @param repositoryGate repository gate
      * @param githubGateway  github gateway
      */
+    @SuppressWarnings("this-escape")
     public GenericRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
         this.platformValidators = Map.of( //
@@ -34,6 +35,7 @@ public class GenericRepository extends BaseRepository {
                 PlatformName.COMMUNITY, new CommunityPlatformValidator(this), //
                 PlatformName.JIRA, new JiraPlatformValidator(this) //
         );
+        repositoryValidators = List.of(new CommonRepositoryValidator(this));
     }
 
     @Override

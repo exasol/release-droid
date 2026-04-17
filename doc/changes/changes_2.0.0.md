@@ -1,10 +1,14 @@
-# Exasol Release Droid 1.5.2, released 2024-??-??
+# Exasol Release Droid 2.0.0, released 2026-??-??
 
 Code name:
 
 ## Summary
 
+* This release updates dependencies and you need Java 21 to run release droid.
+
 ## Features
+
+* ISSUE_NUMBER: description
 
 ## Security
 
@@ -32,12 +36,12 @@ Code name:
 * Added `org.eclipse.parsson:parsson:1.1.7`
 * Updated `org.eclipse:yasson:3.0.2` to `3.0.4`
 * Updated `org.fusesource.jansi:jansi:2.4.0` to `2.4.3`
-* Updated `org.kohsuke:github-api:1.314` to `1.33`
+* Updated `org.kohsuke:github-api:1.314` to `1.330`
 * Updated `org.yaml:snakeyaml:2.0` to `2.6`
 
 ### Runtime Dependency Updates
 
-* Updated `org.springframework:spring-beans:5.3.25` to `5.3.39`
+* Removed `org.springframework:spring-beans:5.3.25`
 
 ### Test Dependency Updates
 
@@ -59,6 +63,7 @@ Code name:
 * Added `org.apache.maven.plugins:maven-artifact-plugin:3.6.1`
 * Updated `org.apache.maven.plugins:maven-assembly-plugin:3.3.0` to `3.8.0`
 * Updated `org.apache.maven.plugins:maven-compiler-plugin:3.10.1` to `3.15.0`
+* Added `org.apache.maven.plugins:maven-dependency-plugin:3.10.0`
 * Updated `org.apache.maven.plugins:maven-deploy-plugin:2.8.2` to `3.1.0`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.2.1` to `3.6.2`
 * Updated `org.apache.maven.plugins:maven-failsafe-plugin:3.0.0-M6` to `3.5.4`

@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>1.5.2</version>
+    <version>2.0.0</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
     <properties>
         <mockito.version>5.23.0</mockito.version>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
     </properties>
     <repositories>
         <repository>
@@ -33,13 +33,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <!-- keep major version 5 to remain compatible to jira-rest-java-client-core -->
-            <version>5.3.39</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
             <version>6.1.2</version>
@@ -47,7 +40,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.33</version>
+            <version>1.330</version>
         </dependency>
         <!-- transitive dependencies of github-api expected to be provided since version 1.326 -->
         <dependency>
@@ -162,15 +155,9 @@
             <version>4.5</version>
             <scope>test</scope>
         </dependency>
+    </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <useModules>false</useModules>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -228,7 +215,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Xlint:all,-processing</arg>
+                        <arg>-Xlint:all,-processing,-path</arg>
                         <arg>-Werror</arg>
                     </compilerArgs>
                 </configuration>
@@ -263,7 +250,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>1.5.2</version>
+        <version>2.0.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>

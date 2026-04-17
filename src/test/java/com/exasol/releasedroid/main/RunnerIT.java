@@ -25,7 +25,7 @@ class RunnerIT {
             fail("Jar " + jar + " does not exist. Run 'mvn package' before starting the integration tests");
         }
         final String output = startCommand("java", "-jar", jar.toString(), "--help");
-        assertThat(output, startsWith("usage: Release Droid"));
+        assertThat(output, startsWith(" usage:  release-droid"));
     }
 
     private String startCommand(final String... command) throws IOException, InterruptedException {
