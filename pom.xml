@@ -11,8 +11,8 @@
     </properties>
     <repositories>
         <repository>
-            <id>atlassian-public</id>
-            <url>https://packages.atlassian.com/maven/repository/public</url>
+            <id>jenkins-public</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -46,16 +46,16 @@
         </dependency>
         <!-- transitive dependencies of github-api expected to be provided since version 1.326 -->
         <dependency>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-annotations</artifactId>
-          <version>4.8.6</version>
-          <scope>provided</scope>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>4.8.6</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>com.infradna.tool</groupId>
-          <artifactId>bridge-method-annotation</artifactId>
-          <version>1.29</version>
-          <optional>true</optional>
+            <groupId>com.infradna.tool</groupId>
+            <artifactId>bridge-method-annotation</artifactId>
+            <version>1.31</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -199,7 +199,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>4.3.3</version>
+                <version>5.4.6</version>
                 <executions>
                     <execution>
                         <goals>
@@ -232,11 +232,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
             </plugin>
             <plugin>

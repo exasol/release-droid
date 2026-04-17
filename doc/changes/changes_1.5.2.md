@@ -20,7 +20,7 @@ Code name:
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:5.2.4` to `5.2.7`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.14.2` to `2.18.0`
-* Added `com.infradna.tool:bridge-method-annotation:1.29`
+* Added `com.infradna.tool:bridge-method-annotation:1.31`
 * Updated `commons-cli:commons-cli:1.5.0` to `1.9.0`
 * Updated `io.atlassian.fugue:fugue:5.0.0` to `6.1.0`
 * Updated `jakarta.json:jakarta.json-api:2.1.1` to `2.1.3`
@@ -49,7 +49,7 @@ Code name:
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:error-code-crawler-maven-plugin:1.2.2` to `2.0.3`
-* Updated `com.exasol:project-keeper-maven-plugin:2.9.6` to `4.3.3`
+* Updated `com.exasol:project-keeper-maven-plugin:2.9.6` to `5.4.6`
 * Updated `org.apache.maven.plugins:maven-assembly-plugin:3.3.0` to `3.7.1`
 * Updated `org.apache.maven.plugins:maven-compiler-plugin:3.10.1` to `3.13.0`
 * Updated `org.apache.maven.plugins:maven-deploy-plugin:2.8.2` to `3.1.0`
