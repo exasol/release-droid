@@ -45,7 +45,6 @@ jobs:
         with:
           distribution: temurin
           java-version: |
-            11
             17
           cache: maven
       - name: Cache SonarCloud packages
