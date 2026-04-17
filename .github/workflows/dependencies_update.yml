@@ -57,7 +57,7 @@ jobs:
       - name: Fail if not running on a branch
         id: check-branch
         if: ${{ !startsWith(github.ref, 'refs/heads/') }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v7
         with:
           script: |
             core.setFailed('Not running on a branch, github.ref is ${{ github.ref }}. Please start this workflow only on main or a branch')
@@ -180,5 +180,5 @@ jobs:
           message_format: '{workflow} created Pull Request ${{ steps.create-pr.outputs.pr_url }}'
         }
         env: {
-          SLACK_WEBHOOK_URL: '${{ secrets.INTEGRATION_TEAM_SECURITY_UPDATES_WEBHOOK }}'
+          SLACK_WEBHOOK_URL: '${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}'
         }

@@ -6,7 +6,7 @@ on:
       main,
       release/*
     ]
-    
+
   pull_request:
     types: [
       opened,
@@ -14,7 +14,7 @@ on:
       reopened,
       ready_for_review
     ]
-    
+
   workflow_dispatch: null
 jobs:
   build-and-test:
