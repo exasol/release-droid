@@ -25,7 +25,7 @@ class GitHubReleaseInfoTest {
 
     @Test
     void htmlUrl() throws MalformedURLException, URISyntaxException {
-        final URL url = new java.net.URI("http://www.abc").toURL();
+        final URL url = new URI("http://www.abc").toURL();
         final GitHubReleaseInfo info = GitHubReleaseInfo.builder().htmlUrl(url).build();
         assertThat(info.getHtmlUrl(), equalTo(url));
     }

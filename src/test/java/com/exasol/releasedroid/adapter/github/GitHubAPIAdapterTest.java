@@ -11,8 +11,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.time.Duration;
 import java.util.Map;
 
@@ -61,7 +60,7 @@ class GitHubAPIAdapterTest {
 
     private GHWorkflowRun mockWorkflowRun() throws IOException, URISyntaxException {
         final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
-        when(run.getHtmlUrl()).thenReturn(new java.net.URI("http://of-workflow-run").toURL());
+        when(run.getHtmlUrl()).thenReturn(new URI("http://of-workflow-run").toURL());
         when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
         return run;
     }
@@ -196,7 +195,7 @@ class GitHubAPIAdapterTest {
     }
 
     private URL mockGHRepository() throws IOException, URISyntaxException {
-        final URL htmlUrl = new java.net.URI("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123").toURL();
+        final URL htmlUrl = new URI("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123").toURL();
         final GHRelease releaseMock = mock(GHRelease.class);
         when(releaseMock.getHtmlUrl()).thenReturn(htmlUrl);
         when(releaseMock.isDraft()).thenReturn(true);
