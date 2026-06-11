@@ -1,9 +1,14 @@
 package com.exasol.releasedroid.main;
 
+
 import org.apache.commons.cli.*;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.usecases.request.UserInput;
+import org.apache.commons.cli.help.HelpFormatter;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * Parser for user input.
@@ -14,7 +19,7 @@ public class UserInputParser {
     private static final Option PLATFORM = Option.builder().option("p").longOpt("platforms") //
             .numberOfArgs(Option.UNLIMITED_VALUES).valueSeparator(',') //
             .desc("comma-separated list of release platforms") //
-            .build();
+            .get();
     private static final Option BRANCH = new Option("b", "branch", true, "git branch (only for validation)");
     private static final Option LOCAL = new Option("l", "local", true, "local path to the repository");
     private static final Option LANGUAGE = new Option("lg", "language", true, //
@@ -78,7 +83,11 @@ public class UserInputParser {
     }
 
     private static void printHelp(final Options options) {
-        final HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("Release Droid", options);
+        final HelpFormatter formatter = HelpFormatter.builder().get();
+        try {
+            formatter.printHelp("release-droid", "", options, "", true);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

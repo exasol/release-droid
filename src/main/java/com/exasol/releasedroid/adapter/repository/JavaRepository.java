@@ -21,11 +21,11 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
  */
 public class JavaRepository extends BaseRepository implements MavenRepository {
     private static final String POM_PATH = "pom.xml";
-    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this),
-            new JavaRepositoryValidator(this));
+    private final List<RepositoryValidator> repositoryValidators;
     private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
     private MavenPom pom;
 
+    @SuppressWarnings("this-escape")
     public JavaRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
         this.platformValidators = Map.of( //
@@ -34,6 +34,7 @@ public class JavaRepository extends BaseRepository implements MavenRepository {
                 PlatformName.COMMUNITY, new CommunityPlatformValidator(this), //
                 PlatformName.JIRA, new JiraPlatformValidator(this) //
         );
+        repositoryValidators = List.of(new CommonRepositoryValidator(this),new JavaRepositoryValidator(this));
     }
 
     /**

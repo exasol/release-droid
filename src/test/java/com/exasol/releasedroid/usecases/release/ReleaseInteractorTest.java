@@ -11,8 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
@@ -219,9 +218,11 @@ class ReleaseInteractorTest {
 
     private URL url(final String url) {
         try {
-            return new URL(GITHUB_TAG_URL);
+            return new URI(GITHUB_TAG_URL).toURL();
         } catch (final MalformedURLException exception) {
             throw new IllegalStateException(exception);
+        } catch (final URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

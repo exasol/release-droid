@@ -22,10 +22,10 @@ import com.exasol.releasedroid.usecases.validate.RepositoryValidator;
 public class ScalaRepository extends BaseRepository {
     private static final String VERSION_PATTERN = "settings(version";
     protected static final String BUILD_SBT = "build.sbt";
-    private final List<RepositoryValidator> repositoryValidators = List.of(new CommonRepositoryValidator(this),
-            new ScalaRepositoryValidator(this));
+    private final List<RepositoryValidator> repositoryValidators;
     private final Map<PlatformName, ReleasePlatformValidator> platformValidators;
 
+    @SuppressWarnings("this-escape")
     public ScalaRepository(final RepositoryGate repositoryGate, final GitHubGateway githubGateway) {
         super(repositoryGate);
         this.platformValidators = Map.of( //
@@ -33,6 +33,8 @@ public class ScalaRepository extends BaseRepository {
                 PlatformName.COMMUNITY, new CommunityPlatformValidator(this), //
                 PlatformName.JIRA, new JiraPlatformValidator(this) //
         );
+        repositoryValidators = List.of(new CommonRepositoryValidator(this),
+                new ScalaRepositoryValidator(this));
     }
 
     @Override

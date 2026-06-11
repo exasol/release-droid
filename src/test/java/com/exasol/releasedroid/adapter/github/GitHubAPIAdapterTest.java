@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.*;
 import java.time.Duration;
 import java.util.Map;
 
@@ -48,7 +48,7 @@ class GitHubAPIAdapterTest {
 
     @Tag("integration")
     @Test
-    void testExecuteWorkflow() throws IOException, GitHubException {
+    void testExecuteWorkflow() throws IOException, GitHubException, URISyntaxException {
         final String workflowName = "some_workflow.yml";
         final String defaultBranch = "main";
         final GHWorkflow workflowMock = mockWorkflow(mockWorkflowRun());
@@ -58,9 +58,9 @@ class GitHubAPIAdapterTest {
         verify(workflowMock, times(1)).dispatch(defaultBranch, Map.of());
     }
 
-    private GHWorkflowRun mockWorkflowRun() throws IOException {
+    private GHWorkflowRun mockWorkflowRun() throws IOException, URISyntaxException {
         final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
-        when(run.getHtmlUrl()).thenReturn(new URL("http://of-workflow-run"));
+        when(run.getHtmlUrl()).thenReturn(new URI("http://of-workflow-run").toURL());
         when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
         return run;
     }
@@ -100,7 +100,7 @@ class GitHubAPIAdapterTest {
     }
 
     @Test
-    void releaseCreateRelease() throws GitHubException, IOException {
+    void releaseCreateRelease() throws GitHubException, IOException, URISyntaxException {
         final String version = "4.5.6";
         final GitHubRelease release = releaseBuilder(version).build();
         final URL expectedHtmlUrl = mockGHRepository();
@@ -130,7 +130,7 @@ class GitHubAPIAdapterTest {
     }
 
     @Test
-    void additionalTags() throws GitHubException, IOException {
+    void additionalTags() throws GitHubException, IOException, URISyntaxException {
         final String v1 = "v1.2.3";
         final String v2 = "subfolder/v1.2.3";
         final GitHubRelease release = releaseBuilder("1.2.3") //
@@ -194,8 +194,8 @@ class GitHubAPIAdapterTest {
                 .releaseLetter("release letter");
     }
 
-    private URL mockGHRepository() throws IOException {
-        final URL htmlUrl = new URL("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123");
+    private URL mockGHRepository() throws IOException, URISyntaxException {
+        final URL htmlUrl = new URI("https://github.com/" + REPOSITORY_NAME + "/releases/releases/edit/untagged-123").toURL();
         final GHRelease releaseMock = mock(GHRelease.class);
         when(releaseMock.getHtmlUrl()).thenReturn(htmlUrl);
         when(releaseMock.isDraft()).thenReturn(true);
