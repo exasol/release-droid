@@ -28,7 +28,6 @@
 | Dependency                                 | License                           |
 | ------------------------------------------ | --------------------------------- |
 | [JUnit Jupiter (Aggregator)][31]           | [Eclipse Public License v2.0][32] |
-| [mockito-core][33]                         | [MIT][8]                          |
 | [mockito-junit-jupiter][33]                | [MIT][8]                          |
 | [Hamcrest][34]                             | [BSD-3-Clause][35]                |
 | [Maven Project Version Getter][36]         | [MIT License][37]                 |

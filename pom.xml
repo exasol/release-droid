@@ -7,7 +7,6 @@
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
     <properties>
-        <mockito.version>5.23.0</mockito.version>
         <java.version>21</java.version>
     </properties>
     <repositories>
@@ -127,14 +126,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -46,7 +46,7 @@ This release updates dependencies and you need Java 21 to run release droid.
 * Updated `nl.jqno.equalsverifier:equalsverifier:3.14.1` to `4.5`
 * Updated `org.hamcrest:hamcrest:2.2` to `3.0`
 * Updated `org.junit.jupiter:junit-jupiter:5.9.2` to `6.1.0`
-* Updated `org.mockito:mockito-core:5.2.0` to `5.23.0`
+* Removed `org.mockito:mockito-core:5.2.0`
 * Updated `org.mockito:mockito-junit-jupiter:5.2.0` to `5.23.0`
 
 ### Plugin Dependency Updates
