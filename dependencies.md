@@ -12,7 +12,7 @@
 | [Bridge method injection annotations][7]    | [MIT License][8]                                                                                               |
 | [jackson-databind][9]                       | [The Apache Software License, Version 2.0][10]                                                                 |
 | [JGit - Core][11]                           | [BSD-3-Clause][12]                                                                                             |
-| [SLF4J Simple Binding][13]                  | [MIT License][14]                                                                                              |
+| [SLF4J Simple Provider][13]                 | [MIT][14]                                                                                                      |
 | [Apache Commons CLI][15]                    | [Apache-2.0][10]                                                                                               |
 | [Jakarta JSON Processing API][16]           | [Eclipse Public License 2.0][17]; [GNU General Public License, version 2 with the GNU Classpath Exception][18] |
 | [Yasson][19]                                | [Eclipse Public License v. 2.0][20]; [Eclipse Distribution License v. 1.0][21]                                 |
@@ -78,7 +78,7 @@
 [11]: https://www.eclipse.org/jgit/
 [12]: https://www.eclipse.org/org/documents/edl-v10.php
 [13]: http://www.slf4j.org
-[14]: http://www.opensource.org/licenses/mit-license.php
+[14]: https://opensource.org/license/mit
 [15]: https://commons.apache.org/proper/commons-cli/
 [16]: https://github.com/eclipse-ee4j/jsonp
 [17]: https://projects.eclipse.org/license/epl-2.0

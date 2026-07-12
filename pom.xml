@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
-            <version>6.1.4</version>
+            <version>7.0.0-java25-m005-c3b6edbda1b</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.22.0</version>
+            <version>2.22.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -68,7 +68,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <!-- must be compatible to slf4j-api:1.7.36 required by jira-rest-java-client-core -->
-            <version>1.7.36</version>
+            <version>2.0.18</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.28.0</version>
+            <version>0.29.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -183,7 +183,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.6.2</version>
+                <version>5.7.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -243,7 +243,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
