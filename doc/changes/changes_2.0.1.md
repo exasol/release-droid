@@ -15,6 +15,7 @@ We also updated the GitHub API to 2.0-RC7 and adapted some code to match that. W
 ### Compile Dependency Updates
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:7.0.1` to `7.0.2`
+* Removed `com.exasol:error-reporting-java:1.0.2`
 * Updated `com.fasterxml.jackson.core:jackson-databind:2.22.0` to `2.22.1`
 * Removed `com.infradna.tool:bridge-method-annotation:1.31`
 * Removed `jakarta.json:jakarta.json-api:2.1.3`
