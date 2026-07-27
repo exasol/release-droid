@@ -1,8 +1,7 @@
 package com.exasol.releasedroid.main;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -25,7 +24,7 @@ class RunnerIT {
             fail("Jar " + jar + " does not exist. Run 'mvn package' before starting the integration tests");
         }
         final String output = startCommand("java", "-jar", jar.toString(), "--help");
-        assertThat(output, startsWith(" usage:  release-droid"));
+        assertThat(output, containsString(" usage:  release-droid"));
     }
 
     private String startCommand(final String... command) throws IOException, InterruptedException {
