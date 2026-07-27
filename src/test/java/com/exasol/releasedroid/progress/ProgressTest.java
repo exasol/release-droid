@@ -2,14 +2,11 @@ package com.exasol.releasedroid.progress;
 
 import static com.exasol.releasedroid.formatting.Colorizer.brightGreen;
 import static com.exasol.releasedroid.formatting.Colorizer.yellow;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARATOR;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -19,10 +16,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.github.*;
-
-import com.exasol.releasedroid.adapter.github.*;
-import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 
 class ProgressTest {
 
@@ -39,6 +32,7 @@ class ProgressTest {
     }
 
     @Test
+    @SuppressWarnings("java:S8692") // testing the clock-related behavior is the point here.
     void startTime() {
         final String pattern = "HH mm ss";
         final Progress testee = progressBuilder() //
@@ -59,6 +53,7 @@ class ProgressTest {
     }
 
     @Test
+    @SuppressWarnings("java:S8692") // testing the clock-related behavior is the point here.
     void welcomeMessage() {
         final String timePattern = "HH mm ss";
         final String datePattern = "dd MM YYYY";
@@ -136,39 +131,6 @@ class ProgressTest {
         return allOf(Arrays.stream(expected).map(Matchers::containsString).toArray(Matcher[]::new));
     }
 
-    void manualIntegrationTestWithoutGithub() throws InterruptedException {
-        final Duration estimation = Duration.ofSeconds(4);
-        final Progress testee = startProgress(new ProgressMonitor(), estimation);
-        new ManualExplorer().estimation(estimation).iterations(5, 3).run(testee, "");
-    }
-
-    void manualIntegrationTestWithGithub() throws IOException, InterruptedException {
-        final String credentials = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
-        final PropertyReaderImpl reader = new PropertyReaderImpl(credentials);
-        final GitHubConnectorImpl connector = new GitHubConnectorImpl(reader);
-        final GHWorkflowRun run = lastRun(connector, "exasol/release-droid");
-
-        final Progress testee = Progress.builder() //
-                .datePattern("dd.MM.YYYY") //
-                .estimation(Estimation.from(run.getCreatedAt(), run.getUpdatedAt())) //
-                .start();
-        final Duration estimation = Duration.between(run.getCreatedAt(), run.getUpdatedAt());
-
-        final String prefix = testee.startTime() + ": Started GitHub workflow 'ci-build.yml': " //
-                + run.getHtmlUrl() + "\n" //
-                + "The Release Droid is monitoring its progress.\n" //
-                + "This can take from a few minutes to a couple of hours depending on the build.";
-        new ManualExplorer().estimation(estimation).iterations(3, 50).run(testee, prefix);
-    }
-
-    private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repositoryName)
-            throws IOException {
-        final GHRepository repository = connector.connectToGitHub().getRepository(repositoryName);
-        final GHWorkflow workflow = repository.getWorkflow("ci-build.yml");
-        final GitHubAPIAdapter adapter = new GitHubAPIAdapter(connector);
-        return adapter.latestRun(workflow);
-    }
-
     private Progress.Builder progressBuilder() {
         return Progress.builder().estimation(ESTIMATION);
     }
@@ -178,43 +140,5 @@ class ProgressTest {
                 .estimation(Estimation.from(INSTANT, INSTANT.plus(estimation)))
                 .datePattern("dd.MM.YYYY")
                 .start();
-    }
-
-    static class ManualExplorer {
-        private Duration estimation = Duration.ofSeconds(2);
-        private int iterations = 5;
-        private int intervals = 3;
-
-        public ManualExplorer estimation(final Duration value) {
-            this.estimation = value;
-            return this;
-        }
-
-        public ManualExplorer iterations(final int iterations, final int intervals) {
-            this.iterations = iterations;
-            this.intervals = intervals;
-            return this;
-        }
-
-        // class is only used for manual exploration
-        // Sonar warnings are suppressed therefore:
-        // java:S2925 - "Thread.sleep" should not be used in tests
-        @SuppressWarnings("java:S2925")
-        public void run(final Progress testee, final String prefix) throws InterruptedException {
-            System.out.println(testee.welcomeMessage(prefix));
-            for (int i = 0; i < this.iterations; i++) {
-                Thread.sleep(this.estimation.dividedBy(this.intervals).toMillis());
-                fixEclipseConsole();
-                System.out.print("\r" + testee.status());
-                System.out.flush();
-            }
-            System.out.println();
-        }
-
-        private void fixEclipseConsole() {
-            if (System.getProperty("sun.java.command").startsWith("org.eclipse")) {
-                System.out.println(Progress.repeat("\r\n", 70));
-            }
-        }
     }
 }
