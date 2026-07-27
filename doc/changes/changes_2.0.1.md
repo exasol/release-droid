@@ -1,14 +1,14 @@
-# Exasol Release Droid 2.0.1, released 2026-??-??
+# Exasol Release Droid 2.0.1, released 2026-07-27
 
 Code name: Dependency Update on top of 2.0.0
 
 ## Summary
 
-This release fixes CWE-915 by updating the transitive dependency `com.fasterxml.jackson.core:jackson-databind` to 2.22.0 
+This release fixes CWE-915 by updating the transitive dependency `com.fasterxml.jackson.core:jackson-databind` to 2.22.1.
 
-## Security
+The Jira client does not have an update yet, so we had to pin two transitive dependencies.
 
-* ISSUE_NUMBER: description
+We also updated the GitHub API to 2.0-RC7 and adapted some code to match that. While we were at it, we fixed some Sonar findings.
 
 ## Dependency Updates
 
