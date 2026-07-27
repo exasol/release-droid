@@ -15,7 +15,11 @@ This release fixes CWE-915 by updating the transitive dependency `com.fasterxml.
 ### Compile Dependency Updates
 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:7.0.1` to `7.0.2`
+* Updated `com.fasterxml.jackson.core:jackson-databind:2.22.0` to `2.22.1`
+* Removed `com.infradna.tool:bridge-method-annotation:1.31`
 * Updated `org.commonmark:commonmark:0.28.0` to `0.29.0`
+* Removed `org.eclipse.parsson:parsson:1.1.9`
+* Updated `org.kohsuke:github-api:1.330` to `2.0-rc.7`
 
 ### Test Dependency Updates
 
@@ -23,9 +27,9 @@ This release fixes CWE-915 by updating the transitive dependency `com.fasterxml.
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:artifact-reference-checker-maven-plugin:0.4.4` to `1.0.0`
+* Updated `com.exasol:artifact-reference-checker-maven-plugin:0.4.4` to `1.0.1`
 * Updated `com.exasol:error-code-crawler-maven-plugin:2.0.7` to `2.1.0`
-* Updated `com.exasol:project-keeper-maven-plugin:5.6.2` to `5.7.3`
+* Updated `com.exasol:project-keeper-maven-plugin:5.6.2` to `5.7.4`
 * Removed `com.exasol:quality-summarizer-maven-plugin:0.2.1`
 * Updated `org.apache.maven.plugins:maven-dependency-plugin:3.10.0` to `3.11.0`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.6.2` to `3.6.3`

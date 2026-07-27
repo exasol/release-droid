@@ -84,7 +84,6 @@ class ProgressTest {
     void status() {
         final ProgressMonitor monitor = mockProgressMonitor(ESTIMATION);
         final Duration delta = Duration.ofSeconds(3);
-
         when(monitor.elapsed()) //
                 .thenReturn(Duration.ofMillis(300)) //
                 .thenReturn(DURATION.minus(delta));
