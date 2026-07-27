@@ -127,6 +127,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     @Override
+    @SuppressWarnings("deprecation") // getIssues is deprecated.
     public Set<Integer> getClosedTickets(final String repositoryName) throws GitHubException {
         try {
             final List<GHIssue> closedIssues = this.getRepository(repositoryName).getIssues(GHIssueState.CLOSED);
@@ -213,7 +214,7 @@ public class GitHubAPIAdapter implements GitHubGateway {
      */
     // [impl->dsn~progress-display~1]
     private String getWorkflowConclusion(final GHWorkflow workflow, final WorkflowOptions options)
-            throws GitHubException, IOException {
+            throws GitHubException {
         boolean reportUrl = true;
         final Duration timeout = Duration.ofMinutes(150);
         final Timer timer = new Timer() //

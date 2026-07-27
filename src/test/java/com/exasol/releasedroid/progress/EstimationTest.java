@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +14,9 @@ class EstimationTest {
 
     private static final Duration DURATION = Duration.ofMinutes(1).plusSeconds(2);
     private static final Instant START = Instant.parse("2022-02-28T09:30:59.000Z");
-    private static final Date DATE1 = Date.from(START);
-    private static final Date DATE2 = Date.from(START.plus(DURATION));
+    private static final Instant END = START.plus(DURATION);
     private static final Estimation ESTIMATION_WITHOUT_TIMESTAMP = Estimation.of(DURATION);
-    private static final Estimation ESTIMATION = Estimation.from(DATE1, DATE2);
+    private static final Estimation ESTIMATION = Estimation.from(START, END);
 
     @Test
     void empty() {

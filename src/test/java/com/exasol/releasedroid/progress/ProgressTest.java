@@ -6,13 +6,13 @@ import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARA
 import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.kohsuke.github.*;
-import org.mockito.Mockito;
 
 import com.exasol.releasedroid.adapter.github.*;
 import com.exasol.releasedroid.usecases.PropertyReaderImpl;
@@ -60,7 +59,7 @@ class ProgressTest {
     }
 
     @Test
-    void welcomeMessage() throws InterruptedException {
+    void welcomeMessage() {
         final String timePattern = "HH mm ss";
         final String datePattern = "dd MM YYYY";
         final Progress testee = Progress.builder() //
@@ -69,11 +68,11 @@ class ProgressTest {
                 .timePattern(timePattern) //
                 .start();
         final String prefix = "Hello";
-        final String expected = String.format(prefix + "\n" //
-                + "Last release on %s took ~ 1:01 hours.\n"
-                + "If all goes well then the current release will be finished at %s.", //
-                format(INSTANT, datePattern), //
-                format(Instant.now().plus(DURATION), timePattern));
+        final String expected = "Hello\nLast release on "
+                + format(INSTANT, datePattern)
+                + " took ~ 1:01 hours.\nIf all goes well then the current release will be finished at "
+                + format(Instant.now().plus(DURATION), timePattern)
+                + ".";
         assertThat(testee.welcomeMessage(prefix), equalTo(expected));
     }
 
@@ -82,7 +81,7 @@ class ProgressTest {
     }
 
     @Test
-    void status() throws InterruptedException {
+    void status() {
         final ProgressMonitor monitor = mockProgressMonitor(ESTIMATION);
         final Duration delta = Duration.ofSeconds(3);
 
@@ -104,14 +103,14 @@ class ProgressTest {
     }
 
     private ProgressMonitor mockProgressMonitor(final Estimation estimation) {
-        final ProgressMonitor monitor = Mockito.mock(ProgressMonitor.class);
+        final ProgressMonitor monitor = mock(ProgressMonitor.class);
         when(monitor.estimation()).thenReturn(estimation);
         when(monitor.eta()).thenReturn(INSTANT);
         return monitor;
     }
 
     @Test
-    void progress() throws InterruptedException {
+    void progress() {
         final Duration estimation = Duration.ofSeconds(1);
         final ProgressMonitor monitor = mockProgressMonitor(new Estimation(INSTANT, estimation));
         when(monitor.elapsed()) //
@@ -144,19 +143,17 @@ class ProgressTest {
         new ManualExplorer().estimation(estimation).iterations(5, 3).run(testee, "");
     }
 
-    void manualIntegrationTestWithGithub() throws IOException, GitHubException, InterruptedException {
+    void manualIntegrationTestWithGithub() throws IOException, InterruptedException {
         final String credentials = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
         final PropertyReaderImpl reader = new PropertyReaderImpl(credentials);
         final GitHubConnectorImpl connector = new GitHubConnectorImpl(reader);
-        final GHWorkflowRun run = lastRun(connector, "exasol/release-droid", "ci-build.yml");
+        final GHWorkflowRun run = lastRun(connector, "exasol/release-droid");
 
         final Progress testee = Progress.builder() //
                 .datePattern("dd.MM.YYYY") //
                 .estimation(Estimation.from(run.getCreatedAt(), run.getUpdatedAt())) //
                 .start();
-        final Duration estimation = Duration.between( //
-                run.getCreatedAt().toInstant(), //
-                run.getUpdatedAt().toInstant());
+        final Duration estimation = Duration.between(run.getCreatedAt(), run.getUpdatedAt());
 
         final String prefix = testee.startTime() + ": Started GitHub workflow 'ci-build.yml': " //
                 + run.getHtmlUrl() + "\n" //
@@ -165,9 +162,9 @@ class ProgressTest {
         new ManualExplorer().estimation(estimation).iterations(3, 50).run(testee, prefix);
     }
 
-    private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repo, final String workflowName)
+    private GHWorkflowRun lastRun(final GitHubConnectorImpl connector, final String repositoryName)
             throws IOException {
-        final GHRepository repository = connector.connectToGitHub().getRepository(repo);
+        final GHRepository repository = connector.connectToGitHub().getRepository(repositoryName);
         final GHWorkflow workflow = repository.getWorkflow("ci-build.yml");
         final GitHubAPIAdapter adapter = new GitHubAPIAdapter(connector);
         return adapter.latestRun(workflow);
@@ -178,11 +175,9 @@ class ProgressTest {
     }
 
     private Progress startProgress(final ProgressMonitor monitor, final Duration estimation) {
-        return new Progress.Builder(monitor) //
-                .estimation(Estimation.from( //
-                        Date.from(INSTANT), //
-                        Date.from(INSTANT.plus(estimation)))) //
-                .datePattern("dd.MM.YYYY") //
+        return new Progress.Builder(monitor)
+                .estimation(Estimation.from(INSTANT, INSTANT.plus(estimation)))
+                .datePattern("dd.MM.YYYY")
                 .start();
     }
 
@@ -220,7 +215,6 @@ class ProgressTest {
         private void fixEclipseConsole() {
             if (System.getProperty("sun.java.command").startsWith("org.eclipse")) {
                 System.out.println(Progress.repeat("\r\n", 70));
-                // System.out.println(new String(new char[70]).replace("\0", "\r\n"));
             }
         }
     }
