@@ -127,10 +127,10 @@ public class GitHubAPIAdapter implements GitHubGateway {
     }
 
     @Override
-    @SuppressWarnings("deprecation") // getIssues is deprecated.
     public Set<Integer> getClosedTickets(final String repositoryName) throws GitHubException {
         try {
-            final List<GHIssue> closedIssues = this.getRepository(repositoryName).getIssues(GHIssueState.CLOSED);
+            final List<GHIssue> closedIssues = this.getRepository(repositoryName).queryIssues().state(GHIssueState.CLOSED)
+                    .list().toList();
             return closedIssues.stream().filter(ghIssue -> !ghIssue.isPullRequest()).map(GHIssue::getNumber)
                     .collect(Collectors.toSet());
         } catch (final IOException exception) {
