@@ -51,12 +51,11 @@ jobs:
       - name: Set up JDKs
         id: setup-java
         uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: |-
-            17
-            21
+        with: {
+          distribution: temurin,
+          java-version: '21',
           cache: maven
+        }
       - name: Cache SonarCloud packages
         id: cache-sonar
         uses: actions/cache@v6
@@ -207,15 +206,14 @@ jobs:
       - name: Set up JDKs
         id: setup-java
         uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: |-
-            17
-            21
-          cache: maven
-          server-id: ossindex
-          server-username: OSSINDEX_USERNAME
+        with: {
+          distribution: temurin,
+          java-version: '21',
+          cache: maven,
+          server-id: ossindex,
+          server-username: OSSINDEX_USERNAME,
           server-password: OSSINDEX_API_TOKEN
+        }
       - name: Run Ossindex
         id: ossindex
         run: |
@@ -285,12 +283,11 @@ jobs:
       - name: Set up JDKs
         id: setup-java
         uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: |-
-            17
-            21
+        with: {
+          distribution: temurin,
+          java-version: '21',
           cache: maven
+        }
       - name: Check if release is needed
         id: check-release
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
