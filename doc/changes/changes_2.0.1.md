@@ -20,6 +20,8 @@ We also updated the GitHub API to 2.0-RC7 and adapted some code to match that. W
 * Removed `jakarta.json:jakarta.json-api:2.1.3`
 * Added `org.apache.commons:commons-lang3:3.20.0`
 * Updated `org.commonmark:commonmark:0.28.0` to `0.29.0`
+* Removed `org.fusesource.jansi:jansi:2.4.3`
+* Added `org.jline:jansi:4.3.1`
 * Updated `org.kohsuke:github-api:1.330` to `2.0-rc.7`
 * Added `org.springframework:spring-beans:7.0.8`
 
