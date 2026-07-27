@@ -53,15 +53,15 @@
 | [Artifact reference checker and unifier][56]            | [MIT License][57]                              |
 | [spdx-maven-plugin Maven Plugin][58]                    | [The Apache Software License, Version 2.0][26] |
 | [Apache Maven Dependency Plugin][59]                    | [Apache-2.0][4]                                |
-| [Maven Failsafe Plugin][60]                             | [Apache-2.0][4]                                |
-| [JaCoCo :: Maven Plugin][61]                            | [EPL-2.0][62]                                  |
-| [error-code-crawler-maven-plugin][63]                   | [MIT License][64]                              |
-| [Git Commit Id Maven Plugin][65]                        | [GNU Lesser General Public License 3.0][66]    |
-| [Apache Maven Clean Plugin][67]                         | [Apache License, Version 2.0][4]               |
-| [Apache Maven Deploy Plugin][68]                        | [Apache-2.0][4]                                |
-| [Apache Maven Install Plugin][69]                       | [Apache License, Version 2.0][4]               |
-| [Apache Maven Resources Plugin][70]                     | [Apache License, Version 2.0][4]               |
-| [Apache Maven Site Plugin][71]                          | [Apache License, Version 2.0][4]               |
+| [Apache Maven Clean Plugin][60]                         | [Apache License, Version 2.0][4]               |
+| [Apache Maven Deploy Plugin][61]                        | [Apache-2.0][4]                                |
+| [Apache Maven Install Plugin][62]                       | [Apache License, Version 2.0][4]               |
+| [Apache Maven Resources Plugin][63]                     | [Apache License, Version 2.0][4]               |
+| [Apache Maven Site Plugin][64]                          | [Apache License, Version 2.0][4]               |
+| [Maven Failsafe Plugin][65]                             | [Apache-2.0][4]                                |
+| [JaCoCo :: Maven Plugin][66]                            | [EPL-2.0][67]                                  |
+| [error-code-crawler-maven-plugin][68]                   | [MIT License][69]                              |
+| [Git Commit Id Maven Plugin][70]                        | [GNU Lesser General Public License 3.0][71]    |
 
 [0]: https://www.atlassian.com/public-pom/jira-rest-java-client-parent/jira-rest-java-client-core/
 [1]: https://www.apache.org/licenses/LICENSE-2.0
@@ -123,15 +123,15 @@
 [57]: https://github.com/exasol/artifact-reference-checker-maven-plugin/blob/main/LICENSE
 [58]: https://github.com/spdx/spdx-maven-plugin
 [59]: https://maven.apache.org/plugins/maven-dependency-plugin/
-[60]: https://maven.apache.org/surefire/maven-failsafe-plugin/
-[61]: https://www.jacoco.org/jacoco/trunk/doc/maven.html
-[62]: https://www.eclipse.org/legal/epl-2.0/
-[63]: https://github.com/exasol/error-code-crawler-maven-plugin/
-[64]: https://github.com/exasol/error-code-crawler-maven-plugin/blob/main/LICENSE
-[65]: https://github.com/git-commit-id/git-commit-id-maven-plugin
-[66]: http://www.gnu.org/licenses/lgpl-3.0.txt
-[67]: https://maven.apache.org/plugins/maven-clean-plugin/
-[68]: https://maven.apache.org/plugins/maven-deploy-plugin/
-[69]: https://maven.apache.org/plugins/maven-install-plugin/
-[70]: https://maven.apache.org/plugins/maven-resources-plugin/
-[71]: https://maven.apache.org/plugins/maven-site-plugin/
+[60]: https://maven.apache.org/plugins/maven-clean-plugin/
+[61]: https://maven.apache.org/plugins/maven-deploy-plugin/
+[62]: https://maven.apache.org/plugins/maven-install-plugin/
+[63]: https://maven.apache.org/plugins/maven-resources-plugin/
+[64]: https://maven.apache.org/plugins/maven-site-plugin/
+[65]: https://maven.apache.org/surefire/maven-failsafe-plugin/
+[66]: https://www.jacoco.org/jacoco/trunk/doc/maven.html
+[67]: https://www.eclipse.org/legal/epl-2.0/
+[68]: https://github.com/exasol/error-code-crawler-maven-plugin/
+[69]: https://github.com/exasol/error-code-crawler-maven-plugin/blob/main/LICENSE
+[70]: https://github.com/git-commit-id/git-commit-id-maven-plugin
+[71]: http://www.gnu.org/licenses/lgpl-3.0.txt
