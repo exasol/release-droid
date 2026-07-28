@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.fusesource.jansi.AnsiConsole;
+import org.jline.jansi.AnsiConsole;
 
 import com.exasol.errorreporting.ExaError;
 import com.exasol.releasedroid.adapter.ReleaseManagerImpl;

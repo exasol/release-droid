@@ -1,10 +1,10 @@
 package com.exasol.releasedroid.formatting;
 
-import static org.fusesource.jansi.Ansi.ansi;
+import static org.jline.jansi.Ansi.ansi;
 
 import java.net.URL;
 
-import org.fusesource.jansi.Ansi.Attribute;
+import org.jline.jansi.Ansi.Attribute;
 
 public class Colorizer {
 

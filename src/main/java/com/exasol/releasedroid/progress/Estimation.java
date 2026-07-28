@@ -2,7 +2,6 @@ package com.exasol.releasedroid.progress;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Objects;
 
 // [impl->dsn~estimate-duration~1]
@@ -30,9 +29,8 @@ public class Estimation {
      * @param end   end of time period to compute estimation from
      * @return duration representing the estimation
      */
-    public static Estimation from(final Date start, final Date end) {
-        final Instant startInstant = start.toInstant();
-        return new Estimation(startInstant, Duration.between(startInstant, end.toInstant()));
+    public static Estimation from(final Instant start, final Instant end) {
+        return new Estimation(start, Duration.between(start, end));
     }
 
     private final Instant timestamp;
