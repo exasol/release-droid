@@ -1,12 +1,12 @@
 package com.exasol.releasedroid.adapter.github;
 
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.FILE_SEPARATOR;
-import static com.exasol.releasedroid.usecases.ReleaseDroidConstants.RELEASE_DROID_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -17,15 +17,15 @@ import java.util.Map;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHWorkflowRun.Conclusion;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.releasedroid.progress.Estimation;
 import com.exasol.releasedroid.progress.Progress;
-import com.exasol.releasedroid.usecases.PropertyReaderImpl;
 
 @ExtendWith(MockitoExtension.class)
 class GitHubAPIAdapterTest {
@@ -59,24 +59,24 @@ class GitHubAPIAdapterTest {
     }
 
     private GHWorkflowRun mockWorkflowRun() throws IOException, URISyntaxException {
-        final GHWorkflowRun run = Mockito.mock(GHWorkflowRun.class);
+        final GHWorkflowRun run = mock(GHWorkflowRun.class);
         when(run.getHtmlUrl()).thenReturn(new URI("http://of-workflow-run").toURL());
         when(run.getConclusion()).thenReturn(Conclusion.SUCCESS);
         return run;
     }
 
     @SuppressWarnings("unchecked")
-    private GHWorkflow mockWorkflow(final GHWorkflowRun run) throws IOException {
-        final PagedIterator<GHWorkflowRun> ptor = Mockito.mock(PagedIterator.class);
+    private GHWorkflow mockWorkflow(final GHWorkflowRun run) {
+        final PagedIterator<GHWorkflowRun> ptor = mock(PagedIterator.class);
         when(ptor.hasNext()).thenReturn(run != null);
         if (run != null) {
             when(ptor.next()).thenReturn(run);
         }
 
-        final PagedIterable<GHWorkflowRun> pable = Mockito.mock(PagedIterable.class);
+        final PagedIterable<GHWorkflowRun> pable = mock(PagedIterable.class);
         when(pable.iterator()).thenReturn(ptor);
 
-        final GHWorkflow workflow = Mockito.mock(GHWorkflow.class);
+        final GHWorkflow workflow = mock(GHWorkflow.class);
         when(workflow.listRuns()).thenReturn(pable);
         return workflow;
     }
@@ -88,11 +88,22 @@ class GitHubAPIAdapterTest {
         assertThat(this.apiAdapter.getRepositoryPrimaryLanguage(REPOSITORY_NAME), equalTo(language));
     }
 
+    @ParameterizedTest
+    @CsvSource({ "Not Found, E-RD-GH-1", "Bad credentials, E-RD-GH-13", "Unexpected response, E-RD-GH-14" })
+    void wrapGitHubException(final String originalMessage, final String errorCode) throws IOException {
+        reset(this.gitHubMock);
+        final IOException cause = new IOException(originalMessage);
+        doThrow(cause).when(this.gitHubMock).getRepository(REPOSITORY_NAME);
+        final GitHubException exception = assertThrows(GitHubException.class,
+                () -> this.apiAdapter.getRepositoryPrimaryLanguage(REPOSITORY_NAME));
+        assertAll(() -> assertThat(exception.getMessage(), containsString(errorCode)),
+                () -> assertThat(exception.getCause(), is(cause)));
+    }
+
     @Test
     void testDownloadArtifactAsString() throws IOException, GitHubException {
         final long artifactId = 123;
-        final GHArtifact artifactMock = Mockito.mock(GHArtifact.class);
-        final GHRepository repositoryMock = Mockito.mock(GHRepository.class);
+        final GHArtifact artifactMock = mock(GHArtifact.class);
         when(this.gitHubMock.getRepository(REPOSITORY_NAME)).thenReturn(repositoryMock);
         when(repositoryMock.getArtifact(artifactId)).thenReturn(artifactMock);
         when(artifactMock.download(any())).thenReturn("hashsum file.jar");
@@ -147,20 +158,6 @@ class GitHubAPIAdapterTest {
         verify(this.repositoryMock).createRef(eq("refs/tags/" + v2), any());
     }
 
-    void manualExperiments() throws Exception {
-        final String credentials = RELEASE_DROID_DIRECTORY + FILE_SEPARATOR + "credentials";
-        final GitHubConnectorImpl connector = new GitHubConnectorImpl(new PropertyReaderImpl(credentials));
-        final GHRepository repository = connector.connectToGitHub().getRepository("exasol/testing-release-robot");
-        final String branch = repository.getDefaultBranch();
-        final String sha = repository.getRef("refs/heads/" + branch).getObject().getSha();
-        final PagedIterable<GHCommit> pi = repository.queryCommits().from(sha).pageSize(1).list();
-        final PagedIterator<GHCommit> it = pi.iterator();
-        while (it.hasNext()) {
-            final GHCommit commit = it.next();
-            System.out.println(commit.getCommitDate() + " sha " + commit.getSHA1());
-        }
-    }
-
     @SuppressWarnings("unchecked")
     static void mockCommits(final GHRepository repositoryMock, final boolean hasCommits) throws IOException {
         final GHRef ref = mock(GHRef.class);
@@ -206,7 +203,7 @@ class GitHubAPIAdapterTest {
     }
 
     private GHReleaseBuilder releaseBuilderMock(final GHRelease release) throws IOException {
-        final GHReleaseBuilder builder = Mockito.mock(GHReleaseBuilder.class);
+        final GHReleaseBuilder builder = mock(GHReleaseBuilder.class);
         when(builder.draft(anyBoolean())).thenReturn(builder);
         when(builder.body(any())).thenReturn(builder);
         when(builder.name(any())).thenReturn(builder);
