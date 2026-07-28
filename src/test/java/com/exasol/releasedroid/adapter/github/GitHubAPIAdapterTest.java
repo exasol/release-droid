@@ -13,7 +13,9 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.net.*;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,6 +88,22 @@ class GitHubAPIAdapterTest {
         final String language = "Java";
         when(this.repositoryMock.getLanguage()).thenReturn(language);
         assertThat(this.apiAdapter.getRepositoryPrimaryLanguage(REPOSITORY_NAME), equalTo(language));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getClosedTickets() throws IOException, GitHubException {
+        final GHIssue issue = mock(GHIssue.class);
+        when(issue.getNumber()).thenReturn(123);
+        final GHIssue pullRequest = mock(GHIssue.class);
+        when(pullRequest.isPullRequest()).thenReturn(true);
+        final GHIssueQueryBuilder.ForRepository query = mock(GHIssueQueryBuilder.ForRepository.class);
+        final PagedIterable<GHIssue> issues = mock(PagedIterable.class);
+        when(this.repositoryMock.queryIssues()).thenReturn(query);
+        when(query.state(GHIssueState.CLOSED)).thenReturn(query);
+        when(query.list()).thenReturn(issues);
+        when(issues.toList()).thenReturn(List.of(issue, pullRequest));
+        assertThat(this.apiAdapter.getClosedTickets(REPOSITORY_NAME), equalTo(Set.of(123)));
     }
 
     @ParameterizedTest
