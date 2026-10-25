@@ -3,24 +3,24 @@
 
 ## Compile Dependencies
 
-| Dependency                                  | License                                                                                                        |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [JIRA REST Java Client - Implementation][0] | [Apache License, Version 2.0][1]                                                                               |
-| [Spring Beans][2]                           | [Apache License, Version 2.0][1]                                                                               |
-| [Apache Commons Lang][3]                    | [Apache-2.0][4]                                                                                                |
-| [Functional Extensions][5]                  | [Apache License 2.0][1]                                                                                        |
-| [GitHub API for Java][6]                    | [The MIT license][7]                                                                                           |
-| [jackson-databind][8]                       | [The Apache Software License, Version 2.0][4]                                                                  |
-| [JGit - Core][9]                            | [BSD-3-Clause][10]                                                                                             |
-| [SLF4J Simple Binding][11]                  | [MIT License][12]                                                                                              |
-| [Apache Commons CLI][13]                    | [Apache-2.0][4]                                                                                                |
-| [Yasson][14]                                | [Eclipse Public License v. 2.0][15]; [Eclipse Distribution License v. 1.0][16]                                 |
-| [Eclipse Parsson][17]                       | [Eclipse Public License 2.0][18]; [GNU General Public License, version 2 with the GNU Classpath Exception][19] |
-| [Maven Model][20]                           | [Apache-2.0][4]                                                                                                |
-| [error-reporting-java][21]                  | [MIT License][22]                                                                                              |
-| [commonmark-java core][23]                  | [BSD-2-Clause][24]                                                                                             |
-| [SnakeYAML][25]                             | [Apache License, Version 2.0][26]                                                                              |
-| [Jansi Bundle][27]                          | [The BSD License][28]                                                                                          |
+| Dependency                                  | License                                                                                                           |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [JIRA REST Java Client - Implementation][0] | [Apache License, Version 2.0][1]                                                                                  |
+| [Spring Beans][2]                           | [Apache License, Version 2.0][1]                                                                                  |
+| [Apache Commons Lang][3]                    | [Apache-2.0][4]                                                                                                   |
+| [Functional Extensions][5]                  | [Apache License 2.0][1]                                                                                           |
+| [GitHub API for Java][6]                    | [The MIT license][7]                                                                                              |
+| [jackson-databind][8]                       | [The Apache Software License, Version 2.0][4]                                                                     |
+| [JGit - Core][9]                            | [BSD-3-Clause][10]                                                                                                |
+| [SLF4J Simple Provider][11]                 | [MIT][12]                                                                                                         |
+| [Apache Commons CLI][13]                    | [Apache-2.0][4]                                                                                                   |
+| [Yasson][14]                                | [Eclipse Public License v. 2.0][15]; [GNU General Public License, version 2 with the GNU Classpath Exception][16] |
+| [Eclipse Parsson][17]                       | [Eclipse Public License 2.0][18]; [GNU General Public License, version 2 with the GNU Classpath Exception][19]    |
+| [Maven Model][20]                           | [Apache-2.0][4]                                                                                                   |
+| [error-reporting-java][21]                  | [MIT License][22]                                                                                                 |
+| [commonmark-java core][23]                  | [BSD-2-Clause][24]                                                                                                |
+| [SnakeYAML][25]                             | [Apache License, Version 2.0][26]                                                                                 |
+| [Jansi Bundle][27]                          | [The BSD License][28]                                                                                             |
 
 ## Test Dependencies
 
@@ -68,27 +68,27 @@
 [2]: https://github.com/spring-projects/spring-framework
 [3]: https://commons.apache.org/proper/commons-lang/
 [4]: https://www.apache.org/licenses/LICENSE-2.0.txt
-[5]: https://www.atlassian.com/central-pom/fugue-parent/fugue/
+[5]: https://www.atlassian.com/public-pom/fugue-parent/fugue/
 [6]: https://hub4j.github.io/github-api/
 [7]: https://www.opensource.org/licenses/mit-license.php
 [8]: https://github.com/FasterXML/jackson
 [9]: https://www.eclipse.org/jgit/
 [10]: https://www.eclipse.org/org/documents/edl-v10.php
 [11]: http://www.slf4j.org
-[12]: http://www.opensource.org/licenses/mit-license.php
+[12]: https://opensource.org/license/mit
 [13]: https://commons.apache.org/proper/commons-cli/
-[14]: https://projects.eclipse.org/projects/ee4j.yasson
-[15]: http://www.eclipse.org/legal/epl-v20.html
-[16]: http://www.eclipse.org/org/documents/edl-v10.php
+[14]: https://projects.eclipse.org/projects/ee4j/yasson
+[15]: https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+[16]: https://www.gnu.org/software/classpath/license.html
 [17]: https://github.com/eclipse-ee4j/parsson
 [18]: https://projects.eclipse.org/license/epl-2.0
 [19]: https://projects.eclipse.org/license/secondary-gpl-2.0-cp
-[20]: https://maven.apache.org/ref/3.9.16/maven-model/
+[20]: https://maven.apache.org/ref/3.10.0/maven-model/
 [21]: https://github.com/exasol/error-reporting-java/
 [22]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
 [23]: https://github.com/commonmark/commonmark-java/commonmark
 [24]: https://opensource.org/licenses/BSD-2-Clause
-[25]: https://bitbucket.org/snakeyaml/snakeyaml
+[25]: https://codeberg.org/snakeyaml/snakeyaml
 [26]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [27]: https://github.com/jline/jline3/jansi
 [28]: https://opensource.org/licenses/BSD-3-Clause
