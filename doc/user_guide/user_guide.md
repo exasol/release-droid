@@ -159,7 +159,7 @@ Section [Release Guide](#release-guide) describes optional additional entries.
 
 #### Requirements
 
-* JRE 11 or higher
+* JRE 25 or higher
 
 #### Run Steps
 
