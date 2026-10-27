@@ -34,14 +34,15 @@ jobs:
       - name: Set up JDKs
         id: setup-jdks
         uses: actions/setup-java@v6
-        with: {
-          distribution: temurin,
-          java-version: '21',
-          cache: maven,
-          server-id: ossindex,
-          server-username-env-var: OSSINDEX_USERNAME,
+        with:
+          distribution: temurin
+          java-version: |-
+            21
+            25
+          cache: maven
+          server-id: ossindex
+          server-username-env-var: OSSINDEX_USERNAME
           server-password-env-var: OSSINDEX_API_TOKEN
-        }
       - {
         name: Prepare Maven Wrapper,
         id: prepare-maven-wrapper,

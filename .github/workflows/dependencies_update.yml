@@ -43,11 +43,12 @@ jobs:
       - name: Set up JDKs
         id: setup-jdks
         uses: actions/setup-java@v6
-        with: {
-          distribution: temurin,
-          java-version: '21',
+        with:
+          distribution: temurin
+          java-version: |-
+            21
+            25
           cache: maven
-        }
       - {
         name: Prepare Maven Wrapper,
         id: prepare-maven-wrapper,
