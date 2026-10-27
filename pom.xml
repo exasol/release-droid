@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
@@ -11,12 +11,9 @@
     </properties>
     <repositories>
         <repository>
+            <!-- Required for dependency com.atlassian.jira:jira-rest-java-client-core -->
             <id>atlassian-public</id>
             <url>https://packages.atlassian.com/maven/repository/public</url>
-        </repository>
-        <repository>
-            <id>jenkins-public</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -178,7 +175,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.7.4</version>
+                <version>5.8.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -245,7 +242,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
