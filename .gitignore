@@ -32,4 +32,5 @@ pom.xml.versionsBackup
 *.flattened-pom.xml
 /.apt_generated/
 /.apt_generated_tests/
-.codex/
+/.codex/
+/.serena/

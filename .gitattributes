@@ -1,12 +1,20 @@
-.github/workflows/broken_links_checker.yml  linguist-generated
-.github/workflows/ci-build.yml              linguist-generated
-.github/workflows/dependencies_check.yml    linguist-generated
-.github/workflows/release.yml               linguist-generated
-.github/workflows/dependencies_update.yml   linguist-generated
-.github/zizmor.yml                          linguist-generated
-doc/changes/changelog.md                    linguist-generated
-dependencies.md                             linguist-generated
-pk_generated_parent.pom                     linguist-generated
-.settings/org.eclipse.jdt.core.prefs        linguist-generated
-.settings/org.eclipse.jdt.ui.prefs          linguist-generated
-SECURITY.md                                 linguist-generated
+*.sh text eol=lf
+*.bat text eol=crlf
+
+.github/workflows/broken_links_checker.yml  linguist-generated=true
+.github/workflows/ci-build.yml              linguist-generated=true
+.github/workflows/dependencies_check.yml    linguist-generated=true
+.github/workflows/release.yml               linguist-generated=true
+.github/workflows/dependencies_update.yml   linguist-generated=true
+.github/zizmor.yml                          linguist-generated=true
+doc/changes/changelog.md                    linguist-generated=true
+dependencies.md                             linguist-generated=true
+pk_generated_parent.pom                     linguist-generated=true
+.settings/org.eclipse.jdt.core.prefs        linguist-generated=true
+.settings/org.eclipse.jdt.ui.prefs          linguist-generated=true
+SECURITY.md                                 linguist-generated=true
+src/assembly/all-dependencies.xml linguist-generated=true
+
+/mvnw linguist-generated=true
+/mvnw.cmd linguist-generated=true
+/.mvn/wrapper/maven-wrapper.properties linguist-generated=true
