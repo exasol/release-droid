@@ -23,4 +23,5 @@ Code name:
 * Updated `org.apache.maven.plugins:maven-toolchains-plugin:3.2.0` to `3.3.0`
 * Updated `org.codehaus.mojo:flatten-maven-plugin:1.7.3` to `1.8.0`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.21.0` to `2.23.0`
+* Updated `org.itsallcode:openfasttrace-maven-plugin:1.6.2` to `3.1.0`
 * Updated `org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970` to `5.8.0.7211`
