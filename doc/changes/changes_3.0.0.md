@@ -32,12 +32,10 @@ This release addresses 14 OSS Index vulnerability findings in Spring Framework, 
 * Updated `com.atlassian.jira:jira-rest-java-client-core:7.0.2` to `8.0.1`
 * Removed `com.fasterxml.jackson.core:jackson-databind:2.22.1`
 * Updated `io.atlassian.fugue:fugue:6.1.4` to `7.0.2`
-* Removed `org.apache.commons:commons-lang3:3.20.0`
 * Updated `org.apache.maven:maven-model:3.9.16` to `3.10.0`
-* Updated `org.commonmark:commonmark:0.29.0` to `0.31.0`
-* Updated `org.eclipse.jgit:org.eclipse.jgit:7.7.0.202606012155-r` to `7.8.0.202609011348-r`
 * Removed `org.eclipse.parsson:parsson:1.1.9`
-* Updated `org.eclipse:yasson:3.0.4` to `3.0.5`
+* Added `org.eclipse.yasson:yasson:3.0.5`
+* Removed `org.eclipse:yasson:3.0.4`
 * Updated `org.jline:jansi:4.3.1` to `4.4.8`
 * Updated `org.slf4j:slf4j-simple:1.7.36` to `2.0.20`
 * Removed `org.springframework:spring-beans:7.0.8`
@@ -51,7 +49,7 @@ This release addresses 14 OSS Index vulnerability findings in Spring Framework, 
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:error-code-crawler-maven-plugin:2.1.0` to `2.1.2`
+* Updated `com.exasol:error-code-crawler-maven-plugin:2.1.0` to `2.1.3`
 * Updated `com.exasol:project-keeper-maven-plugin:5.7.4` to `5.8.1`
 * Updated `io.github.git-commit-id:git-commit-id-maven-plugin:10.0.0` to `10.0.1`
 * Updated `org.apache.maven.plugins:maven-artifact-plugin:3.6.1` to `3.7.0`
