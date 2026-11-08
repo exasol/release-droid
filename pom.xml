@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>release-droid</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>Exasol Release Droid</name>
     <description>Release Droid automates release process steps on widely used platforms like GitHub and Maven</description>
     <url>https://github.com/exasol/release-droid/</url>
@@ -28,7 +28,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.22.4</version>
+                <version>2.23.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -42,17 +42,17 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.7.2-jre</version>
+                <version>33.8.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.6.4</version>
+                <version>5.6.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5-cache</artifactId>
-                <version>5.6.4</version>
+                <version>5.6.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -71,12 +71,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.20.0</version>
+            <version>3.21.0</version>
         </dependency>
         <dependency>
             <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
-            <version>7.0.2</version>
+            <version>7.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>7.7.0.202606012155-r</version>
+            <version>7.8.1.202611041320-r</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.29.0</version>
+            <version>0.32.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jansi</artifactId>
-            <version>4.4.8</version>
+            <version>4.5.0</version>
         </dependency>
         <!--Unit test dependencies-->
         <dependency>
@@ -194,7 +194,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.8.1</version>
+                <version>5.8.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -244,7 +244,7 @@
     <parent>
         <artifactId>release-droid-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
