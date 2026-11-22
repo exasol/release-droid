@@ -74,7 +74,7 @@
 [12]: https://projects.eclipse.org/projects/ee4j.yasson
 [13]: http://www.eclipse.org/legal/epl-v20.html
 [14]: http://www.eclipse.org/org/documents/edl-v10.php
-[15]: https://maven.apache.org/ref/3.10.0/maven-model/
+[15]: https://maven.apache.org/ref/3.10.2/maven-model/
 [16]: https://github.com/exasol/error-reporting-java/
 [17]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
 [18]: https://github.com/commonmark/commonmark-java/commonmark
